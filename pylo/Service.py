@@ -183,9 +183,11 @@ class Service(pylo.ReferenceTracker):
 
         self.processName = data['process_name']
 
-        for entry_data in data['service_ports']:
-            entry = ServiceEntry.create_from_json(entry_data)
-            self.entries.append(entry)
+        service_ports = data.get('service_ports')
+        if service_ports is not None:
+            for entry_data in data['service_ports']:
+                entry = ServiceEntry.create_from_json(entry_data)
+                self.entries.append(entry)
 
         if data['deleted_at'] is not None:
             self.deleted = True
