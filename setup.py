@@ -10,7 +10,7 @@ with open('LICENSE') as f:
 setup(
     name='pylo',
     version='0.1.0',
-    description='API Framwork and helpers for Illumio ASP platform',
+    description='API Framework and Helpers for Illumio ASP platform',
     long_description=readme,
     author='Christophe Painchaud',
     author_email='christophe.painchaud@illumio.com',

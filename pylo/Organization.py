@@ -20,6 +20,7 @@ class Organization:
         self.LabelStore = pylo.LabelStore(self)
         self.IPListStore = pylo.IPListStore(self)
         self.WorkloadStore = pylo.WorkloadStore(self)
+        self.AgentStore = pylo.AgentStore(self)
         self.ServiceStore = pylo.ServiceStore(self)
         self.RulesetStore = pylo.RulesetStore(self)
         self.SecurityPrincipalStore = pylo.SecurityPrincipalStore(self)
@@ -110,6 +111,13 @@ class Organization:
     def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
         return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads))
 
+    @staticmethod
+    def create_fake_empty_config():
+        return {'iplists': [], 'workloads': [], 'labels': [], 'labelgroups': [], 'services': [],
+                'rulesets': [], 'security_principals': []
+                }
+
+
     def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
         self.connector = con
 
@@ -140,25 +148,29 @@ class Organization:
 
         return data
 
-    def stats_to_str(self):
+    def stats_to_str(self, padding=''):
         stats = ""
-        stats += "- {} Labels in total. Loc: {} / Env: {} / App: {} / Role: {}".\
-            format(self.LabelStore.count_labels(),
+        stats += "{}- {} Labels in total. Loc: {} / Env: {} / App: {} / Role: {}".\
+            format(padding,
+                   self.LabelStore.count_labels(),
                    self.LabelStore.count_location_labels(),
                    self.LabelStore.count_environment_labels(),
                    self.LabelStore.count_application_labels(),
                    self.LabelStore.count_role_labels())
 
-        stats += "\n- Workloads: Managed: {} / Unmanaged: {} / Deleted: {}". \
-            format(self.WorkloadStore.count_managed_workloads(),
+        stats += "\n{}- Workloads: Managed: {} / Unmanaged: {} / Deleted: {}". \
+            format(padding,
+                   self.WorkloadStore.count_managed_workloads(),
                    self.WorkloadStore.count_unamanaged_workloads(),
                    self.WorkloadStore.count_deleted_workloads())
 
-        stats += "\n- {} IPlists in total.". \
-            format(self.IPListStore.count() )
+        stats += "\n{}- {} IPlists in total.". \
+            format(padding,
+                   self.IPListStore.count())
 
 
-        stats += "\n- {} RuleSets and {} Rules.".format(self.RulesetStore.count_rulesets(), self.RulesetStore.count_rules())
+        stats += "\n{}- {} RuleSets and {} Rules.". \
+            format(padding, self.RulesetStore.count_rulesets(), self.RulesetStore.count_rules())
 
         return stats
 

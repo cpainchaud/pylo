@@ -4,6 +4,19 @@ import pylo
 from pylo import log
 from .Helpers import *
 
+label_type_loc = 1
+label_type_env = 2
+label_type_app = 4
+label_type_role = 3
+
+if type == 1:
+    ref = self.locationLabels
+elif type == 2:
+    ref = self.environmentLabels
+elif type == 4:
+    ref = self.applicationLabels
+elif type == 3:
+    ref = self.roleLabels
 
 class LabelStore:
 

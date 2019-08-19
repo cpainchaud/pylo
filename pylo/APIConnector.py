@@ -353,6 +353,12 @@ class APIConnector:
 
         return self.do_get_call(path=path, asyncCall=not fast_mode, params=data)
 
+    def objects_workload_agent_upgrade(self, workload_href: str, target_version: str):
+        path = '{}/upgrade'.format(workload_href)
+        data = {"release": target_version}
+
+        return self.do_post_call(path=path, json_arguments=data, jsonOutputExpected=False, includeOrgID=False)
+
     def objects_workload_update(self, href: str, data):
         path = href
 

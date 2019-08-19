@@ -30,6 +30,8 @@ class Workload(pylo.ReferenceTracker):
         self.applicationLabel = None  # type: pylo.Label
         self.roleLabel = None  # type: pylo.Label
 
+        self.ven_agent = None  # type: pylo.VENAgent
+
         self.unmanaged = True
 
         self.temporary = False
@@ -56,6 +58,7 @@ class Workload(pylo.ReferenceTracker):
             self.unmanaged = True
         else:
             self.unmanaged = False
+            self.ven_agent = self.owner.owner.AgentStore.create_venagent_from_workload_record(self, agent_json)
 
         if 'description' in data:
             desc = data['description']
@@ -142,6 +145,31 @@ class Workload(pylo.ReferenceTracker):
             label_data.append({'href': self.roleLabel.href})
 
         connector.objects_workload_update(self.href, data={'labels': label_data})
+
+    def get_labels_str(self):
+        labels = ''
+
+        if self.roleLabel is None:
+            labels += '*None*|'
+        else:
+            labels += self.roleLabel.name + '|'
+
+        if self.applicationLabel is None:
+            labels += '*None*|'
+        else:
+            labels += self.applicationLabel.name + '|'
+
+        if self.environmentLabel is None:
+            labels += '*None*|'
+        else:
+            labels += self.environmentLabel.name + '|'
+
+        if self.locationLabel is None:
+            labels += '*None*'
+        else:
+            labels += self.locationLabel.name
+
+        return labels
 
 
     def get_name(self):
