@@ -13,9 +13,9 @@ parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, def
                     help='For developpers only')
 
 parser.add_argument('--filter-env-label', type=str, required=False, default=None,
-                    help='Filter agents by environment labels (seperated by commas)')
+                    help='Filter agents by environment labels (separated by commas)')
 parser.add_argument('--filter-loc-label', type=str, required=False, default=None,
-                    help='Filter agents by environment labels (seperated by commas)')
+                    help='Filter agents by environment labels (separated by commas)')
 
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
@@ -29,6 +29,8 @@ hostname = args['host']
 print(args)
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
+
+minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
 
 org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
@@ -57,29 +59,24 @@ print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 print(" * Listing VEN Agents TOTAL count per version:")
 version_count = {}
 for agent in org.AgentStore.itemsByHRef.values():
-    if agent.version_string in version_count:
-        version_count[agent.version_string] += 1
+    if agent.software_version.version_string in version_count:
+        version_count[agent.software_version.version_string] += 1
     else:
-        version_count[agent.version_string] = 1
+        version_count[agent.software_version.version_string] = 1
 
 
 for version_string in sorted(version_count.keys()):
     count = version_count[version_string]
-    print("   - {}: {}".format(version_string.ljust(12, ' '), count))
+    if minimum_supported_version < pylo.SoftwareVersion(version_string):
+        print("   - {}: {}    *NOT SUPPORTED*".format(version_string.ljust(12, ' '), count))
+    else:
+        print("   - {}: {}".format(version_string.ljust(12, ' '), count))
 print("    - TOTAL: {} Agents".format(len(org.AgentStore.itemsByHRef)))
 
 
 target_version_string = args['target_version']
 print(" * Parsing target version '{}'".format(target_version_string))
-version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)(u[0-9]+)?$")
-regex_match = version_regex.match(target_version_string)
-if regex_match is None:
-    raise pylo.PyloEx("Invalid target version format provided")
-target_version_major = int(regex_match.group('major'))
-target_version_middle = int(regex_match.group('middle'))
-target_version_minor = int(regex_match.group('minor'))
-target_version_build = int(regex_match.group('build'))
-
+target_version = pylo.SoftwareVersion(target_version_string)
 
 print(" * Parsing filters")
 
@@ -125,28 +122,18 @@ for agent_href in [*agents.keys()]:
         del agents[agent_href]
         continue
 
-    if target_version_major < agent.version_major:
-        del agents[agent_href]
-        continue
-    if target_version_major == agent.version_major and target_version_middle < agent.version_middle:
-        del agents[agent_href]
-        continue
-    if target_version_major == agent.version_major and target_version_middle == agent.version_middle and \
-            target_version_minor < agent.version_minor :
-        del agents[agent_href]
-        continue
-    if target_version_major == agent.version_major and target_version_middle == agent.version_middle and \
-            target_version_minor == agent.version_minor and target_version_build <= agent.version_build:
+    # Hiding versions which are higher than the one request for upgrade
+    if agent.software_version < target_version:
         del agents[agent_href]
         continue
 
 
 version_count = {}
 for agent in agents.values():
-    if agent.version_string in version_count:
-        version_count[agent.version_string] += 1
+    if agent.software_version.version_string in version_count:
+        version_count[agent.software_version.version_string] += 1
     else:
-        version_count[agent.version_string] = 1
+        version_count[agent.software_version.version_string] = 1
 
 
 for version_string in sorted(version_count.keys()):

@@ -1,0 +1,88 @@
+import pylo
+from pylo import log
+from .Helpers import *
+import re
+
+version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)(u[0-9]+)?$")
+
+
+class SoftwareVersion:
+
+    """
+    :type version_string: str
+    :type version_string: str
+    """
+
+    def __init__(self, version_string: str):
+        self.version_string = version_string
+        match = version_regex.match(version_string)
+
+        if match is None:
+            raise pylo.PyloEx("version_string has invalid version format: {}".format(version_string))
+
+        self.major = int(match.group("major"))
+        self.middle = int(match.group("middle"))
+        self.minor = int(match.group("minor"))
+        self.build = int(match.group("build"))
+
+
+    def is_greater_than(self, target_version: 'pylo.SoftwareVersion'):
+        if target_version.major < self.major:
+            return True
+        if target_version.major == self.major:
+            if target_version.middle < self.middle:
+                return True
+            if target_version.middle == self.middle:
+                if target_version.minor < self.minor:
+                    return True
+                if target_version.minor == self.minor:
+                    if target_version.build < self.build:
+                        return True
+
+        return False
+
+    def is_greater_or_equal_than(self, target_version: 'pylo.SoftwareVersion'):
+        if target_version.major < self.major:
+            return True
+        if target_version.major == self.major:
+            if target_version.middle < self.middle:
+                return True
+            if target_version.middle == self.middle:
+                if target_version.minor < self.minor:
+                    return True
+                if target_version.minor == self.minor:
+                    if target_version.build <= self.build:
+                        return True
+
+        return False
+
+
+    def is_lower_than(self, target_version: 'pylo.SoftwareVersion'):
+        return not target_version.is_greater_than(self)
+
+
+    def is_lower_or_equal_than(self, target_version: 'pylo.SoftwareVersion'):
+        return not target_version.is_greater_or_equal_than(self)
+
+    def equals(self, target_version: 'pylo.SoftwareVersion'):
+        if target_version.major == self.major and target_version.middle == self.middle and \
+                target_version.minor == self.minor and target_version.build == self.build:
+            return True
+        return False
+
+    def __lt__(self, other):
+        return self.is_lower_than(other)
+
+    def __gt__(self, other):
+        return self.is_greater_than(other)
+
+    def __eq__(self, target_version):
+        if target_version.major == self.major and target_version.middle == self.middle and \
+                target_version.minor == self.minor and target_version.build == self.build:
+            return True
+        return False
+
+    def generate_str_from_numbers(self):
+        return "{}.{}.{}-{}".format(self.major, self.middle, self.minor, self.build)
+
+

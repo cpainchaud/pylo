@@ -8,6 +8,7 @@ sys.path.append(vendor_dir)
 from .tmp import *
 
 from .Exception import PyloEx
+from .SoftwareVersion import SoftwareVersion
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
 from .APIConnector import APIConnector
 from .LabelCommon import LabelCommon
