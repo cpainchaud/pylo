@@ -175,7 +175,7 @@ class APIConnector:
 
         if method == 'GET' and req.status_code != 200 \
                 or\
-                method == 'POST' and req.status_code != 201 \
+                method == 'POST' and req.status_code != 201 and req.status_code != 204 \
                 or\
                 method == 'DELETE' and req.status_code != 204 \
                 or \

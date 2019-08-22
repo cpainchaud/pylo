@@ -27,42 +27,64 @@ class SoftwareVersion:
 
 
     def is_greater_than(self, target_version: 'pylo.SoftwareVersion'):
-        if target_version.major < self.major:
+        if self.major > target_version.major:
             return True
         if target_version.major == self.major:
-            if target_version.middle < self.middle:
+            if self.middle > target_version.middle:
                 return True
             if target_version.middle == self.middle:
-                if target_version.minor < self.minor:
+                if self.minor > target_version.minor:
                     return True
                 if target_version.minor == self.minor:
-                    if target_version.build < self.build:
+                    if self.build > target_version.build:
                         return True
 
         return False
 
     def is_greater_or_equal_than(self, target_version: 'pylo.SoftwareVersion'):
-        if target_version.major < self.major:
+        if self.major > target_version.major:
             return True
         if target_version.major == self.major:
-            if target_version.middle < self.middle:
+            if self.middle > target_version.middle:
                 return True
             if target_version.middle == self.middle:
-                if target_version.minor < self.minor:
+                if self.minor > target_version.minor:
                     return True
                 if target_version.minor == self.minor:
-                    if target_version.build <= self.build:
+                    if self.build >= target_version.build:
                         return True
 
         return False
 
 
     def is_lower_than(self, target_version: 'pylo.SoftwareVersion'):
-        return not target_version.is_greater_than(self)
+        if self.major < target_version.major:
+            return True
+        if target_version.major == self.major:
+            if self.middle < target_version.middle:
+                return True
+            if target_version.middle == self.middle:
+                if self.minor < target_version.minor:
+                    return True
+                if target_version.minor == self.minor:
+                    if self.build < target_version.build:
+                        return True
+        return False
 
 
     def is_lower_or_equal_than(self, target_version: 'pylo.SoftwareVersion'):
-        return not target_version.is_greater_or_equal_than(self)
+        if self.major < target_version.major:
+            return True
+        if target_version.major == self.major:
+            if self.middle < target_version.middle:
+                return True
+            if target_version.middle == self.middle:
+                if self.minor < target_version.minor:
+                    return True
+                if target_version.minor == self.minor:
+                    if self.build <= target_version.build:
+                        return True
+        return False
 
     def equals(self, target_version: 'pylo.SoftwareVersion'):
         if target_version.major == self.major and target_version.middle == self.middle and \

@@ -16,6 +16,10 @@ parser.add_argument('--filter-env-label', type=str, required=False, default=None
                     help='Filter agents by environment labels (separated by commas)')
 parser.add_argument('--filter-loc-label', type=str, required=False, default=None,
                     help='Filter agents by environment labels (separated by commas)')
+parser.add_argument('--filter-app-label', type=str, required=False, default=None,
+                    help='Filter agents by role labels (separated by commas)')
+parser.add_argument('--filter-role-label', type=str, required=False, default=None,
+                    help='Filter agents by role labels (separated by commas)')
 
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
@@ -30,7 +34,7 @@ print(args)
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
 
-minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
+minimum_supported_version = pylo.SoftwareVersion("18.3.0-0")
 
 org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
@@ -67,7 +71,7 @@ for agent in org.AgentStore.itemsByHRef.values():
 
 for version_string in sorted(version_count.keys()):
     count = version_count[version_string]
-    if minimum_supported_version < pylo.SoftwareVersion(version_string):
+    if minimum_supported_version.is_greater_than(pylo.SoftwareVersion(version_string)):
         print("   - {}: {}    *NOT SUPPORTED*".format(version_string.ljust(12, ' '), count))
     else:
         print("   - {}: {}".format(version_string.ljust(12, ' '), count))
@@ -106,6 +110,31 @@ if args['filter_loc_label'] is not None:
             print("FOUND")
             loc_label_list[label] = label
 
+app_label_list = {}
+if args['filter_app_label'] is not None:
+    print("   * Application Labels specified")
+    for raw_label_name in args['filter_app_label'].split(','):
+        print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
+        label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_app)
+        if label is None:
+            print("NOT FOUND!")
+            raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
+        else:
+            print("FOUND")
+            app_label_list[label] = label
+
+role_label_list = {}
+if args['filter_role_label'] is not None:
+    print("   * Role Labels specified")
+    for raw_label_name in args['filter_role_label'].split(','):
+        print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
+        label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_role)
+        if label is None:
+            print("NOT FOUND!")
+            raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
+        else:
+            print("FOUND")
+            role_label_list[label] = label
 
 
 print(" * Listing VEN Agents FILTERED count per version:")
@@ -121,12 +150,23 @@ for agent_href in [*agents.keys()]:
     if len(loc_label_list) > 0 and (workload.locationLabel is None or workload.locationLabel not in loc_label_list):
         del agents[agent_href]
         continue
-
-    # Hiding versions which are higher than the one request for upgrade
-    if agent.software_version < target_version:
+    if len(app_label_list) > 0 and (workload.applicationLabel is None or workload.applicationLabel not in app_label_list):
         del agents[agent_href]
         continue
 
+    if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
+        del agents[agent_href]
+        continue
+
+    # Hiding versions which are higher than the one requested for upgrade
+    if agent.software_version > target_version:
+        del agents[agent_href]
+        continue
+
+    # Hiding unsupported versions
+    if agent.software_version.is_lower_than(minimum_supported_version):
+        del agents[agent_href]
+        continue
 
 version_count = {}
 for agent in agents.values():
