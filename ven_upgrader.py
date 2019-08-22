@@ -140,7 +140,7 @@ if args['filter_role_label'] is not None:
 print(" * Listing VEN Agents FILTERED count per version:")
 agents = org.AgentStore.itemsByHRef.copy()
 
-for agent_href in [*agents.keys()]:
+for agent_href in list(agents.keys()):
     agent = agents[agent_href]
     workload = agent.workload
 
