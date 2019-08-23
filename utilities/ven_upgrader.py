@@ -1,8 +1,10 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import pylo
 import sys
 import argparse
-import re
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')
@@ -184,11 +186,11 @@ print("    - TOTAL: {} Agents".format(len(agents)))
 
 if use_cached_config:
     print("\n\n *** SKIPPING Upgrade process as --dev-use-cache option was used!")
-    exit(0)
+    sys.exit(0)
 
 if not request_upgrades:
     print("\n\n *** SKIPPING Upgrade process as option '--confirm' was not used")
-    exit(0)
+    sys.exit(0)
 
 print("\n *** Now Requesting Agents Upgrades from the PCE ***")
 agent_count = 0

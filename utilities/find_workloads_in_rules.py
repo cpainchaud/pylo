@@ -1,6 +1,8 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import pylo
-import sys
 import argparse
 
 parser = argparse.ArgumentParser(description='TODO LATER')
@@ -11,7 +13,6 @@ args = vars(parser.parse_args())
 
 hostname = args['host']
 pylo.ignoreWorkloadsWithSameName = True
-pylo.log_set_debug()
 
 org = pylo.Organization(1)
 
@@ -19,13 +20,7 @@ print("Loading Origin PCE configuration from " + hostname + " or cached file... 
 org.load_from_cache_or_saved_credentials(hostname)
 print("OK!\n")
 
-deleted_workloads = []  # type: list[pylo.Workload]
-
-print("Looking for workloads which are marked as temporary or deleted ... ", end="", flush=True)
-for workload in org.WorkloadStore.itemsByHRef.values():
-    if workload.temporary or workload.deleted:
-        deleted_workloads.append(workload)
-print("Done!  Found {} over {}\n".format(len(deleted_workloads), len(org.WorkloadStore.itemsByHRef)))
+workloads_to_inspect = org.WorkloadStore.itemsByHRef.values()
 
 
 global_count_concerned_workloads = 0
@@ -34,7 +29,7 @@ global_concerned_rulesets = {}
 global_concerned_rules = {}
 
 
-for workload in deleted_workloads:
+for workload in workloads_to_inspect:
     concerned_rulesets = {}  # type: dict[pylo.Ruleset, dict[pylo.Rule,pylo.Rule]]
     count_concerned_rules = 0
     for referencer in workload.get_references():
@@ -43,7 +38,7 @@ for workload in deleted_workloads:
             concerned_ruleset = concerned_rule.owner
 
             global_concerned_rulesets[concerned_ruleset] = True
-            global_concerned_rules[concerned_rule] = True
+            global_concerned_rules[concerned_rule]= True
 
             if concerned_ruleset not in concerned_rulesets:
                 concerned_rulesets[concerned_ruleset] = {concerned_rule: concerned_rule}
@@ -66,16 +61,17 @@ def get_name(obj):
 
 
 tmp_rulesets = sorted(global_concerned_rulesets.keys(), key=get_name)
-
+print(tmp_rulesets)
 
 print("\n* For convenience here is the list of Rulesets:")
 for ruleset in tmp_rulesets:
     print("  - '{}' HREF: {}".format(ruleset.name, ruleset.href))
 
 
-print("\n** Total: {} deleted Workloads used in {} Rulesets and {} Rules".format(global_count_concerned_workloads,
-                                                                               len(global_concerned_rulesets),
-                                                                               len(global_concerned_rules)))
+
+print("\n** Total: {} Workloads used in {} Rulesets and {} Rules".format(   global_count_concerned_workloads,
+                                                                            len(global_concerned_rulesets),
+                                                                            len(global_concerned_rules)))
 
 print("\nEND OF SCRIPT\n")
 

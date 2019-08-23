@@ -1,12 +1,14 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
 from typing import Dict, Any
 
 import pylo
-import sys
 import argparse
 import time
 import json
 import csv
-import os
 import re
 
 
