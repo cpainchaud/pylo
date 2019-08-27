@@ -11,11 +11,12 @@ class Organization:
     """
     :type id: int
     :type connector: pylo.APIConnector
+    :type pce_version: pylo.SoftwareVersion
     """
 
-    def __init__(self, orgID):
-        """@type orgID: int"""
-        self.id = orgID
+    def __init__(self, org_id):
+        """@type org_id: int"""
+        self.id = org_id
         self.connector = None
         self.LabelStore = pylo.LabelStore(self)
         self.IPListStore = pylo.IPListStore(self)
@@ -24,6 +25,7 @@ class Organization:
         self.ServiceStore = pylo.ServiceStore(self)
         self.RulesetStore = pylo.RulesetStore(self)
         self.SecurityPrincipalStore = pylo.SecurityPrincipalStore(self)
+        self.pce_version = None
 
     def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
         # filename should be like 'cache_xxx.yyy.zzz.json'
@@ -33,6 +35,9 @@ class Organization:
             # now we try to open that JSON file
             with open(filename) as json_file:
                 data = json.load(json_file)
+                if 'pce_version' not in data:
+                    raise pylo.PyloEx("Cannot find PCE version in cache file")
+                self.pce_version = pylo.SoftwareVersion(data['pce_version'])
                 if 'data' not in data:
                     raise Exception("Cache file '%s' was found and successfully loaded but no 'data' object could be found" % filename)
                 self.load_from_json(data['data'])
@@ -49,6 +54,7 @@ class Organization:
         timestamp = time.time()
 
         json_content = {'generation_date': timestamp,
+                        'pce_version': self.pce_version.generate_str_from_numbers(),
                        'data': data
                         }
 
@@ -109,6 +115,7 @@ class Organization:
         self.RulesetStore.load_rulesets_from_json(data['rulesets'])
 
     def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
+        self.pce_version = con.getSoftwareVersion()
         return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads))
 
     @staticmethod
@@ -150,6 +157,7 @@ class Organization:
 
     def stats_to_str(self, padding=''):
         stats = ""
+        stats += "{}- Version {}".format(padding, self.pce_version.generate_str_from_numbers())
         stats += "{}- {} Labels in total. Loc: {} / Env: {} / App: {} / Role: {}".\
             format(padding,
                    self.LabelStore.count_labels(),

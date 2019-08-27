@@ -1,7 +1,6 @@
 import json
 import time
 import os
-import sys
 import getpass
 from threading import Thread
 from queue import Queue
@@ -9,7 +8,7 @@ from queue import Queue
 import pylo
 from pylo import log
 
-import requests
+import vendors.requests as requests²
 
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
@@ -195,11 +194,11 @@ class APIConnector:
         return req.text
 
     def getSoftwareVersion(self):
-        self.collectPceInfos()
+        self.collect_pce_infos()
         return self.version
 
     def getSoftwareVersionString(self):
-        self.collectPceInfos()
+        self.collect_pce_infos()
         return self.version_string
 
     def get_pce_objects(self, include_deleted_workloads=False):
@@ -261,14 +260,14 @@ class APIConnector:
 
         return data
 
-    def collectPceInfos(self):
+    def collect_pce_infos(self):
         if self.version is not None:  # Make sure we collect data only once
             return
         path = "/product_version"
         jout = self.do_get_call(path, includeOrgID=False)
 
         self.version_string = jout['version']
-        self.version = 0
+        self.version = pylo.SoftwareVersion(jout['long_display'])
 
     def policy_check(self, protocol, port=None, src_ip=None, src_href=None, dst_ip=None, dst_href=None):
 
@@ -441,4 +440,5 @@ class APIConnector:
             raise pylo.PyloEx("You need to provide a SID")
 
         return get_field_or_die('href', self.do_post_call(path=path, json_arguments={'name': name, 'sid': sid}))
+
 
