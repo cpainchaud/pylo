@@ -50,6 +50,7 @@ class Organization:
         filename = 'cache_' + con.hostname + '.json'
 
         data = self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads)
+        self.pce_version = con.version
 
         timestamp = time.time()
 
@@ -136,7 +137,7 @@ class Organization:
 
     def stats_to_str(self, padding=''):
         stats = ""
-        stats += "{}- Version {}".format(padding, self.pce_version.generate_str_from_numbers())
+        stats += "{}- Version {}\n".format(padding, self.pce_version.generate_str_from_numbers())
         stats += "{}- {} Labels in total. Loc: {} / Env: {} / App: {} / Role: {}".\
             format(padding,
                    self.LabelStore.count_labels(),

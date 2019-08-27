@@ -2,13 +2,13 @@ import json
 import time
 import os
 import getpass
+import vendors.requests as requests
 from threading import Thread
 from queue import Queue
-
 import pylo
 from pylo import log
 
-import vendors.requests as requests
+
 
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
@@ -37,7 +37,7 @@ class APIConnector:
         self.api_user = apiuser
         self.orgID = orgID
         self.skipSSLCertCheck = skip_ssl_cert_check
-        self.version = None
+        self.version = None  # type: pylo.SoftwareVersion
         self.version_string = "Not Defined"
         self._cached_session = requests.session()
 

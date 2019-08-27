@@ -33,13 +33,15 @@ print("* Getting API credentials from cached credentials for host '%s' ... " % h
 con = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
 print("OK!")
 
+print("* Getting PCE Version... ", end="", flush=True)
+con.collect_pce_infos()
+print(con.version.generate_str_from_numbers())
+
 org = pylo.Organization(1)
-print("* Loading PCE configuration from " + hostname + " ... ", end="", flush=True)
+print("* Downloading PCE objects and settings from '{}'".format(hostname), end="", flush=True)
 (file_name, file_size) = org.make_cache_file_from_api(con, include_deleted_workloads=include_deleted)
 print("OK!")
 
-print("\nConfiguration was saved to file '%s' with a size of %iKB" % (file_name, int(file_size/1024)))
-
-print("Organization statistics:\n{}\n\n".format(org.stats_to_str()))
+print("\nPCE objects and settings were saved to file '%s' with a size of %iKB" % (file_name, int(file_size/1024)))
 
 print()
