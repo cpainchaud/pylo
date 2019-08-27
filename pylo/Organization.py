@@ -86,6 +86,9 @@ class Organization:
         self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads)
 
     def load_from_json(self, data):
+        if self.pce_version is None:
+            raise pylo.PyloEx('Organization has no "version" specified')
+
         if 'labels' not in data:
             raise Exception("'labels' was not found in json data")
         self.LabelStore.loadLabelsFromJson(data['labels'])
@@ -130,30 +133,6 @@ class Organization:
 
         return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads)
 
-        data = {}
-
-        # we start by loading labels
-        data['labels'] = con.objects_label_get()
-
-        # now LabelGroups
-        data['labelgroups'] = con.objects_labelgroup_get()
-
-        # IPLists
-        data['iplists'] = con.objects_iplist_get()
-
-        # Services
-        data['services'] = con.objects_service_get()
-
-        # Workloads
-        data['workloads'] = con.objects_workload_get(include_deleted=include_deleted_workloads)
-
-        # Security Principals
-        data['security_principals'] = con.objects_securityprincipal_get()
-
-        # Workloads
-        data['rulesets'] = con.objects_ruleset_get()
-
-        return data
 
     def stats_to_str(self, padding=''):
         stats = ""

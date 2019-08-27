@@ -57,6 +57,7 @@ else:
     print("OK!")
 
     print(" * Parsing PCE data ... ", end="", flush=True)
+    org.pce_version = connector.version
     org.load_from_json(fake_config)
     print("OK!")
 

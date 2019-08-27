@@ -84,9 +84,9 @@ class APIConnector:
 
         return url
 
-    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None):
+    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None, skip_product_version_check=False):
         return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, params=params)
+                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params)
 
     def do_post_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False):
         return self._doCall('POST', path, json_arguments=json_arguments, include_org_id=includeOrgID,
@@ -100,7 +100,10 @@ class APIConnector:
         return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
 
-    def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False, params=None):
+    def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False, skip_product_version_check=False, params=None):
+
+        if self.version is None and not skip_product_version_check:
+            self.collect_pce_infos()
 
         url = self._make_url(path, include_org_id)
 
@@ -264,7 +267,7 @@ class APIConnector:
         if self.version is not None:  # Make sure we collect data only once
             return
         path = "/product_version"
-        jout = self.do_get_call(path, includeOrgID=False)
+        jout = self.do_get_call(path, includeOrgID=False, skip_product_version_check=True)
 
         self.version_string = jout['version']
         self.version = pylo.SoftwareVersion(jout['long_display'])
