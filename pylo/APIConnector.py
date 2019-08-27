@@ -8,7 +8,7 @@ from queue import Queue
 import pylo
 from pylo import log
 
-import vendors.requests as requests²
+import vendors.requests as requests
 
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
