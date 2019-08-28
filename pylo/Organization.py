@@ -2,6 +2,7 @@ import json
 import pylo
 import os
 import time
+import datetime
 import getpass
 from pylo import log, LabelStore
 
@@ -52,9 +53,9 @@ class Organization:
         data = self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads)
         self.pce_version = con.version
 
-        timestamp = time.time()
+        timestamp = datetime.datetime.now(datetime.timezone.utc)
 
-        json_content = {'generation_date': timestamp,
+        json_content = {'generation_date': timestamp.isoformat(),
                         'pce_version': self.pce_version.generate_str_from_numbers(),
                        'data': data
                         }

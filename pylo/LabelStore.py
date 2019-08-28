@@ -9,15 +9,6 @@ label_type_env = 2
 label_type_app = 4
 label_type_role = 3
 
-if type == 1:
-    ref = self.locationLabels
-elif type == 2:
-    ref = self.environmentLabels
-elif type == 4:
-    ref = self.applicationLabels
-elif type == 3:
-    ref = self.roleLabels
-
 class LabelStore:
 
     """
@@ -200,7 +191,7 @@ class LabelStore:
                     self.label_resolution_cache[group_name].append(workload)
                 already_processed[group_name] = True
 
-    def get_workloads_by_label_scope(self, role: pylo.Label, app: pylo.Label, env: pylo.Label, loc: pylo.Label):
+    def get_workloads_by_label_scope(self, role: 'pylo.Label', app: 'pylo.Label', env: 'pylo.Label', loc: 'pylo.Label'):
         if self.label_resolution_cache is None:
             self.generate_label_resolution_cache()
 
@@ -240,13 +231,13 @@ class LabelStore:
         ref = None
         name = name.lower()
 
-        if type == 1:
+        if type == label_type_loc:
             ref = self.locationLabels
-        elif type == 2:
+        elif type == label_type_env:
             ref = self.environmentLabels
-        elif type == 4:
+        elif type == label_type_app:
             ref = self.applicationLabels
-        elif type == 3:
+        elif type == label_type_role:
             ref = self.roleLabels
 
         for labelName in ref.keys():
@@ -264,13 +255,13 @@ class LabelStore:
         name = name.lower()
         result = []
 
-        if type == 1:
+        if type == label_type_loc:
             ref = self.locationLabels
-        elif type == 2:
+        elif type == label_type_env:
             ref = self.environmentLabels
-        elif type == 4:
+        elif type == label_type_app:
             ref = self.applicationLabels
-        elif type == 3:
+        elif type == label_type_role:
             ref = self.roleLabels
 
         for labelName in ref.keys():

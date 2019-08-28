@@ -12,6 +12,7 @@ class VENAgent(pylo.ReferenceTracker):
 
     """
     :type software_version: pylo.SoftwareVersion
+    :type last_heartbeat: datetime.datetime
     """
 
     def __init__(self, href: str, owner: 'pylo.AgentStore', workload: 'pylo.Workload' = None):

@@ -1,10 +1,5 @@
 import pylo
-
-
-typeid_location = 1
-typeid_environment = 2
-typeid_application = 4
-typeid_role = 3
+from .LabelStore import label_type_role, label_type_env, label_type_loc, label_type_app
 
 
 class LabelCommon:
@@ -57,27 +52,27 @@ class LabelCommon:
 
 
     def type_is_location(self):
-        return self._type == 1
+        return self._type == label_type_loc
 
     def type_is_environment(self):
-        return self._type == 2
+        return self._type == label_type_env
 
     def type_is_application(self):
-        return self._type == 4
+        return self._type == label_type_app
 
     def type_is_role(self):
-        return self._type == 3
+        return self._type == label_type_role
 
     def type(self):
         return self._type
 
     def type_string(self):
-        if self._type == 1:
+        if self._type == label_type_loc:
             return 'loc'
-        if self._type == 2:
+        if self._type == label_type_env:
             return 'env'
-        if self._type == 4:
+        if self._type == label_type_app:
             return 'app'
-        if self._type == 3:
+        if self._type == label_type_role:
             return 'role'
 
