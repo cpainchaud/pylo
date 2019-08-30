@@ -2,7 +2,7 @@ import json
 import time
 import os
 import getpass
-import vendors.requests as requests
+import pylo.vendors.requests as requests
 from threading import Thread
 from queue import Queue
 import pylo

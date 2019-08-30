@@ -311,12 +311,14 @@ class FilterCollections:
 def tmp_func(wkl: pylo.Workload, context: FilterContext):
     return wkl.name == context.argument
 
+
 FilterCollections.add_workload_filter('name', 'matches', tmp_func, 'string')
 
 
 def tmp_func(wkl: pylo.Workload, context: FilterContext):
     if context.math_op == '>':
         return wkl.count_references() > context.argument
+
 
 FilterCollections.add_workload_filter('reference.count', '<>=!', tmp_func, 'int')
 

@@ -1,5 +1,8 @@
 import pylo
 from pylo import log
+import re
+
+ruleset_id_extraction_regex = re.compile(r"^/orgs/([0-9]+)/sec_policy/([0-9]+)?(draft)?/rule_sets/(?P<id>[0-9]+)$")
 
 
 class RulesetScope:
@@ -112,6 +115,16 @@ class Ruleset:
 
     def count_rules(self):
         return len(self.rules_byHref)
+
+    def extract_id_from_href(self):
+        match = ruleset_id_extraction_regex.match(self.href)
+        if match is None:
+            raise pylo.PyloEx("Cannot extract ruleset_id from href '{}'".format(self.href))
+
+        return match.group("id")
+
+    def get_ruleset_url(self, pce_hostname: str, pce_port):
+        return 'https://{}:{}/#/rulesets/{}/draft/rules/'.format(pce_hostname, pce_port, self.extract_id_from_href())
 
 
 class Rule:
@@ -236,7 +249,7 @@ class RuleHostContainer(pylo.Referencer):
     def __init__(self, owner: 'pylo.Rule', name: str):
         pylo.Referencer.__init__(self)
         self.owner = owner
-        self._items = {}
+        self._items = {}  # type: dict[pylo.Label | pylo.LabelGroup | pylo.Workload, pylo.Label|pylo.LabelGroup|pylo.Workload]
         self.name = name
         self._hasAllWorkloads = False
 
@@ -286,6 +299,24 @@ class RuleHostContainer(pylo.Referencer):
             if find_object is not None:
                 self._items[find_object] = find_object
                 find_object.add_reference(self)
+
+    def has_workloads(self):
+        for item in self._items.values():
+            if isinstance(item, pylo.Workload):
+                return True
+        return False
+
+    def has_labels(self):
+        for item in self._items.values():
+            if isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup):
+                return True
+        return False
+
+    def has_iplists(self):
+        for item in self._items.values():
+            if isinstance(item, pylo.IPList):
+                return True
+        return False
 
 
 class RulesetStore:
