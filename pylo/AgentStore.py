@@ -24,6 +24,8 @@ class VENAgent(pylo.ReferenceTracker):
         self.software_version = None
         self.last_heartbeat = None
 
+        self.mode = None
+
         self.raw_json = None
 
     def load_from_json(self, data):
@@ -43,6 +45,13 @@ class VENAgent(pylo.ReferenceTracker):
             # "2019-07-30T11:13:25.006Z"
             self.last_heartbeat = datetime.datetime.strptime(last_heartbeat, "%Y-%m-%dT%H:%M:%S.%fZ")
 
+        config_json = data.get('config')
+        if config_json is None:
+            raise pylo.PyloEx("Cannot find Agent's config in JSON", data)
+
+        self.mode = config_json.get('mode')
+        if self.mode is None:
+            raise pylo.PyloEx("Cannot find Agent's mode in config JSON", config_json)
 
 
         self.software_version = pylo.SoftwareVersion(version_string)

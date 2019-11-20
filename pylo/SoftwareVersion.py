@@ -10,7 +10,6 @@ class SoftwareVersion:
 
     """
     :type version_string: str
-    :type version_string: str
     """
 
     def __init__(self, version_string: str):

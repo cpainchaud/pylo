@@ -25,6 +25,8 @@ class Workload(pylo.ReferenceTracker):
         self.description = None  # type: str
         self.interfaces = []
 
+        self.online = False
+
         self.locationLabel = None  # type: pylo.Label
         self.environmentLabel = None  # type: pylo.Label
         self.applicationLabel = None  # type: pylo.Label
@@ -59,6 +61,7 @@ class Workload(pylo.ReferenceTracker):
         else:
             self.unmanaged = False
             self.ven_agent = self.owner.owner.AgentStore.create_venagent_from_workload_record(self, agent_json)
+            self.online = data['online']
 
         if 'description' in data:
             desc = data['description']

@@ -9,7 +9,6 @@ import pylo
 from pylo import log
 
 
-
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
 
@@ -27,6 +26,7 @@ def get_field_or_die(field_name: str, data):
 
 class APIConnector:
     """docstring for APIConnector."""
+
 
     def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, orgID=1):
         self.hostname = hostname
@@ -73,7 +73,6 @@ class APIConnector:
 
         connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True)
         return connector
-
 
 
     def _make_url(self, path: str, includeOrgID):
@@ -444,4 +443,79 @@ class APIConnector:
 
         return get_field_or_die('href', self.do_post_call(path=path, json_arguments={'name': name, 'sid': sid}))
 
+
+    class ApiAgentCompatibilityReport:
+
+        class ApiAgentCompatibilityReportItem:
+            def __init__(self, name, value, status):
+                self.name = name
+                self.value = value
+                self.status = status
+
+        def __init__(self, raw_json):
+            self._items = {}
+
+            self.global_status = raw_json.get('qualify_status')
+            if self.global_status is None:
+                raise pylo.PyloEx('Cannot find Compatibility Report status in JSON', json_object=raw_json)
+
+            results = raw_json.get('results')
+            if results is None:
+                raise pylo.PyloEx('Cannot find Compatibility Report results in JSON', json_object=raw_json)
+
+            results = results.get('qualify_tests')
+            if results is None:
+                raise pylo.PyloEx('Cannot find Compatibility Report results in JSON', json_object=raw_json)
+
+            for result in results:
+                status = result.get('status')
+                if status is None:
+                    continue
+
+                for result_name in result.keys():
+                    if result_name == 'status':
+                        continue
+                    self._items[result_name] = APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem(result_name, result[result_name], status)
+
+        def get_failed_items(self):
+            results = {}
+            for infos in self._items.values():
+                if infos.status != 'green':
+                    results[infos.name] = infos
+
+            return results
+
+    def agent_get_compatibility_report(self, agent_href: str = None, agent_id: str = None, return_raw_json=True):
+        if agent_href is None and agent_id is None:
+            raise pylo.PyloEx('you need to provide a HREF or an ID')
+        if agent_href is not None and agent_id is not None:
+            raise pylo.PyloEx('you need to provide a HREF or an ID but not BOTH')
+
+        if agent_href is None:
+            path = '/agents/{}/compatibility_report'.format(agent_id)
+        else:
+            path = '{}/compatibility_report'.format(agent_href)
+
+        if return_raw_json:
+            return self.do_get_call(path=path)
+
+        return APIConnector.ApiAgentCompatibilityReport(self.do_get_call(path=path, includeOrgID=False))
+
+    def agent_change_mode(self, workload_href: str, mode: str):
+        path = workload_href
+
+        if mode != 'build' and mode != 'idle' and mode != 'test':
+            raise pylo.PyloEx("unsupported mode {}".format(mode))
+
+        log_traffic = False
+
+        if mode == 'build':
+            mode = 'illuminated'
+        elif mode == 'test':
+            mode = 'illuminated'
+            log_traffic = True
+
+        data = {"agent": {"config": {"mode": mode, 'log_traffic': log_traffic}}}
+
+        return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
