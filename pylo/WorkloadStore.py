@@ -27,6 +27,8 @@ class Workload(pylo.ReferenceTracker):
 
         self.online = False
 
+        self.os_id = None
+
         self.locationLabel = None  # type: pylo.Label
         self.environmentLabel = None  # type: pylo.Label
         self.applicationLabel = None  # type: pylo.Label
@@ -48,6 +50,10 @@ class Workload(pylo.ReferenceTracker):
         self.forced_name = data['name']
 
         self.hostname = data['hostname']
+
+        self.os_id = data.get('os_id')
+        if self.os_id is None:
+            raise pylo.PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
 
         agent_json = data.get('agent')
 
@@ -119,6 +125,7 @@ class Workload(pylo.ReferenceTracker):
                 or self.applicationLabel is label or self.applicationLabel is label:
             return True
         return False
+
 
     def api_update_description(self, new_description: str):
         connector = pylo.find_connector_or_die(self.owner)

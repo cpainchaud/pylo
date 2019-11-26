@@ -174,7 +174,7 @@ for agent in agents.values():
 
     export_row.append(agent.workload.get_name())
     export_row.append(agent.workload.get_labels_str())
-    export_row.append(agent.workload.os_family)
+    export_row.append(agent.workload.os_id)
 
     print("    - Downloading report...", flush=True, end='')
     report = connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
@@ -192,7 +192,13 @@ for agent in agents.values():
         export_row.append('')
     else:
         export_row.append('yes')
-        failed_items = report.get_failed_items()
+        failed_items_texts = []
+        for failed_item in report.get_failed_items().values():
+            if failed_item.extra_debug_message is None:
+                failed_items_texts.append(failed_item.name)
+            else:
+                failed_items_texts.append('{}({})'.format(failed_item.name, failed_item.extra_debug_message))
+        failed_items = pylo.string_list_to_text(failed_items_texts)
         agent_report_failed_count += 1
         export_row.append(failed_items)
 

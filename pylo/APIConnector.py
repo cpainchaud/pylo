@@ -454,10 +454,11 @@ class APIConnector:
     class ApiAgentCompatibilityReport:
 
         class ApiAgentCompatibilityReportItem:
-            def __init__(self, name, value, status):
+            def __init__(self, name, value, status, extra_debug_message=None):
                 self.name = name
                 self.value = value
                 self.status = status
+                self.extra_debug_message = extra_debug_message
 
         def __init__(self, raw_json):
             self._items = {}
@@ -488,9 +489,16 @@ class APIConnector:
                     if result_name == 'status':
                         continue
                     self._items[result_name] = APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem(result_name, result[result_name], status)
+                    if result_name == "required_packages_installed" and status != "green":
+                        for tmp in results:
+                            if "required_packages_missing" in tmp:
+                                extra_infos = 'missing packages:{}'.format(pylo.string_list_to_text(tmp["required_packages_missing"]))
+                                self._items[result_name].extra_debug_message = extra_infos
+                                break
+
 
         def get_failed_items(self):
-            results = {}
+            results = {}  # type: dict[str,APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem]
             for infos in self._items.values():
                 if infos.status != 'green':
                     results[infos.name] = infos
