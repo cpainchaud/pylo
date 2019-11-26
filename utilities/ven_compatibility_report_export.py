@@ -27,11 +27,10 @@ parser.add_argument('--filter-role-label', type=str, required=False, default=Non
 parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,
                     help='extra debugging messages')
 
-
 args = vars(parser.parse_args())
 
 if args['debug']:
-    pylo.log_set_debug()
+        pylo.log_set_debug()
 
 
 hostname = args['host']
