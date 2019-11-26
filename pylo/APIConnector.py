@@ -57,12 +57,19 @@ class APIConnector:
                 if hostname in data:
                     cur = data[hostname]
                     ignore_ssl = False
+                    org_id = 1
                     if 'ignore-ssl' in cur:
                         ssl_value = cur['ignore-ssl']
                         if type(ssl_value) is str:
                             if ssl_value.lower() == 'yes':
                                 ignore_ssl = True
-                    return APIConnector( hostname, cur['port'], cur['user'], cur['key'], skip_ssl_cert_check=ignore_ssl)
+                    if 'org_id' in cur:
+                        org_id_value = cur['org_id']
+                        if type(org_id_value) is int:
+                            org_id = org_id_value
+                        else:
+                            raise pylo.PyloEx("org_id must be an integer", cur)
+                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], orgID=org_id, skip_ssl_cert_check=ignore_ssl)
 
         if not request_if_missing:
             return None
@@ -454,6 +461,11 @@ class APIConnector:
 
         def __init__(self, raw_json):
             self._items = {}
+            self.empty = False
+
+            if len(raw_json) == 0:
+                self.empty = True
+                return
 
             self.global_status = raw_json.get('qualify_status')
             if self.global_status is None:

@@ -11,6 +11,32 @@ import json
 import csv
 import re
 
+import time
+import os
+import pylo.vendors.psutil as psutil
+
+
+def elapsed_since(start):
+    return time.strftime("%H:%M:%S", time.gmtime(time.time() - start))
+
+
+def get_process_memory():
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss
+
+def track(func):
+    def wrapper(*args, **kwargs):
+        mem_before = get_process_memory()
+        start = time.time()
+        result = func(*args, **kwargs)
+        elapsed_time = elapsed_since(start)
+        mem_after = get_process_memory()
+        print("{}: memory before: {:,}, after: {:,}, consumed: {:,}; exec time: {}".format(
+            func.__name__,
+            mem_before, mem_after, mem_after - mem_before,
+            elapsed_time))
+        return result
+    return wrapper
 
 output_dir = 'output'
 json_dump_file = output_dir + '/dump.json'
@@ -244,7 +270,8 @@ print()
 
 print('*** Generating label_resolution_cache... ', end='', flush=True)
 start_time = time.time()
-org.LabelStore.generate_label_resolution_cache()
+tracker = track(org.LabelStore.generate_label_resolution_cache)
+tracker()
 elapsed_time = time.time() - start_time
 print(' {} seconds ***'.format(round(elapsed_time, 2)))
 
@@ -322,7 +349,7 @@ for ruleset in org.RulesetStore.itemsByHRef.values():
         rules.append(rule_json)
 
         if not rule.unscoped_consumers:
-            pylo.log.warning("Intra scope rules are not supported, be careful!")
+            # pylo.log.warning("Intra scope rules are not supported, be careful!")
             continue
 
         # Extracting Tags

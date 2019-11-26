@@ -1,10 +1,10 @@
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
-import pylo
-import sys
 import argparse
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import pylo
+
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')

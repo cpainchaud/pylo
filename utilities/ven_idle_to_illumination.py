@@ -1,10 +1,10 @@
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
-import pylo
-import sys
 import argparse
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import pylo
+
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')
@@ -151,10 +151,14 @@ for agent_href in list(agents.keys()):
 print("OK!")
 
 print()
-print(" ** Request Compatibility Report for each Agent in BUILD mode **")
+print(" ** Request Compatibility Report for each Agent in IDLE mode **")
 
 agent_count = 0
 agent_green_count = 0
+agent_mode_changed_count = 0
+agent_skipped_not_online = 0
+agent_has_no_report_count = 0
+agent_report_failed_count = 0
 for agent in agents.values():
     agent_count += 1
     print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(agent_count, len(agents), agent.workload.get_name(),
@@ -163,25 +167,47 @@ for agent in agents.values():
           )
     if not agent.workload.online:
         print("    - Agent is not ONLINE so we're skipping it")
+        agent_skipped_not_online += 1
         continue
 
     print("    - Downloading report...", flush=True, end='')
     report = connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
     print('OK')
+    if report.empty:
+        print("    - ** SKIPPING : Report does not exist")
+        agent_has_no_report_count += 1
+        continue
     print("    - Report status is '{}'".format(report.global_status))
     if report.global_status == 'green':
         agent_green_count += 1
+        if not request_upgrades:
+            print("    - ** SKIPPING Agent mode reconfiguration process as option '--confirm' was not used")
+            continue
         print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
         connector.agent_change_mode(agent.workload.href, 'build')
         print("OK")
+        agent_mode_changed_count += 1
     else:
         print("       - the following issues were found in the report:")
         failed_items = report.get_failed_items()
+        agent_report_failed_count += 1
         for failed_item in failed_items:
             print("         -{}".format(failed_item))
 
 
+def myformat(name, value):
+    return "{:<42} {:>6}".format(name, value)
+    # return "{:<18} {:>6}".format(name, "${:.2f}".format(value))
 
-    if not request_upgrades:
-        print("\n\n *** SKIPPING Agent reconfiguration process as option '--confirm' was not used")
 
+print("\n\n*** Statistics ***")
+print(myformat(" - IDLE Agents count:", agent_count))
+if request_upgrades:
+    print(myformat(" - Agents mode changed count:", agent_mode_changed_count))
+else:
+    print(myformat(" - Agents with successful report count:", agent_green_count))
+print(myformat(" - SKIPPED because not online count:", agent_skipped_not_online))
+print(myformat(" - SKIPPED because report was not found:", agent_has_no_report_count))
+print(myformat(" - Agents with failed reports:", agent_report_failed_count ))
+
+print()
