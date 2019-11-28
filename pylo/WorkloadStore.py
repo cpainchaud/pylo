@@ -51,10 +51,6 @@ class Workload(pylo.ReferenceTracker):
 
         self.hostname = data['hostname']
 
-        self.os_id = data.get('os_id')
-        if self.os_id is None:
-            raise pylo.PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
-
         agent_json = data.get('agent')
 
         if agent_json is None:
@@ -68,6 +64,9 @@ class Workload(pylo.ReferenceTracker):
             self.unmanaged = False
             self.ven_agent = self.owner.owner.AgentStore.create_venagent_from_workload_record(self, agent_json)
             self.online = data['online']
+            self.os_id = data.get('os_id')
+            if self.os_id is None:
+                raise pylo.PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
 
         if 'description' in data:
             desc = data['description']

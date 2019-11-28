@@ -220,6 +220,34 @@ class LabelStore:
         return self.label_resolution_cache[group_name]
 
 
+    def api_create_label(self, name: str, type: str):
+
+        connector = pylo.find_connector_or_die(self.owner)
+        json_label = connector.objects_label_create(name, type)
+
+        if 'value' not in json_label or 'href' not in json_label or 'key' not in json_label:
+            raise pylo.PyloEx("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))
+        new_label_name = json_label['value']
+        new_label_href = json_label['href']
+        new_label_type = json_label['key']
+
+        new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
+
+        if new_label_href in self.itemsByHRef:
+            raise Exception("A Label with href '%s' already exists in the table", new_label_href)
+
+        self.itemsByHRef[new_label_href] = new_label
+
+        if new_label.type_is_location():
+            self.locationLabels[new_label_name] = new_label
+        elif new_label.type_is_environment():
+            self.environmentLabels[new_label_name] = new_label
+        elif new_label.type_is_application():
+            self.applicationLabels[new_label_name] = new_label
+        elif new_label.type_is_role():
+            self.roleLabels[new_label_name] = new_label
+
+        return new_label
 
 
 

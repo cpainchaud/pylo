@@ -36,6 +36,19 @@ if args['debug']:
 hostname = args['host']
 use_cached_config = args['dev_use_cache']
 output_filename_csv = 'reports.csv'
+output_filename_xls = 'reports.xlsx'
+
+
+def file_clean(path):
+    if not os.path.exists(path):
+        return
+    print(" * Cleaning file '{}' from previous runs... ".format(path), end='', flush=True)
+    os.remove(path)
+    print("OK!")
+
+
+file_clean(output_filename_csv)
+file_clean(output_filename_xls)
 
 
 minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
@@ -208,6 +221,9 @@ for agent in agents.values():
 
 print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_csv), end='', flush=True)
 export_report.write_to_csv(output_filename_csv)
+print("OK!")
+print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_xls), end='', flush=True)
+export_report.write_to_excel(output_filename_xls, 'Workloads')
 print("OK!")
 
 def myformat(name, value):

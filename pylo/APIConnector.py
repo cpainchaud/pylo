@@ -411,6 +411,10 @@ class APIConnector:
         path = '/workloads'
         return self.do_post_call(path=path, json_arguments=json_object)
 
+    def objects_workload_create_bulk_unmanaged(self, json_object):
+        path = '/workloads/bulk_create'
+        return self.do_put_call(path=path, json_arguments=json_object)
+
     def objects_service_get(self):
         path = '/sec_policy/draft/services'
         return self.do_get_call(path=path, asyncCall=True)
