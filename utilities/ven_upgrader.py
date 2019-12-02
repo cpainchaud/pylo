@@ -32,7 +32,6 @@ parser.add_argument('--target-version', type=str, required=True,
 args = vars(parser.parse_args())
 
 hostname = args['host']
-print(args)
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
 

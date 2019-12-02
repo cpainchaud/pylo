@@ -525,8 +525,8 @@ class APIConnector:
 
         return APIConnector.ApiAgentCompatibilityReport(self.do_get_call(path=path, includeOrgID=False))
 
-    def agent_change_mode(self, workload_href: str, mode: str):
-        path = workload_href
+    def objects_agent_change_mode(self, agent_href: str, mode: str):
+        path = agent_href
 
         if mode != 'build' and mode != 'idle' and mode != 'test':
             raise pylo.PyloEx("unsupported mode {}".format(mode))
@@ -541,5 +541,10 @@ class APIConnector:
 
         data = {"agent": {"config": {"mode": mode, 'log_traffic': log_traffic}}}
 
+        return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
+
+    def objects_agent_reassign_pce(self, agent_href: str, target_pce: str):
+        path = agent_href + '/update'
+        data = {"target_pce_fqdn": target_pce}
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 

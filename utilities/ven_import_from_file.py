@@ -34,6 +34,7 @@ use_cached_config = args['dev_use_cache']
 input_file = args['input_file']
 ignore_label_case_collisions = args['ignore_label_case_collisions']
 batch_size = args['batch_size']
+report_file = 'reports.csv'
 
 csv_expected_fields = [
     {'name': 'name', 'optional': False},
@@ -48,6 +49,9 @@ csv_expected_fields = [
 csv_created_fields = csv_expected_fields.copy()
 csv_created_fields.append({'name': 'href'})
 csv_created_fields.append({'name': '**not_created_reason**'})
+
+
+pylo.file_clean(report_file)
 
 print(" * Loading CSV input file '{}'...".format(input_file), flush=True, end='')
 CsvData = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields)
@@ -285,12 +289,12 @@ while batch_cursor <= len(workloads_json_data):
             total_failed_count += 1
         else:
             csv_objects[i+batch_cursor]['href'] = result['href']
-            created_count = 0
+            created_count += 1
             total_created_count += 1
 
     print("    - {} created with success, {} failures (read report to get reasons)".format(created_count, failed_count))
     CsvData.save_to_csv('results.csv', csv_created_fields)
 
     batch_cursor += batch_size
-print("  * DONE - {} created with success, {} failures".format(total_created_count, total_failed_count))
+print("  * DONE - {} created with success, {} failures. A report was created in {}".format(total_created_count, total_failed_count, report_file))
 

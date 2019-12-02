@@ -3,7 +3,7 @@ from pylo import log
 from .Helpers import *
 import re
 
-version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)(u[0-9]+)?$")
+version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)([-]?[uHh][0-9]+)?$")
 
 
 class SoftwareVersion:

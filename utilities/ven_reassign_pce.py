@@ -24,24 +24,20 @@ parser.add_argument('--filter-role-label', type=str, required=False, default=Non
                     help='Filter agents by role labels (separated by commas)')
 
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
-                    help='Request upgrade of the Agents')
+                    help='Confirm reassignment request')
+parser.add_argument('--stop-after', type=int, nargs='?', required=False, default=False, const=True,
+                    help='Stop reassigning agents after X number of agents have already been processed')
 
-parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,
-                    help='extra debugging messages')
-
+parser.add_argument('--target-pce', type=str, required=True,
+                    help='the new PCE these VENs should report to')
 
 args = vars(parser.parse_args())
 
-if args['debug']:
-    pylo.log_set_debug()
-
-
 hostname = args['host']
-print(args)
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
-
-minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
+target_pce_string = args['target_pce']
+stop_after_x_agents = args['stop_after']
 
 org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
@@ -63,16 +59,11 @@ else:
 
     print(" * Parsing PCE data ... ", end="", flush=True)
     org.pce_version = connector.version
+    org.connector = connector
     org.load_from_json(fake_config)
     print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
-
-agents = {}
-for agent in org.AgentStore.itemsByHRef.values():
-    if agent.mode == 'idle':
-        agents[agent.href] = agent
-print(" * Found {} IDLE Agents".format(len(agents)))
 
 print(" * Parsing filters")
 
@@ -129,7 +120,7 @@ if args['filter_role_label'] is not None:
             role_label_list[label] = label
 
 
-print(" * Applying filters to the list of Agents...", flush=True, end='')
+agents = org.AgentStore.itemsByHRef.copy()
 
 for agent_href in list(agents.keys()):
     agent = agents[agent_href]
@@ -148,66 +139,40 @@ for agent_href in list(agents.keys()):
     if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
         del agents[agent_href]
         continue
-print("OK!")
 
-print()
-print(" ** Request Compatibility Report for each Agent in IDLE mode **")
+    if 'active_pce_fqdn' in agent.raw_json and agent.raw_json['active_pce_fqdn'] == target_pce_string:
+        del agents[agent_href]
+        continue
 
-agent_count = 0
-agent_green_count = 0
-agent_mode_changed_count = 0
-agent_skipped_not_online = 0
-agent_has_no_report_count = 0
-agent_report_failed_count = 0
+print("")
+
+
+print("\n *** Now Requesting Agents Reassignment to the new PCE '{}' ***".format(target_pce_string))
+processed_agent_count = 0
 for agent in agents.values():
-    agent_count += 1
-    print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(agent_count, len(agents), agent.workload.get_name(),
+    if stop_after_x_agents is not False and processed_agent_count >= stop_after_x_agents:
+        print("\n ** Reassignment Processed stopped after {} agents as requested while there is {} more to process **".format(stop_after_x_agents, len(agents)-stop_after_x_agents))
+        break
+
+    print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(processed_agent_count, len(agents), agent.workload.get_name(),
                                                                     agent.workload.href,
                                                                     agent.workload.get_labels_str())
           )
-    if not agent.workload.online:
-        print("    - Agent is not ONLINE so we're skipping it")
-        agent_skipped_not_online += 1
+    if agent.workload.online is not True:
+        print("   * SKIPPED because Workload is not online")
+        continue
+    if not request_upgrades:
+        print("   * SKIPPED Reassign Request process as option '--confirm' was not used")
+        continue
+    if use_cached_config:
+        print("   * SKIPPED Upgrade process as --dev-use-cache option was used!")
         continue
 
-    print("    - Downloading report...", flush=True, end='')
-    report = connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
-    print('OK')
-    if report.empty:
-        print("    - ** SKIPPING : Report does not exist")
-        agent_has_no_report_count += 1
-        continue
-    print("    - Report status is '{}'".format(report.global_status))
-    if report.global_status == 'green':
-        agent_green_count += 1
-        if not request_upgrades:
-            print("    - ** SKIPPING Agent mode reconfiguration process as option '--confirm' was not used")
-            continue
-        print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
-        connector.objects_agent_change_mode(agent.workload.href, 'build')
-        print("OK")
-        agent_mode_changed_count += 1
-    else:
-        print("       - the following issues were found in the report:")
-        failed_items = report.get_failed_items()
-        agent_report_failed_count += 1
-        for failed_item in failed_items:
-            print("         -{}".format(failed_item))
+    connector.objects_agent_reassign_pce(agent.href, target_pce_string)
+    processed_agent_count += 1
 
 
-def myformat(name, value):
-    return "{:<42} {:>6}".format(name, value)
-    # return "{:<18} {:>6}".format(name, "${:.2f}".format(value))
+
+print("\n ** {} Agents were reassigned to PCE '{}' **".format(processed_agent_count, target_pce_string))
 
 
-print("\n\n*** Statistics ***")
-print(myformat(" - IDLE Agents count:", agent_count))
-if request_upgrades:
-    print(myformat(" - Agents mode changed count:", agent_mode_changed_count))
-else:
-    print(myformat(" - Agents with successful report count:", agent_green_count))
-print(myformat(" - SKIPPED because not online count:", agent_skipped_not_online))
-print(myformat(" - SKIPPED because report was not found:", agent_has_no_report_count))
-print(myformat(" - Agents with failed reports:", agent_report_failed_count ))
-
-print()

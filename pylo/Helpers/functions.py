@@ -1,4 +1,5 @@
 import json
+import os
 
 
 def nice_json(json_obj):
@@ -23,5 +24,14 @@ def string_list_to_text(string_list, separator=None):
         msg += stringItem
 
     return msg
+
+
+def file_clean(path, no_print=False):
+    if not os.path.exists(path):
+        return
+    if not no_print:
+        print(" * Cleaning file '{}' from previous runs... ".format(path), end='', flush=True)
+    os.remove(path)
+    print("OK!")
 
 

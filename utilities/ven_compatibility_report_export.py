@@ -39,16 +39,8 @@ output_filename_csv = 'reports.csv'
 output_filename_xls = 'reports.xlsx'
 
 
-def file_clean(path):
-    if not os.path.exists(path):
-        return
-    print(" * Cleaning file '{}' from previous runs... ".format(path), end='', flush=True)
-    os.remove(path)
-    print("OK!")
-
-
-file_clean(output_filename_csv)
-file_clean(output_filename_xls)
+pylo.file_clean(output_filename_csv)
+pylo.file_clean(output_filename_xls)
 
 
 minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
