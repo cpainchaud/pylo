@@ -13,7 +13,6 @@ args = vars(parser.parse_args())
 
 hostname = args['host']
 pylo.ignoreWorkloadsWithSameName = True
-pylo.log_set_debug()
 
 org = pylo.Organization(1)
 

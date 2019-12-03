@@ -1,4 +1,5 @@
 import pylo.vendors.xlsxwriter as xlsxwriter
+import pylo.vendors.openpyxl as openpyxl
 import csv
 import pylo
 import os
@@ -79,43 +80,102 @@ class CsvExcelToObject:
             raise pylo.PyloEx("File '{}' does not exist")
 
         optional_headers = []
+        mandatory_headers_dict = {}
         for header_infos in expected_headers:
             value = header_infos.get('optional')
             if value is None or value is True:
                 optional_headers.append(header_infos)
+            else:
+                mandatory_headers_dict[header_infos['name']] = header_infos
 
-        with open(filename) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=csv_delimiter, quotechar=csv_quotechar)
-            row_count = 0
-            for row in csv_reader:
-                if row_count == 0:
-                    item_count = 0
-                    for item in row:
+        file_base, file_extension = os.path.splitext(filename)
+        file_extension = file_extension.lower()
+
+        if file_extension == '.csv':
+            with open(filename) as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=csv_delimiter, quotechar=csv_quotechar)
+                row_count = 0
+                for row in csv_reader:
+
+                    # this is Headers
+                    if row_count == 0:
+                        item_count = 0
+                        for item in row:
+                            if item is None or len(item) < 1:
+                                raise pylo.PyloEx('CSV headers has blank fields, this is not supported')
+                            self._detected_headers.append(item.lower())
+
+                        missing_headers = mandatory_headers_dict.copy()
+                        for header_name in self._detected_headers:
+                            self._header_index_to_name.append(header_name)
+                            if header_name in missing_headers:
+                                del missing_headers[header_name]
+                        if len(missing_headers) > 0:
+                            raise pylo.PyloEx('CSV is missing the following mandatory headers: {}'.format(pylo.string_list_to_text(missing_headers.keys())))
+
+                    # this is DATA
+                    else:
+                        if len(self._detected_headers) != len(row):
+                            raise pylo.PyloEx('CSV line #{} doesnt have the same fields ({}) count than the headers ({})'.format(row_count+1,
+                                                                                                                            len(self._detected_headers),
+                                                                                                                     len(row)))
+
+                        self._raw_lines.append(row)
+                        new_object = {'*line*': row_count+1}
+                        self._objects.append(new_object)
+                        row_index = 0
+                        for item in row:
+                            new_object[self._detected_headers[row_index]] = item
+                            row_index += 1
+
+                        # handling missing optional columns
+                        for opt_header in optional_headers:
+                            if opt_header['name'] not in new_object:
+                                new_object[opt_header['name']] = opt_header['default']
+
+                    row_count += 1
+        elif file_extension == '.xlsx':
+            workbook = openpyxl.load_workbook(filename, read_only=True)
+            # print("workbook has {} worksheets".format(len(workbook.worksheets)))
+            if len(workbook.worksheets) < 1:
+                raise pylo.PyloEx("Excel file has no Worksheet")
+            source_worksheet = workbook.worksheets[0]
+
+            # print("\n\nmax_col {} max_row {}\n\n".format(source_worksheet.max_column,source_worksheet.max_row))
+
+            for row_count in range(1, source_worksheet.max_row+1):
+                # this is Headers
+                if row_count == 1:
+                    for col_index in range(1, source_worksheet.max_column+1):
+                        item = source_worksheet.cell(row_count, col_index).value
                         if item is None or len(item) < 1:
-                            raise pylo.PyloEx('CSV headers has blank fields, this is not supported')
-                        self._detected_headers.append(item)
+                            raise pylo.PyloEx('Excel headers has blank fields, this is not supported')
+                        self._detected_headers.append(item.lower())
+
+                    missing_headers = mandatory_headers_dict.copy()
                     for header_name in self._detected_headers:
                         self._header_index_to_name.append(header_name)
-                else:
-                    if len(self._detected_headers) != len(row):
-                        raise pylo.PyloEx('CSV line #{} doesnt have the same fields ({}) count than the headers ({})'.format(row_count+1,
-                                                                                                                        len(self._detected_headers),
-                                                                                                                 len(row)))
+                        if header_name in missing_headers:
+                            del missing_headers[header_name]
+                    if len(missing_headers) > 0:
+                        raise pylo.PyloEx('Excel file is missing the following mandatory headers: {}'.format(pylo.string_list_to_text(missing_headers.keys())))
 
-                    self._raw_lines.append(row)
-                    new_object = {'*line*': row_count+1}
+                # This is DATA
+                else:
+                    new_object = {'*line*': row_count}
                     self._objects.append(new_object)
-                    row_index = 0
-                    for item in row:
-                        new_object[self._detected_headers[row_index]] = item
-                        row_index += 1
+
+                    for col_index in range(1, source_worksheet.max_column+1):
+                        item = source_worksheet.cell(row_count, col_index).value
+                        new_object[self._detected_headers[col_index-1]] = item
 
                     # handling missing optional columns
                     for opt_header in optional_headers:
                         if opt_header['name'] not in new_object:
                             new_object[opt_header['name']] = opt_header['default']
 
-                row_count += 1
+        else:
+            raise pylo.PyloEx("Unsupported file extension '{}' in filename {}".format(file_extension, filename))
 
 
     def count_lines(self):
@@ -141,4 +201,19 @@ class CsvExcelToObject:
             exporter.add_line_from_list(row)
 
         exporter.write_to_csv(filename)
+
+    def save_to_excel(self, filename: str, fields_filter: list):
+        headers = []
+        for field in fields_filter:
+            headers.append(field['name'])
+
+        exporter = ArrayToExport(headers)
+
+        for obj in self._objects:
+            row = []
+            for header in headers:
+                row.append(obj.get(header))
+            exporter.add_line_from_list(row)
+
+        exporter.write_to_excel(filename)
 
