@@ -128,7 +128,7 @@ for csv_object in CsvData.objects():
                 csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
                 if not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
                     raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
-                print("  - WARNING: CSV has an entry for workload name '' at line '' but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
+                print("  - WARNING: CSV has an entry for workload name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
     if csv_object['hostname'] is not None and len(csv_object['hostname']) > 0:
         lower_hostname = csv_object['hostname'].lower()
@@ -142,6 +142,7 @@ for csv_object in CsvData.objects():
                     csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
                     if not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
                         raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
+                    print("  - WARNING: CSV has an entry for workload hostname '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
 del name_cache
 print("  * DONE")
@@ -240,7 +241,7 @@ csv_objects_to_create = []
 ignored_objects_count = 0
 for csv_object in CsvData.objects():
     if '**not_created_reason**' not in csv_object:
-        csv_objects_to_create.append(csv_objects_to_create)
+        csv_objects_to_create.append(csv_object)
     else:
         ignored_objects_count += 1
 
