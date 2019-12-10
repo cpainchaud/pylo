@@ -346,6 +346,10 @@ class APIConnector:
         path = '/sec_policy/draft/ip_lists'
         return self.do_get_call(path=path, asyncCall=True)
 
+    def objects_iplist_create(self, json_blob):
+        path = '/sec_policy/draft/ip_lists'
+        return self.do_post_call(path=path, json_arguments=json_blob)
+
     def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None, fast_mode=False):
         path = '/workloads'
         data = {}
