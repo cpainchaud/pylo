@@ -3,7 +3,7 @@ from pylo import log
 from .Helpers import *
 import re
 
-version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)([-]?[uHh][0-9]+)?$")
+version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)(-(?P<build>[0-9]+))?([-]?[uHh][0-9]+)?([-]?dev)?$")
 
 
 class SoftwareVersion:
@@ -22,7 +22,11 @@ class SoftwareVersion:
         self.major = int(match.group("major"))
         self.middle = int(match.group("middle"))
         self.minor = int(match.group("minor"))
-        self.build = int(match.group("build"))
+        build = match.group("build")
+        if build is None:
+            self.build = 0
+        else:
+            self.build = int(match.group("build"))
 
 
     def is_greater_than(self, target_version: 'pylo.SoftwareVersion'):

@@ -23,7 +23,7 @@ class Workload(pylo.ReferenceTracker):
         self.hostname = None  # type: str
 
         self.description = None  # type: str
-        self.interfaces = []
+        self.interfaces = []  # type: list[WorkloadInterface]
 
         self.online = False
 

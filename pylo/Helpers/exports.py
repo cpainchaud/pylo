@@ -69,12 +69,15 @@ class ArrayToExport:
 
 class CsvExcelToObject:
 
-    def __init__(self, filename: str, expected_headers=None, csv_delimiter=',', csv_quotechar='"'):
+    def __init__(self, filename: str, expected_headers=None, csv_delimiter=',', csv_quotechar='"', strict_headers=False):
 
         self._detected_headers = []
         self._header_index_to_name = []
         self._raw_lines = []
         self._objects = []
+
+        if strict_headers and expected_headers is None:
+            pylo.PyloEx("CSV/Excel file cannot use strict_headers mode without specifying expected_headers")
 
         if not os.path.exists(filename):
             raise pylo.PyloEx("File '{}' does not exist")
@@ -104,6 +107,8 @@ class CsvExcelToObject:
                             if item is None or len(item) < 1:
                                 raise pylo.PyloEx('CSV headers has blank fields, this is not supported')
                             self._detected_headers.append(item.lower())
+                            if strict_headers and item.lower() not in mandatory_headers_dict:
+                                raise pylo.PyloEx("CSV/Excel headers have an unexpected header named '{}'".format(item))
 
                         missing_headers = mandatory_headers_dict.copy()
                         for header_name in self._detected_headers:
@@ -131,7 +136,10 @@ class CsvExcelToObject:
                         # handling missing optional columns
                         for opt_header in optional_headers:
                             if opt_header['name'] not in new_object:
-                                new_object[opt_header['name']] = opt_header['default']
+                                if 'default' in opt_header:
+                                    new_object[opt_header['name']] = opt_header['default']
+                                else:
+                                    new_object[opt_header['name']] = ''
 
                     row_count += 1
         elif file_extension == '.xlsx':
@@ -151,6 +159,8 @@ class CsvExcelToObject:
                         if item is None or len(item) < 1:
                             raise pylo.PyloEx('Excel headers has blank fields, this is not supported')
                         self._detected_headers.append(item.lower())
+                        if strict_headers and item.lower() not in mandatory_headers_dict:
+                            raise pylo.PyloEx("CSV/Excel headers have an unexpected header named '{}'".format(item))
 
                     missing_headers = mandatory_headers_dict.copy()
                     for header_name in self._detected_headers:
@@ -172,7 +182,10 @@ class CsvExcelToObject:
                     # handling missing optional columns
                     for opt_header in optional_headers:
                         if opt_header['name'] not in new_object:
-                            new_object[opt_header['name']] = opt_header['default']
+                            if 'default' in opt_header:
+                                new_object[opt_header['name']] = opt_header['default']
+                            else:
+                                new_object[opt_header['name']] = ''
 
         else:
             raise pylo.PyloEx("Unsupported file extension '{}' in filename {}".format(file_extension, filename))

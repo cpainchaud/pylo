@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import math
+from datetime import datetime
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -40,8 +41,10 @@ input_file = args['input_file']
 input_file_delimiter = args['input_file_delimiter']
 ignore_if_iplist_exists = args['ignore_if_iplist_exists']
 network_delimiter = args['network_delimiter']
-report_file = 'results.csv'
-report_file_excel = 'results.xlsx'
+
+now = datetime.now()
+report_file = 'import-iplists-results_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
+report_file_excel = 'import-iplists-results_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
 
 csv_expected_fields = [
     {'name': 'name', 'optional': False},
@@ -191,7 +194,7 @@ for data in csv_objects_to_create:
         exit(1)
 
     print("  - iplist '{}' extracted with {} with networks".format(new_iplist['name'], len(new_iplist['ip_ranges'])))
-    print(new_iplist)
+    # print(new_iplist)
 
 print("  * DONE")
 
@@ -205,8 +208,13 @@ for index in range(0, len(iplists_json_data)):
     print("  - Pushing new iplist '{}' to PCE (#{} of {})... ".format(json_blob['name'], index+1, len(iplists_json_data)), end='', flush=True)
     result = connector.objects_iplist_create(json_blob)
     print("OK")
+
+    href = result.get('href')
+    if href is None:
+        raise pylo.PyloEx('API returned unexpected response which is missing a HREF:', result)
+
     total_created_count += 1
-    # batch_json_data = iplists_json_data[batch_cursor:batch_cursor+batch_size-1]
+    csv_objects_to_create[index]['href'] = href
 
     CsvData.save_to_csv(report_file, csv_created_fields)
     CsvData.save_to_excel(report_file_excel, csv_created_fields)

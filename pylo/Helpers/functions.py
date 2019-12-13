@@ -28,11 +28,13 @@ def string_list_to_text(string_list, separator=None):
 
 
 def file_clean(path, no_print=False):
-    if not os.path.exists(path):
-        return
     if not no_print:
         print(" * Cleaning file '{}' from previous runs... ".format(path), end='', flush=True)
-    os.remove(path)
+    if os.path.exists(path):
+        if not os.path.isfile(path):
+            raise Exception("Provided path '{}' is not a file!".format(path))
+        else:
+            os.remove(path)
     print("OK!")
 
 

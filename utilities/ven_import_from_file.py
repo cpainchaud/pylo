@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import math
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
@@ -20,8 +21,13 @@ parser.add_argument('--input-file', '-i', type=str, required=True,
 parser.add_argument('--input-file-delimiter', type=str, required=False, default=',',
                     help='CSV field delimiter')
 
+parser.add_argument('--input-filter-file', type=str, required=False, default=None,
+                    help='CSV/Excel file used to keep only the lines of interest from the input file')
+
 parser.add_argument('--ignore-if-managed-workload-exists', type=bool, required=False, default=False, nargs='?', const=True,
                     help='If a Managed Workload with same same exists, ignore CSV entry')
+parser.add_argument('--ignore-all-sorts-collisions', type=bool, required=False, default=False, nargs='?', const=True,
+                    help='If names/hostnames/ips collisions are found ignore these CSV/Excel entries')
 # parser.add_argument('--ignore-label-case-collisions', type=bool, nargs='?', required=False, default=False, const=True,
 #                     help='Use this option if you want allow Workloads to be created with labels with same name but different case (Illumio PCE allows it but its definitely a bad practice!)')
 
@@ -37,12 +43,16 @@ if args['debug']:
 hostname = args['host']
 use_cached_config = args['dev_use_cache']
 input_file = args['input_file']
+input_filter_file = args["input_filter_file"]
 input_file_delimiter = args['input_file_delimiter']
 ignore_if_managed_workload_exists = args['ignore_if_managed_workload_exists']
+ignore_all_sorts_collisions = ['ignore_all_sorts_collisions']
 #ignore_label_case_collisions = args['ignore_label_case_collisions']
 batch_size = args['batch_size']
-report_file = 'results.csv'
-report_file_excel = 'results.xlsx'
+
+now = datetime.now()
+report_file = 'import-umw-results_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
+report_file_excel = 'import-umw-results_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
 
 csv_expected_fields = [
     {'name': 'name', 'optional': False},
@@ -53,6 +63,10 @@ csv_expected_fields = [
     {'name': 'loc', 'optional': True},
     {'name': 'ip', 'optional': False},
     {'name': 'description', 'optional': True, 'default': ''}
+]
+
+csv_filter_fields = [
+    {'name': 'ip', 'optional': False},
 ]
 
 csv_created_fields = csv_expected_fields.copy()
@@ -70,6 +84,7 @@ print("   - CSV has {} columns and {} lines (headers don't count)".format(CsvDat
 # print(pylo.nice_json(CsvData._objects))
 
 
+# <editor-fold desc="PCE Configuration Download and Parsing">
 org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
 
@@ -95,9 +110,10 @@ else:
     print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
+# </editor-fold>
 
-
-print(" * Checking for name/hostname collisions:")
+# <editor-fold desc="Name/Hostname collision detection">
+print(" * Checking for name/hostname collisions:", flush=True)
 name_cache = {}
 for workload in org.WorkloadStore.itemsByHRef.values():
     lower_name = None
@@ -116,6 +132,8 @@ for workload in org.WorkloadStore.itemsByHRef.values():
                 print("  - Warning duplicate found in the PCE for hostname/name: {}".format(workload.hostname))
 
 for csv_object in CsvData.objects():
+    if '**not_created_reason**' in csv_object:
+        continue
     lower_name = None
     if csv_object['name'] is not None and len(csv_object['name']) > 0:
         lower_name = csv_object['name'].lower()
@@ -126,7 +144,7 @@ for csv_object in CsvData.objects():
                 raise pylo.PyloEx('CSV contains workloads with duplicates name/hostname: {}'.format(lower_name))
             else:
                 csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
-                if not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
+                if not ignore_all_sorts_collisions or not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
                     raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
                 print("  - WARNING: CSV has an entry for workload name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
@@ -140,14 +158,96 @@ for csv_object in CsvData.objects():
                     raise pylo.PyloEx('CSV contains workloads with duplicates name/hostname: {}'.format(lower_name))
                 else:
                     csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
-                    if not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
+                    if not ignore_all_sorts_collisions or not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
                         raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
                     print("  - WARNING: CSV has an entry for workload hostname '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
 del name_cache
 print("  * DONE")
+# </editor-fold>
 
+# <editor-fold desc="IP Collision detection">
+print(" * Checking for IP addresses collisions:")
+ip_cache = {}
+count_duplicate_ip_addresses_in_csv = 0
+for workload in org.WorkloadStore.itemsByHRef.values():
+    for interface in workload.interfaces:
+        if interface.ip not in ip_cache:
+            ip_cache[interface.ip] = {'pce': True, 'workload': workload}
+        else:
+            print("  - Warning duplicate IPs found in the PCE for IP: {}".format(workload.name))
 
+for csv_object in CsvData.objects():
+    if '**not_created_reason**' in csv_object:
+        continue
+
+    ips = csv_object['ip'].rsplit(',')
+
+    csv_object['**ip_array**'] = []
+
+    for ip in ips:
+        ip = ip.strip(" \r\n")
+        if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
+            pylo.log.error("CSV/Excel at line #{} contains invalid IP addresses: '{}'".format(csv_object['*line*'], csv_object['ip']))
+            exit(1)
+
+        csv_object['**ip_array**'].append(ip)
+
+        if ip not in ip_cache:
+            ip_cache[ip] = {'csv': True, 'workload': csv_object}
+        else:
+            count_duplicate_ip_addresses_in_csv += 1
+            csv_object['**not_created_reason**'] = "Duplicate IP address {} found in the PCE".format(ip)
+            if not ignore_all_sorts_collisions:
+                print("Duplicate IP address {} found in the PCE and CSV/Excel at line #{}. (look for --options to bypass this if you know what you are doing)".format(ip,csv_object['*line*']))
+                exit(1)
+            break
+
+print("   - Found {} colliding IP addresses from CSV/Excel, they won't be imported".format(count_duplicate_ip_addresses_in_csv))
+
+del ip_cache
+print("  * DONE")
+# </editor-fold>
+
+# <editor-fold desc="Optional filters parsing">
+print(" * Filtering CSV/Excel based on optional filters...", flush=True)
+count_filtered_from_file = 0
+if input_filter_file is None:
+    print("   - No filter given (see --help)")
+else:
+    print("  - loading Excel/CSV file '{}'... ".format(input_filter_file), end='', flush=True)
+    print("OK")
+    filter_csv_data = pylo.CsvExcelToObject(input_filter_file, csv_filter_fields, strict_headers=True)
+    for filter in filter_csv_data.objects():
+        ip = filter.get('ip')
+        if ip is None:
+            continue
+        if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
+            pylo.log.error("CSV/Excel FILTER file has invalid IP {} at line #{}".format(ip, filter['*line*']))
+
+    for csv_object in CsvData.objects():
+        if '**not_created_reason**' in csv_object:
+            continue
+
+        match_filter = False
+        for filter in filter_csv_data.objects():
+            ip_filter = filter.get('ip')
+            if ip is not None:
+                for ip in csv_object['**ip_array**']:
+                    if ip_filter == ip:
+                        match_filter = True
+                        break
+
+            if match_filter:
+                break
+
+        if not match_filter:
+            csv_object['**not_created_reason**'] = "No match in input filter file"
+
+print("  *OK")
+# </editor-fold>
+
+# <editor-fold desc="Label collision detection">
 print(" * Checking for Labels case collisions and missing ones to be created:")
 name_cache = {}
 for label in org.LabelStore.itemsByHRef.values():
@@ -160,6 +260,9 @@ for label in org.LabelStore.itemsByHRef.values():
             print("  - Warning duplicate found in the PCE for Label: {}".format(label.name))
 
 for csv_object in CsvData.objects():
+    if '**not_created_reason**' in csv_object:
+        continue
+
     role_label = csv_object['role']
     role_label_lower = role_label.lower()
     app_label = csv_object['app']
@@ -217,7 +320,9 @@ for label_entry in name_cache.values():
 
 del name_cache
 print("  * DONE")
+# </editor-fold>
 
+# <editor-fold desc="Missing Labels creation">
 if len(labels_to_be_created) > 0:
     print(" * {} Labels need to created before Workloads can be imported, listing:".format(len(labels_to_be_created)))
     for label_to_create in labels_to_be_created:
@@ -235,6 +340,7 @@ if len(labels_to_be_created) > 0:
         print("   - Pushing '{}' with type '{}' to the PCE... ".format(label_to_create['name'], label_to_create['type']), end='', flush=True)
         org.LabelStore.api_create_label(label_to_create['name'], label_to_create['type'])
         print("OK")
+# </editor-fold>
 
 # Listing objects to be created (filtering out inconsistent ones)
 csv_objects_to_create = []
@@ -246,7 +352,8 @@ for csv_object in CsvData.objects():
         ignored_objects_count += 1
 
 
-print(' * Preparing Workload JSON data...')
+# <editor-fold desc="JSON Payloads generation">
+print(' * Preparing Workloads JSON payloads...')
 workloads_json_data = []
 for data in csv_objects_to_create:
     new_workload = {}
@@ -283,12 +390,20 @@ for data in csv_objects_to_create:
     if len(data['description']) > 0:
         new_workload['description'] = data['description']
 
-    new_workload['public_ip'] = data['ip']
-    new_workload['interfaces'] = [{"name": "eth0", "address": data['ip']}]
+    if len(data['**ip_array**']) < 1:
+        pylo.log.error('CSV/Excel worklaod at line #{} has no valid ip address defined'.format(data['*line*']))
+        exit(1)
+
+    new_workload['public_ip'] = data['**ip_array**'][0]
+    new_workload['interfaces'] = []
+    for ip in data['**ip_array**']:
+        new_workload['interfaces'].append({"name": "eth0", "address": ip})
 
 print("  * DONE")
+# </editor-fold>
 
 
+# <editor-fold desc="Unmanaged Workloads PUSH to API">
 print(" * Creating {} Unmanaged Workloads in batches of {}".format(len(workloads_json_data), batch_size))
 batch_cursor = 0
 total_created_count = 0
@@ -318,6 +433,7 @@ while batch_cursor <= len(workloads_json_data):
     CsvData.save_to_excel(report_file_excel, csv_created_fields)
 
     batch_cursor += batch_size
+# </editor-fold>
 
 CsvData.save_to_csv(report_file, csv_created_fields)
 CsvData.save_to_excel(report_file_excel, csv_created_fields)
