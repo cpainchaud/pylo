@@ -1,13 +1,14 @@
 import os
 import sys
 import argparse
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 
 
-parser = argparse.ArgumentParser(description='TODO LATER')
+parser = argparse.ArgumentParser(description='Get compatibility reports from all your IDLE VEN so you can review and remediate them')
 parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 
@@ -35,8 +36,9 @@ if args['debug']:
 
 hostname = args['host']
 use_cached_config = args['dev_use_cache']
-output_filename_csv = 'reports.csv'
-output_filename_xls = 'reports.xlsx'
+now = datetime.now()
+output_filename_csv = 'compatibility-reports_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
+output_filename_xls = 'compatibility-reports_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
 
 
 pylo.file_clean(output_filename_csv)

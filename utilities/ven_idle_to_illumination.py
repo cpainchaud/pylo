@@ -12,7 +12,7 @@ parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 
 parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, default=False, const=True,
-                    help='For developpers only')
+                    help='For developers only')
 
 parser.add_argument('--filter-env-label', type=str, required=False, default=None,
                     help='Filter agents by environment labels (separated by commas)')
