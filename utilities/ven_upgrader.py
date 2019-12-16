@@ -29,11 +29,17 @@ parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=F
 parser.add_argument('--target-version', type=str, required=True,
                     help='Request upgrade of the Agents')
 
+parser.add_argument('--debug-pylo', type=bool, nargs='?', required=False, default=False, const=True,
+                    help='Request upgrade of the Agents')
+
 args = vars(parser.parse_args())
 
 hostname = args['host']
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
+
+if args['debug_pylo']:
+    pylo.log_set_debug()
 
 minimum_supported_version = pylo.SoftwareVersion("18.3.0-0")
 
@@ -96,7 +102,7 @@ if args['filter_env_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print(" FOUND")
+            print("found")
             env_label_list[label] = label
 
 loc_label_list = {}
@@ -109,7 +115,7 @@ if args['filter_loc_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print("FOUND")
+            print("found")
             loc_label_list[label] = label
 
 app_label_list = {}
@@ -122,7 +128,7 @@ if args['filter_app_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print("FOUND")
+            print("found")
             app_label_list[label] = label
 
 role_label_list = {}
@@ -135,11 +141,11 @@ if args['filter_role_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print("FOUND")
+            print("found")
             role_label_list[label] = label
 
 
-print(" * Listing VEN Agents FILTERED count per version:")
+print(" * Filter out VEN Agents which aren't matching filters:")
 agents = org.AgentStore.itemsByHRef.copy()
 
 for agent_href in list(agents.keys()):
@@ -147,29 +153,37 @@ for agent_href in list(agents.keys()):
     workload = agent.workload
 
     if len(env_label_list) > 0 and (workload.environmentLabel is None or workload.environmentLabel not in env_label_list):
+        pylo.log.debug(" - workload '{}' does not match env_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
     if len(loc_label_list) > 0 and (workload.locationLabel is None or workload.locationLabel not in loc_label_list):
+        pylo.log.debug(" - workload '{}' does not match loc_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
     if len(app_label_list) > 0 and (workload.applicationLabel is None or workload.applicationLabel not in app_label_list):
+        pylo.log.debug(" - workload '{}' does not match app_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
-
     if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
+        pylo.log.debug(" - workload '{}' does not match role_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
 
     # Hiding versions which are higher than the one requested for upgrade
     if agent.software_version > target_version:
+        pylo.log.debug(" - workload '{}' has a higher version of VEN ({}) than requested, it's out".format(workload.get_name(), workload.ven_agent.software_version.version_string))
         del agents[agent_href]
         continue
 
     # Hiding unsupported versions
     if agent.software_version.is_lower_than(minimum_supported_version):
+        pylo.log.debug(" - workload '{}' has incompatible version of VEN ({}), it's out".format(workload.get_name(), workload.ven_agent.software_version.version_string))
         del agents[agent_href]
         continue
 
+print("\n  * DONE\n")
+
+print(" * Listing VEN Agents FILTERED count per version:")
 version_count = {}
 for agent in agents.values():
     if agent.software_version.version_string in version_count:
@@ -190,6 +204,10 @@ if use_cached_config:
 
 if not request_upgrades:
     print("\n\n *** SKIPPING Upgrade process as option '--confirm' was not used")
+    sys.exit(0)
+
+if len(agents) < 1:
+    print("\n\n *** After filtering there no Agent left for the upgrade process")
     sys.exit(0)
 
 print("\n *** Now Requesting Agents Upgrades from the PCE ***")
