@@ -29,6 +29,9 @@ parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=F
 parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,
                     help='extra debugging messages')
 
+parser.add_argument('--mode', type=str.lower, required=True, choices=['build', 'test'],
+                    help='Select if you want to switch from IDLE to BUILD or TEST')
+
 
 args = vars(parser.parse_args())
 
@@ -40,6 +43,7 @@ hostname = args['host']
 print(args)
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
+switch_to_mode = args['mode']
 
 minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
 
@@ -86,7 +90,7 @@ if args['filter_env_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print(" FOUND")
+            print(" found")
             env_label_list[label] = label
 
 loc_label_list = {}
@@ -99,7 +103,7 @@ if args['filter_loc_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print("FOUND")
+            print(" found")
             loc_label_list[label] = label
 
 app_label_list = {}
@@ -109,10 +113,10 @@ if args['filter_app_label'] is not None:
         print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
         label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_app)
         if label is None:
-            print("NOT FOUND!")
+            print(" NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print("FOUND")
+            print(" found")
             app_label_list[label] = label
 
 role_label_list = {}
@@ -125,7 +129,7 @@ if args['filter_role_label'] is not None:
             print("NOT FOUND!")
             raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
         else:
-            print("FOUND")
+            print("found")
             role_label_list[label] = label
 
 
@@ -159,6 +163,7 @@ agent_mode_changed_count = 0
 agent_skipped_not_online = 0
 agent_has_no_report_count = 0
 agent_report_failed_count = 0
+agent_mode_switched = 0
 for agent in agents.values():
     agent_count += 1
     print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(agent_count, len(agents), agent.workload.get_name(),
@@ -183,8 +188,9 @@ for agent in agents.values():
         if not request_upgrades:
             print("    - ** SKIPPING Agent mode reconfiguration process as option '--confirm' was not used")
             continue
+        agent_mode_switched += 1
         print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
-        connector.objects_agent_change_mode(agent.workload.href, 'build')
+        connector.objects_agent_change_mode(agent.workload.href, switch_to_mode)
         print("OK")
         agent_mode_changed_count += 1
     else:
@@ -209,5 +215,8 @@ else:
 print(myformat(" - SKIPPED because not online count:", agent_skipped_not_online))
 print(myformat(" - SKIPPED because report was not found:", agent_has_no_report_count))
 print(myformat(" - Agents with failed reports:", agent_report_failed_count ))
+
+if not request_upgrades:
+    print("No Agent was switched to Illumination because --confirm option was not used")
 
 print()
