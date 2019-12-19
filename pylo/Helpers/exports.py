@@ -80,7 +80,7 @@ class CsvExcelToObject:
             pylo.PyloEx("CSV/Excel file cannot use strict_headers mode without specifying expected_headers")
 
         if not os.path.exists(filename):
-            raise pylo.PyloEx("File '{}' does not exist")
+            raise pylo.PyloEx("File '{}' does not exist".format(filename))
 
         optional_headers = []
         mandatory_headers_dict = {}
