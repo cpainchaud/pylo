@@ -17,13 +17,14 @@ parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, def
 parser.add_argument('--filter-env-label', type=str, required=False, default=None,
                     help='Filter agents by environment labels (separated by commas)')
 parser.add_argument('--filter-loc-label', type=str, required=False, default=None,
-                    help='Filter agents by environment labels (separated by commas)')
+                    help='Filter agents by location labels (separated by commas)')
 parser.add_argument('--filter-app-label', type=str, required=False, default=None,
-                    help='Filter agents by role labels (separated by commas)')
+                    help='Filter agents by application labels (separated by commas)')
 parser.add_argument('--filter-role-label', type=str, required=False, default=None,
                     help='Filter agents by role labels (separated by commas)')
-parser.add_argument('--filter-ven-versions', type=str, required=False, default=None,
-                    help='Filter agents by versions (separated by commas)')
+
+parser.add_argument('--filter-ven-versions', nargs='+', type=str, required=False, default=None,
+                    help='Filter agents by versions (separated by spaces)')
 
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
@@ -35,6 +36,7 @@ parser.add_argument('--debug-pylo', type=bool, nargs='?', required=False, defaul
                     help='Request upgrade of the Agents')
 
 args = vars(parser.parse_args())
+# print(args)
 
 hostname = args['host']
 use_cached_config = args['dev_use_cache']
@@ -136,7 +138,7 @@ if args['filter_app_label'] is not None:
 role_label_list = {}
 if args['filter_role_label'] is not None:
     print("   * Role Labels specified")
-    for raw_label_name in args['filter_role_label'].split(','):
+    for raw_label_name in args['filter_role_label']:
         print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
         label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_role)
         if label is None:
