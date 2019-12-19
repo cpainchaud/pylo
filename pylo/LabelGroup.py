@@ -24,6 +24,17 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
                 else:
                     raise pylo.PyloEx('LabelGroup member has no HREF')
 
+    def expand_nested_to_array(self):
+        results = {}
+        for label in self._members.values():
+            if isinstance(label, pylo.Label):
+                results[label] = label
+            elif isinstance(label, pylo.LabelGroup):
+                for nested_label in label.expand_nested_to_array():
+                    results[nested_label] = nested_label
+            else:
+                raise pylo.PyloEx("Unsupported object type {}".format(type(label)))
+        return list(results.values())
 
 
     def is_group(self):
