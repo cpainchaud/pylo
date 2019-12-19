@@ -22,6 +22,8 @@ parser.add_argument('--filter-app-label', type=str, required=False, default=None
                     help='Filter agents by role labels (separated by commas)')
 parser.add_argument('--filter-role-label', type=str, required=False, default=None,
                     help='Filter agents by role labels (separated by commas)')
+parser.add_argument('--filter-ven-versions', type=str, required=False, default=None,
+                    help='Filter agents by versions (separated by commas)')
 
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
@@ -144,6 +146,17 @@ if args['filter_role_label'] is not None:
             print("found")
             role_label_list[label] = label
 
+filter_versions = {}
+if args['filter_ven_versions'] is not None:
+    print("   * VEN versions specified")
+    for raw_version_name in args['filter_ven_versions'].split(','):
+        if len(raw_version_name) < 0:
+            pylo.log.error("Unsupported version provided: '{}'".format(raw_version_name))
+            sys.exit(1)
+        parsed_version = pylo.SoftwareVersion(raw_version_name)
+        print("     - version '{}' ".format(raw_version_name), end='', flush=True)
+        versions[raw_version_name] = parsed_version
+
 
 print(" * Filter out VEN Agents which aren't matching filters:")
 agents = org.AgentStore.itemsByHRef.copy()
@@ -166,6 +179,11 @@ for agent_href in list(agents.keys()):
         continue
     if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
         pylo.log.debug(" - workload '{}' does not match role_label filters, it's out!".format(workload.get_name()))
+        del agents[agent_href]
+        continue
+
+    if agent.software_version.version_string not in filter_versions:
+        pylo.log.debug(" - workload '{}' does not match the version filter, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
 
