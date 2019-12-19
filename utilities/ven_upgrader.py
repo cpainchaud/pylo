@@ -155,7 +155,7 @@ if args['filter_ven_versions'] is not None:
             sys.exit(1)
         parsed_version = pylo.SoftwareVersion(raw_version_name)
         print("     - version '{}' ".format(raw_version_name), end='', flush=True)
-        versions[raw_version_name] = parsed_version
+        filter_versions[raw_version_name] = parsed_version
 
 
 print(" * Filter out VEN Agents which aren't matching filters:")
