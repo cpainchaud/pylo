@@ -121,7 +121,7 @@ class CsvExcelToObject:
                     # this is DATA
                     else:
                         if len(self._detected_headers) != len(row):
-                            raise pylo.PyloEx('CSV line #{} doesnt have the same fields ({}) count than the headers ({})'.format(row_count+1,
+                            raise pylo.PyloEx('CSV line #{} doesnt have the same fields ({}) count than the headers ({}), is it empty?'.format(row_count+1,
                                                                                                                             len(self._detected_headers),
                                                                                                                      len(row)))
 
