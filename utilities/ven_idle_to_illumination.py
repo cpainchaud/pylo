@@ -131,7 +131,7 @@ if args['filter_role_label'] is not None:
         else:
             print("found")
             role_label_list[label] = label
-
+print("  * DONE")
 
 print(" * Applying filters to the list of Agents...", flush=True, end='')
 
@@ -148,7 +148,6 @@ for agent_href in list(agents.keys()):
     if len(app_label_list) > 0 and (workload.applicationLabel is None or workload.applicationLabel not in app_label_list):
         del agents[agent_href]
         continue
-
     if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
         del agents[agent_href]
         continue
