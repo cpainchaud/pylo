@@ -19,6 +19,17 @@ class ArrayToExport:
             self._headers_index_to_name.append(header_name)
             index += 1
 
+    def add_line_from_object(self, record):
+        new_line = []
+        for header in self._headers:
+            new_line.append(record.get(header))
+
+        self._lines.append(new_line)
+
+
+    def add_line_from_list_of_objects(self, list_of_objects):
+        for record in list_of_objects:
+            self.add_line_from_object(record)
 
     def add_line_from_list(self, line: list):
         if len(line) != self._columns:

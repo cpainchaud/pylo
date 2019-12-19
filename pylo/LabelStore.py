@@ -4,10 +4,11 @@ import pylo
 from pylo import log
 from .Helpers import *
 
-label_type_loc = 1
+label_type_loc = 3
 label_type_env = 2
-label_type_app = 4
-label_type_role = 3
+label_type_app = 1
+label_type_role = 0
+
 
 class LabelStore:
 
@@ -77,13 +78,13 @@ class LabelStore:
 
             self.itemsByHRef[newLabelHref] = new_label
 
-            if newLabelType == 1:
+            if newLabelType == label_type_loc:
                 self.locationLabels[new_label_name] = new_label
-            elif newLabelType == 2:
+            elif newLabelType == label_type_env:
                 self.environmentLabels[new_label_name] = new_label
-            elif newLabelType == 4:
+            elif newLabelType == label_type_app:
                 self.applicationLabels[new_label_name] = new_label
-            elif newLabelType == 3:
+            elif newLabelType == label_type_role:
                 self.roleLabels[new_label_name] = new_label
 
             new_label.raw_json = json_label
@@ -112,13 +113,13 @@ class LabelStore:
         return self.locationLabels.values()
 
     def find_label_by_name_and_type(self, name: str, type: int):
-        if type == 1:
+        if type == label_type_loc:
             return self.locationLabels.get(name)
-        if type == 2:
+        if type == label_type_env:
             return self.environmentLabels.get(name)
-        if type == 4:
+        if type == label_type_app:
             return self.applicationLabels.get(name)
-        if type == 3:
+        if type == label_type_role:
             return self.roleLabels.get(name)
         raise Exception("Unsupported")
 

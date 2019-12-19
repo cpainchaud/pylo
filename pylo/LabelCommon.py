@@ -20,13 +20,13 @@ class LabelCommon:
 
         if type(ltype) is str:
             if ltype == 'loc':
-                ltype = 1
+                ltype = label_type_loc
             elif ltype == 'env':
-                ltype = 2
+                ltype = label_type_env
             elif ltype == 'app':
-                ltype = 4
+                ltype = label_type_app
             elif ltype == 'role':
-                ltype = 3
+                ltype = label_type_role
             else:
                 raise Exception("Tried to initialize a Label object with unsupported type '%s'" % (ltype) )
 

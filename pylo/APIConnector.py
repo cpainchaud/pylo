@@ -212,7 +212,7 @@ class APIConnector:
 
     def get_pce_objects(self, include_deleted_workloads=False):
 
-        threads_count = 7
+        threads_count = 4
         data = {}
         errors = []
         thread_queue = Queue()
@@ -376,6 +376,10 @@ class APIConnector:
 
         return self.do_put_call(path=path, json_arguments=data, jsonOutputExpected=False, includeOrgID=False)
 
+    def objects_workload_update_bulk(self, json_object):
+        path = '/workloads/bulk_update'
+        return self.do_put_call(path=path, json_arguments=json_object)
+
     def objects_workload_delete(self, href):
         """
 
@@ -387,22 +391,23 @@ class APIConnector:
 
         return self.do_delete_call(path=path, jsonOutputExpected=False, includeOrgID=False)
 
-    def objects_workload_delete_multi(self, href_array):
+    def objects_workload_delete_multi(self, href_or_workload_array):
         """
 
-        :type href_array: list[str]|list[pylo.Workload]
+        :type href_or_workload_array: list[str]|list[pylo.Workload]
         """
 
-        if len(href_array) < 1:
+        if len(href_or_workload_array) < 1:
             return
 
         json_data = []
 
-        if type(href_array[0]) is str:
-            for href in href_array:
+        if type(href_or_workload_array[0]) is str:
+            for href in href_or_workload_array:
                 json_data.append({"href": href})
         else:
-            for href in href_array:
+            href: 'pylo.Workload'
+            for href in href_or_workload_array:
                 json_data.append({"href": href.href})
 
         print(json_data)
@@ -449,7 +454,7 @@ class APIConnector:
             raise pylo.PyloEx("You must either use json_object or name but you cannot use both they are mutually exclusive")
 
         if json_object is not None:
-            return get_field_or_die('href',self.do_post_call(path=path, json_arguments=json_object))
+            return get_field_or_die('href', self.do_post_call(path=path, json_arguments=json_object))
 
         if name is None:
             raise pylo.PyloEx("You need to provide a group name")
@@ -506,7 +511,7 @@ class APIConnector:
 
 
         def get_failed_items(self):
-            results = {}  # type: dict[str,APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem]
+            results = {}  # type: {str,APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem}
             for infos in self._items.values():
                 if infos.status != 'green':
                     results[infos.name] = infos
@@ -551,4 +556,69 @@ class APIConnector:
         path = agent_href + '/update'
         data = {"target_pce_fqdn": target_pce}
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
+
+    class ExplorerFilterSetV1:
+        def __init__(self):
+            self._consumer_labels = {}
+            self._consumer_exclude_labels = {}
+            self._provider_labels = {}
+            self._provider_exclude_labels = {}
+            pass
+
+        @staticmethod
+        def __filter_prop_add_label(prop_dict, label_or_href):
+            """
+
+            @type label_or_href: str|pylo.Label|pylo.LabelGroup
+            """
+            if isinstance(label_or_href, str):
+                prop_dict[label_or_href] = label_or_href
+                return
+            elif isinstance(label_or_href, pylo.Label):
+                prop_dict[label_or_href.href] = label_or_href
+                return
+            elif isinstance(label_or_href, pylo.LabelGroup):
+                for nested_label in label_or_href.expand_nested_to_array():
+                    prop_dict[nested_label.href] = nested_label
+            else:
+                raise pylo.PyloEx("Unsupported object type {}".format(type(label_or_href)))
+
+        def consumer_include_label(self, label_or_href):
+            """
+
+            @type label_or_href: str|pylo.Label|pylo.LabelGroup
+            """
+            self.__filter_prop_add_label(self._consumer_labels, label_or_href)
+
+        def consumer_exclude_label(self, label_or_href):
+            """
+
+            @type label_or_href: str|pylo.Label|pylo.LabelGroup
+            """
+            self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)
+
+        def provider_include_label(self, label_or_href):
+            """
+
+            @type label_or_href: str|pylo.Label|pylo.LabelGroup
+            """
+            self.__filter_prop_add_label(self._provider_labels, label_or_href)
+
+        def provider_exclude_label(self, label_or_href):
+            """
+
+            @type label_or_href: str|pylo.Label|pylo.LabelGroup
+            """
+            self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
+
+
+        def generate_json_query(self):
+            filters = {}
+            return filters
+
+
+    def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
+        path="/traffic_flows/traffic_analysis_queries"
+        data = filters.generate_json_query()
+        return self.do_post_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 

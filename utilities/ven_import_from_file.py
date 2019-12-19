@@ -31,8 +31,8 @@ parser.add_argument('--ignore-all-sorts-collisions', type=bool, required=False, 
 # parser.add_argument('--ignore-label-case-collisions', type=bool, nargs='?', required=False, default=False, const=True,
 #                     help='Use this option if you want allow Workloads to be created with labels with same name but different case (Illumio PCE allows it but its definitely a bad practice!)')
 
-parser.add_argument('--batch-size', type=int, nargs='?', required=False, default=500, const=True,
-                    help='extra debugging messages for developers')
+parser.add_argument('--batch-size', type=int, required=False, default=500,
+                    help='Number of Workloads to create per API call')
 
 args = vars(parser.parse_args())
 
@@ -47,7 +47,7 @@ input_filter_file = args["input_filter_file"]
 input_file_delimiter = args['input_file_delimiter']
 ignore_if_managed_workload_exists = args['ignore_if_managed_workload_exists']
 ignore_all_sorts_collisions = ['ignore_all_sorts_collisions']
-#ignore_label_case_collisions = args['ignore_label_case_collisions']
+# ignore_label_case_collisions = args['ignore_label_case_collisions']
 batch_size = args['batch_size']
 
 now = datetime.now()

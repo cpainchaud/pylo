@@ -181,6 +181,33 @@ class Workload(pylo.ReferenceTracker):
         return labels
 
 
+    def get_labels_list(self, missing_str=''):
+
+        labels = []
+
+        if self.roleLabel is None:
+            labels.append(missing_str)
+        else:
+            labels.append(self.roleLabel.name)
+
+        if self.applicationLabel is None:
+            labels.append(missing_str)
+        else:
+            labels.append(self.applicationLabel.name)
+
+        if self.environmentLabel is None:
+            labels.append(missing_str)
+        else:
+            labels.append(self.environmentLabel.name)
+
+        if self.locationLabel is None:
+            labels.append(missing_str)
+        else:
+            labels.append(self.locationLabel.name)
+
+        return labels
+
+
     def get_name(self):
         if self.name is not None:
             return self.name
