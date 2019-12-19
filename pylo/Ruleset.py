@@ -226,7 +226,7 @@ class RuleServiceContainer(pylo.Referencer):
             if href is None:
                 port = data.get('port')
                 if port is None:
-                     raise pylo.PyloEx("unsupported service type in rule: {}".format(pylo.nice_json(data)))
+                    raise pylo.PyloEx("unsupported service type in rule: {}".format(pylo.nice_json(data)))
                 protocol = data.get('proto')
                 if protocol is None:
                     raise pylo.PyloEx("Protocol not found in direct service use: {}".format(pylo.nice_json(data)))
@@ -259,28 +259,28 @@ class RuleHostContainer(pylo.Referencer):
             if 'label' in host_data:
                 href = host_data['label'].get('href')
                 if href is None:
-                    raise Exception('Cannot find object HREF ')
+                    pylo.PyloEx('Cannot find object HREF ', host_data)
                 find_object = self.owner.owner.owner.owner.LabelStore.itemsByHRef.get(href)
                 if find_object is None:
                     raise Exception('Cannot find Label with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'label_group' in host_data:
                 href = host_data['label_group'].get('href')
                 if href is None:
-                    raise Exception('Cannot find object HREF ')
+                    raise pylo.PyloEx('Cannot find object HREF ', host_data)
                 find_object = self.owner.owner.owner.owner.LabelStore.itemsByHRef.get(href)
                 if find_object is None:
                     raise Exception('Cannot find LabelGroup with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'ip_list' in host_data:
                 href = host_data['ip_list'].get('href')
                 if href is None:
-                    raise Exception('Cannot find object HREF ')
+                    raise pylo.PyloEx('Cannot find object HREF ', host_data)
                 find_object = self.owner.owner.owner.owner.IPListStore.itemsByHRef.get(href)
                 if find_object is None:
                     raise Exception('Cannot find IPList with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'workload' in host_data:
                 href = host_data['workload'].get('href')
                 if href is None:
-                    raise Exception('Cannot find object HREF ')
+                    raise pylo.PyloEx('Cannot find object HREF ', host_data)
                 # @TODO : better handling of temporary objects
                 find_object = self.owner.owner.owner.owner.WorkloadStore.itemsByHRef.get(href)
                 if find_object is None:
@@ -292,9 +292,9 @@ class RuleHostContainer(pylo.Referencer):
                     self._hasAllWorkloads = True
                     continue
                 # TODO implement actors
-                raise pylo.PyloEx("An actor that is not 'ams' was detected but this library doesn't support it yet")
+                raise pylo.PyloEx("An actor that is not 'ams' was detected but this library doesn't support it yet", host_data)
             else:
-                raise Exception("Unsupported reference type: {}\n".format(pylo.nice_json(host_data)))
+                raise pylo.PyloEx("Unsupported reference type", host_data)
 
             if find_object is not None:
                 self._items[find_object] = find_object
