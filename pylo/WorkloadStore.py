@@ -291,6 +291,21 @@ class WorkloadStore:
 
         return count
 
+    def get_managed_workloads_list(self):
+        results = []
+        for item in self.itemsByHRef.values():
+            if not item.unmanaged:
+                results.append(item)
+
+        return results
+
+    def get_managed_workloads_dict_href(self):
+        results = {}
+        for item in self.itemsByHRef.values():
+            if not item.unmanaged:
+                results[item.href] = item
+
+        return results
 
     def count_deleted_workloads(self):
         """
