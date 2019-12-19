@@ -15,7 +15,7 @@ parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--include-deleted-workloads', type=bool, required=False, nargs='?', default=False, const=True,
                     help='should deleted workloads be downloaded as well')
-parser.add_argument('--debug', type=bool, default=False,
+parser.add_argument('--debug', type=bool, required=False, nargs='?', default=False, const=True,
                     help='should deleted workloads be downloaded as well')
 
 args = vars(parser.parse_args())
