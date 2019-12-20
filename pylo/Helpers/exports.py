@@ -8,7 +8,7 @@ import os
 class ArrayToExport:
     def __init__(self, headers):
         self._headers = headers
-        self._columns = len(headers)
+        self._columns_count = len(headers)
         self._lines = []
 
         self._headers_name_to_index = {}
@@ -18,6 +18,12 @@ class ArrayToExport:
             self._headers_name_to_index[header_name] = index
             self._headers_index_to_name.append(header_name)
             index += 1
+
+    def columns_count(self):
+        return len(self._headers)
+
+    def lines_count(self):
+        return len(self._lines)
 
     def add_line_from_object(self, record):
         new_line = []
@@ -32,8 +38,8 @@ class ArrayToExport:
             self.add_line_from_object(record)
 
     def add_line_from_list(self, line: list):
-        if len(line) != self._columns:
-            raise pylo.PyloEx("line length ({}) does not match the number of columns ({})".format(len(line), self._columns))
+        if len(line) != self._columns_count:
+            raise pylo.PyloEx("line length ({}) does not match the number of columns ({})".format(len(line), self._columns_count))
         self._lines.append(line)
 
     def write_to_csv(self, filename, delimiter=',', multivalues_cell_delimiter=' '):

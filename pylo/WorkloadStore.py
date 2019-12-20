@@ -207,6 +207,18 @@ class Workload(pylo.ReferenceTracker):
 
         return labels
 
+    def get_label_by_type_str(self, label_type: str):
+        label_type = label_type.lower()
+        if label_type == 'role':
+            return self.roleLabel
+        if label_type == 'app':
+            return self.applicationLabel
+        if label_type == 'env':
+            return self.environmentLabel
+        if label_type == 'loc':
+            return self.locationLabel
+
+        raise pylo.PyloEx("unsupported label_type '{}'".format(label_type))
 
     def get_name(self):
         if self.name is not None:

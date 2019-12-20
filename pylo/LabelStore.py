@@ -3,6 +3,8 @@
 import pylo
 from pylo import log
 from .Helpers import *
+import random
+from hashlib import md5
 
 label_type_loc = 3
 label_type_env = 2
@@ -32,6 +34,19 @@ class LabelStore:
         self.applicationLabels = {}
 
         self.label_resolution_cache = None
+
+    @staticmethod
+    def label_type_str_to_int(label_type: str):
+        if label_type == 'role':
+            return label_type_role
+        if label_type == 'app':
+            return label_type_app
+        if label_type == 'env':
+            return label_type_env
+        if label_type == 'loc':
+            return label_type_loc
+
+        raise pylo.PyloEx("Unsupported type '{}'".format(label_type))
 
     def loadLabelsFromJson(self, json_list):
         for json_label in json_list:
@@ -220,6 +235,29 @@ class LabelStore:
 
         return self.label_resolution_cache[group_name]
 
+    def create_label(self, name: str, label_type: str):
+
+        new_label_name = name
+        new_label_type = label_type
+        new_label_href = '**fake-label-href**/{}'.format(md5(str(random.random()).encode('utf8')))
+
+        new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
+
+        if new_label_href in self.itemsByHRef:
+            raise Exception("A Label with href '%s' already exists in the table", new_label_href)
+
+        self.itemsByHRef[new_label_href] = new_label
+
+        if new_label.type_is_location():
+            self.locationLabels[new_label_name] = new_label
+        elif new_label.type_is_environment():
+            self.environmentLabels[new_label_name] = new_label
+        elif new_label.type_is_application():
+            self.applicationLabels[new_label_name] = new_label
+        elif new_label.type_is_role():
+            self.roleLabels[new_label_name] = new_label
+
+        return new_label
 
     def api_create_label(self, name: str, type: str):
 
@@ -268,6 +306,8 @@ class LabelStore:
             ref = self.applicationLabels
         elif type == label_type_role:
             ref = self.roleLabels
+        else:
+            raise pylo.PyloEx("Unsupported type '{}'".format(type))
 
         for labelName in ref.keys():
             if name == labelName.lower():
