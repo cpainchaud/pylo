@@ -8,7 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 
-parser = argparse.ArgumentParser(description='TODO LATER')
+# <editor-fold desc="Argparse stuff">
+parser = argparse.ArgumentParser(description='TODO LATER', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
@@ -33,6 +34,7 @@ parser.add_argument('--filter-role-label', type=str, required=False, default=Non
 
 parser.add_argument('--batch-size', type=int, required=False, default=500,
                     help='Number of Workloads to update per API call')
+# </editor-fold>
 
 args = vars(parser.parse_args())
 
@@ -233,7 +235,6 @@ if args['filter_role_label'] is not None:
 print("  * DONE")
 # </editor-fold>
 
-
 # <editor-fold desc="Filter the list of VENs to be relabeled">
 workloads_to_relabel = org.WorkloadStore.get_managed_workloads_dict_href()
 print(" * PCE has {} managed workloads. Now applying requested filters:".format(len(workloads_to_relabel)))
@@ -267,7 +268,7 @@ for workload_href in list(workloads_to_relabel.keys()):
 print("  * DONE! {} Managed Workloads remain to be relabeled".format(len(workloads_to_relabel)))
 # </editor-fold>
 
-
+# <editor-fold desc="Matching between CSV/Excel and Managed Workloads">
 print(" * Matching remaining Managed Workloads with CSV/Excel input:")
 count = 0
 workloads_to_relabel_match = {}  # type: dict[pylo.Workload,dict]
@@ -298,9 +299,8 @@ for workload_href in list(workloads_to_relabel.keys()):
         csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Too many IP matches were found in CSV/Excel input'))
         continue
     workloads_to_relabel_match[workload] = ip_matches[0]
-
 print("  * Done! After Filtering+CSV Match, {} workloads remain to be relabeled".format(len(workloads_to_relabel)))
-
+# </editor-fold>
 
 # <editor-fold desc="List missing Labels and Workloads which already have the right labels">
 print(" * Looking for any missing label which need to be created and Workloads which already have the right labels:")
@@ -359,7 +359,6 @@ if len(labels_to_be_created) > 0:
         org.LabelStore.create_label(label_to_create['name'], label_to_create['type'])
 
 # </editor-fold>
-
 
 
 # <editor-fold desc="JSON Payloads generation">
