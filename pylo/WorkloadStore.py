@@ -119,6 +119,7 @@ class Workload(pylo.ReferenceTracker):
                             self.name, self.roleLabel.name, label_object.name))
                     self.roleLabel = label_object
 
+
     def is_using_label(self, label: 'pylo.Label'):
         if self.locationLabel is label or self.environmentLabel is label \
                 or self.applicationLabel is label or self.applicationLabel is label:

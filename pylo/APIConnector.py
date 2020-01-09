@@ -8,7 +8,6 @@ from queue import Queue
 import pylo
 from pylo import log
 
-
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
 
@@ -102,9 +101,11 @@ class APIConnector:
         return self._doCall('PUT', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
 
+
     def do_delete_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False):
         return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
+
 
     def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False, skip_product_version_check=False, params=None):
 
@@ -138,7 +139,7 @@ class APIConnector:
                 raise Exception("Status code for Async call should be 202 but " + str(req.status_code)
                                 + " " + req.reason + " was returned with the following body: " + req.text +
                                 "\n\n Request was: " + orig_request.url + "\nHEADERS: " + str(orig_request.headers) +
-                                "\nBODY:\n" + str(orig_request.body) )
+                                "\nBODY:\n" + str(orig_request.body))
 
             if 'Location' not in req.headers:
                 raise Exception('Header "Location" was not found in API answer!')
@@ -334,7 +335,7 @@ class APIConnector:
     def objects_label_create(self, label_name: str, label_type: str):
         path = '/labels'
         if label_type != 'app' and label_type != 'env' and label_type != 'role' and label_type != 'loc':
-            raise Exception("Requested to create a Label '%s' with wrong type '%s'" % (label_name, label_type) )
+            raise Exception("Requested to create a Label '%s' with wrong type '%s'" % (label_name, label_type))
         data = {'key': label_type, 'value': label_name}
         return self.do_post_call(path=path, json_arguments=data)
 

@@ -14,6 +14,17 @@ class SoftwareVersion:
 
     def __init__(self, version_string: str):
         self.version_string = version_string
+
+        self.is_unknown = False
+        self.major = 0
+        self.middle = 0
+        self.minor = 0
+        self.build = 0
+
+        if version_string.lower() == 'unknown':
+            self.is_unknown = True
+            return
+
         match = version_regex.match(version_string)
 
         if match is None:

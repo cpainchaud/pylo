@@ -55,6 +55,12 @@ class VENAgent(pylo.ReferenceTracker):
 
 
         self.software_version = pylo.SoftwareVersion(version_string)
+        if self.software_version.is_unknown:
+            pylo.log.warn("Agent {} from Workload {}/{} has unknown software version: {}".format(
+                          self.href,
+                          self.workload.get_name(),
+                          self.workload.href,
+                          self.software_version.version_string))
 
 
 

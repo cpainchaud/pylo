@@ -9,6 +9,7 @@ from .tmp import *
 
 from .Exception import PyloEx
 from .SoftwareVersion import SoftwareVersion
+from .IPMap import IP4Map
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
 from .APIConnector import APIConnector
 from .LabelCommon import LabelCommon

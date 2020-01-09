@@ -7,12 +7,15 @@ import pylo
 
 
 
+# <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 
 parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, default=False, const=True,
-                    help='For developpers only')
+                    help='For developers only')
+parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
+                    help='extra debugging messages for developers')
 
 parser.add_argument('--filter-env-label', type=str, required=False, default=None,
                     help='Filter agents by environment labels (separated by commas)')
@@ -32,6 +35,10 @@ parser.add_argument('--target-pce', type=str, required=True,
                     help='the new PCE these VENs should report to')
 
 args = vars(parser.parse_args())
+# </editor-fold>
+
+if args['debug']:
+    pylo.log_set_debug()
 
 hostname = args['host']
 use_cached_config = args['dev_use_cache']
