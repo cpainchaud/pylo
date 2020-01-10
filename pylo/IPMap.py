@@ -6,16 +6,16 @@ def sort_first(val):
     return val[0]
 
 
-
 start = 0
 end = 1
+
 
 class IP4Map:
     def __init__(self):
         self._entries = []
 
-    def add_from_text(self, entry: str, skip_recalculation=False):
-
+    @staticmethod
+    def ip_entry_from_text(entry: str):
         new_entry = None
 
         dash_find = entry.find('-')
@@ -27,6 +27,8 @@ class IP4Map:
             start_ip_object = ipaddress.IPv4Address(start_txt)
             end_ip_object = ipaddress.IPv4Address(end_txt)
             new_entry = [int(start_ip_object), int(end_ip_object)]
+            if new_entry[start] > new_entry[end]:
+                raise pylo.PyloEx("Invalid IP Ranged entered with start address > end address: {}".format(entry))
         elif entry.find('/') > 0:
             # This is a network entry
             ip_object = ipaddress.IPv4Network(entry)
@@ -34,6 +36,12 @@ class IP4Map:
         else:
             ip_object = ipaddress.IPv4Address(entry)
             new_entry = [int(ip_object), int(ip_object)]
+
+        return new_entry
+
+    def add_from_text(self, entry: str, skip_recalculation=False):
+
+        new_entry = self.ip_entry_from_text(entry)
 
         if not skip_recalculation:
             self._entries.append(new_entry)
@@ -41,24 +49,7 @@ class IP4Map:
 
     def substract_from_text(self, entry: str):
 
-        new_entry = None
-
-        dash_find = entry.find('-')
-
-        if dash_find > 0:
-            # this is a range entry
-            start_txt = entry[0:dash_find]
-            end_txt = entry[dash_find+1:]
-            start_ip_object = ipaddress.IPv4Address(start_txt)
-            end_ip_object = ipaddress.IPv4Address(end_txt)
-            new_entry = [int(start_ip_object), int(end_ip_object)]
-        elif entry.find('/') > 0:
-            # This is a network entry
-            ip_object = ipaddress.IPv4Network(entry)
-            new_entry = [int(ip_object.network_address), int(ip_object.broadcast_address)]
-        else:
-            ip_object = ipaddress.IPv4Address(entry)
-            new_entry = [int(ip_object), int(ip_object)]
+        new_entry = self.ip_entry_from_text(entry)
 
         updated_entries = []
 
