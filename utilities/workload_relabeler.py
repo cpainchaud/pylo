@@ -324,8 +324,6 @@ for workload in list(workloads_to_relabel.values()):
             else:
                 if label_found is not workload.get_label_by_type_str(label_type):
                     workload_needs_label_change = True
-                    print(label_found)
-                    print(workload.get_label_by_type_str(label_type))
         else:
             if workload.get_label_by_type_str(label_type) is not None:
                 workload_needs_label_change = True
@@ -356,7 +354,8 @@ if len(labels_to_be_created) > 0:
             org.LabelStore.api_create_label(label_to_create['name'], label_to_create['type'])
             print("OK")
     else:
-        org.LabelStore.create_label(label_to_create['name'], label_to_create['type'])
+        for label_to_create in labels_to_be_created.values():
+            org.LabelStore.create_label(label_to_create['name'], label_to_create['type'])
 
 # </editor-fold>
 
@@ -399,7 +398,7 @@ print("  * DONE")
 
 if confirmed_changes:
     # <editor-fold desc="Unmanaged Workloads PUSH to API">
-    print(" * Creating {} Unmanaged Workloads in batches of {}".format(len(workloads_json_data), batch_size))
+    print(" * Updating {} Workloads in batches of {}".format(len(workloads_json_data), batch_size))
     batch_cursor = 0
     total_created_count = 0
     total_failed_count = 0
@@ -431,8 +430,8 @@ if confirmed_changes:
         csv_report.write_to_excel(report_file_excel)
 
         batch_cursor += batch_size
-    # </editor-fold>
     print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_workloads_count, report_file, report_file_excel))
+    # </editor-fold>
 else:
     print("\n*************")
     print(" WARNING!!! --confirm option was not used so no Workloads were relabeled and no Labels were created")

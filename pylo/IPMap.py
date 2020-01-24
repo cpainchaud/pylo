@@ -1,5 +1,6 @@
 import pylo
 import ipaddress
+import copy
 
 
 def sort_first(val):
@@ -47,32 +48,58 @@ class IP4Map:
             self._entries.append(new_entry)
             self.sort_and_recalculate()
 
-    def substract_from_text(self, entry: str):
+    def intersection(self, another_map: 'IP4Map'):
 
-        new_entry = self.ip_entry_from_text(entry)
+        inverted_map = IP4Map()
+        inverted_map.add_from_text('0.0.0.0-255.255.255.255')
 
+        inverted_map.substract(another_map)
+
+        result = copy.deepcopy(self)
+        result.substract(inverted_map)
+
+        return result
+
+    def substract(self, another_map: 'IP4Map'):
+        affected_rows = 0
+        for entry in another_map._entries:
+            affected_rows += self.substract_single_entry(entry)
+        return affected_rows
+
+    def substract_single_entry(self, sub_entry: []):
+        affected_rows = 0
         updated_entries = []
 
         for entry in self._entries:
-            if new_entry[end] < entry[start] or new_entry[start] > entry[end]:
+            if sub_entry[end] < entry[start] or sub_entry[start] > entry[end]:
                 # no overlap at all, entry is left untouched
                 updated_entries.append(entry)
                 continue
 
-            if new_entry[start] <= entry[start]:
-                if new_entry[end] >= entry[end]:
+            affected_rows += 1
+            if sub_entry[start] <= entry[start]:
+                if sub_entry[end] >= entry[end]:
                     # complete overlap, remove entry
                     continue
                 else:
-                    entry[start] = new_entry[end] + 1
+                    entry[start] = sub_entry[end] + 1
                     updated_entries.append(entry)
             else:
-                updated_entries.append([entry[start], new_entry[start]-1])
-                if new_entry[end] < entry[end]:
-                    updated_entries.append([new_entry[end]+1, entry[end]])
-
+                updated_entries.append([entry[start], sub_entry[start] - 1])
+                if sub_entry[end] < entry[end]:
+                    updated_entries.append([sub_entry[end] + 1, entry[end]])
 
         self._entries = updated_entries
+
+        return affected_rows
+
+
+
+    def substract_from_text(self, entry: str):
+
+        new_entry = self.ip_entry_from_text(entry)
+
+        return self.substract_single_entry(new_entry)
 
 
     def sort_and_recalculate(self):
@@ -121,12 +148,15 @@ class IP4Map:
 
         return ranges
 
-    def print_to_std(self, header=None):
+    def print_to_std(self, header=None, padding='', list_marker=' - '):
         if header is not None:
-            print(header)
+            print('{}{}({} entries)'.format(
+                padding,
+                header,
+                len(self._entries)))
 
         for text in self.to_string_list():
-            print(text)
+            print('{}{}{}'.format(padding, list_marker, text))
 
 
 # test = IP4Map()
@@ -146,4 +176,4 @@ class IP4Map:
 # test.add_from_text('200.20.0.0-200.21.255.255')
 # test.substract_from_text('200.20.10.10-200.22.0.0')  # should produce 200.20.0.0-200.20.10.9
 #
-# test.print_to_std(header="Show IP4Map test:")
+# test.print_to_std(header="Show IP4Map test:", padding='')
