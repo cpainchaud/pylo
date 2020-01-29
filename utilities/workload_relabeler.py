@@ -175,6 +175,7 @@ for csv_object in CsvData.objects():
 
 if csv_check_failed > 0:
     pylo.log.error("ERROR! Several ({}) inconsistencies were found in the CSV, please fix them before you continue!".format(csv_check_failed))
+    exit(1)
 
 print("  * done")
 # </editor-fold>
