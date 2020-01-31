@@ -16,13 +16,18 @@ def string_list_to_text(string_list, separator=None):
     msg = ""
     first = True
     for stringItem in string_list:
+        if type(stringItem) is str:
+            str_to_print = stringItem
+        else:
+            str_to_print = stringItem.name
+
         if not first:
             if separator is None:
                 msg += ","
             else:
                 msg += separator
         first = False
-        msg += stringItem
+        msg += str_to_print
 
     return msg
 
