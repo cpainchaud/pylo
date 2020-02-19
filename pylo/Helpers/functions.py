@@ -115,3 +115,6 @@ def is_valid_ipv6(ip):
     return pattern.match(ip) is not None
 
 
+def hostname_from_fqdn(fqdn: str):
+    return fqdn.split('.')[0]
+

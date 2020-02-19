@@ -50,9 +50,9 @@ warning_messages = []
 error_messages = []
 
 if health_data.status_is_warning():
-    warning_messages.append("Cluster has global 'warning' status read the entire report or issues troubleshooting command to get more details")
+    warning_messages.append("Cluster has reported global 'warning' status read the entire report or issues troubleshooting command to get more details")
 elif health_data.status_is_error():
-    warning_messages.append("Cluster has global 'error' status read the entire report or issues troubleshooting command to get more details")
+    warning_messages.append("Cluster has reported global 'error' status read the entire report or issues troubleshooting command to get more details")
 
 broken_nodes = {}
 working_nodes = {}
@@ -60,7 +60,7 @@ working_nodes = {}
 for node in health_data.nodes_dict.values():
     if node.is_offline_or_unreachable():
         broken_nodes[node] = node
-        error_messages.append("Node {}/{}/IP:{} is offline or not reachable by other members".format(node.name, node.type, node.ip_address))
+        warning_messages.append("Node {}/{}/IP:{} is offline or not reachable by other members".format(node.name, node.type, node.ip_address))
     else:
         working_nodes[node] = node
 
@@ -68,8 +68,19 @@ for node in working_nodes.values():
     troubled_services = node.get_troubled_services()
     if len(troubled_services) > 0:
         broken_nodes[node] = node
-        warning_messages.append("Node '{}'/IP:{} has several non-functional services: {}".format(node.name, node.ip_address, pylo.string_list_to_text(troubled_services)))
+        warning_messages.append("Node '{}'/{}/IP:{} has several non-functional services: {}".format(node.name, node.type, node.ip_address, pylo.string_list_to_text(troubled_services)))
 
+
+data1_is_broken = False
+data0_is_broken = False
+for node in broken_nodes:
+    if node.type == 'data0':
+        data0_is_broken = True
+    if node.type == 'data1':
+        data1_is_broken = True
+
+if data1_is_broken or data0_is_broken:
+    error_messages.append("Data1 or Data0 is down so Database has no resiliency anymore, please fix this situation as soon as possible.")
 
 report = {'warning_messages': warning_messages, 'error_messages': error_messages}
 
