@@ -559,12 +559,13 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
     class ExplorerFilterSetV1:
-        def __init__(self):
+        def __init__(self, max_results=10000):
             self._consumer_labels = {}
             self._consumer_exclude_labels = {}
             self._provider_labels = {}
             self._provider_exclude_labels = {}
-            pass
+            self.max_results = max_results
+
 
         @staticmethod
         def __filter_prop_add_label(prop_dict, label_or_href):
@@ -612,16 +613,36 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
 
+        def set_max_results(self, max: int):
+            self.max_results = max
+
 
         def generate_json_query(self):
-            filters = {}
+            # examples:
+            # {"sources":{"include":[[]],"exclude":[]}
+            #  "destinations":{"include":[[]],"exclude":[]},
+            #  "services":{"include":[],"exclude":[]},
+            #  "sources_destinations_query_op":"and",
+            #  "start_date":"2015-02-21T09:18:46.751Z","end_date":"2020-02-21T09:18:46.751Z",
+            #  "policy_decisions":[],
+            #  "max_results":10000}
+            #
+            filters = {
+                "sources": {"include": [], "exclude": []},
+                "destinations": {"include": [], "exclude": []},
+                "services": {"include": [], "exclude": []},
+                "sources_destinations_query_op": "and",
+                "start_date": "2015-02-21T09:18:46.751Z", "end_date": "2020-02-21T09:18:46.751Z",
+                "policy_decisions": [],
+                "max_results": self.max_results
+                }
             return filters
 
 
     def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
-        path="/traffic_flows/traffic_analysis_queries"
+        path = "/traffic_flows/traffic_analysis_queries"
         data = filters.generate_json_query()
-        return self.do_post_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
+        return self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True)
 
 
     class ClusterHealth:
@@ -772,7 +793,7 @@ class APIConnector:
         # cluster_health list
         json_output = self.do_get_call(path, includeOrgID=False)
         if type(json_output) is not list:
-            raise pylo.PyloEx("A list object was expected by we received a '{}' instead".format(type(json_output)))
+            raise pylo.PyloEx("A list object was expected but we received a '{}' instead".format(type(json_output)))
 
         dict_of_health_reports = {}
 

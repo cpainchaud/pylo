@@ -160,7 +160,8 @@ class CsvExcelToObject:
 
                     row_count += 1
         elif file_extension == '.xlsx':
-            workbook = openpyxl.load_workbook(filename, read_only=True)
+            #workbook = openpyxl.load_workbook(filename, read_only=True)
+            workbook = openpyxl.load_workbook(filename)
             # print("workbook has {} worksheets".format(len(workbook.worksheets)))
             if len(workbook.worksheets) < 1:
                 raise pylo.PyloEx("Excel file has no Worksheet")

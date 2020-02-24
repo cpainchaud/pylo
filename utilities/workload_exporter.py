@@ -63,7 +63,7 @@ if filter_file is not None:
     print("   - CSV has {} columns and {} lines (headers don't count)".format(filter_data.count_columns(), filter_data.count_lines()))
 
 
-csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'href']
+csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'href', 'online']
 if filter_keep_in_report:
     for field in filter_data._detected_headers:
         csv_report_headers.append('_' + field)
@@ -108,7 +108,8 @@ def add_workload_to_report(wkl: pylo.Workload, filter=None, filter_append_prefix
         'app': labels[1],
         'env': labels[2],
         'loc': labels[3],
-        'href': wkl.href
+        'href': wkl.href,
+        'online': wkl.online
     }
 
     if filter is not None:
