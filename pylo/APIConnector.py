@@ -571,6 +571,7 @@ class APIConnector:
         def __filter_prop_add_label(prop_dict, label_or_href):
             """
 
+            @type prop_dict: dict
             @type label_or_href: str|pylo.Label|pylo.LabelGroup
             """
             if isinstance(label_or_href, str):

@@ -14,6 +14,8 @@ parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
                     help='extra debugging messages for developers')
+parser.add_argument('--verbose', '-v', type=bool, nargs='?', required=False, default=False, const=True,
+                    help='')
 
 parser.add_argument('--filter-file', '-i', type=str, required=False, default=None,
                     help='CSV or Excel input filename')
@@ -37,7 +39,7 @@ filter_file = args['filter_file']
 filter_file_delimiter = args['filter_file_delimiter']
 filter_fields = args['filter_fields']
 filter_keep_in_report = args['keep_filters_in_report']
-
+verbose = args['verbose']
 # print(args['filter_fields'])
 
 now = datetime.now()
@@ -97,22 +99,27 @@ print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 
 
 all_workloads = org.WorkloadStore.itemsByHRef.copy()
+used_filters = {}
 
 
-def add_workload_to_report(wkl: pylo.Workload, filter=None, filter_append_prefix='_'):
+def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append_prefix='_'):
     labels = workload.get_labels_list()
 
-    new_row = {
-        'hostname': wkl.name,
-        'role': labels[0],
-        'app': labels[1],
-        'env': labels[2],
-        'loc': labels[3],
-        'href': wkl.href,
-        'online': wkl.online
-    }
+    if wkl is not None:
+        new_row = {
+            'hostname': wkl.name,
+            'role': labels[0],
+            'app': labels[1],
+            'env': labels[2],
+            'loc': labels[3],
+            'href': wkl.href,
+            'online': wkl.online
+        }
+    else:
+        new_row = {}
 
     if filter is not None:
+        used_filters[filter['*line*']] = True
         for field in filter:
             new_row[filter_append_prefix + field] = filter[field]
 
@@ -123,7 +130,8 @@ print(" * Listing and Filtering ({}) workloads now".format(len(all_workloads)))
 
 
 for workload in all_workloads.values():
-    print("  - Processing Wkl {}|{}".format(workload.hostname, workload.href))
+    if verbose:
+        print("  - Processing Wkl {}|{}".format(workload.hostname, workload.href))
     if filter_data is not None:
         matched_filters = 0
 
@@ -158,7 +166,20 @@ for workload in all_workloads.values():
                 matched_filters += 1
 
         if matched_filters > 0:
-            print("  - matched {} filters".format(matched_filters))
+            if verbose:
+                print("  - matched {} filters".format(matched_filters))
+
+print("** All workloads have been processed, {} were added in the report".format(csv_report.lines_count()))
+
+if filter_keep_in_report:
+    print(" * Adding unmatched filters back into the report as request...", flush=True, end='')
+    count_unused_filters = 0
+    for filter_data_row in filter_data.objects():
+        if filter_data_row['*line*'] not in used_filters:
+            count_unused_filters += 1
+            add_workload_to_report(wkl=None, filter=filter_data_row)
+    print(" DONE! ({} found)".format(count_unused_filters))
+
 
 
 print()
