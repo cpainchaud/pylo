@@ -172,6 +172,9 @@ for workload in all_workloads.values():
             if verbose:
                 print("  - matched {} filters".format(matched_filters))
 
+    else:
+        add_workload_to_report(workload)
+
 print("** All workloads have been processed, {} were added in the report".format(csv_report.lines_count()))
 
 if filter_keep_in_report:
