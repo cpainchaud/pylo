@@ -228,6 +228,11 @@ class Workload(pylo.ReferenceTracker):
             raise pylo.PyloEx("Cannot find workload name!")
         return self.hostname
 
+    def get_status_string(self):
+        if self.ven_agent is None:
+            return 'not-applicable'
+        return self.ven_agent.mode;
+
 
 class WorkloadStore:
 

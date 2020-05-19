@@ -53,6 +53,13 @@ class VENAgent(pylo.ReferenceTracker):
         if self.mode is None:
             raise pylo.PyloEx("Cannot find Agent's mode in config JSON", config_json)
 
+        if self.mode == 'illuminated':
+            log_traffic = config_json.get('log_traffic');
+            if log_traffic:
+                self.mode = "test"
+            else:
+                self.mode = "build"
+
 
         self.software_version = pylo.SoftwareVersion(version_string)
         if self.software_version.is_unknown:
