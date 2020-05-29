@@ -150,7 +150,7 @@ class Organization:
         stats += "\n{}- Workloads: Managed: {} / Unmanaged: {} / Deleted: {}". \
             format(padding,
                    self.WorkloadStore.count_managed_workloads(),
-                   self.WorkloadStore.count_unamanaged_workloads(),
+                   self.WorkloadStore.count_unamanaged_workloads(True),
                    self.WorkloadStore.count_deleted_workloads())
 
         stats += "\n{}- {} IPlists in total.". \

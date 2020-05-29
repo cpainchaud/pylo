@@ -228,6 +228,10 @@ class Workload(pylo.ReferenceTracker):
             raise pylo.PyloEx("Cannot find workload name!")
         return self.hostname
 
+    def get_name_stripped_fqdn(self):
+        name_split = self.get_name().split('.')
+        return name_split[0]
+
     def get_status_string(self):
         if self.ven_agent is None:
             return 'not-applicable'
@@ -361,10 +365,11 @@ class WorkloadStore:
         for item in self.itemsByHRef.values():
             if item.deleted:
                 count += 1
+                print(item.href)
 
         return count
 
-    def count_unamanaged_workloads(self):
+    def count_unamanaged_workloads(self, if_not_deleted=False):
         """
 
         :rtype: int
@@ -372,7 +377,7 @@ class WorkloadStore:
         count = 0
 
         for item in self.itemsByHRef.values():
-            if item.unmanaged:
+            if item.unmanaged and (not if_not_deleted or (if_not_deleted and not item.deleted)):
                 count += 1
 
         return count

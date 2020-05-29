@@ -11,6 +11,9 @@ import pylo
 
 # <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, default=False, const=True,
+                    help='For developers only')
+
 parser.add_argument('--host', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
@@ -29,6 +32,7 @@ if args['debug']:
 
 hostname = args['host']
 verbose = args['verbose']
+use_cached_config = args['dev_use_cache']
 
 
 now = datetime.now()
@@ -43,23 +47,26 @@ csv_report = pylo.ArrayToExport(csv_report_headers)
 org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
 
-print(" * Looking for credentials for PCE '{}'... ".format(hostname), end="", flush=True)
-connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
-print("OK!")
+if use_cached_config:
+    org.load_from_cache_or_saved_credentials(hostname)
+else:
+    print(" * Looking for credentials for PCE '{}'... ".format(hostname), end="", flush=True)
+    connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
+    print("OK!")
 
-print(" * Downloading Workloads/Agents listing from the PCE... ", end="", flush=True)
-fake_config['workloads'] = connector.objects_workload_get()
-print("OK!")
+    print(" * Downloading Workloads/Agents listing from the PCE... ", end="", flush=True)
+    fake_config['workloads'] = connector.objects_workload_get()
+    print("OK!")
 
-print(" * Downloading Labels listing from the PCE... ", end="", flush=True)
-fake_config['labels'] = connector.objects_label_get()
-print("OK!")
+    print(" * Downloading Labels listing from the PCE... ", end="", flush=True)
+    fake_config['labels'] = connector.objects_label_get()
+    print("OK!")
 
-print(" * Parsing PCE data ... ", end="", flush=True)
-org.pce_version = connector.version
-org.connector = connector
-org.load_from_json(fake_config)
-print("OK!")
+    print(" * Parsing PCE data ... ", end="", flush=True)
+    org.pce_version = connector.version
+    org.connector = connector
+    org.load_from_json(fake_config)
+    print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 # </editor-fold>
@@ -83,6 +90,7 @@ def add_workload_to_report(wkl: pylo.Workload, action: str):
 
     csv_report.add_line_from_object(new_row)
 
+
 class DuplicatedRecord:
     def __init__(self):
         self.offline = []
@@ -101,13 +109,18 @@ class DuplicatedRecord:
     def count_workloads(self):
         return len(self.unamanaged) + len(self.online) + len(self.offline)
 
+    def has_dupicates(self):
+        if len(self.offline) + len(self.online) + len(self.unamanaged) > 1:
+            return True
+        return False
+
 
 class DuplicateRecordManager:
     def __init__(self):
         self._records: Dict[str, DuplicatedRecord] = {}
 
     def count_record(self):
-        return len(self.records)
+        return len(self._records)
 
     def count_workloads(self):
         total = 0
@@ -117,8 +130,15 @@ class DuplicateRecordManager:
     def records(self):
         return list(self._records.values())
 
+    def count_duplicates(self):
+        count = 0
+        for record in self._records.values():
+            if record.has_dupicates():
+                count += 1
+        return count
+
     def add_workload(self, wkl: pylo.Workload):
-        lower_hostname = wkl.hostname.lower()
+        lower_hostname = wkl.get_name_stripped_fqdn().lower()
 
         if lower_hostname not in self._records:
             self._records[lower_hostname] = DuplicatedRecord()
@@ -128,17 +148,20 @@ class DuplicateRecordManager:
 
 duplicated_hostnames = DuplicateRecordManager()
 
-print(" * Looking for VEN with duplicated hostnames ...")
+print(" * Looking for VEN with duplicated hostname(s)")
 
 for workload in all_workloads.values():
+    if workload.deleted:
+        continue
     duplicated_hostnames.add_workload(workload)
 
-print(" * Found {} duplicated hostnames for a total of {} workloads".format(duplicated_hostnames.count_record(),
-                                                                            duplicated_hostnames.count_workloads()))
+print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
 
 for dup_hostname, dup_record in duplicated_hostnames._records.items():
+    if not dup_record.has_dupicates():
+        continue
     if verbose:
-        print(" - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
+        print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
                                                                                      len(dup_record.online),
                                                                                      len(dup_record.offline),
                                                                                      len(dup_record.unamanaged)))
