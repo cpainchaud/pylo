@@ -149,6 +149,7 @@ for data in csv_objects_to_create:
         print('Iplist at line #{} has empty networks list'.format(data['*line*']))
         exit(1)
 
+    network_delimiter = network_delimiter.replace("\\n", "\n")
     networks_strings = data['networks'].rsplit(network_delimiter)
     ip_ranges = []
     new_iplist['ip_ranges'] = ip_ranges
