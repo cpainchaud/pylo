@@ -7,6 +7,7 @@ from threading import Thread
 from queue import Queue
 import pylo
 from pylo import log
+from typing import Union, Dict, Any
 
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
@@ -392,6 +393,66 @@ class APIConnector:
 
         return self.do_delete_call(path=path, jsonOutputExpected=False, includeOrgID=False)
 
+    class WorkloadMultiDeleteTracker:
+        _errors: Dict[str, str]
+        _hrefs: Dict[str, bool]
+        _wkls: Dict[str, 'pylo.Workload']
+        connector: 'pylo.APIConnector'
+
+        def __init__(self, connector: 'pylo.APIConnector'):
+            self.connector = connector
+            self._hrefs = {}
+            self._errors = {}
+            self._wkls = {}
+
+        def add_workload(self, wkl: 'pylo.Workload'):
+            self._hrefs[wkl.href] = True
+            self._wkls[wkl.href] = wkl
+
+        def add_href(self, href: str):
+            self._hrefs[href] = True
+
+        def add_error(self, href: str, message: str):
+            self._errors[href] = message
+
+        def get_error_by_wlk(self, wkl: 'pylo.Workload') -> Union[str, None]:
+            found = self._errors.get(wkl.href, pylo.objectNotFound)
+            if found is pylo.objectNotFound:
+                return None
+            return found
+
+        def get_error_by_href(self, href: str) -> Union[str, None]:
+            return self._errors.get(href)
+
+
+        def execute(self):
+            result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))
+            print(pylo.nice_json(result))
+            if not type(result) is list:
+                raise pylo.PyloEx("API didnt return expected JSON format", result)
+
+            for entry in result:
+                if not type(entry) is dict:
+                    raise pylo.PyloEx("API didnt return expected JSON format", entry)
+                href = entry.get("href")
+                if href is None or type(href) is not str:
+                    raise pylo.PyloEx("API didnt return expected JSON format", entry)
+
+                error = entry.get("errors")
+                if href is not None:
+                    self._errors[href] = json.dumps(error)
+
+
+        def count_entries(self):
+            return len(self._hrefs)
+
+        def count_errors(self):
+            return len(self._errors)
+
+
+    def new_tracker_workload_multi_delete(self):
+        return APIConnector.WorkloadMultiDeleteTracker(self)
+
     def objects_workload_delete_multi(self, href_or_workload_array):
         """
 
@@ -415,7 +476,7 @@ class APIConnector:
 
         path = "/workloads/bulk_delete"
 
-        return self.do_put_call(path=path, json_arguments=json_data, jsonOutputExpected=False)
+        return self.do_put_call(path=path, json_arguments=json_data, jsonOutputExpected=True)
 
     def objects_workload_create_single_unmanaged(self, json_object):
         path = '/workloads'

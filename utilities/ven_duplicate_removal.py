@@ -3,6 +3,7 @@ import sys
 import argparse
 import math
 from datetime import datetime
+import json
 from typing import Dict, List, Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -20,6 +21,8 @@ parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, defau
                     help='extra debugging messages for developers')
 parser.add_argument('--verbose', '-v', type=bool, nargs='?', required=False, default=False, const=True,
                     help='')
+parser.add_argument('--confirm', '-c', type=bool, nargs='?', required=False, default=False, const=True,
+                    help='actually operate deletions')
 
 # </editor-fold>
 
@@ -33,6 +36,7 @@ if args['debug']:
 hostname = args['host']
 verbose = args['verbose']
 use_cached_config = args['dev_use_cache']
+argument_confirm = args['confirm']
 
 
 now = datetime.now()
@@ -49,6 +53,7 @@ fake_config = pylo.Organization.create_fake_empty_config()
 
 if use_cached_config:
     org.load_from_cache_or_saved_credentials(hostname)
+    connector = org.connector
 else:
     print(" * Looking for credentials for PCE '{}'... ".format(hostname), end="", flush=True)
     connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
@@ -95,11 +100,11 @@ class DuplicatedRecord:
     def __init__(self):
         self.offline = []
         self.online = []
-        self.unamanaged= []
+        self.unmanaged= []
 
     def add_workload(self, wkl: pylo.Workload):
         if wkl.unmanaged:
-            self.unamanaged.append(wkl)
+            self.unmanaged.append(wkl)
             return
         if wkl.online:
             self.online.append(wkl)
@@ -107,10 +112,19 @@ class DuplicatedRecord:
         self.offline.append(wkl)
 
     def count_workloads(self):
-        return len(self.unamanaged) + len(self.online) + len(self.offline)
+        return len(self.unmanaged) + len(self.online) + len(self.offline)
+
+    def count_online(self):
+        return len(self.online)
+
+    def count_offline(self):
+        return len(self.offline)
+
+    def count_unmanaged(self):
+        return len(self.unmanaged)
 
     def has_dupicates(self):
-        if len(self.offline) + len(self.online) + len(self.unamanaged) > 1:
+        if len(self.offline) + len(self.online) + len(self.unmanaged) > 1:
             return True
         return False
 
@@ -157,16 +171,54 @@ for workload in all_workloads.values():
 
 print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
 
+deleteTracker = connector.new_tracker_workload_multi_delete()
+
 for dup_hostname, dup_record in duplicated_hostnames._records.items():
     if not dup_record.has_dupicates():
         continue
-    if verbose:
-        print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
+
+    print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
                                                                                      len(dup_record.online),
                                                                                      len(dup_record.offline),
-                                                                                     len(dup_record.unamanaged)))
+                                                                                     len(dup_record.unmanaged)))
+
+    if dup_record.count_online() == 0:
+        print("     - IGNORED: there no VEN online")
+        continue
+
+    if dup_record.count_online() > 1:
+        print("     - IGNORED: there are more than 1 VEN online")
+        continue
+
+    for wkl in dup_record.offline:
+        deleteTracker.add_workload(wkl)
+        print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+
+    for wkl in dup_record.unmanaged:
+        deleteTracker.add_workload(wkl)
+        #deleteTracker.add_href('nope')
+        print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
 
+print()
+print(" * Found {} workloads to be deleted".format(deleteTracker.count_entries()))
+
+if argument_confirm:
+    print(" * Executing deletion requests ... ".format(report_file), end='', flush=True)
+    deleteTracker.execute()
+    print("DONE")
+
+    for wkl in deleteTracker._wkls.values():
+        error_msg = deleteTracker.get_error_by_href(wkl.href)
+        if error_msg is None:
+            add_workload_to_report(wkl, "deleted")
+        else:
+            pass
+            print("    - an error occured when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
+            add_workload_to_report(wkl, "API error: " + error_msg)
+else:
+    for wkl in deleteTracker._wkls.values():
+        add_workload_to_report(wkl, "DELETE (no confirm option used)")
 
 print()
 print(" * Writing report file '{}' ... ".format(report_file), end='', flush=True)
