@@ -190,7 +190,16 @@ class APIConnector:
                 method == 'DELETE' and req.status_code != 204 \
                 or \
                 method == 'PUT' and req.status_code != 204 and req.status_code != 200:
-            raise Exception('API returned error status "' + str(req.status_code) + ' ' + req.reason
+
+            if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_request_error", ....}]
+                jout = req.json()
+                if len(jout) > 0:
+                    if "token" in jout[0]:
+                        if jout[0]['token'] == 'too_many_request_error':
+                            raise pylo.PyloApiTooManyRequestsEx('API has hit DOS protection limit (X calls per minute)', jout)
+
+
+            raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
                             + '" and error message: ' + req.text)
 
         if jsonOutputExpected:
@@ -594,7 +603,19 @@ class APIConnector:
         if return_raw_json:
             return self.do_get_call(path=path)
 
-        return APIConnector.ApiAgentCompatibilityReport(self.do_get_call(path=path, includeOrgID=False))
+        retryCount = 5
+
+        while retryCount >= 0:
+            retryCount -= retryCount
+            try:
+                api_result = self.do_get_call(path=path, includeOrgID=False)
+                break
+
+            except pylo.PyloApiTooManyRequestsEx as ex:
+                retryCount = True
+                time.sleep(4)
+
+        return APIConnector.ApiAgentCompatibilityReport()
 
     def objects_agent_change_mode(self, agent_href: str, mode: str):
         path = agent_href
