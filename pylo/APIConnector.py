@@ -191,11 +191,11 @@ class APIConnector:
                 or \
                 method == 'PUT' and req.status_code != 204 and req.status_code != 200:
 
-            if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_request_error", ....}]
+            if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
                 jout = req.json()
                 if len(jout) > 0:
                     if "token" in jout[0]:
-                        if jout[0]['token'] == 'too_many_request_error':
+                        if jout[0]['token'] == 'too_many_requests_error':
                             raise pylo.PyloApiTooManyRequestsEx('API has hit DOS protection limit (X calls per minute)', jout)
 
 
@@ -607,15 +607,15 @@ class APIConnector:
         api_result = None
 
         while retryCount >= 0:
-            retryCount -= retryCount
+            retryCount -= 1
             try:
                 api_result = self.do_get_call(path=path, includeOrgID=False)
                 break
 
             except pylo.PyloApiTooManyRequestsEx as ex:
-                if retryCount == 0:
+                if retryCount <= 0:
                     raise ex
-                time.sleep(4)
+                time.sleep(6)
 
         return APIConnector.ApiAgentCompatibilityReport(api_result)
 
