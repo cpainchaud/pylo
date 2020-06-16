@@ -201,9 +201,9 @@ for dup_hostname, dup_record in duplicated_hostnames._records.items():
 
 
 print()
-print(" * Found {} workloads to be deleted".format(deleteTracker.count_entries()))
 
 if argument_confirm:
+    print(" * Found {} workloads to be deleted".format(deleteTracker.count_entries()))
     print(" * Executing deletion requests ... ".format(report_file), end='', flush=True)
     deleteTracker.execute()
     print("DONE")
@@ -213,10 +213,10 @@ if argument_confirm:
         if error_msg is None:
             add_workload_to_report(wkl, "deleted")
         else:
-            pass
             print("    - an error occured when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
             add_workload_to_report(wkl, "API error: " + error_msg)
 else:
+    print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(deleteTracker.count_entries()))
     for wkl in deleteTracker._wkls.values():
         add_workload_to_report(wkl, "DELETE (no confirm option used)")
 
