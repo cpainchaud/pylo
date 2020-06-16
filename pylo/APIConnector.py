@@ -436,7 +436,7 @@ class APIConnector:
 
         def execute(self):
             result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))
-            print(pylo.nice_json(result))
+            # print(pylo.nice_json(result))
             if not type(result) is list:
                 raise pylo.PyloEx("API didnt return expected JSON format", result)
 

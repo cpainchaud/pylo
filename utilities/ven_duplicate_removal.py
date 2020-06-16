@@ -43,7 +43,7 @@ now = datetime.now()
 report_file = 'ven-duplicate-removal_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
 report_file_excel = 'ven-duplicate-removal_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
 
-csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'href', 'action']
+csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'href', 'action']
 csv_report = pylo.ArrayToExport(csv_report_headers)
 
 
@@ -89,6 +89,7 @@ def add_workload_to_report(wkl: pylo.Workload, action: str):
             'app': labels[1],
             'env': labels[2],
             'loc': labels[3],
+            'online': wkl.online,
             'href': wkl.href,
             'action': action
     }
@@ -215,6 +216,10 @@ if argument_confirm:
         else:
             print("    - an error occured when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
             add_workload_to_report(wkl, "API error: " + error_msg)
+
+    print()
+    print(" * {} workloads deleted".format(deleteTracker.count_entries()-deleteTracker.count_errors()))
+    print()
 else:
     print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(deleteTracker.count_entries()))
     for wkl in deleteTracker._wkls.values():
