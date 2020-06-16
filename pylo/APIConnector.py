@@ -604,6 +604,7 @@ class APIConnector:
             return self.do_get_call(path=path)
 
         retryCount = 5
+        api_result = None
 
         while retryCount >= 0:
             retryCount -= retryCount
@@ -612,9 +613,11 @@ class APIConnector:
                 break
 
             except pylo.PyloApiTooManyRequestsEx as ex:
+                if retryCount == 0:
+                    raise ex
                 time.sleep(4)
 
-        return APIConnector.ApiAgentCompatibilityReport()
+        return APIConnector.ApiAgentCompatibilityReport(api_result)
 
     def objects_agent_change_mode(self, agent_href: str, mode: str):
         path = agent_href
