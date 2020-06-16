@@ -612,7 +612,6 @@ class APIConnector:
                 break
 
             except pylo.PyloApiTooManyRequestsEx as ex:
-                retryCount = True
                 time.sleep(4)
 
         return APIConnector.ApiAgentCompatibilityReport()
