@@ -203,10 +203,13 @@ for dup_hostname, dup_record in duplicated_hostnames._records.items():
 
 print()
 
-if argument_confirm:
+if deleteTracker.count_entries() < 1:
+    print(" * No duplicate found!")
+
+elif argument_confirm:
     print(" * Found {} workloads to be deleted".format(deleteTracker.count_entries()))
     print(" * Executing deletion requests ... ".format(report_file), end='', flush=True)
-    deleteTracker.execute()
+    deleteTracker.execute(unpair_agents=True)
     print("DONE")
 
     for wkl in deleteTracker._wkls.values():

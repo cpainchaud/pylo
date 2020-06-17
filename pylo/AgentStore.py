@@ -22,7 +22,7 @@ class VENAgent(pylo.ReferenceTracker):
         self.workload = workload
 
         self.software_version = None
-        self.last_heartbeat = None
+        self._last_heartbeat = None
 
         self.mode = None
 
@@ -43,7 +43,7 @@ class VENAgent(pylo.ReferenceTracker):
         if last_heartbeat is not None:
             # self.last_heartbeat = dparser.parse(last_heartbeat)
             # "2019-07-30T11:13:25.006Z"
-            self.last_heartbeat = datetime.datetime.strptime(last_heartbeat, "%Y-%m-%dT%H:%M:%S.%fZ")
+            self._last_heartbeat = datetime.datetime.strptime(last_heartbeat, "%Y-%m-%dT%H:%M:%S.%fZ")
 
         config_json = data.get('config')
         if config_json is None:

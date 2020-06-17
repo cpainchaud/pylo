@@ -434,22 +434,58 @@ class APIConnector:
             return self._errors.get(href)
 
 
-        def execute(self):
+        def execute(self, unpair_agents=False):
+
+            if len(self._hrefs) < 1:
+                raise pylo.PyloEx("WorkloadMultiDeleteTracker is empty")
+
             result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))
             # print(pylo.nice_json(result))
             if not type(result) is list:
-                raise pylo.PyloEx("API didnt return expected JSON format", result)
+                raise pylo.PyloApiEx("API didnt return expected JSON format", result)
+
+            agents_to_unpair = []
 
             for entry in result:
                 if not type(entry) is dict:
-                    raise pylo.PyloEx("API didnt return expected JSON format", entry)
+                    raise pylo.PyloApiEx("API didnt return expected JSON format", entry)
                 href = entry.get("href")
                 if href is None or type(href) is not str:
-                    raise pylo.PyloEx("API didnt return expected JSON format", entry)
+                    raise pylo.PyloApiEx("API didnt return expected JSON format", entry)
 
                 error = entry.get("errors")
-                if href is not None:
-                    self._errors[href] = json.dumps(error)
+                error_string = json.dumps(error)
+                if unpair_agents and error_string.find("method_not_allowed_error") > -1:
+                    agents_to_unpair.append(href)
+                else:
+                    if href is not None:
+                        self._errors[href] = error_string
+
+            if len(agents_to_unpair) > 0:
+                self._unpair_agents(agents_to_unpair)
+
+
+        def _unpair_agents(self, workloads_hrefs: [str]):
+            for href in workloads_hrefs:
+                retryCount = 5
+                api_result = None
+
+                while retryCount >= 0:
+                    retryCount -= 1
+                    try:
+                        api_result = self.connector.objects_workload_unpair_multi([href])
+                        break
+
+                    except pylo.PyloApiTooManyRequestsEx as ex:
+                        if retryCount <= 0:
+                            self._errors[href] = str(ex)
+                            break
+                        time.sleep(6)
+
+                    except pylo.PyloApiEx as ex:
+                        self._errors[href] = str(ex)
+                        break
+
 
 
         def count_entries(self):
@@ -481,11 +517,40 @@ class APIConnector:
             for href in href_or_workload_array:
                 json_data.append({"href": href.href})
 
-        print(json_data)
+        # print(json_data)
 
         path = "/workloads/bulk_delete"
 
         return self.do_put_call(path=path, json_arguments=json_data, jsonOutputExpected=True)
+
+
+    def objects_workload_unpair_multi(self, href_or_workload_array):
+        """
+
+        :type href_or_workload_array: list[str]|list[pylo.Workload]
+        """
+
+        if len(href_or_workload_array) < 1:
+            return
+
+        json_data = {
+            "ip_table_restore": "disable",
+            "workloads": []
+        }
+
+        if type(href_or_workload_array[0]) is str:
+            for href in href_or_workload_array:
+                json_data['workloads'].append({"href": href})
+        else:
+            href: 'pylo.Workload'
+            for href in href_or_workload_array:
+                json_data['workloads'].append({"href": href.href})
+
+        # print(json_data)
+
+        path = "/workloads/unpair"
+
+        return self.do_put_call(path=path, json_arguments=json_data, jsonOutputExpected=False)
 
     def objects_workload_create_single_unmanaged(self, json_object):
         path = '/workloads'
@@ -522,15 +587,15 @@ class APIConnector:
         path = '/security_principals'
 
         if json_object is not None and name is not None:
-            raise pylo.PyloEx("You must either use json_object or name but you cannot use both they are mutually exclusive")
+            raise pylo.PyloApiEx("You must either use json_object or name but you cannot use both they are mutually exclusive")
 
         if json_object is not None:
             return get_field_or_die('href', self.do_post_call(path=path, json_arguments=json_object))
 
         if name is None:
-            raise pylo.PyloEx("You need to provide a group name")
+            raise pylo.PyloApiEx("You need to provide a group name")
         if sid is None:
-            raise pylo.PyloEx("You need to provide a SID")
+            raise pylo.PyloApiEx("You need to provide a SID")
 
         return get_field_or_die('href', self.do_post_call(path=path, json_arguments={'name': name, 'sid': sid}))
 
