@@ -65,7 +65,9 @@ if filter_file is not None:
     print("   - CSV has {} columns and {} lines (headers don't count)".format(filter_data.count_columns(), filter_data.count_lines()))
 
 
-csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'href', 'online', 'managed', 'status', 'agent_href']
+csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'managed',
+                      'status', 'agent.last_heartbeat', 'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
+                      'href', 'agent.href']
 if filter_keep_in_report:
     for field in filter_data._detected_headers:
         csv_report_headers.append('_' + field)
@@ -118,7 +120,10 @@ def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append
             'status': wkl.get_status_string(),
         }
         if wkl.ven_agent is not None:
-            new_row['agent_href'] = wkl.ven_agent.href
+            new_row['agent.href'] = wkl.ven_agent.href
+            new_row['agent.sec_policy_sync_state'] = wkl.ven_agent.get_status_security_policy_sync_state()
+            new_row['agent.last_heartbeat'] = str(wkl.ven_agent.get_last_heartbeat_date())
+            new_row['agent.sec_policy_applied_at'] = str(wkl.ven_agent.get_status_security_policy_applied_at())
     else:
         new_row = {}
 

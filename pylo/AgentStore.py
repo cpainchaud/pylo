@@ -1,8 +1,11 @@
+from datetime import datetime
+
 import pylo
-from pylo import log
+from pylo import log, SoftwareVersion
 from .Helpers import *
 import re
 import datetime
+from typing import *
 
 
 version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)(u[0-9]+)?$")
@@ -11,9 +14,13 @@ version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[
 class VENAgent(pylo.ReferenceTracker):
 
     """
-    :type software_version: pylo.SoftwareVersion
-    :type last_heartbeat: datetime.datetime
+    #:type software_version: pylo.SoftwareVersion
+    #:type _last_heartbeat: datetime.datetime
     """
+    software_version: Optional['pylo.SoftwareVersion']
+    _last_heartbeat: Optional[datetime.datetime]
+    _status_security_policy_sync_state: Optional[str]
+    _status_security_policy_applied_at: Optional[str]
 
     def __init__(self, href: str, owner: 'pylo.AgentStore', workload: 'pylo.Workload' = None):
         pylo.ReferenceTracker.__init__(self)
@@ -24,9 +31,24 @@ class VENAgent(pylo.ReferenceTracker):
         self.software_version = None
         self._last_heartbeat = None
 
+        self._status_security_policy_sync_state = None
+        self._status_security_policy_applied_at = None
+
         self.mode = None
 
         self.raw_json = None
+
+    def _get_date_from_json(self, prop_name_in_json: str) -> Optional[datetime.datetime]:
+        status_json = self.raw_json.get('status')
+        if status_json is None:
+            return None
+
+        prop_value = status_json.get(prop_name_in_json)
+        if prop_value is None:
+            return None
+
+        return datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%S.%fZ")
+
 
     def load_from_json(self, data):
         self.raw_json = data
@@ -38,12 +60,15 @@ class VENAgent(pylo.ReferenceTracker):
         version_string = status_json.get('agent_version')
         if version_string is None:
             raise pylo.PyloEx("Cannot find VENAgent version from '{}'".format(self.href))
+        self.software_version = pylo.SoftwareVersion(version_string)
+        if self.software_version.is_unknown:
+            pylo.log.warn("Agent {} from Workload {}/{} has unknown software version: {}".format(
+                self.href,
+                self.workload.get_name(),
+                self.workload.href,
+                self.software_version.version_string))
 
-        last_heartbeat = status_json.get("last_heartbeat_on")
-        if last_heartbeat is not None:
-            # self.last_heartbeat = dparser.parse(last_heartbeat)
-            # "2019-07-30T11:13:25.006Z"
-            self._last_heartbeat = datetime.datetime.strptime(last_heartbeat, "%Y-%m-%dT%H:%M:%S.%fZ")
+        self._status_security_policy_sync_state = status_json.get('security_policy_sync_state')
 
         config_json = data.get('config')
         if config_json is None:
@@ -54,20 +79,26 @@ class VENAgent(pylo.ReferenceTracker):
             raise pylo.PyloEx("Cannot find Agent's mode in config JSON", config_json)
 
         if self.mode == 'illuminated':
-            log_traffic = config_json.get('log_traffic');
+            log_traffic = config_json.get('log_traffic')
             if log_traffic:
                 self.mode = "test"
             else:
                 self.mode = "build"
 
 
-        self.software_version = pylo.SoftwareVersion(version_string)
-        if self.software_version.is_unknown:
-            pylo.log.warn("Agent {} from Workload {}/{} has unknown software version: {}".format(
-                          self.href,
-                          self.workload.get_name(),
-                          self.workload.href,
-                          self.software_version.version_string))
+    def get_last_heartbeat_date(self) -> Optional[datetime.datetime]:
+        if self._last_heartbeat is None:
+            self._last_heartbeat = self._get_date_from_json('last_heartbeat_on')
+        return self._last_heartbeat
+
+    def get_status_security_policy_applied_at(self):
+        if self._status_security_policy_applied_at is None:
+            self._status_security_policy_applied_at = self._get_date_from_json('security_policy_applied_at')
+        return self._status_security_policy_applied_at
+
+    def get_status_security_policy_sync_state(self):
+        return self._status_security_policy_sync_state
+
 
 
 

@@ -221,22 +221,23 @@ elif argument_confirm:
             add_workload_to_report(wkl, "API error: " + error_msg)
 
     print()
-    print(" * {} workloads deleted".format(deleteTracker.count_entries()-deleteTracker.count_errors()))
+    print(" * {} workloads deleted / {} with errors".format(deleteTracker.count_entries()-deleteTracker.count_errors(), deleteTracker.count_errors()))
     print()
 else:
     print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(deleteTracker.count_entries()))
     for wkl in deleteTracker._wkls.values():
         add_workload_to_report(wkl, "DELETE (no confirm option used)")
 
-print()
-print(" * Writing report file '{}' ... ".format(report_file), end='', flush=True)
-csv_report.write_to_csv(report_file)
-print("DONE")
-print(" * Writing report file '{}' ... ".format(report_file_excel), end='', flush=True)
-csv_report.write_to_excel(report_file_excel)
-print("DONE")
+if csv_report.lines_count() < 1:
+    print()
+    print(" * Writing report file '{}' ... ".format(report_file), end='', flush=True)
+    csv_report.write_to_csv(report_file)
+    print("DONE")
+    print(" * Writing report file '{}' ... ".format(report_file_excel), end='', flush=True)
+    csv_report.write_to_excel(report_file_excel)
+    print("DONE")
 
 if csv_report.lines_count() < 1:
-    print("\n** WARNING: no entry matched your filters so reports are empty !\n")
+    print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
 
 
