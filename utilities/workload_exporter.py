@@ -107,6 +107,11 @@ used_filters = {}
 def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append_prefix='_'):
     labels = workload.get_labels_list()
 
+    def none_or_date(date):
+        if date is None:
+            return None
+        return datetime.strftime(date, '%Y-%m-%d %H:%M:%S')
+
     if wkl is not None:
         new_row = {
             'hostname': wkl.name,
@@ -122,8 +127,8 @@ def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append
         if wkl.ven_agent is not None:
             new_row['agent.href'] = wkl.ven_agent.href
             new_row['agent.sec_policy_sync_state'] = wkl.ven_agent.get_status_security_policy_sync_state()
-            new_row['agent.last_heartbeat'] = datetime.strftime(wkl.ven_agent.get_last_heartbeat_date(), '%Y-%m-%d %H:%M:%S')
-            new_row['agent.sec_policy_applied_at'] = datetime.strftime(wkl.ven_agent.get_status_security_policy_applied_at(), '%Y-%m-%d %H:%M:%S')
+            new_row['agent.last_heartbeat'] = none_or_date(wkl.ven_agent.get_last_heartbeat_date())
+            new_row['agent.sec_policy_applied_at'] = none_or_date(wkl.ven_agent.get_status_security_policy_applied_at())
     else:
         new_row = {}
 
@@ -172,7 +177,7 @@ for workload in all_workloads.values():
 
             if filter_all_columns_matched:
                 add_workload_to_report(workload, filter_data_row)
-                print("test\n");
+                print("test\n")
                 matched_filters += 1
 
         if matched_filters > 0:
