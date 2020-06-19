@@ -122,8 +122,8 @@ def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append
         if wkl.ven_agent is not None:
             new_row['agent.href'] = wkl.ven_agent.href
             new_row['agent.sec_policy_sync_state'] = wkl.ven_agent.get_status_security_policy_sync_state()
-            new_row['agent.last_heartbeat'] = str(wkl.ven_agent.get_last_heartbeat_date())
-            new_row['agent.sec_policy_applied_at'] = str(wkl.ven_agent.get_status_security_policy_applied_at())
+            new_row['agent.last_heartbeat'] = datetime.strftime(wkl.ven_agent.get_last_heartbeat_date(), '%Y-%m-%d %H:%M:%S')
+            new_row['agent.sec_policy_applied_at'] = datetime.strftime(wkl.ven_agent.get_status_security_policy_applied_at(), '%Y-%m-%d %H:%M:%S')
     else:
         new_row = {}
 

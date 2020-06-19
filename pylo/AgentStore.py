@@ -21,6 +21,7 @@ class VENAgent(pylo.ReferenceTracker):
     _last_heartbeat: Optional[datetime.datetime]
     _status_security_policy_sync_state: Optional[str]
     _status_security_policy_applied_at: Optional[str]
+    _status_rule_count: int
 
     def __init__(self, href: str, owner: 'pylo.AgentStore', workload: 'pylo.Workload' = None):
         pylo.ReferenceTracker.__init__(self)
@@ -33,6 +34,7 @@ class VENAgent(pylo.ReferenceTracker):
 
         self._status_security_policy_sync_state = None
         self._status_security_policy_applied_at = None
+        self._status_rule_count = 0
 
         self.mode = None
 
@@ -69,6 +71,10 @@ class VENAgent(pylo.ReferenceTracker):
                 self.software_version.version_string))
 
         self._status_security_policy_sync_state = status_json.get('security_policy_sync_state')
+
+        self._status_rule_count = status_json.get('firewall_rule_count')
+        if self._status_rule_count is None:
+            raise pylo.PyloEx("Cannot find VENAgent '{}' rule count ".format(self.href), status_json)
 
         config_json = data.get('config')
         if config_json is None:
