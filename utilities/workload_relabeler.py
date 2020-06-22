@@ -393,9 +393,9 @@ for workload_href in list(workloads_to_relabel.keys()):
 
 
     if this_workload_matched is not None and\
-            (not input_match_on_ip or input_match_on_ip and this_workload_matched['**line**'] == this_workload_matched_on_ip['**line**']) and\
-            (not input_match_on_hostname or input_match_on_hostname and this_workload_matched['**line**'] == this_workload_matched_on_hostname['**line**']) and \
-            (not input_match_on_href or input_match_on_href and this_workload_matched['**line**'] == this_workload_matched_on_href['**line**']):
+            (not input_match_on_ip or input_match_on_ip and this_workload_matched['*line*'] == this_workload_matched_on_ip['*line*']) and\
+            (not input_match_on_hostname or input_match_on_hostname and this_workload_matched['*line*'] == this_workload_matched_on_hostname['*line*']) and \
+            (not input_match_on_href or input_match_on_href and this_workload_matched['*line*'] == this_workload_matched_on_href['*line*']):
         workloads_to_relabel_match[workload] = this_workload_matched
         print("    - all filters matched, it's in!")
 
