@@ -72,9 +72,9 @@ csv_expected_fields = [
     {'name': 'env', 'optional': True},
     {'name': 'loc', 'optional': True},
     {'name': 'href', 'optional': True},
-    {'name': 'ip', 'optional': input_match_on_ip},
-    {'name': 'hostname', 'optional': input_match_on_hostname},
-    {'name': 'href', 'optional': input_match_on_href}
+    {'name': 'ip', 'optional': not input_match_on_ip},
+    {'name': 'hostname', 'optional': not input_match_on_hostname},
+    {'name': 'href', 'optional': not input_match_on_href}
 ]
 
 
