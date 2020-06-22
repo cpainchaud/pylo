@@ -23,6 +23,14 @@ parser.add_argument('--input-file', '-i', type=str, required=True,
 parser.add_argument('--input-file-delimiter', type=str, required=False, default=',',
                     help='CSV field delimiter')
 
+parser.add_argument('--match-on-hostname', type=bool, nargs='?', required=False, default=False, const=True,
+                    help="In order to be relabeled, a workload must match a HOSTNAME entry from the CSV file")
+parser.add_argument('--match-on-ip', type=bool, nargs='?', required=False, default=False, const=True,
+                    help="In order to be relabeled, a workload must match an IP entry from the CSV file")
+parser.add_argument('--match-on-href', type=bool, nargs='?', required=False, default=False, const=True,
+                    help="In order to be relabeled, a workload must match a HREF entry from the CSV file")
+
+
 parser.add_argument('--filter-env-label', type=str, required=False, default=None,
                     help='Filter workloads by environment labels (separated by commas)')
 parser.add_argument('--filter-loc-label', type=str, required=False, default=None,
@@ -48,6 +56,10 @@ input_file_delimiter = args['input_file_delimiter']
 batch_size = args['batch_size']
 confirmed_changes = args['confirm']
 
+input_match_on_hostname = args['match_on_hostname']
+input_match_on_ip = args['match_on_ip']
+input_match_on_href = args['match_on_href']
+
 now = datetime.now()
 report_file = 'ven-relabeler-results_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
 report_file_excel = 'ven-relabeler-results_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
@@ -60,8 +72,16 @@ csv_expected_fields = [
     {'name': 'env', 'optional': True},
     {'name': 'loc', 'optional': True},
     {'name': 'href', 'optional': True},
-    {'name': 'ip', 'optional': False}
+    {'name': 'ip', 'optional': input_match_on_ip},
+    {'name': 'hostname', 'optional': input_match_on_hostname},
+    {'name': 'href', 'optional': input_match_on_href}
 ]
+
+
+if not input_match_on_ip and not input_match_on_hostname and not input_match_on_href:
+    pylo.log.error('You must specify at least one (or several) property to match on for workloads vs input: href, ip or hostname')
+    exit(1)
+
 
 csv_report = pylo.ArrayToExport(['name', 'role', 'app', 'env', 'loc', 'new_role', 'new_app', 'new_env', 'new_loc', '**updated**', '**reason**', 'href'])
 
@@ -148,36 +168,71 @@ def workload_to_csv_report(workload: pylo.Workload, updated: bool, reason: str =
 # <editor-fold desc="CSV basic checks">
 print(" * Performing basic checks on CSV input:")
 csv_ip_cache = {}
+csv_name_cache = {}
+csv_href_cache = {}
 csv_check_failed = 0
-for csv_object in CsvData.objects():
-    ips = csv_object['ip'].rsplit(',')
-    csv_object['**ip_array**'] = []
 
+if input_match_on_ip:
+    for csv_object in CsvData.objects():
+        ips = csv_object['ip'].rsplit(',')
+        csv_object['**ip_array**'] = []
 
-    for ip in ips:
-        ip = ip.strip(" \r\n")
-        if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
-            print("   - ERROR: CSV line #{} ha invalid IP address defined".format(csv_object['*line*']))
+        for ip in ips:
+            ip = ip.strip(" \r\n")
+            if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
+                print("   - ERROR: CSV line #{} has invalid IP address defined".format(csv_object['*line*']), flush=True)
+                csv_check_failed += 1
+                continue
+
+            csv_object['**ip_array**'].append(ip)
+
+            if ip not in csv_ip_cache:
+                csv_ip_cache[ip] = csv_object
+                continue
+
+            csv_check_failed += 1
+            print("   - ERROR: CSV line #{} has a duplicate IP address with line #{}".format(csv_object['*line*'], csv_ip_cache[ip]['*line*']), flush=True)
+
+        if len(csv_object['**ip_array**']) < 1:
+            print("   - ERROR: CSV line #{} has no valid IP address defined".format(csv_object['*line*']), flush=True)
+
+if input_match_on_hostname:
+    for csv_object in CsvData.objects():
+        name = csv_object['hostname']
+        name = pylo.Workload.static_name_stripped_fqdn(name)
+        if name is None or len(name) < 1:
+            print("   - ERROR: CSV line #{} has invalid hostname defined: '{}'".format(csv_object['*line*'], csv_object['hostname']), flush=True)
             csv_check_failed += 1
             continue
 
-        csv_object['**ip_array**'].append(ip)
-
-        if ip not in csv_ip_cache:
-            csv_ip_cache[ip] = csv_object
+        if name not in csv_name_cache:
+            csv_name_cache[name.lower()] = csv_object
             continue
 
+        print("   - ERROR: CSV line #{} has duplicate hostname defined from a previous line: '{}'".format(csv_object['*line*'], csv_object['hostname']), flush=True)
         csv_check_failed += 1
-        print("   - ERROR: CSV line #{} has a duplicate IP address with line #{}".format(csv_object['*line*'], csv_ip_cache[ip]['*line*']))
 
-    if len(csv_object['**ip_array**']) < 1:
-        print("   - ERROR: CSV line #{} has no valid IP address defined".format(csv_object['*line*']))
+if input_match_on_href:
+    for csv_object in CsvData.objects():
+        href = csv_object['href']
+        if href is None or len(href) < 1:
+            print("   - ERROR: CSV line #{} has invalid href defined: '{}'".format(csv_object['*line*'], csv_object['href']), flush=True)
+            csv_check_failed += 1
+            continue
+
+        if href not in csv_href_cache:
+            csv_name_cache[href] = csv_object
+            continue
+
+        print("   - ERROR: CSV line #{} has duplicate href defined from a previous line: '{}'".format(csv_object['*line*'], csv_object['href']), flush=True)
+        csv_check_failed += 1
+
 
 if csv_check_failed > 0:
     pylo.log.error("ERROR! Several ({}) inconsistencies were found in the CSV, please fix them before you continue!".format(csv_check_failed))
     exit(1)
 
-print("  * done")
+print("   * Done")
 # </editor-fold>
 
 # <editor-fold desc="Parsing Label filters">
@@ -278,28 +333,72 @@ for workload_href in list(workloads_to_relabel.keys()):
     count += 1
     workload = workloads_to_relabel[workload_href]
     print("  - Workload #{}/{}  named '{}' href '{}' with {} IP addresses".format(count, len(workloads_to_relabel), workload.get_name(), workload.href, len(workload.interfaces)))
-    ip_matches = []
-    for interface in workload.interfaces:
-        print("    - ip {}...".format(interface.ip), flush=True, end='')
-        csv_ip_record = csv_ip_cache.get(interface.ip)
-        if csv_ip_record is None:
-            print(" not found in CSV/Excel")
-        else:
-            print("found")
-            ip_matches.append(csv_ip_record)
-    if len(ip_matches) < 1:
-        print("    - No matching IP address found in CSV/Excel, this Workload will not be relabeled")
-        del workloads_to_relabel[workload_href]
-        ignored_workloads_count += 1
-        csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'No IP match was found in CSV/Excel input'))
-        continue
-    if len(ip_matches) > 1:
-        print("    - Found more than 1 IP matches in CSV/Excel, this Workload will not be relabeled")
-        del workloads_to_relabel[workload_href]
-        ignored_workloads_count += 1
-        csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Too many IP matches were found in CSV/Excel input'))
-        continue
-    workloads_to_relabel_match[workload] = ip_matches[0]
+    this_workload_matched_on_ip = None
+    this_workload_matched_on_name = None
+    this_workload_matched_on_href = None
+    this_workload_matched = None
+
+    if input_match_on_ip:
+        ip_matches = []
+        for interface in workload.interfaces:
+            print("    - ip {}...".format(interface.ip), flush=True, end='')
+            csv_ip_record = csv_ip_cache.get(interface.ip)
+            if csv_ip_record is None:
+                print(" not found in CSV/Excel")
+            else:
+                print("found")
+                ip_matches.append(csv_ip_record)
+        if len(ip_matches) < 1:
+            print("    - No matching IP address found in CSV/Excel, this Workload will not be relabeled")
+            del workloads_to_relabel[workload_href]
+            ignored_workloads_count += 1
+            csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'No IP match was found in CSV/Excel input'))
+            continue
+        if len(ip_matches) > 1:
+            print("    - Found more than 1 IP matches in CSV/Excel, this Workload will not be relabeled")
+            del workloads_to_relabel[workload_href]
+            ignored_workloads_count += 1
+            csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Too many IP matches were found in CSV/Excel input'))
+            continue
+        this_workload_matched_on_ip = ip_matches[0]
+        this_workload_matched = this_workload_matched_on_ip
+
+    if input_match_on_hostname:
+        name_match = csv_name_cache.get(workload.get_name_stripped_fqdn().lower())
+        print("    - match on name '{}'...".format(workload.get_name_stripped_fqdn()), flush=True, end='')
+        if name_match is None:
+            del workloads_to_relabel[workload_href]
+            print("  NOT FOUND")
+            ignored_workloads_count += 1
+            csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'No name match was found in CSV/Excel input'))
+            continue
+
+        print(" FOUND")
+        this_workload_matched_on_name = name_match
+        this_workload_matched = this_workload_matched_on_name
+
+    if input_match_on_href:
+        href_match = csv_name_cache.get(workload.href)
+        print("    - match on href '{}'...".format(workload.href), flush=True, end='')
+        if href_match is None:
+            del workloads_to_relabel[workload_href]
+            print("  NOT FOUND")
+            ignored_workloads_count += 1
+            csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'No href match was found in CSV/Excel input'))
+            continue
+
+        print(" FOUND")
+        this_workload_matched_on_href = href_match
+        this_workload_matched = this_workload_matched_on_href
+
+
+    if this_workload_matched is not None and\
+            (not input_match_on_ip or input_match_on_ip and this_workload_matched['**line**'] == this_workload_matched_on_ip['**line**']) and\
+            (not input_match_on_hostname or input_match_on_hostname and this_workload_matched['**line**'] == this_workload_matched_on_hostname['**line**']) and \
+            (not input_match_on_href or input_match_on_href and this_workload_matched['**line**'] == this_workload_matched_on_href['**line**']):
+        workloads_to_relabel_match[workload] = this_workload_matched
+        print("    - all filters matched, it's in!")
+
 print("  * Done! After Filtering+CSV Match, {} workloads remain to be relabeled".format(len(workloads_to_relabel)))
 # </editor-fold>
 

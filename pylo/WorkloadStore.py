@@ -232,6 +232,11 @@ class Workload(pylo.ReferenceTracker):
         name_split = self.get_name().split('.')
         return name_split[0]
 
+    @staticmethod
+    def static_name_stripped_fqdn(name: str):
+        name_split = name.split('.')
+        return name_split[0]
+
     def get_status_string(self):
         if self.ven_agent is None:
             return 'not-applicable'
