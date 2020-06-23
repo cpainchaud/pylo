@@ -155,7 +155,7 @@ for agent_href in list(agents.keys()):
 print("OK!")
 
 print()
-print(" ** Request Compatibility Report for each Agent in IDLE mode **")
+print(" ** Request Compatibility Report for each Agent in IDLE mode **", flush=True)
 
 agent_count = 0
 agent_green_count = 0
@@ -164,7 +164,7 @@ agent_skipped_not_online = 0
 agent_has_no_report_count = 0
 agent_report_failed_count = 0
 
-export_report = pylo.Helpers.ArrayToExport(['hostname', 'labels', 'operating_system', 'report_failed', 'details', 'href'])
+export_report = pylo.Helpers.ArrayToExport(['hostname', 'role', 'app', 'env', 'loc', 'operating_system', 'report_failed', 'details', 'href'])
 
 for agent in agents.values():
     agent_count += 1
@@ -179,7 +179,11 @@ for agent in agents.values():
         continue
 
     export_row.append(agent.workload.get_name())
-    export_row.append(agent.workload.get_labels_str())
+    labels = agent.workload.get_labels_list()
+    export_row.append(labels[0])
+    export_row.append(labels[1])
+    export_row.append(labels[2])
+    export_row.append(labels[3])
     export_row.append(agent.workload.os_id)
 
     print("    - Downloading report...", flush=True, end='')
@@ -219,6 +223,7 @@ print("OK!")
 print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_xls), end='', flush=True)
 export_report.write_to_excel(output_filename_xls, 'Workloads')
 print("OK!")
+
 
 def myformat(name, value):
     return "{:<42} {:>6}".format(name, value)

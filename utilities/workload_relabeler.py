@@ -438,13 +438,13 @@ for workload in list(workloads_to_relabel.values()):
         del workloads_to_relabel[workload.href]
         del workloads_to_relabel_match[workload]
         csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Workload already has the right Labels'))
-
-print("  * DONE! Found {} missing labels to be created and {} Workloads which need an update".format(len(labels_to_be_created), len(workloads_to_relabel)))
+print()
+print("  * DONE! Found {} missing labels to be created and {} Workloads which need an update".format(len(labels_to_be_created), len(workloads_to_relabel)), flush=True)
 # </editor-fold>
 
 # <editor-fold desc="Missing Labels creation">
 if len(labels_to_be_created) > 0:
-    print(" * {} Labels need to created before Workloads can be imported, listing:".format(len(labels_to_be_created)))
+    print(" * {} Labels need to created before Workloads can be imported, listing:".format(len(labels_to_be_created)), flush=True)
     for label_to_create in labels_to_be_created.values():
         print("   - '{}' type {}".format(label_to_create['name'], label_to_create['type']))
 
@@ -461,7 +461,7 @@ if len(labels_to_be_created) > 0:
 
 
 # <editor-fold desc="JSON Payloads generation">
-print(' * Preparing Workloads JSON payloads...')
+print(' * Preparing Workloads JSON payloads...', flush=True)
 workloads_to_relabel_fixed_index = list(workloads_to_relabel_match.keys())
 workloads_list_changed_labels_for_report = {}
 workloads_json_data = []
@@ -498,12 +498,12 @@ print("  * DONE")
 
 if confirmed_changes:
     # <editor-fold desc="Unmanaged Workloads PUSH to API">
-    print(" * Updating {} Workloads in batches of {}".format(len(workloads_json_data), batch_size))
+    print(" * Updating {} Workloads in batches of {}".format(len(workloads_json_data), batch_size), flush=True)
     batch_cursor = 0
     total_created_count = 0
     total_failed_count = 0
     while batch_cursor <= len(workloads_json_data):
-        print("  - batch #{} of {}".format(math.ceil(batch_cursor/batch_size)+1, math.ceil(len(workloads_json_data)/batch_size)))
+        print("  - batch #{} of {}".format(math.ceil(batch_cursor/batch_size)+1, math.ceil(len(workloads_json_data)/batch_size)), flush=True)
         batch_json_data = workloads_json_data[batch_cursor:batch_cursor+batch_size-1]
         results = connector.objects_workload_update_bulk(batch_json_data)
         created_count = 0
@@ -530,7 +530,7 @@ if confirmed_changes:
         csv_report.write_to_excel(report_file_excel)
 
         batch_cursor += batch_size
-    print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_workloads_count, report_file, report_file_excel))
+    print("  * DONE - {} workloads labels updated with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_workloads_count, report_file, report_file_excel))
     # </editor-fold>
 else:
     print("\n*************")

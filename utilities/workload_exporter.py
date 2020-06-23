@@ -187,7 +187,7 @@ for workload in all_workloads.values():
     else:
         add_workload_to_report(workload)
 
-print("** All workloads have been processed, {} were added in the report".format(csv_report.lines_count()))
+print("  ** All workloads have been processed, {} were added in the report".format(csv_report.lines_count()))
 
 if filter_keep_in_report:
     print(" * Adding unmatched filters back into the report as request...", flush=True, end='')
