@@ -201,7 +201,7 @@ for agent_href in list(agents.keys()):
         continue
 
 
-print("OK! {} VENs are matching filters (from initial of {] Idle VENs).".format(len(agents), count_idle_agents_total))
+print("OK! {} VENs are matching filters (from initial of {} Idle VENs).".format(len(agents), count_idle_agents_total))
 
 print()
 print(" ** Request Compatibility Report for each Agent in IDLE mode **")
