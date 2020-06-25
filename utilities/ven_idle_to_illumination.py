@@ -57,8 +57,8 @@ org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
 
 now = datetime.now()
-report_file = 'ven-export-results_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
-report_file_excel = 'ven-export-results_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
+report_file = 'ven-idle-to-illumination-results_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
+report_file_excel = 'ven-idle-to-illumination-results_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
 
 csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'changed_mode', 'details', 'href']
 csv_report = pylo.ArrayToExport(csv_report_headers)
@@ -194,11 +194,11 @@ for agent_href in list(agents.keys()):
         for href_entry in href_filter_data.objects():
             workload_href = href_entry['href']
             if workload_href is not None and workload_href == workload.href:
-                href_found = True
+                workload_href_found = True
                 break
         if not workload_href_found:
             del agents[agent_href]
-        continue
+            continue
 
 
 print("OK! {} VENs are matching filters (from initial of {} Idle VENs).".format(len(agents), count_idle_agents_total))
