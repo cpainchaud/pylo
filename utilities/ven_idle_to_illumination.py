@@ -74,6 +74,8 @@ def add_workload_to_report(wkl: pylo.Workload, changed_mode: str, details: str):
         'loc': labels[3],
         'href': wkl.href,
         'status': wkl.get_status_string(),
+        'changed_mode': changed_mode,
+        'details': details
     }
 
     csv_report.add_line_from_object(new_row)
