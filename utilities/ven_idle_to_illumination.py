@@ -104,7 +104,7 @@ print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 href_filter_data = None
 if href_filter_file is not None:
     print(" * Loading CSV input file '{}'...".format(href_filter_file), flush=True, end='')
-    href_filter_data = pylo.CsvExcelToObject(href_filter_file, expected_headers=['href'])
+    href_filter_data = pylo.CsvExcelToObject(href_filter_file, expected_headers=[{'name': 'href', 'optional': False}])
     print('OK')
     print("   - CSV has {} columns and {} lines (headers don't count)".format(href_filter_data.count_columns(), href_filter_data.count_lines()), flush=True)
 
