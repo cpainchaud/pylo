@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
@@ -23,6 +24,10 @@ parser.add_argument('--filter-app-label', type=str, required=False, default=None
 parser.add_argument('--filter-role-label', type=str, required=False, default=None,
                     help='Filter agents by role labels (separated by commas)')
 
+parser.add_argument('--filter-on-href-from-file', type=str, required=False, default=None,
+                    help='Filter agents on workload href found in specific csv file')
+
+
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
 
@@ -44,11 +49,35 @@ print(args)
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
 switch_to_mode = args['mode']
+href_filter_file = args['filter_on_href_from_file']
 
 minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
 
 org = pylo.Organization(1)
 fake_config = pylo.Organization.create_fake_empty_config()
+
+now = datetime.now()
+report_file = 'ven-export-results_{}.csv'.format(now.strftime("%Y%m%d-%H%M%S"))
+report_file_excel = 'ven-export-results_{}.xlsx'.format(now.strftime("%Y%m%d-%H%M%S"))
+
+csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'changed_mode', 'details', 'href']
+csv_report = pylo.ArrayToExport(csv_report_headers)
+
+
+def add_workload_to_report(wkl: pylo.Workload, changed_mode: str, details: str):
+    labels = workload.get_labels_list()
+    new_row = {
+        'hostname': wkl.name,
+        'role': labels[0],
+        'app': labels[1],
+        'env': labels[2],
+        'loc': labels[3],
+        'href': wkl.href,
+        'status': wkl.get_status_string(),
+    }
+
+    csv_report.add_line_from_object(new_row)
+
 
 if use_cached_config:
     org.load_from_cache_or_saved_credentials(hostname)
@@ -72,11 +101,19 @@ else:
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 
+href_filter_data = None
+if href_filter_file is not None:
+    print(" * Loading CSV input file '{}'...".format(href_filter_file), flush=True, end='')
+    href_filter_data = pylo.CsvExcelToObject(href_filter_file, expected_headers=['href'])
+    print('OK')
+    print("   - CSV has {} columns and {} lines (headers don't count)".format(href_filter_data.count_columns(), href_filter_data.count_lines()), flush=True)
+
 agents = {}
 for agent in org.AgentStore.itemsByHRef.values():
     if agent.mode == 'idle':
         agents[agent.href] = agent
 print(" * Found {} IDLE Agents".format(len(agents)))
+count_idle_agents_total = len(agents)
 
 print(" * Parsing filters")
 
@@ -151,7 +188,20 @@ for agent_href in list(agents.keys()):
     if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
         del agents[agent_href]
         continue
-print("OK!")
+
+    if href_filter_data is not None:
+        workload_href_found = False
+        for href_entry in href_filter_data.objects():
+            workload_href = href_entry['href']
+            if workload_href is not None and workload_href == workload.href:
+                href_found = True
+                break
+        if not workload_href_found:
+            del agents[agent_href]
+        continue
+
+
+print("OK! {} VENs are matching filters (from initial of {] Idle VENs).".format(len(agents), count_idle_agents_total))
 
 print()
 print(" ** Request Compatibility Report for each Agent in IDLE mode **")
@@ -163,41 +213,59 @@ agent_skipped_not_online = 0
 agent_has_no_report_count = 0
 agent_report_failed_count = 0
 agent_mode_switched = 0
-for agent in agents.values():
-    agent_count += 1
-    print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(agent_count, len(agents), agent.workload.get_name(),
-                                                                    agent.workload.href,
-                                                                    agent.workload.get_labels_str())
-          )
-    if not agent.workload.online:
-        print("    - Agent is not ONLINE so we're skipping it")
-        agent_skipped_not_online += 1
-        continue
 
-    print("    - Downloading report...", flush=True, end='')
-    report = connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
-    print('OK')
-    if report.empty:
-        print("    - ** SKIPPING : Report does not exist")
-        agent_has_no_report_count += 1
-        continue
-    print("    - Report status is '{}'".format(report.global_status))
-    if report.global_status == 'green':
-        agent_green_count += 1
-        if not request_upgrades:
-            print("    - ** SKIPPING Agent mode reconfiguration process as option '--confirm' was not used")
+try:
+    for agent in agents.values():
+        agent_count += 1
+        print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(agent_count, len(agents), agent.workload.get_name(),
+                                                                        agent.workload.href,
+                                                                        agent.workload.get_labels_str())
+              )
+        if not agent.workload.online:
+            print("    - Agent is not ONLINE so we're skipping it")
+            agent_skipped_not_online += 1
+            add_workload_to_report(agent.workload, 'no', 'VEN is not online')
             continue
-        agent_mode_switched += 1
-        print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
-        connector.objects_agent_change_mode(agent.workload.href, switch_to_mode)
-        print("OK")
-        agent_mode_changed_count += 1
-    else:
-        print("       - the following issues were found in the report:")
-        failed_items = report.get_failed_items()
-        agent_report_failed_count += 1
-        for failed_item in failed_items:
-            print("         -{}".format(failed_item))
+
+        print("    - Downloading report...", flush=True, end='')
+        report = connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
+        print('OK')
+        if report.empty:
+            print("    - ** SKIPPING : Report does not exist")
+            agent_has_no_report_count += 1
+            add_workload_to_report(agent.workload, 'no', 'Compatibility report does not exist')
+            continue
+        print("    - Report status is '{}'".format(report.global_status))
+        if report.global_status == 'green':
+            agent_green_count += 1
+            if not request_upgrades:
+                print("    - ** SKIPPING Agent mode reconfiguration process as option '--confirm' was not used")
+                add_workload_to_report(agent.workload, 'no', '--confirm option was not used')
+                continue
+            agent_mode_switched += 1
+            print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
+            connector.objects_agent_change_mode(agent.workload.href, switch_to_mode)
+            print("OK")
+            agent_mode_changed_count += 1
+            add_workload_to_report(agent.workload, 'yes', '')
+        else:
+            print("       - the following issues were found in the report:", flush=True)
+            failed_items = report.get_failed_items()
+            agent_report_failed_count += 1
+            for failed_item in failed_items:
+                print("         -{}".format(failed_item))
+            add_workload_to_report(agent.workload, 'no', 'compatibility report has reported issues')
+
+except:
+    pylo.log.error("An unexpected error happened, an intermediate report will be written and original traceback displayed")
+    pylo.log.error(" * Writing report file '{}' ... ".format(report_file))
+    csv_report.write_to_csv(report_file)
+    pylo.log.error("DONE")
+    pylo.log.error(" * Writing report file '{}' ... ".format(report_file_excel))
+    csv_report.write_to_excel(report_file_excel)
+    pylo.log.error("DONE")
+
+    raise
 
 
 def myformat(name, value):
@@ -206,7 +274,7 @@ def myformat(name, value):
 
 
 print("\n\n*** Statistics ***")
-print(myformat(" - IDLE Agents count:", agent_count))
+print(myformat(" - IDLE Agents count (after filters):", agent_count))
 if request_upgrades:
     print(myformat(" - Agents mode changed count:", agent_mode_changed_count))
 else:
@@ -215,7 +283,16 @@ print(myformat(" - SKIPPED because not online count:", agent_skipped_not_online)
 print(myformat(" - SKIPPED because report was not found:", agent_has_no_report_count))
 print(myformat(" - Agents with failed reports:", agent_report_failed_count ))
 
-if not request_upgrades:
-    print("No Agent was switched to Illumination because --confirm option was not used")
-
 print()
+print(" * Writing report file '{}' ... ".format(report_file), end='', flush=True)
+csv_report.write_to_csv(report_file)
+print("DONE")
+print(" * Writing report file '{}' ... ".format(report_file_excel), end='', flush=True)
+csv_report.write_to_excel(report_file_excel)
+print("DONE")
+
+
+if not request_upgrades:
+    print()
+    print(" ***** No Agent was switched to Illumination because --confirm option was not used *****")
+    print()

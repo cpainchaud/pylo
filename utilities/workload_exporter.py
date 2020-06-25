@@ -114,7 +114,8 @@ def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append
 
     if wkl is not None:
         new_row = {
-            'hostname': wkl.name,
+            'name': wkl.name,
+            'hostname': wkl.hostname,
             'role': labels[0],
             'app': labels[1],
             'env': labels[2],

@@ -191,26 +191,27 @@ for agent in agents.values():
     print('OK')
 
     if report.empty:
-        print("    - ** SKIPPING : Report does not exist")
+        print("    - Report does not exist")
         agent_has_no_report_count += 1
-        continue
-
-    print("    - Report status is '{}'".format(report.global_status))
-    if report.global_status == 'green':
-        agent_green_count += 1
-        export_row.append('no')
+        export_row.append('not-available')
         export_row.append('')
     else:
-        export_row.append('yes')
-        failed_items_texts = []
-        for failed_item in report.get_failed_items().values():
-            if failed_item.extra_debug_message is None:
-                failed_items_texts.append(failed_item.name)
-            else:
-                failed_items_texts.append('{}({})'.format(failed_item.name, failed_item.extra_debug_message))
-        failed_items = pylo.string_list_to_text(failed_items_texts)
-        agent_report_failed_count += 1
-        export_row.append(failed_items)
+        print("    - Report status is '{}'".format(report.global_status))
+        if report.global_status == 'green':
+            agent_green_count += 1
+            export_row.append('no')
+            export_row.append('')
+        else:
+            export_row.append('yes')
+            failed_items_texts = []
+            for failed_item in report.get_failed_items().values():
+                if failed_item.extra_debug_message is None:
+                    failed_items_texts.append(failed_item.name)
+                else:
+                    failed_items_texts.append('{}({})'.format(failed_item.name, failed_item.extra_debug_message))
+            failed_items = pylo.string_list_to_text(failed_items_texts)
+            agent_report_failed_count += 1
+            export_row.append(failed_items)
 
     export_row.append(agent.workload.href)
 
