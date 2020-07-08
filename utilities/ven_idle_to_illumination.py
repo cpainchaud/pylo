@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 from datetime import datetime
+from typing import Union,Dict,List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
@@ -27,6 +28,12 @@ parser.add_argument('--filter-role-label', type=str, required=False, default=Non
 parser.add_argument('--filter-on-href-from-file', type=str, required=False, default=None,
                     help='Filter agents on workload href found in specific csv file')
 
+parser.add_argument('--ignore-incompatibilities', type=str, nargs='+', required=False, default=None,
+                    help="Ignore specific incompatibilities and force mode switch!")
+
+parser.add_argument('--ignore-all-incompatibilities', type=bool, nargs='?', required=False, default=False, const=True,
+                    help="Don't check compatibility report and just do the change!")
+
 
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
@@ -50,6 +57,13 @@ use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
 switch_to_mode = args['mode']
 href_filter_file = args['filter_on_href_from_file']
+options_ignore_all_incompatibilities = args['ignore_all_incompatibilities']
+option_ignore_incompatibilities: Union[None, Dict[str, bool]] = None
+if args['ignore_incompatibilities'] is not None:
+    option_ignore_incompatibilities = {}
+    for entry in args['ignore_incompatibilities']:
+        option_ignore_incompatibilities[entry] = True
+
 
 minimum_supported_version = pylo.SoftwareVersion("18.2.0-0")
 
@@ -214,7 +228,6 @@ agent_mode_changed_count = 0
 agent_skipped_not_online = 0
 agent_has_no_report_count = 0
 agent_report_failed_count = 0
-agent_mode_switched = 0
 
 try:
     for agent in agents.values():
@@ -229,6 +242,18 @@ try:
             add_workload_to_report(agent.workload, 'no', 'VEN is not online')
             continue
 
+        if options_ignore_all_incompatibilities:
+            if not request_upgrades:
+                print("    - ** SKIPPING Agent mode change process as option '--confirm' was not used")
+                add_workload_to_report(agent.workload, 'no', '--confirm option was not used')
+                continue
+            print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
+            connector.objects_agent_change_mode(agent.workload.href, switch_to_mode)
+            print("OK")
+            agent_mode_changed_count += 1
+            add_workload_to_report(agent.workload, 'yes', '')
+            continue
+
         print("    - Downloading report...", flush=True, end='')
         report = connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
         print('OK')
@@ -241,10 +266,9 @@ try:
         if report.global_status == 'green':
             agent_green_count += 1
             if not request_upgrades:
-                print("    - ** SKIPPING Agent mode reconfiguration process as option '--confirm' was not used")
+                print("    - ** SKIPPING Agent mode change process as option '--confirm' was not used")
                 add_workload_to_report(agent.workload, 'no', '--confirm option was not used')
                 continue
-            agent_mode_switched += 1
             print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
             connector.objects_agent_change_mode(agent.workload.href, switch_to_mode)
             print("OK")
@@ -253,10 +277,31 @@ try:
         else:
             print("       - the following issues were found in the report:", flush=True)
             failed_items = report.get_failed_items()
-            agent_report_failed_count += 1
+            issues_remaining = False
             for failed_item in failed_items:
-                print("         -{}".format(failed_item))
-            add_workload_to_report(agent.workload, 'no', 'compatibility report has reported issues')
+                if option_ignore_incompatibilities is not None and failed_item in option_ignore_incompatibilities:
+                    print("         -{} (ignored because it's part of --ignore-incompatibilities list)".format(failed_item))
+                else:
+                    print("         -{}".format(failed_item))
+                    issues_remaining = True
+
+            if not issues_remaining:
+                agent_green_count += 1
+                if not request_upgrades:
+                    print("    - ** SKIPPING Agent mode change process as option '--confirm' was not used")
+                    add_workload_to_report(agent.workload, 'no', '--confirm option was not used')
+                    continue
+                print("    - Request Agent mode switch to BUILD/TEST...", end='', flush=True)
+                connector.objects_agent_change_mode(agent.workload.href, switch_to_mode)
+                print("OK")
+                agent_mode_changed_count += 1
+                add_workload_to_report(agent.workload, 'yes', '')
+                continue
+
+            add_workload_to_report(agent.workload, 'no',
+                                   'compatibility report has reported issues: {}'.format(pylo.string_list_to_text(failed_items.keys()))
+                                   )
+            agent_report_failed_count += 1
 
 except:
     pylo.log.error("An unexpected error happened, an intermediate report will be written and original traceback displayed")

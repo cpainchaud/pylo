@@ -646,8 +646,8 @@ class APIConnector:
                                 break
 
 
-        def get_failed_items(self):
-            results = {}  # type: {str,APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem}
+        def get_failed_items(self) -> Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem']:
+            results: Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem'] = {}
             for infos in self._items.values():
                 if infos.status != 'green':
                     results[infos.name] = infos
