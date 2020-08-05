@@ -6,12 +6,12 @@ from .Helpers import *
 class IPList(pylo.ReferenceTracker):
 
     """
-    :type name: str
     :type owner: IPListStore
-    :type href: str
     :type description: str|None
     :type raw_entries: dict[str,str]
     """
+    name: str
+    href: str
 
     def __init__(self, name: str, href: str, owner: 'pylo.IPListStore', description=None):
         """
@@ -61,7 +61,7 @@ class IPList(pylo.ReferenceTracker):
 
             self.raw_entries[entry] = entry
 
-    def get_ip4map_from_interfaces(self) -> pylo.IP4Map:
+    def get_ip4map(self) -> pylo.IP4Map:
         map = pylo.IP4Map()
 
         for entry in self.raw_entries:
@@ -71,6 +71,9 @@ class IPList(pylo.ReferenceTracker):
                 map.add_from_text(entry, ignore_ipv6=True)
 
         return map
+
+    def get_raw_entries_as_string_list(self, separator=',') -> str:
+        return pylo.string_list_to_text(self.raw_entries.values(), separator=separator)
 
 
 class IPListStore:

@@ -43,9 +43,8 @@ filter_data = None
 
 
 
-csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'managed',
-                      'status', 'agent.last_heartbeat', 'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
-                      'href', 'agent.href']
+csv_report_headers = ['name', 'members', 'ip4_mapping',
+                      'href']
 
 csv_report = pylo.ArrayToExport(csv_report_headers)
 
@@ -85,39 +84,19 @@ print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 # </editor-fold>
 
 
-def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append_prefix='_'):
+def add_iplist_to_report(iplist: pylo.IPList):
+
+    print("  - {}/{}".format(iplist.name, iplist.href))
     labels = workload.get_labels_list()
 
-    def none_or_date(date):
-        if date is None:
-            return None
-        return datetime.strftime(date, '%Y-%m-%d %H:%M:%S')
+    ip_map = iplist.get_ip4map()
 
-    if wkl is not None:
-        new_row = {
-            'name': wkl.name,
-            'hostname': wkl.hostname,
-            'role': labels[0],
-            'app': labels[1],
-            'env': labels[2],
-            'loc': labels[3],
-            'href': wkl.href,
-            'online': wkl.online,
-            'managed': not wkl.unmanaged,
-            'status': wkl.get_status_string(),
-        }
-        if wkl.ven_agent is not None:
-            new_row['agent.href'] = wkl.ven_agent.href
-            new_row['agent.sec_policy_sync_state'] = wkl.ven_agent.get_status_security_policy_sync_state()
-            new_row['agent.last_heartbeat'] = none_or_date(wkl.ven_agent.get_last_heartbeat_date())
-            new_row['agent.sec_policy_applied_at'] = none_or_date(wkl.ven_agent.get_status_security_policy_applied_at())
-    else:
-        new_row = {}
-
-    if filter is not None:
-        used_filters[filter['*line*']] = True
-        for field in filter:
-            new_row[filter_append_prefix + field] = filter[field]
+    new_row = {
+        'name': iplist.name,
+        'href': iplist.href,
+        'members': iplist.get_raw_entries_as_string_list(separator="\n"),
+        'ip4_mapping': ip_map.to_string_list()
+    }
 
     csv_report.add_line_from_object(new_row)
 
@@ -135,12 +114,17 @@ print("OK")
 iplists_ip4maps_cache: Dict[pylo.IPList, pylo.IP4Map] = {}
 print(" * Building IPLists IP4 mapping... ", end='')
 for iplist in org.IPListStore.itemsByHRef.values():
-    ip_map = iplist.get_ip4map_from_interfaces()
+    ip_map = iplist.get_ip4map()
     iplists_ip4maps_cache[iplist] = ip_map
 print("OK")
 # </editor-fold>
 
 
+print(" * Now analyzing IPLists:", flush=True)
+for (iplist, ip_map) in iplists_ip4maps_cache.items():
+    add_iplist_to_report(iplist)
+
+print(" ** DONE **")
 
 print()
 print(" * Writing report file '{}' ... ".format(report_file), end='', flush=True)

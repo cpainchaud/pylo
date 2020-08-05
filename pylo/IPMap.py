@@ -37,7 +37,7 @@ class IP4Map:
                 raise pylo.PyloEx("Invalid IP Ranged entered with start address > end address: {}".format(entry))
         elif entry.find('/') > 0:
             # This is a network entry
-            network_str = entry[0:(entry.find('/')-1)]
+            network_str = entry[0:(entry.find('/'))]
             if ignore_ipv6 and (pylo.is_valid_ipv6(network_str) or network_str == '::'):
                 return None
             ip_object = ipaddress.IPv4Network(entry)
@@ -74,6 +74,19 @@ class IP4Map:
         result.substract(inverted_map)
 
         return result
+
+    def contains(self, another_map: 'pylo.IP4Map') -> bool:
+
+        if len(self._entries) < 1:
+            return False
+
+        copyOfMap = copy.deepcopy(another_map)
+        copyOfMap.substract(self)
+
+        if len(copyOfMap._entries) < 1:
+            return True
+        return False
+
 
     def substract(self, another_map: 'IP4Map'):
         affected_rows = 0
@@ -158,13 +171,13 @@ class IP4Map:
         self._entries = new_entries
 
 
-    def to_string_list(self):
+    def to_string_list(self, separator=','):
         ranges = []
 
         for entry in self._entries:
             ranges.append('{}-{}'.format(ipaddress.IPv4Address(entry[start]), ipaddress.IPv4Address(entry[end])))
 
-        return ranges
+        return pylo.string_list_to_text(ranges, separator=separator)
 
     def print_to_std(self, header=None, padding='', list_marker=' - '):
         if header is not None:

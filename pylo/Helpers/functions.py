@@ -7,7 +7,7 @@ def nice_json(json_obj):
     return json.dumps(json_obj, indent=2, sort_keys=True)
 
 
-def string_list_to_text(string_list, separator=None):
+def string_list_to_text(string_list, separator=None) -> str:
     """
 
     :type string_list: List[str]
