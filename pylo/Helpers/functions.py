@@ -43,10 +43,7 @@ def file_clean(path, no_print=False):
     print("OK!")
 
 
-def is_valid_ipv4(ip):
-    """Validates IPv4 addresses.
-    """
-    pattern = re.compile(r"""
+___ipv4_pattern = re.compile(r"""
         ^
         (?:
           # Dotted variants:
@@ -80,13 +77,15 @@ def is_valid_ipv4(ip):
         )
         $
     """, re.VERBOSE | re.IGNORECASE)
-    return pattern.match(ip) is not None
 
 
-def is_valid_ipv6(ip):
-    """Validates IPv6 addresses.
+def is_valid_ipv4(ip):
+    """Validates IPv4 addresses.
     """
-    pattern = re.compile(r"""
+    return ___ipv4_pattern.match(ip) is not None
+
+
+___ipv6_pattern = re.compile(r"""
         ^
         \s*                         # Leading whitespace
         (?!.*::.*::)                # Only a single whildcard allowed
@@ -112,7 +111,13 @@ def is_valid_ipv6(ip):
         \s*                         # Trailing whitespace
         $
     """, re.VERBOSE | re.IGNORECASE | re.DOTALL)
-    return pattern.match(ip) is not None
+
+
+def is_valid_ipv6(ip):
+    """Validates IPv6 addresses.
+    """
+    #print("testing ({})".format(ip))
+    return ___ipv6_pattern.match(ip) is not None
 
 
 def hostname_from_fqdn(fqdn: str):

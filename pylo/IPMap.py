@@ -1,6 +1,7 @@
 import pylo
 import ipaddress
 import copy
+from typing import Optional, List, Dict
 
 
 def sort_first(val):
@@ -16,7 +17,7 @@ class IP4Map:
         self._entries = []
 
     @staticmethod
-    def ip_entry_from_text(entry: str):
+    def ip_entry_from_text(entry: str, ignore_ipv6=False) -> Optional[List[int]]:
         new_entry = None
 
         dash_find = entry.find('-')
@@ -24,7 +25,11 @@ class IP4Map:
         if dash_find > 0:
             # this is a range entry
             start_txt = entry[0:dash_find]
+            if ignore_ipv6 and pylo.is_valid_ipv6(start_txt):
+                return None
             end_txt = entry[dash_find+1:]
+            if ignore_ipv6 and pylo.is_valid_ipv6(end_txt):
+                return None
             start_ip_object = ipaddress.IPv4Address(start_txt)
             end_ip_object = ipaddress.IPv4Address(end_txt)
             new_entry = [int(start_ip_object), int(end_ip_object)]
@@ -32,17 +37,27 @@ class IP4Map:
                 raise pylo.PyloEx("Invalid IP Ranged entered with start address > end address: {}".format(entry))
         elif entry.find('/') > 0:
             # This is a network entry
+            network_str = entry[0:(entry.find('/')-1)]
+            if ignore_ipv6 and (pylo.is_valid_ipv6(network_str) or network_str == '::'):
+                return None
             ip_object = ipaddress.IPv4Network(entry)
             new_entry = [int(ip_object.network_address), int(ip_object.broadcast_address)]
+            if ignore_ipv6 and pylo.is_valid_ipv6(ip_object.network_address.__str__()):
+                return None
         else:
+            if ignore_ipv6 and pylo.is_valid_ipv6(entry):
+                return None
             ip_object = ipaddress.IPv4Address(entry)
             new_entry = [int(ip_object), int(ip_object)]
 
         return new_entry
 
-    def add_from_text(self, entry: str, skip_recalculation=False):
+    def add_from_text(self, entry: str, skip_recalculation=False, ignore_ipv6=False):
 
-        new_entry = self.ip_entry_from_text(entry)
+        new_entry = self.ip_entry_from_text(entry, ignore_ipv6=ignore_ipv6)
+
+        if ignore_ipv6 and new_entry is None:
+            return
 
         if not skip_recalculation:
             self._entries.append(new_entry)
@@ -66,7 +81,7 @@ class IP4Map:
             affected_rows += self.substract_single_entry(entry)
         return affected_rows
 
-    def substract_single_entry(self, sub_entry: []):
+    def substract_single_entry(self, sub_entry: []) -> int:
         affected_rows = 0
         updated_entries = []
 
@@ -95,9 +110,12 @@ class IP4Map:
 
 
 
-    def substract_from_text(self, entry: str):
+    def substract_from_text(self, entry: str, ignore_ipv6=False):
 
-        new_entry = self.ip_entry_from_text(entry)
+        new_entry = self.ip_entry_from_text(entry, ignore_ipv6=ignore_ipv6)
+
+        if new_entry is None:
+            return 0
 
         return self.substract_single_entry(new_entry)
 

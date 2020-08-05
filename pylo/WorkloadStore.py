@@ -1,6 +1,7 @@
 import pylo
-from pylo import log
+from pylo import log, IP4Map
 from .Helpers import *
+from typing import Optional, List
 
 
 class WorkloadInterface():
@@ -14,16 +15,19 @@ class WorkloadInterface():
 
 class Workload(pylo.ReferenceTracker):
 
+    interfaces: List[WorkloadInterface]
+    hostname: Optional[str]
+
     def __init__(self, name: str, href: str, owner: 'pylo.WorkloadStore'):
         pylo.ReferenceTracker.__init__(self)
         self.owner = owner
         self.name = name  # type: str
         self.href = href  # type: str
         self.forced_name = None  # type: str
-        self.hostname = None  # type: str
+        self.hostname = None
 
         self.description = None  # type: str
-        self.interfaces = []  # type: list[WorkloadInterface]
+        self.interfaces = []
 
         self.online = False
 
@@ -118,6 +122,15 @@ class Workload(pylo.ReferenceTracker):
                             "Workload '%s' found 2 role labels while parsing JSON, labels are '%s' and '%s':\n" % (
                             self.name, self.roleLabel.name, label_object.name))
                     self.roleLabel = label_object
+
+
+    def get_ip4map_from_interfaces(self) -> pylo.IP4Map:
+        map = IP4Map()
+
+        for interface in self.interfaces:
+            map.add_from_text(interface.ip)
+
+        return map
 
 
     def is_using_label(self, label: 'pylo.Label'):

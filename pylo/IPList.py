@@ -61,6 +61,17 @@ class IPList(pylo.ReferenceTracker):
 
             self.raw_entries[entry] = entry
 
+    def get_ip4map_from_interfaces(self) -> pylo.IP4Map:
+        map = pylo.IP4Map()
+
+        for entry in self.raw_entries:
+            if entry[0] == '!':
+                map.substract_from_text(entry[1:], ignore_ipv6=True)
+            else:
+                map.add_from_text(entry, ignore_ipv6=True)
+
+        return map
+
 
 class IPListStore:
 
