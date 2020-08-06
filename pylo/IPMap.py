@@ -179,6 +179,14 @@ class IP4Map:
 
         return pylo.string_list_to_text(ranges, separator=separator)
 
+
+    def count_ips(self) -> int:
+        count = 0
+        for entry in self._entries:
+            count += entry[1] - entry[0] + 1
+
+        return count
+
     def print_to_std(self, header=None, padding='', list_marker=' - '):
         if header is not None:
             print('{}{}({} entries)'.format(
@@ -186,8 +194,11 @@ class IP4Map:
                 header,
                 len(self._entries)))
 
-        for text in self.to_string_list():
-            print('{}{}{}'.format(padding, list_marker, text))
+        for entry in self._entries:
+            if entry[0] == entry[1]:
+                print('{}{}{}'.format(padding, list_marker, ipaddress.IPv4Address(entry[0])))
+            else:
+                print('{}{}{}-{}'.format(padding, list_marker, ipaddress.IPv4Address(entry[0]), ipaddress.IPv4Address(entry[1])))
 
 
 # test = IP4Map()

@@ -3,7 +3,7 @@ import sys
 import argparse
 import math
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List, Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
@@ -43,8 +43,8 @@ filter_data = None
 
 
 
-csv_report_headers = ['name', 'members', 'ip4_mapping',
-                      'href']
+csv_report_headers = ['name', 'members', 'ip4_mapping', 'ip4_count', 'ip4_uncovered_count', 'covered_workloads_count',
+                      'covered_workloads_list', 'href']
 
 csv_report = pylo.ArrayToExport(csv_report_headers)
 
@@ -87,16 +87,31 @@ print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 def add_iplist_to_report(iplist: pylo.IPList):
 
     print("  - {}/{}".format(iplist.name, iplist.href))
-    labels = workload.get_labels_list()
 
     ip_map = iplist.get_ip4map()
+    #print(ip_map.print_to_std(padding="     "))
 
     new_row = {
         'name': iplist.name,
         'href': iplist.href,
         'members': iplist.get_raw_entries_as_string_list(separator="\n"),
-        'ip4_mapping': ip_map.to_string_list()
+        'ip4_mapping': ip_map.to_string_list(),
+        'ip4_count': ip_map.count_ips()
     }
+
+    matched_workloads: List[pylo.Workload] = []
+
+    for workload, wkl_map in workloads_ip4maps_cache.items():
+        affected_rows = ip_map.substract(wkl_map)
+        if affected_rows > 0:
+            print("matched workload   {}".format(workload.get_name()))
+            matched_workloads.append(workload)
+        #print(ip_map.print_to_std(header="after substraction", padding="     "))
+
+
+    new_row['ip4_uncovered_count'] = ip_map.count_ips()
+    new_row['covered_workloads_count'] = len(matched_workloads)
+    new_row['covered_workloads_list'] = pylo.string_list_to_text(matched_workloads, "\n")
 
     csv_report.add_line_from_object(new_row)
 

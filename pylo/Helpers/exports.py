@@ -55,6 +55,7 @@ class ArrayToExport:
                         new_line.append(item)
                 filewriter.writerow(new_line)
 
+
     def write_to_excel(self, filename, worksheet_name='worksheet1', multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)
         cell_format = xls_workbook.add_format()
@@ -80,7 +81,7 @@ class ArrayToExport:
         xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,
                                             {'header_row': True, 'data': xls_data, 'columns': xls_headers}
                                             )
-
+        xls_worksheet.freeze_panes(1, 0)
         xls_workbook.close()
 
 
