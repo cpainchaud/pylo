@@ -44,7 +44,7 @@ filter_data = None
 
 
 csv_report_headers = ['name', 'members', 'ip4_mapping', 'ip4_count', 'ip4_uncovered_count', 'covered_workloads_count',
-                      'covered_workloads_list', 'href']
+                      'covered_workloads_list', 'covered_workloads_appgroups', 'href']
 
 csv_report = pylo.ArrayToExport(csv_report_headers)
 
@@ -86,6 +86,8 @@ print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 
 def add_iplist_to_report(iplist: pylo.IPList):
 
+    appgroup_tracker: Dict[str, bool] = {}
+
     print("  - {}/{}".format(iplist.name, iplist.href))
 
     ip_map = iplist.get_ip4map()
@@ -106,12 +108,14 @@ def add_iplist_to_report(iplist: pylo.IPList):
         if affected_rows > 0:
             print("matched workload   {}".format(workload.get_name()))
             matched_workloads.append(workload)
+            appgroup_tracker[workload.get_appgroup_str()] = True
         #print(ip_map.print_to_std(header="after substraction", padding="     "))
 
 
     new_row['ip4_uncovered_count'] = ip_map.count_ips()
     new_row['covered_workloads_count'] = len(matched_workloads)
     new_row['covered_workloads_list'] = pylo.string_list_to_text(matched_workloads, "\n")
+    new_row['covered_workloads_appgroups'] = pylo.string_list_to_text(appgroup_tracker.keys(), "\n")
 
     csv_report.add_line_from_object(new_row)
 

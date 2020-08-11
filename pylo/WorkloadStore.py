@@ -195,6 +195,27 @@ class Workload(pylo.ReferenceTracker):
         return labels
 
 
+    def get_appgroup_str(self):
+        labels = ''
+
+        if self.applicationLabel is None:
+            labels += '*None*|'
+        else:
+            labels += self.applicationLabel.name + '|'
+
+        if self.environmentLabel is None:
+            labels += '*None*|'
+        else:
+            labels += self.environmentLabel.name + '|'
+
+        if self.locationLabel is None:
+            labels += '*None*'
+        else:
+            labels += self.locationLabel.name
+
+        return labels
+
+
     def get_labels_list(self, missing_str=''):
 
         labels = []
