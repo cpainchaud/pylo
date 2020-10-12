@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import pylo.vendors.xlsxwriter as xlsxwriter
 import pylo.vendors.openpyxl as openpyxl
 import csv
@@ -83,6 +85,108 @@ class ArrayToExport:
                                             )
         xls_worksheet.freeze_panes(1, 0)
         xls_workbook.close()
+
+
+class ArraysToExcel:
+
+    _sheets: Dict[str, 'ArraysToExcel.Sheet']
+
+    class Sheet:
+        def __init__(self, headers):
+            self._headers = headers
+            self._columns_count = len(headers)
+            self._lines = []
+
+            self._headers_name_to_index = {}
+            self._headers_index_to_name = []
+            index = 0
+            for header_name in headers:
+                self._headers_name_to_index[header_name] = index
+                self._headers_index_to_name.append(header_name)
+                index += 1
+
+
+        def columns_count(self):
+            return len(self._headers)
+
+        def lines_count(self):
+            return len(self._lines)
+
+        def add_line_from_object(self, record):
+            new_line = []
+            for header in self._headers:
+                new_line.append(record.get(header))
+
+            self._lines.append(new_line)
+
+
+        def add_line_from_list_of_objects(self, list_of_objects):
+            for record in list_of_objects:
+                self.add_line_from_object(record)
+
+        def add_line_from_list(self, line: list):
+            if len(line) != self._columns_count:
+                raise pylo.PyloEx("line length ({}) does not match the number of columns ({})".format(len(line), self._columns_count))
+            self._lines.append(line)
+
+
+        def add_to_document(self, xls_workbook: xlsxwriter.Workbook, sheet_name: str):
+            cell_format = xls_workbook.add_format()
+            cell_format.set_text_wrap()
+            cell_format.set_valign('vcenter')
+            xls_worksheet = xls_workbook.add_worksheet(sheet_name)
+            xls_headers = []
+            xls_data = []
+            header_index = 0
+            for header in self._headers:
+                xls_headers.append({'header': header, 'format': cell_format})
+                header_index += 1
+
+            for line in self._lines:
+                new_line = []
+                for item in line:
+                    if type(item) is list:
+                        new_line.append(pylo.string_list_to_text(item, multivalues_cell_delimiter))
+                    else:
+                        new_line.append(item)
+                xls_data.append(new_line)
+
+            xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,
+                                                {'header_row': True, 'data': xls_data, 'columns': xls_headers}
+                                                )
+            xls_worksheet.freeze_panes(1, 0)
+
+
+
+    def __init__(self):
+        self._sheets = {}
+
+    def create_sheet(self, name: str, headers):
+        if name in self._sheets:
+            pylo.PyloEx("A sheet named '{}' already exists".format(name))
+
+        self._sheets[name] = ArraysToExcel.Sheet(headers)
+
+
+    def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
+        xls_workbook = xlsxwriter.Workbook(filename)
+
+        for sheet_name, sheet_content in self._sheets.items():
+            sheet_content.add_to_document(xls_workbook, sheet_name)
+
+        xls_workbook.close()
+
+
+    def add_line_from_object(self, record, sheet_name: str):
+        self._sheets[sheet_name].add_line_from_object(record)
+
+
+    def add_line_from_list_of_objects(self, list_of_objects, sheet_name: str):
+        self._sheets[sheet_name].add_line_from_list_of_objects(list_of_objects)
+
+    def add_line_from_list(self, line: list, sheet_name: str):
+        self._sheets[sheet_name].add_line_from_list(list)
+
 
 
 class CsvExcelToObject:

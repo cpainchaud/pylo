@@ -20,7 +20,7 @@ parser.add_argument('--debug', type=bool, required=False, nargs='?', default=Fal
 
 args = vars(parser.parse_args())
 
-print(args)
+# print(args)
 
 hostname = args['host']
 include_deleted = args['include_deleted_workloads']

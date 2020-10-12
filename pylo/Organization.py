@@ -28,6 +28,25 @@ class Organization:
         self.SecurityPrincipalStore = pylo.SecurityPrincipalStore(self)
         self.pce_version = None
 
+    def load_from_cached_file(self, hostname: str, ):
+        # filename should be like 'cache_xxx.yyy.zzz.json'
+        filename = 'cache_' + hostname + '.json'
+
+        if os.path.isfile(filename):
+            # now we try to open that JSON file
+            with open(filename) as json_file:
+                data = json.load(json_file)
+                if 'pce_version' not in data:
+                    raise pylo.PyloEx("Cannot find PCE version in cache file")
+                self.pce_version = pylo.SoftwareVersion(data['pce_version'])
+                if 'data' not in data:
+                    raise pylo.PyloEx("Cache file '%s' was found and successfully loaded but no 'data' object could be found" % filename)
+                self.load_from_json(data['data'])
+                return
+
+        raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
+
+
     def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
         # filename should be like 'cache_xxx.yyy.zzz.json'
         filename = 'cache_' + hostname + '.json'
@@ -40,11 +59,12 @@ class Organization:
                     raise pylo.PyloEx("Cannot find PCE version in cache file")
                 self.pce_version = pylo.SoftwareVersion(data['pce_version'])
                 if 'data' not in data:
-                    raise Exception("Cache file '%s' was found and successfully loaded but no 'data' object could be found" % filename)
+                    raise pylo.PyloEx("Cache file '%s' was found and successfully loaded but no 'data' object could be found" % filename)
                 self.load_from_json(data['data'])
             self.connector = pylo.APIConnector.create_from_credentials_in_file(hostname)
         else:
-            return self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
+            self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
+
 
     def make_cache_file_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
         # filename should be like 'cache_xxx.yyy.zzz.json'

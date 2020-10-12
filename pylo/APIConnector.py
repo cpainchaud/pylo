@@ -756,7 +756,7 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._provider_labels, label_or_href)
 
-        def provider_exclude_label(self, label_or_href):
+        def provider_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
             """
 
             @type label_or_href: str|pylo.Label|pylo.LabelGroup
