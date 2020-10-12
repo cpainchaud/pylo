@@ -124,6 +124,15 @@ class Workload(pylo.ReferenceTracker):
                     self.roleLabel = label_object
 
 
+    def interfaces_to_string(self, separator=','):
+        tmp = []
+
+        for interface in self.interfaces:
+            tmp.append('{}:{}'.format(interface.name, interface.ip))
+
+        return pylo.string_list_to_text(tmp, separator)
+
+
     def get_ip4map_from_interfaces(self) -> pylo.IP4Map:
         map = IP4Map()
 
@@ -341,11 +350,26 @@ class WorkloadStore:
         return new_tmp_item
 
 
-    def find_workloads_matching_label(self, label: 'pylo.Label'):
-        result = {}  # type: dict[str,pylo.Workload]
+    def find_workloads_matching_label(self, label: 'pylo.Label') -> Dict[str, 'pylo.Workload']:
+        result = {}
 
         for href, workload in self.itemsByHRef.items():
             if workload.is_using_label(label):
+                result[href] = workload
+
+        return result
+
+
+    def find_workloads_matching_all_labels(self, labels: List[pylo.Label]) -> Dict[str, 'pylo.Workload']:
+        result = {}
+
+        for href, workload in self.itemsByHRef.items():
+            matched = True
+            for label in labels:
+                if not workload.is_using_label(label):
+                    matched = False
+                    break
+            if matched:
                 result[href] = workload
 
         return result
