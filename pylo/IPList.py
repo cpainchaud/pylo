@@ -110,3 +110,7 @@ class IPListStore:
             self.itemsByName[new_iplist_name] = new_iplist
 
             log.debug("Found iplist '%s' with href '%s'", new_iplist_name, new_iplist_href)
+
+
+    def find_by_href(self, href: str) -> 'pylo.IPList':
+        return self.itemsByHRef.get(href)

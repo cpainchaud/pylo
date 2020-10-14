@@ -7,7 +7,7 @@ from threading import Thread
 from queue import Queue
 import pylo
 from pylo import log
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, List, Optional
 
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
@@ -708,6 +708,8 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
     class ExplorerFilterSetV1:
+        _consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
+
         def __init__(self, max_results=10000):
             self._consumer_labels = {}
             self._consumer_exclude_labels = {}
@@ -778,21 +780,169 @@ class APIConnector:
             #  "max_results":10000}
             #
             filters = {
-                "sources": {"include": [], "exclude": []},
-                "destinations": {"include": [], "exclude": []},
+                "sources": {"include": [[]], "exclude": []},
+                "destinations": {"include": [[]], "exclude": []},
                 "services": {"include": [], "exclude": []},
                 "sources_destinations_query_op": "and",
-                "start_date": "2015-02-21T09:18:46.751Z", "end_date": "2020-02-21T09:18:46.751Z",
+                "start_date":"2015-10-13T11:27:28.824Z",
+                #"end_date":"2020-10-13T11:27:28.825Z",
                 "policy_decisions": [],
                 "max_results": self.max_results
                 }
+
+            if len(self._consumer_labels) > 0:
+                tmp = []
+                for label_href in self._consumer_labels.keys():
+                    tmp.append({'label': {'href': label_href}})
+                filters['sources']['include'] = [tmp]
+
+            if len(self._provider_labels) > 0:
+                tmp = []
+                for label_href in self._provider_labels.keys():
+                    tmp.append({'label': {'href': label_href}})
+                filters['destinations']['include'] = [tmp]
+
+            if len(self._consumer_exclude_labels) > 0:
+                tmp = []
+                for label_href in self._consumer_labels.keys():
+                    tmp.append({'label': {'href': label_href}})
+                filters['sources']['exclude'] = tmp
+
+            if len(self._provider_exclude_labels) > 0:
+                tmp = []
+                for label_href in self._provider_labels.keys():
+                    tmp.append({'label': {'href': label_href}})
+                filters['destinations']['exclude'] = tmp
+
             return filters
+
+
+    class ExplorerResultSetV1:
+
+        class ExplorerResult:
+            def __init__(self, data):
+                self.num_connections = data['num_connections']
+                self.policy_decision_string = data['policy_decision']
+
+                src = data['src']
+                self.source_ip = src['ip']
+                self._source_iplists = src.get('ip_lists')
+                self.source_workload_href = None
+                workload_data = src.get('workload')
+                if workload_data is not None:
+                    self.source_workload_href = workload_data['href']
+
+
+                dst = data['dst']
+                self.destination_ip = dst['ip']
+                self._destination_iplists = dst.get('ip_lists')
+                self.destination_workload_href = None
+                workload_data = dst.get('workload')
+                if workload_data is not None:
+                    self.destination_workload_href = workload_data['href']
+
+                service_json = data['service']
+
+                self.service_protocol = service_json['proto']
+                self.service_port = service_json.get('port')
+
+
+                self.first_detected = data['timestamp_range']['first_detected']
+                self.last_detected = data['timestamp_range']['last_detected']
+
+                self._cast_type = data.get('transmission')
+
+
+            def service_to_str(self):
+                if self.service_port is None:
+                    return 'proto/{}'.format(self.service_protocol)
+
+                if self.service_protocol == 17:
+                    return 'udp/{}'.format(self.service_port)
+
+                if self.service_protocol == 6:
+                    return 'tcp/{}'.format(self.service_port)
+
+
+
+            def source_is_workload(self):
+                return self.source_workload_href is not None
+
+            def destination_is_workload(self):
+                return self.source_workload_href is not None
+
+            def get_source_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
+                if self.source_workload_href is None:
+                    return None
+                return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.source_workload_href, '*DELETED*')
+
+            def get_destination_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
+                if self.destination_workload_href is None:
+                    return None
+                return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.destination_workload_href, '*DELETED*')
+
+
+            def get_source_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
+                if self._source_iplists is None:
+                    return {}
+
+                result = {}
+
+                for record in self._source_iplists:
+                    href = record.get('href')
+                    if href is None:
+                        raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+                    iplist = org_for_resolution.IPListStore.find_by_href(href)
+                    if iplist is None:
+                        raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+
+                    result[href] = iplist
+
+                return result
+
+
+            def pd_is_potentially_blocked(self):
+                return self.policy_decision_string == 'potentially_blocked'
+
+            def cast_isBroadcast(self):
+                return self._cast_type == 'broadcast'
+
+            def cast_isMulticast(self):
+                return self._cast_type == 'multicast'
+
+            def cast_isUnicast(self):
+                return self._cast_type is not None
+
+
+        def __init__(self, data):
+            self._raw_results = data
+            # print(data)
+            #_print('Received {} Explorer results'.format(len(data)))
+
+        def count_results(self):
+            return len(self._raw_results)
+
+        def get_record(self, line: int):
+            if line < 0:
+                raise pylo.PyloEx('Invalid line #: {}'.format(line))
+            if line >= len(self._raw_results):
+                raise pylo.PyloEx('Line # doesnt exists, requested #{} while this set contains only {} (starts at 0)'.
+                                  format(line, len(self._raw_results)))
+
+            return APIConnector.ExplorerResultSetV1.ExplorerResult(self._raw_results[line])
+
+        def get_all_records(self) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
+            result = []
+            for data in self._raw_results:
+                result.append(APIConnector.ExplorerResultSetV1.ExplorerResult(data))
+            return result
 
 
     def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
         path = "/traffic_flows/traffic_analysis_queries"
         data = filters.generate_json_query()
-        return self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True)
+        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True))
+        return result
 
 
     class ClusterHealth:
@@ -820,6 +970,8 @@ class APIConnector:
 
                 def is_partially_running(self):
                     return self.status == 'partial'
+
+
 
             def __init__(self, json_data):
                 self.name = get_field_or_die('hostname', json_data)  # type: str

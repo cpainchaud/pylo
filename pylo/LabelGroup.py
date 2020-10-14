@@ -15,8 +15,8 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
     def load_from_json(self):
         # print(self.raw_json)
-        if 'sub_groups' in self.raw_json:
-            for href_record in self.raw_json['sub_groups']:
+        if 'labels' in self.raw_json:
+            for href_record in self.raw_json['labels']:
                 if 'href' in href_record:
                     find_label = self.owner.find_by_href_or_die(href_record['href'])
                     find_label.add_reference(self)

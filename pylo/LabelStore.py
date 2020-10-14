@@ -1,5 +1,4 @@
-
-
+from typing import Optional, Union
 import pylo
 from pylo import log
 from .Helpers import *
@@ -46,7 +45,7 @@ class LabelStore:
         if label_type == 'loc':
             return label_type_loc
 
-        raise pylo.PyloEx("Unsupported type '{}'".format(label_type))
+        raise pylo.PyloEx("Unsupported Label/LabelGroup type '{}'".format(label_type))
 
     def loadLabelsFromJson(self, json_list):
         for json_label in json_list:
@@ -83,7 +82,8 @@ class LabelStore:
                 raise Exception("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))
             new_label_name = json_label['name']
             newLabelHref = json_label['href']
-            newLabelType = json_label['key']
+            newLabelType_str = json_label['key']
+            newLabelType = pylo.LabelStore.label_type_str_to_int(newLabelType_str)
 
             new_label = pylo.LabelGroup(new_label_name, newLabelHref, newLabelType, self)
             created_groups.append(new_label)
@@ -101,6 +101,8 @@ class LabelStore:
                 self.applicationLabels[new_label_name] = new_label
             elif newLabelType == label_type_role:
                 self.roleLabels[new_label_name] = new_label
+            else:
+                raise pylo.PyloEx("Unsupported LabelGroup type '{}' from json data".format(newLabelType), json_label)
 
             new_label.raw_json = json_label
 
@@ -126,6 +128,27 @@ class LabelStore:
 
     def get_location_labels_as_list(self):
         return self.locationLabels.values()
+
+    def find_label_by_name_whatever_type(self, name: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
+
+        find = self.locationLabels.get(name)
+        if find is not None:
+            return find
+
+        find = self.environmentLabels.get(name)
+        if find is not None:
+            return find
+
+        find = self.applicationLabels.get(name)
+        if find is not None:
+            return find
+
+        find = self.roleLabels.get(name)
+        if find is not None:
+            return find
+
+        return None
+
 
     def find_label_by_name_and_type(self, name: str, type: int):
         if type == label_type_loc:

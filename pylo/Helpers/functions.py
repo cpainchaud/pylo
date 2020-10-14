@@ -7,7 +7,7 @@ def nice_json(json_obj):
     return json.dumps(json_obj, indent=2, sort_keys=True)
 
 
-def string_list_to_text(string_list, separator=None) -> str:
+def string_list_to_text(string_list, separator=',') -> str:
     """
 
     :type string_list: List[str]
@@ -22,13 +22,10 @@ def string_list_to_text(string_list, separator=None) -> str:
             str_to_print = stringItem.name
 
         if not first:
-            if separator is None:
-                msg += ","
-            else:
-                msg += separator
+            msg += separator
         first = False
         msg += str_to_print
-
+    # print("list length {} and msg ='{}'".format(len(string_list), msg))
     return msg
 
 

@@ -151,9 +151,19 @@ class ArraysToExcel:
                         new_line.append(item)
                 xls_data.append(new_line)
 
-            xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,
+            if len(self._lines) > 0:
+                xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,
                                                 {'header_row': True, 'data': xls_data, 'columns': xls_headers}
                                                 )
+            else:
+                fake_data = []
+                for header in self._headers:
+                    fake_data.append(None)
+
+                xls_table = xls_worksheet.add_table(0, 0, 1, len(self._headers)-1,
+                                                    {'header_row': True, 'data': [fake_data], 'columns': xls_headers}
+                                                    )
+
             xls_worksheet.freeze_panes(1, 0)
 
 
