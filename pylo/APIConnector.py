@@ -708,6 +708,7 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
     class ExplorerFilterSetV1:
+        _policy_decision_filter: List[str]
         _consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
 
         def __init__(self, max_results=10000):
@@ -716,6 +717,7 @@ class APIConnector:
             self._provider_labels = {}
             self._provider_exclude_labels = {}
             self.max_results = max_results
+            self._policy_decision_filter = []
 
 
         @staticmethod
@@ -767,6 +769,23 @@ class APIConnector:
 
         def set_max_results(self, max: int):
             self.max_results = max
+
+
+        def filter_on_policy_decision_blocked(self):
+            self._policy_decision_filter.append('blocked')
+
+
+        def filter_on_policy_decision_potentially_blocked(self):
+            self._policy_decision_filter.append('potentially_blocked')
+
+
+        def filter_on_policy_decision_all_blocked(self):
+            self.filter_on_policy_decision_blocked()
+            self.filter_on_policy_decision_potentially_blocked()
+
+
+        def filter_on_policy_decision_allowed(self):
+            self._policy_decision_filter.append('allowed')
 
 
         def generate_json_query(self):
