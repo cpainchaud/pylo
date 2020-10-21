@@ -5,6 +5,7 @@ import getpass
 import pylo.vendors.requests as requests
 from threading import Thread
 from queue import Queue
+from datetime import datetime, timedelta
 import pylo
 from pylo import log
 from typing import Union, Dict, Any, List, Optional
@@ -708,6 +709,8 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
     class ExplorerFilterSetV1:
+        _time_from: Optional[datetime]
+        _time_to: Optional[datetime]
         _policy_decision_filter: List[str]
         _consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
 
@@ -718,6 +721,9 @@ class APIConnector:
             self._provider_exclude_labels = {}
             self.max_results = max_results
             self._policy_decision_filter = []
+            self._time_from = None
+            self._time_to = None
+
 
 
         @staticmethod
@@ -767,6 +773,19 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
 
+
+        def set_time_from(self, time: datetime):
+            self._time_from = time
+
+
+        def set_time_from_x_seconds_ago(self, seconds: int):
+            self._time_from = datetime.utcnow() - timedelta(seconds=seconds)
+
+
+        def set_time_from_x_days_ago(self, days: int):
+            return self.set_time_from_x_seconds_ago(days*60*60*24)
+
+
         def set_max_results(self, max: int):
             self.max_results = max
 
@@ -803,11 +822,16 @@ class APIConnector:
                 "destinations": {"include": [[]], "exclude": []},
                 "services": {"include": [], "exclude": []},
                 "sources_destinations_query_op": "and",
-                "start_date":"2015-10-13T11:27:28.824Z",
                 #"end_date":"2020-10-13T11:27:28.825Z",
-                "policy_decisions": [],
+                "policy_decisions": self._policy_decision_filter,
                 "max_results": self.max_results
                 }
+
+            if self._time_from is not None:
+                filters["start_date"] = self._time_from.strftime('%Y-%m-%dT%H:%M:%SZ')
+            else:
+                filters["start_date"] = "2010-10-13T11:27:28.824Z",
+
 
             if len(self._consumer_labels) > 0:
                 tmp = []
