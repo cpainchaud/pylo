@@ -259,6 +259,13 @@ class RuleServiceContainer(pylo.Referencer):
             find_service.add_reference(self)
 
 
+    def get_direct_services(self) -> List[DirectServiceInRule]:
+        return self._direct_services
+
+    def get_services(self) -> List[pylo.Service]:
+        return list(self._items.values())
+
+
 class RuleHostContainer(pylo.Referencer):
     def __init__(self, owner: 'pylo.Rule', name: str):
         pylo.Referencer.__init__(self)
@@ -341,6 +348,16 @@ class RuleHostContainer(pylo.Referencer):
             if isinstance(item, pylo.IPList):
                 return True
         return False
+
+
+    def get_iplists(self) -> List[pylo.IPList]:
+        result = []
+
+        for item in self._items.values():
+            if isinstance(item, pylo.IPList):
+                result.append(item)
+
+        return result
 
     def contains_all_workloads(self):
         return self._hasAllWorkloads
