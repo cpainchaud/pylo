@@ -144,7 +144,9 @@ for csv_object in CsvData.objects():
                 raise pylo.PyloEx('CSV contains workloads with duplicates name/hostname: {}'.format(lower_name))
             else:
                 csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
-                if not ignore_all_sorts_collisions or not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
+                if ignore_all_sorts_collisions or ignore_if_managed_workload_exists:
+                    pass
+                elif not name_cache[lower_name]['managed']:
                     raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
                 print("  - WARNING: CSV has an entry for workload name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
