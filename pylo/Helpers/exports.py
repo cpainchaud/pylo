@@ -101,8 +101,12 @@ class ArraysToExcel:
             self._headers_index_to_name = []
             index = 0
             for header_name in headers:
-                self._headers_name_to_index[header_name] = index
-                self._headers_index_to_name.append(header_name)
+                if type(header_name) is str:
+                    self._headers_index_to_name.append(header_name)
+                    self._headers_name_to_index[header_name] = index
+                else:
+                    self._headers_index_to_name.append(header_name['name'])
+                    self._headers_name_to_index[header_name['name']] = index
                 index += 1
 
 
@@ -115,7 +119,10 @@ class ArraysToExcel:
         def add_line_from_object(self, record):
             new_line = []
             for header in self._headers:
-                new_line.append(record.get(header))
+                if type(header) is str:
+                    new_line.append(record.get(header))
+                else:
+                    new_line.append(record.get(header['name']))
 
             self._lines.append(new_line)
 
@@ -139,7 +146,10 @@ class ArraysToExcel:
             xls_data = []
             header_index = 0
             for header in self._headers:
-                xls_headers.append({'header': header, 'format': cell_format})
+                if type(header) is str:
+                    xls_headers.append({'header': header, 'format': cell_format})
+                else:
+                    xls_headers.append({'header': header['nice_name'], 'format': cell_format})
                 header_index += 1
 
             for line in self._lines:

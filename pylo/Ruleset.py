@@ -1,3 +1,5 @@
+from typing import Optional, List, Union
+
 import pylo
 from pylo import log
 import re
@@ -19,6 +21,18 @@ class RulesetScope:
             scope_entry = pylo.RulesetScopeEntry(self)
             scope_entry.load_from_json(scope_json)
             self.scope_entries[scope_entry] = scope_entry
+
+
+    def get_all_scopes_str(self, label_separator='|', scope_separator="\n"):
+        result = ''
+        for scope in self.scope_entries.keys():
+            if len(result) < 1:
+                result += scope.to_string(label_separator)
+            else:
+                result += scope_separator
+                result += scope.to_string(label_separator)
+
+        return result
 
 
 class RulesetScopeEntry:
@@ -56,15 +70,15 @@ class RulesetScopeEntry:
             else:
                 raise pylo.PyloEx("Unsupported label type '{}' in scope".format(label.type_string()))
 
-    def to_string(self):
-        string = 'All/'
+    def to_string(self, label_separator = '|'):
+        string = 'All' + label_separator
         if self.app_label is not None:
-            string = self.app_label.name + '/'
+            string = self.app_label.name + label_separator
 
         if self.env_label is None:
-            string += 'All/'
+            string += 'All' + label_separator
         else:
-            string += self.env_label.name + '/'
+            string += self.env_label.name + label_separator
 
         if self.loc_label is None:
             string += 'All'
@@ -312,11 +326,24 @@ class RuleHostContainer(pylo.Referencer):
                 return True
         return False
 
+    def get_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        result = []
+
+        for item in self._items.values():
+            if isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup):
+                result.append(item)
+
+        return result
+
+
     def has_iplists(self):
         for item in self._items.values():
             if isinstance(item, pylo.IPList):
                 return True
         return False
+
+    def contains_all_workloads(self):
+        return self._hasAllWorkloads
 
 
 class RulesetStore:
@@ -361,3 +388,12 @@ class RulesetStore:
             self.itemsByName[new_item.name] = new_item
 
             log.debug("Found Ruleset '%s' with href '%s'" % (new_item.name, new_item.href) )
+
+
+    def find_rule_by_href(self, href: str) -> Optional['pylo.Rule']:
+        for ruleset in self.itemsByHRef.values():
+            rule = ruleset.rules_byHref.get(href)
+            if rule is not None:
+                return rule
+
+        return None
