@@ -179,6 +179,12 @@ class Rule:
         self.consumers.load_from_json(data['consumers'])
         self.consuming_principals.load_from_json(data['consuming_security_principals'])
 
+    def is_extra_scope(self):
+        return self.unscoped_consumers
+
+    def is_intra_scope(self):
+        return not self.unscoped_consumers
+
 
 class RuleSecurityPrincipalContainer(pylo.Referencer):
     def __init__(self, owner: 'pylo.Rule'):
