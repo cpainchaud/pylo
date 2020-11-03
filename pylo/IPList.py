@@ -75,6 +75,9 @@ class IPList(pylo.ReferenceTracker):
     def get_raw_entries_as_string_list(self, separator=',') -> str:
         return pylo.string_list_to_text(self.raw_entries.values(), separator=separator)
 
+    def get_api_reference_json(self):
+        return {'iplist': {'href': self.href}}
+
 
 class IPListStore:
 

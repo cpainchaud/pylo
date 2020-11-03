@@ -71,6 +71,7 @@ class ArrayToExport:
             xls_headers.append({'header': header, 'format': cell_format})
             header_index += 1
 
+        # Building data array
         for line in self._lines:
             new_line = []
             for item in line:
@@ -92,21 +93,40 @@ class ArraysToExcel:
     _sheets: Dict[str, 'ArraysToExcel.Sheet']
 
     class Sheet:
-        def __init__(self, headers):
+        def __init__(self, headers, force_all_wrap_text=True):
             self._headers = headers
             self._columns_count = len(headers)
             self._lines = []
+            self._width = []
+            self._columns_wrap = []
 
             self._headers_name_to_index = {}
             self._headers_index_to_name = []
             index = 0
             for header_name in headers:
+                self._columns_wrap.append(force_all_wrap_text)
+
                 if type(header_name) is str:
                     self._headers_index_to_name.append(header_name)
                     self._headers_name_to_index[header_name] = index
+                    self._width.append(0)
                 else:
                     self._headers_index_to_name.append(header_name['name'])
                     self._headers_name_to_index[header_name['name']] = index
+                    desired_width = header_name.get('width')
+                    if desired_width is None:
+                        self._width.append(0)
+                    else:
+                        if desired_width == 'auto':
+                            self._width.append(0)
+                        else:
+                            self._width.append(-1)
+                    desired_width = header_name.get('width')
+
+                    wrap = header_name.get('wrap_text')
+                    if wrap is not None and not wrap:
+                        self._columns_wrap[len(self._columns_wrap)-1] = False
+
                 index += 1
 
 
@@ -138,28 +158,59 @@ class ArraysToExcel:
 
 
         def add_to_document(self, xls_workbook: xlsxwriter.Workbook, sheet_name: str):
-            cell_format = xls_workbook.add_format()
-            cell_format.set_text_wrap()
-            cell_format.set_valign('vcenter')
+
+            def find_length(some_text: str) -> int:
+                if type(some_text) is bool or some_text is None:
+                    return 0
+                if type(some_text) is int:
+                    return len(str(some_text))
+
+                length = 0
+                split = some_text.split("\n")
+                for part in split:
+                    if len(part) > length:
+                        length = len(part)
+
+                return length
+
+
             xls_worksheet = xls_workbook.add_worksheet(sheet_name)
             xls_headers = []
             xls_data = []
-            header_index = 0
-            for header in self._headers:
-                if type(header) is str:
-                    xls_headers.append({'header': header, 'format': cell_format})
-                else:
-                    xls_headers.append({'header': header['nice_name'], 'format': cell_format})
-                header_index += 1
 
             for line in self._lines:
                 new_line = []
+                item_index = 0
                 for item in line:
                     if type(item) is list:
                         new_line.append(pylo.string_list_to_text(item, multivalues_cell_delimiter))
                     else:
                         new_line.append(item)
+
+                    if self._width[item_index] >= 0:
+                        length = find_length(new_line[item_index])
+                        if length > self._width[item_index]:
+                            self._width[item_index] = length
+                    item_index += 1
+
                 xls_data.append(new_line)
+
+            header_index = 0
+            for header in self._headers:
+                cell_format = xls_workbook.add_format()
+                cell_format.set_text_wrap(self._columns_wrap[header_index])
+                cell_format.set_valign('vcenter')
+
+
+                if type(header) is str:
+                    xls_headers.append({'header': header, 'format': cell_format})
+                else:
+                    xls_headers.append({'header': header['nice_name'], 'format': cell_format})
+
+                if self._width[header_index] > 0:
+                    xls_worksheet.set_column(header_index, header_index, width=self._width[header_index]+1)
+                header_index += 1
+
 
             if len(self._lines) > 0:
                 xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,
@@ -174,6 +225,7 @@ class ArraysToExcel:
                                                     {'header_row': True, 'data': [fake_data], 'columns': xls_headers}
                                                     )
 
+
             xls_worksheet.freeze_panes(1, 0)
 
 
@@ -181,11 +233,11 @@ class ArraysToExcel:
     def __init__(self):
         self._sheets = {}
 
-    def create_sheet(self, name: str, headers):
+    def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True):
         if name in self._sheets:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))
 
-        self._sheets[name] = ArraysToExcel.Sheet(headers)
+        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text)
 
 
     def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
@@ -211,12 +263,13 @@ class ArraysToExcel:
 
 class CsvExcelToObject:
 
-    def __init__(self, filename: str, expected_headers=None, csv_delimiter=',', csv_quotechar='"', strict_headers=False):
+    def __init__(self, filename: str, expected_headers=None, csv_delimiter=',', csv_quotechar='"', strict_headers=False, excel_sheet_name=None):
 
         self._detected_headers = []
         self._header_index_to_name = []
         self._raw_lines = []
         self._objects = []
+        self._empty_lines_count = 0
 
         if strict_headers and expected_headers is None:
             pylo.PyloEx("CSV/Excel file cannot use strict_headers mode without specifying expected_headers")
@@ -290,7 +343,14 @@ class CsvExcelToObject:
             # print("workbook has {} worksheets".format(len(workbook.worksheets)))
             if len(workbook.worksheets) < 1:
                 raise pylo.PyloEx("Excel file has no Worksheet")
+
             source_worksheet = workbook.worksheets[0]
+
+            if excel_sheet_name is not None:
+                source_worksheet = workbook.get_sheet_by_name(excel_sheet_name)
+                if source_worksheet is None:
+                    raise pylo.PyloEx("Cannot find a Worksheet named '{}' in Excel file '{}'".format(excel_sheet_name, filename))
+
 
             # print("\n\nmax_col {} max_row {}\n\n".format(source_worksheet.max_column,source_worksheet.max_row))
 
@@ -316,11 +376,19 @@ class CsvExcelToObject:
                 # This is DATA
                 else:
                     new_object = {'*line*': row_count}
-                    self._objects.append(new_object)
 
+                    some_fields_have_data = False
                     for col_index in range(1, source_worksheet.max_column+1):
                         item = source_worksheet.cell(row_count, col_index).value
                         new_object[self._detected_headers[col_index-1]] = item
+                        if item is not None and (type(item) is int or type(item) is bool or len(item) > 0):
+                            some_fields_have_data = True
+
+                    if not some_fields_have_data:
+                        self._empty_lines_count += 1
+                        continue
+
+                    self._objects.append(new_object)
 
                     # handling missing optional columns
                     for opt_header in optional_headers:
@@ -336,6 +404,9 @@ class CsvExcelToObject:
 
     def count_lines(self):
         return len(self._objects)
+
+    def count_empty_lines(self):
+        return self._empty_lines_count
 
     def count_columns(self):
         return len(self._detected_headers)

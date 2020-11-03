@@ -32,6 +32,7 @@ class Workload(pylo.ReferenceTracker):
         self.online = False
 
         self.os_id = None
+        self.os_detail = None
 
         self.locationLabel = None  # type: pylo.Label
         self.environmentLabel = None  # type: pylo.Label
@@ -71,6 +72,9 @@ class Workload(pylo.ReferenceTracker):
             self.os_id = data.get('os_id')
             if self.os_id is None:
                 raise pylo.PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
+            self.os_detail = data.get('os_detail')
+            if self.os_detail is None:
+                raise pylo.PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
 
         if 'description' in data:
             desc = data['description']
@@ -304,7 +308,7 @@ class Workload(pylo.ReferenceTracker):
     def get_status_string(self):
         if self.ven_agent is None:
             return 'not-applicable'
-        return self.ven_agent.mode;
+        return self.ven_agent.mode
 
 
 class WorkloadStore:
@@ -449,7 +453,7 @@ class WorkloadStore:
         for item in self.itemsByHRef.values():
             if item.deleted:
                 count += 1
-                print(item.href)
+                #print(item.href)
 
         return count
 

@@ -580,6 +580,94 @@ class APIConnector:
         path = '/sec_policy/draft/rule_sets'
         return self.do_get_call(path=path, asyncCall=True)
 
+    def objects_ruleset_create(self, name: str,
+                               scope_app: 'pylo.Label' = None,
+                               scope_env: 'pylo.Label' = None,
+                               scope_loc: 'pylo.Label' = None,
+                               description: str = '', enabled: bool = True) -> Dict:
+        path = '/sec_policy/draft/rule_sets'
+
+        scope = []
+        if scope_app is not None:
+            scope.append(scope_app.get_api_reference_json())
+        if scope_env is not None:
+            scope.append(scope_env.get_api_reference_json())
+        if scope_app is not None:
+            scope.append(scope_loc.get_api_reference_json())
+
+        data = {
+            'name': name,
+            'enabled': enabled,
+            'description': description,
+            'scopes': [scope]
+        }
+
+        return self.do_post_call(path=path, json_arguments=data, jsonOutputExpected=True)
+
+    def objects_rule_create(self, ruleset_href: str,
+                            intra_scope: bool,
+                            consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                            providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                            services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                            description='', machine_auth=False, secure_connect=False, enabled=True,
+                            stateless=False, consuming_security_principals=[],
+                            resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
+                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True):
+
+        resolve_consumers = []
+        if resolve_consumers_as_virtual_services:
+            resolve_consumers.append('virtual_services')
+        if resolve_consumers_as_workloads:
+            resolve_consumers.append('workloads')
+
+        resolve_providers = []
+        if resolve_providers_as_virtual_services:
+            resolve_providers.append('virtual_services')
+        if resolve_providers_as_workloads:
+            resolve_providers.append('workloads')
+
+        consumers_json = []
+        for item in consumers:
+            if type(item) is dict:
+                consumers_json.append(item)
+            else:
+                consumers_json.append(item.get_api_reference_json())
+
+        providers_json = []
+        for item in providers:
+            if type(item) is dict:
+                providers_json.append(item)
+            else:
+                providers_json.append(item.get_api_reference_json())
+
+        services_json = []
+        for item in services:
+            if type(item) is dict:
+                services_json.append(item)
+            elif type(item) is pylo.DirectServiceInRule:
+                services_json.append(item.get_api_json())
+            else:
+                providers_json.append(item.get_api_reference_json())
+
+        data = {
+            'unscoped_consumers': not intra_scope,
+            'description': description,
+            'machine_auth':  machine_auth,
+            'sec_connect': secure_connect,
+            'enabled': enabled,
+            'stateless': stateless,
+            'consuming_security_principals': consuming_security_principals,
+            'resolve_labels_as': {'providers': resolve_providers, 'consumers': resolve_consumers,},
+            'consumers': consumers_json,
+            'providers': providers_json,
+            'ingress_services': services_json
+        }
+
+        path = ruleset_href+'/sec_rules'
+
+        return self.do_post_call(path, json_arguments=data, jsonOutputExpected=True, includeOrgID=False)
+
+
     def objects_securityprincipal_get(self):
         path = '/security_principals'
         return self.do_get_call(path=path, asyncCall=True)
@@ -888,6 +976,8 @@ class APIConnector:
 
                 self.service_protocol = service_json['proto']
                 self.service_port = service_json.get('port')
+                self.process_name = service_json.get('process_name')
+                self.username = service_json.get('user_name')
 
 
                 self.first_detected = data['timestamp_range']['first_detected']
@@ -896,15 +986,25 @@ class APIConnector:
                 self._cast_type = data.get('transmission')
 
 
-            def service_to_str(self):
-                if self.service_port is None:
-                    return 'proto/{}'.format(self.service_protocol)
+            def service_to_str(self, protocol_first=True):
+                if protocol_first:
+                    if self.service_port is None:
+                        return 'proto/{}'.format(self.service_protocol)
 
-                if self.service_protocol == 17:
-                    return 'udp/{}'.format(self.service_port)
+                    if self.service_protocol == 17:
+                        return 'udp/{}'.format(self.service_port)
 
-                if self.service_protocol == 6:
-                    return 'tcp/{}'.format(self.service_port)
+                    if self.service_protocol == 6:
+                        return 'tcp/{}'.format(self.service_port)
+                else:
+                    if self.service_port is None:
+                        return '{}/proto'.format(self.service_protocol)
+
+                    if self.service_protocol == 17:
+                        return '{}/udp'.format(self.service_port)
+
+                    if self.service_protocol == 6:
+                        return '{}/tcp'.format(self.service_port)
 
 
 
@@ -1259,7 +1359,6 @@ class APIConnector:
                         self.rules_per_ruleset[rule_found.owner] = {rule_found.href: rule_found}
                     else:
                         ruleset_found[rule_found.href]: rule_found
-
 
 
     def new_RuleSearchQuery(self):

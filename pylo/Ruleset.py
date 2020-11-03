@@ -1,7 +1,7 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict
 
 import pylo
-from pylo import log
+from pylo import log, Organization
 import re
 
 ruleset_id_extraction_regex = re.compile(r"^/orgs/([0-9]+)/sec_policy/([0-9]+)?(draft)?/rule_sets/(?P<id>[0-9]+)$")
@@ -96,11 +96,14 @@ class RulesetScopeEntry:
 
 class Ruleset:
 
+    name: str
+    description: str
+
     def __init__(self, owner: 'pylo.RulesetStore'):
         self.owner = owner
         self.href = None  # type: str
-        self.name = None  # type: str
-        self.description = None  # type: str
+        self.name = ''
+        self.description = ''
         self.scopes = pylo.RulesetScope(self)
         self.rules_byHref = {}  # type: dict[str,pylo.Rule]
 
@@ -117,15 +120,43 @@ class Ruleset:
             raise pylo.PyloEx("Cannot find Ruleset scope in JSON data: \n" + pylo.Helpers.nice_json(data))
 
         self.description = data.get('description')
+        if self.description is None:
+            self.description = ''
 
         self.scopes.load_from_json(data['scopes'])
 
-
         if 'rules' in data:
             for rule_data in data['rules']:
-                new_rule = pylo.Rule(self)
-                new_rule.load_from_json(rule_data)
-                self.rules_byHref[new_rule.href] = new_rule
+                self.load_single_rule_from_json(rule_data)
+
+    def load_single_rule_from_json(self, rule_data) -> 'pylo.Rule':
+        new_rule = pylo.Rule(self)
+        new_rule.load_from_json(rule_data)
+        self.rules_byHref[new_rule.href] = new_rule
+        return new_rule
+
+
+    def create_rule(self, intra_scope: bool,
+                    consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                    providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                    services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                    description='', machine_auth=False, secure_connect=False, enabled=True,
+                    stateless=False, consuming_security_principals=[],
+                    resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
+                    resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> 'pylo.Rule':
+
+        new_rule_json = self.owner.owner.connector.objects_rule_create(
+            intra_scope=intra_scope, ruleset_href=self.href,
+            consumers=consumers, providers=providers, services=services,
+            description=description, machine_auth=machine_auth, secure_connect=secure_connect, enabled=enabled,
+            stateless=stateless, consuming_security_principals=consuming_security_principals,
+            resolve_consumers_as_virtual_services=resolve_providers_as_virtual_services,
+            resolve_consumers_as_workloads=resolve_consumers_as_workloads,
+            resolve_providers_as_virtual_services=resolve_providers_as_virtual_services,
+            resolve_providers_as_workloads=resolve_providers_as_workloads
+        )
+
+        return self.load_single_rule_from_json(new_rule_json)
 
     def count_rules(self):
         return len(self.rules_byHref)
@@ -202,22 +233,42 @@ class RuleSecurityPrincipalContainer(pylo.Referencer):
 
 
 class DirectServiceInRule:
-    def __init__(self, proto: int, port: int, toport: int):
+    def __init__(self, proto: int, port: int, toport: int = None):
         self.protocol = proto
         self.port = port
         self.to_port = toport
 
-    def to_string_standard(self):
+    def to_string_standard(self, protocol_first=True):
         if self.protocol == 17:
             if self.to_port is None:
-                return 'udp/' + str(self.port)
-            return 'udp/' + str(self.port) + '-' + str(self.to_port)
+                if protocol_first:
+                    return 'udp/' + str(self.port)
+
+                return str(self.port) + '/udp'
+            if protocol_first:
+                return 'udp/' + str(self.port) + '-' + str(self.to_port)
+
+            return str(self.port) + '-' + str(self.to_port)+ '/udp'
         elif self.protocol == 6:
             if self.to_port is None:
-                return 'tcp/' + str(self.port)
-            return 'tcp/' + str(self.port) + '-' + str(self.to_port)
+                if protocol_first:
+                    return 'tcp/' + str(self.port)
+                return str(self.port) + '/tcp'
 
-        return 'proto/' + str(self.protocol)
+            if protocol_first:
+                return 'tcp/' + str(self.port) + '-' + str(self.to_port)
+            return str(self.port) + '-' + str(self.to_port)+ '/tcp'
+
+        if protocol_first:
+            return 'proto/' + str(self.protocol)
+
+        return str(self.protocol) + '/proto'
+
+    def get_api_json(self):
+        if self.to_port is None:
+            return {'proto': self.protocol, 'port': self.port}
+        return {'proto': self.protocol, 'port': self.port, 'toport': self.to_port}
+
 
 
 class RuleServiceContainer(pylo.Referencer):
@@ -372,10 +423,10 @@ class RuleHostContainer(pylo.Referencer):
 class RulesetStore:
 
     """
-    :type owner: pylo.Organization
     :type itemsByHRef: dict[str,Ruleset]
     :type itemsByName: dict[str,Ruleset]
     """
+    owner: pylo.Organization
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
@@ -394,23 +445,27 @@ class RulesetStore:
 
     def load_rulesets_from_json(self, data):
         for json_item in data:
+            self.load_single_ruleset_from_json(json_item)
 
-            new_item = pylo.Ruleset(self)
-            new_item.load_from_json(json_item)
+    def load_single_ruleset_from_json(self, json_item):
+        new_item = pylo.Ruleset(self)
+        new_item.load_from_json(json_item)
 
-            if new_item.href in self.itemsByHRef:
-                raise Exception("A Ruleset with href '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
-                                % (new_item.href, pylo.nice_json(json_item)) )
+        if new_item.href in self.itemsByHRef:
+            raise Exception("A Ruleset with href '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
+                            % (new_item.href, pylo.nice_json(json_item)) )
 
-            if new_item.name in self.itemsByName:
-                print("The following Ruleset is conflicting (name already exists): '%s' Href: '%s'" % (self.itemsByName[new_item.name].name, self.itemsByName[new_item.name].href), flush=True)
-                raise Exception("A Ruleset with name '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
-                                % (new_item.name, pylo.nice_json(json_item)))
+        if new_item.name in self.itemsByName:
+            print("The following Ruleset is conflicting (name already exists): '%s' Href: '%s'" % (self.itemsByName[new_item.name].name, self.itemsByName[new_item.name].href), flush=True)
+            raise Exception("A Ruleset with name '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
+                            % (new_item.name, pylo.nice_json(json_item)))
 
-            self.itemsByHRef[new_item.href] = new_item
-            self.itemsByName[new_item.name] = new_item
+        self.itemsByHRef[new_item.href] = new_item
+        self.itemsByName[new_item.name] = new_item
 
-            log.debug("Found Ruleset '%s' with href '%s'" % (new_item.name, new_item.href) )
+        log.debug("Found Ruleset '%s' with href '%s'" % (new_item.name, new_item.href) )
+
+        return new_item
 
 
     def find_rule_by_href(self, href: str) -> Optional['pylo.Rule']:
@@ -420,3 +475,25 @@ class RulesetStore:
                 return rule
 
         return None
+
+    def find_ruleset_by_name(self, name: str, case_sensitive=True) -> Optional['pylo.Ruleset']:
+        if case_sensitive:
+            return self.itemsByName.get(name)
+
+        lower_name = name.lower()
+
+        for ruleset in self.itemsByHRef.values():
+            if ruleset.name.lower() == lower_name:
+                return ruleset
+
+        return None
+
+    def create_ruleset(self, name: str,
+               scope_app: 'pylo.Label' = None,
+               scope_env: 'pylo.Label' = None,
+               scope_loc: 'pylo.Label' = None,
+               description: str = '', enabled: bool = True) -> 'pylo.Ruleset':
+
+        con = self.owner.connector
+        json_item = con.objects_ruleset_create(name, scope_app, scope_env, scope_loc, description, enabled)
+        return self.load_single_ruleset_from_json(json_item)

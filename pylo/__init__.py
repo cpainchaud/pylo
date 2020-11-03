@@ -21,7 +21,7 @@ from .AgentStore import AgentStore, VENAgent
 from .WorkloadStore import WorkloadStore, Workload
 from .Service import Service, ServiceStore
 from .Ruleset import Ruleset, RulesetStore, Rule, RuleServiceContainer, RuleHostContainer, \
-    RuleSecurityPrincipalContainer, RulesetScope, RulesetScopeEntry
+    RuleSecurityPrincipalContainer, RulesetScope, RulesetScopeEntry, DirectServiceInRule
 from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
 from .Organization import Organization
 from .Query import Query

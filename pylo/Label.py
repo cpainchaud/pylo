@@ -16,3 +16,5 @@ class Label(pylo.ReferenceTracker, pylo.LabelCommon):
     def reference_obj(self):
         return { "href": self.href, "value": self.name, "key": self.type_to_short_string() }
 
+    def get_api_reference_json(self):
+        return {'label': {'href': self.href}}

@@ -192,6 +192,9 @@ class Service(pylo.ReferenceTracker):
         if data['deleted_at'] is not None:
             self.deleted = True
 
+    def get_api_reference_json(self):
+        return {'service': {'href': self.href}}
+
 
 class ServiceStore(pylo.Referencer):
     def __init__(self, owner):

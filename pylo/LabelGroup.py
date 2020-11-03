@@ -36,6 +36,9 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
                 raise pylo.PyloEx("Unsupported object type {}".format(type(label)))
         return list(results.values())
 
+    def get_api_reference_json(self):
+        return {'label_group': {'href': self.href}}
+
 
     def is_group(self):
         return True
