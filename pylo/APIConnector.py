@@ -1043,6 +1043,23 @@ class APIConnector:
 
                 return result
 
+            def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
+                if self._source_iplists is None:
+                    return {}
+
+                result = {}
+
+                for record in self._destination_iplists:
+                    href = record.get('href')
+                    if href is None:
+                        raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+                    iplist = org_for_resolution.IPListStore.find_by_href(href)
+                    if iplist is None:
+                        raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+
+                    result[href] = iplist
+
+                return result
 
             def pd_is_potentially_blocked(self):
                 return self.policy_decision_string == 'potentially_blocked'
@@ -1356,9 +1373,11 @@ class APIConnector:
                     self.rules[rule_found.href] = rule_found
                     ruleset_found = self.rules_per_ruleset.get(rule_found.owner)
                     if ruleset_found is None:
+                        #print("new ruleset")
                         self.rules_per_ruleset[rule_found.owner] = {rule_found.href: rule_found}
                     else:
-                        ruleset_found[rule_found.href]: rule_found
+                        #print("existing rs")
+                        self.rules_per_ruleset[rule_found.owner][rule_found.href] = rule_found
 
 
     def new_RuleSearchQuery(self):
