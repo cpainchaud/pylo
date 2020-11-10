@@ -804,8 +804,12 @@ class APIConnector:
         _time_to: Optional[datetime]
         _policy_decision_filter: List[str]
         _consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
+        __filter_provider_ip_exclude: List[str]
+        __filter_consumer_ip_exclude: List[str]
 
         def __init__(self, max_results=10000):
+            self.__filter_consumer_ip_exclude = []
+            self.__filter_provider_ip_exclude = []
             self._consumer_labels = {}
             self._consumer_exclude_labels = {}
             self._provider_labels = {}
@@ -850,6 +854,13 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)
 
+        def consumer_exclude_cidr(self, ipaddress: str):
+            self.__filter_consumer_ip_exclude.append(ipaddress)
+
+        def consumer_exclude_ip4map(self, map: 'pylo.IP4Map'):
+            for item in map.to_list_of_cidr_string():
+                self.consumer_exclude_cidr(item)
+
         def provider_include_label(self, label_or_href):
             """
 
@@ -863,6 +874,14 @@ class APIConnector:
             @type label_or_href: str|pylo.Label|pylo.LabelGroup
             """
             self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
+
+        def provider_exclude_cidr(self, ipaddress: str):
+            self.__filter_provider_ip_exclude.append(ipaddress)
+
+        def provider_exclude_ip4map(self, map: 'pylo.IP4Map'):
+            for item in map.to_list_of_cidr_string():
+                self.provider_exclude_cidr(item)
+
 
         def set_exclude_broadcast(self, exclude=True):
             self._exclude_broadcast = exclude
@@ -926,8 +945,8 @@ class APIConnector:
             if self._exclude_broadcast:
                 filters['destinations']['exclude'].append({'transmission': 'broadcast'})
 
-                if self._exclude_multicast:
-                    filters['destinations']['exclude'].append({'transmission': 'multicast'})
+            if self._exclude_multicast:
+                filters['destinations']['exclude'].append({'transmission': 'multicast'})
 
             if self._time_from is not None:
                 filters["start_date"] = self._time_from.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -947,17 +966,25 @@ class APIConnector:
                     tmp.append({'label': {'href': label_href}})
                 filters['destinations']['include'] = [tmp]
 
-            if len(self._consumer_exclude_labels) > 0:
-                tmp = []
-                for label_href in self._consumer_labels.keys():
-                    tmp.append({'label': {'href': label_href}})
-                filters['sources']['exclude'] = tmp
 
+            consumer_exclude_json = []
+            if len(self._consumer_exclude_labels) > 0:
+                for label_href in self._consumer_exclude_labels.keys():
+                    filters['sources']['exclude'].append({'label': {'href': label_href}})
+
+            if len(self.__filter_consumer_ip_exclude) > 0:
+                for ipaddress in self.__filter_consumer_ip_exclude:
+                    filters['sources']['exclude'].append({'ip_address': ipaddress})
+
+
+            provider_exclude_json = []
             if len(self._provider_exclude_labels) > 0:
-                tmp = []
-                for label_href in self._provider_labels.keys():
-                    tmp.append({'label': {'href': label_href}})
-                filters['destinations']['exclude'] = tmp
+                for label_href in self._provider_exclude_labels.keys():
+                    filters['destinations']['exclude'].append({'label': {'href': label_href}})
+
+            if len(self.__filter_provider_ip_exclude) > 0:
+                for ipaddress in self.__filter_provider_ip_exclude:
+                    filters['destinations']['exclude'].append({'ip_address': ipaddress})
 
             return filters
 
@@ -972,6 +999,7 @@ class APIConnector:
             source_workload_labels_href: List[str]
 
             def __init__(self, data):
+                self._raw_json=data
                 self.num_connections = data['num_connections']
                 self.policy_decision_string = data['policy_decision']
                 self._draft_mode_policy_decision_is_blocked = None
@@ -1178,7 +1206,7 @@ class APIConnector:
 
         def get_all_records(self,
                             draft_mode=False,
-                            draft_mode_request_count_per_batch=1
+                            draft_mode_request_count_per_batch=100
                             ) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
             result = []
             for data in self._raw_results:
