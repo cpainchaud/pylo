@@ -256,7 +256,7 @@ class IP4Map:
                         break
 
                     if new_end == net_end:
-                        result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 33 - netmask))
+                        result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 32 - netmask))
                         net_start = net_end+1
                         break
                     else:
