@@ -187,6 +187,9 @@ class IP4Map:
 
         return count
 
+    def count_entries(self) -> int:
+        return len(self._entries)
+
     def print_to_std(self, header=None, padding='', list_marker=' - '):
         if header is not None:
             print('{}{}({} entries)'.format(

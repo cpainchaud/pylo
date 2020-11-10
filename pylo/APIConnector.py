@@ -328,6 +328,9 @@ class APIConnector:
 
         return self.do_get_call(path=path, asyncCall=False)
 
+    def rule_coverage_query(self, data):
+        return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, includeOrgID=True, jsonOutputExpected=True, asyncCall=False)
+
     def objects_label_get(self):
         path = '/labels'
         return self.do_get_call(path=path, asyncCall=True)
@@ -811,8 +814,8 @@ class APIConnector:
             self._policy_decision_filter = []
             self._time_from = None
             self._time_to = None
-
-
+            self._exclude_broadcast = False
+            self._exclude_multicast = False
 
         @staticmethod
         def __filter_prop_add_label(prop_dict, label_or_href):
@@ -861,6 +864,11 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
 
+        def set_exclude_broadcast(self, exclude=True):
+            self._exclude_broadcast = exclude
+
+        def set_exclude_multicast(self, exclude=True):
+            self._exclude_multicast = exclude
 
         def set_time_from(self, time: datetime):
             self._time_from = time
@@ -915,6 +923,12 @@ class APIConnector:
                 "max_results": self.max_results
                 }
 
+            if self._exclude_broadcast:
+                filters['destinations']['exclude'].append({'transmission': 'broadcast'})
+
+                if self._exclude_multicast:
+                    filters['destinations']['exclude'].append({'transmission': 'multicast'})
+
             if self._time_from is not None:
                 filters["start_date"] = self._time_from.strftime('%Y-%m-%dT%H:%M:%SZ')
             else:
@@ -950,29 +964,59 @@ class APIConnector:
 
     class ExplorerResultSetV1:
 
+        owner: 'pylo.APIConnector'
+
         class ExplorerResult:
+            _draft_mode_policy_decision_is_blocked: Optional[bool]
+            destination_workload_labels_href: List[str]
+            source_workload_labels_href: List[str]
+
             def __init__(self, data):
                 self.num_connections = data['num_connections']
                 self.policy_decision_string = data['policy_decision']
+                self._draft_mode_policy_decision_is_blocked = None
 
                 src = data['src']
                 self.source_ip = src['ip']
                 self._source_iplists = src.get('ip_lists')
+                self._source_iplists_href = []
+                if self._source_iplists is not None:
+                    for href in self._source_iplists:
+                        self._source_iplists_href.append(href['href'])
+
                 self.source_workload_href = None
                 workload_data = src.get('workload')
                 if workload_data is not None:
                     self.source_workload_href = workload_data['href']
 
+                    self.source_workload_labels_href = []
+                    workload_labels_data = workload_data.get('labels')
+                    if workload_labels_data is not None:
+                        for label_data in workload_labels_data:
+                            self.source_workload_labels_href.append(label_data.get('href'))
+
 
                 dst = data['dst']
                 self.destination_ip = dst['ip']
                 self._destination_iplists = dst.get('ip_lists')
+                self._destination_iplists_href = []
+                if self._destination_iplists is not None:
+                    for href in self._destination_iplists:
+                        self._destination_iplists_href.append(href['href'])
                 self.destination_workload_href = None
                 workload_data = dst.get('workload')
                 if workload_data is not None:
                     self.destination_workload_href = workload_data['href']
 
+                    self.destination_workload_labels_href = []
+                    workload_labels_data = workload_data.get('labels')
+                    if workload_labels_data is not None:
+                        for label_data in workload_labels_data:
+                            self.destination_workload_labels_href.append(label_data.get('href'))
+
+
                 service_json = data['service']
+                self.service_json = service_json
 
                 self.service_protocol = service_json['proto']
                 self.service_port = service_json.get('port')
@@ -988,7 +1032,7 @@ class APIConnector:
 
             def service_to_str(self, protocol_first=True):
                 if protocol_first:
-                    if self.service_port is None:
+                    if self.service_port is None or self.service_port == 0:
                         return 'proto/{}'.format(self.service_protocol)
 
                     if self.service_protocol == 17:
@@ -997,7 +1041,7 @@ class APIConnector:
                     if self.service_protocol == 6:
                         return 'tcp/{}'.format(self.service_port)
                 else:
-                    if self.service_port is None:
+                    if self.service_port is None or self.service_port == 0:
                         return '{}/proto'.format(self.service_protocol)
 
                     if self.service_protocol == 17:
@@ -1012,7 +1056,7 @@ class APIConnector:
                 return self.source_workload_href is not None
 
             def destination_is_workload(self):
-                return self.source_workload_href is not None
+                return self.destination_workload_href is not None
 
             def get_source_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
                 if self.source_workload_href is None:
@@ -1023,6 +1067,16 @@ class APIConnector:
                 if self.destination_workload_href is None:
                     return None
                 return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.destination_workload_href, '*DELETED*')
+
+            def get_source_labels_href(self) -> Optional[List[str]]:
+                if not self.source_is_workload():
+                    return None
+                return self.source_workload_labels_href
+
+            def get_destination_labels_href(self) -> Optional[List[str]]:
+                if not self.destination_is_workload():
+                    return None
+                return self.destination_workload_labels_href
 
 
             def get_source_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
@@ -1042,6 +1096,21 @@ class APIConnector:
                     result[href] = iplist
 
                 return result
+
+            def get_source_iplists_href(self) -> Optional[List[str]]:
+                if self.source_is_workload():
+                    return None
+                if self._source_iplists_href is None:
+                    return []
+                return self._source_iplists_href
+
+            def get_destination_iplists_href(self) -> Optional[List[str]]:
+                if self.destination_is_workload():
+                    return None
+
+                if self._destination_iplists_href is None:
+                    return []
+                return self._destination_iplists_href
 
             def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
                 if self._source_iplists is None:
@@ -1073,9 +1142,25 @@ class APIConnector:
             def cast_isUnicast(self):
                 return self._cast_type is not None
 
+            def set_draft_mode_policy_decision_blocked(self, blocked: bool=True):
+                self._draft_mode_policy_decision_is_blocked = blocked
 
-        def __init__(self, data):
+            def draft_mode_policy_decision_is_blocked(self) -> Optional[bool]:
+                """
+                @return: None if draft_mode was not enabled
+                """
+                return self._draft_mode_policy_decision_is_blocked is not None and self._draft_mode_policy_decision_is_blocked
+
+            def draft_mode_policy_decision_is_allowed(self) -> Optional[bool]:
+                """
+                @return: None if draft_mode was not enabled
+                """
+                return self._draft_mode_policy_decision_is_blocked is not None and not self._draft_mode_policy_decision_is_blocked
+
+
+        def __init__(self, data, owner: 'pylo.APIConnector'):
             self._raw_results = data
+            self.owner = owner
             # print(data)
             #_print('Received {} Explorer results'.format(len(data)))
 
@@ -1091,17 +1176,134 @@ class APIConnector:
 
             return APIConnector.ExplorerResultSetV1.ExplorerResult(self._raw_results[line])
 
-        def get_all_records(self) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
+        def get_all_records(self,
+                            draft_mode=False,
+                            draft_mode_request_count_per_batch=1
+                            ) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
             result = []
             for data in self._raw_results:
                 result.append(APIConnector.ExplorerResultSetV1.ExplorerResult(data))
+
+            if len(result) > 0 and draft_mode:
+                draft_reply_to_record_table: List[APIConnector.ExplorerResultSetV1.ExplorerResult] = []
+
+                global_query_data = []
+
+
+                for record in result:
+                    service_json: Dict = record.service_json.copy()
+                    service_json['protocol'] = service_json.pop('proto')
+                    if 'user_name' in service_json:
+                        service_json.pop('user_name')
+
+                    local_query_data = {
+                        "resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]},
+                        "services": [service_json]
+                    }
+
+                    if not record.source_is_workload() and not record.destination_is_workload():
+                        raise pylo.PyloEx("Both Source and Destinations are not workloads, it's unexpected")
+
+                    if record.source_is_workload():
+
+                        local_query_data['source'] = {'labels': []}
+                        for href in record.get_source_labels_href():
+                            local_query_data['source']['labels'].append({'href': href})
+
+                        if record.destination_is_workload():
+                            local_query_data['destination'] = {'labels': []}
+                            for href in record.get_destination_labels_href():
+                                local_query_data['destination']['labels'].append({'href': href})
+
+                            draft_reply_to_record_table.append(record)
+                            global_query_data.append(local_query_data)
+                        else:
+
+                            iplists_href = record.get_destination_iplists_href()
+                            for iplist_href in iplists_href:
+                                local_unique_query_data = local_query_data.copy()
+                                local_unique_query_data['destination'] = {'ip_list': {'href': iplist_href}}
+
+                                draft_reply_to_record_table.append(record)
+                                global_query_data.append(local_unique_query_data)
+
+                    else:
+
+                        local_query_data['destination'] = {'labels': []}
+                        for href in record.get_destination_labels_href():
+                            local_query_data['destination']['labels'].append({'href': href})
+
+                        if record.source_is_workload():
+                            local_query_data['source'] = {'labels': []}
+                            for href in record.get_source_labels_href():
+                                local_query_data['source']['labels'].append({'href': href})
+
+                            draft_reply_to_record_table.append(record)
+                            global_query_data.append(local_query_data)
+                        else:
+
+                            iplists_href = record.get_source_iplists_href()
+                            for iplist_href in iplists_href:
+                                local_unique_query_data = local_query_data.copy()
+                                local_unique_query_data['source'] = {'ip_list': { 'href': iplist_href}}
+
+                                draft_reply_to_record_table.append(record)
+                                global_query_data.append(local_unique_query_data)
+
+
+                pylo.log.debug("{} items in Rule Coverage query queue".format(len(global_query_data)))
+
+                index = 0
+                while index < len(global_query_data):
+                    local_index = index
+                    local_last_index = index + draft_mode_request_count_per_batch - 1
+                    if local_last_index >= len(global_query_data):
+                        local_last_index = len(global_query_data) - 1
+
+                    query_data = []
+
+                    for query_index in range(local_index, local_last_index+1):
+                        query_data.append(global_query_data[query_index])
+
+                    # print(query_data)
+                    res = self.owner.rule_coverage_query(query_data)
+                    # print(res)
+
+                    edges = res.get('edges')
+                    if edges is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "edges"', res)
+
+                    if len(edges) != len(query_data):
+                        raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_data)))
+
+                    for query_index in range(local_index, local_last_index+1):
+                        # print(local_index)
+                        # print(query_index)
+                        # print(len(edges))
+                        response_data = edges[query_index-local_index]
+                        # print(response_data)
+                        if type(response_data) is not list or len(response_data) != 1:
+                            raise pylo.PyloEx("rule_coverage has return invalid data: {}\n against query: {}".format(pylo.nice_json(response_data),
+                                                                                                                     pylo.nice_json(query_data[query_index])))
+
+                        rule_list = response_data[0]
+                        #print(rule_list)
+                        explorer_result = draft_reply_to_record_table[query_index]
+                        explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list)<1)
+
+                    index += draft_mode_request_count_per_batch
+
+
+
+
             return result
+
 
 
     def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
         path = "/traffic_flows/traffic_analysis_queries"
         data = filters.generate_json_query()
-        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True))
+        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True), owner=self)
         return result
 
 
