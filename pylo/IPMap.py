@@ -179,6 +179,93 @@ class IP4Map:
 
         return pylo.string_list_to_text(ranges, separator=separator)
 
+    def to_list_of_string(self):
+        ranges = []
+
+        for entry in self._entries:
+            if entry[start] == entry[end]:
+                ranges.append('{}'.format(ipaddress.IPv4Address(entry[start])))
+            else:
+                ranges.append('{}-{}'.format(ipaddress.IPv4Address(entry[start]), ipaddress.IPv4Address(entry[end])))
+
+        return ranges
+
+
+    def to_list_of_cidr_string(self):
+
+        result = []
+
+        masks = [
+            int('00000000000000000000000000000000', 2),
+            int('00000000000000000000000000000001', 2),
+            int('00000000000000000000000000000011', 2),
+            int('00000000000000000000000000000111', 2),
+            int('00000000000000000000000000001111', 2),
+            int('00000000000000000000000000011111', 2),
+            int('00000000000000000000000000111111', 2),
+            int('00000000000000000000000001111111', 2),
+            int('00000000000000000000000011111111', 2),
+            int('00000000000000000000000111111111', 2),
+            int('00000000000000000000001111111111', 2),
+            int('00000000000000000000011111111111', 2),
+            int('00000000000000000000111111111111', 2),
+            int('00000000000000000001111111111111', 2),
+            int('00000000000000000011111111111111', 2),
+            int('00000000000000000111111111111111', 2),
+            int('00000000000000001111111111111111', 2),
+            int('00000000000000011111111111111111', 2),
+            int('00000000000000111111111111111111', 2),
+            int('00000000000001111111111111111111', 2),
+            int('00000000000011111111111111111111', 2),
+            int('00000000000111111111111111111111', 2),
+            int('00000000001111111111111111111111', 2),
+            int('00000000011111111111111111111111', 2),
+            int('00000000111111111111111111111111', 2),
+            int('00000001111111111111111111111111', 2),
+            int('00000011111111111111111111111111', 2),
+            int('00000111111111111111111111111111', 2),
+            int('00001111111111111111111111111111', 2),
+            int('00011111111111111111111111111111', 2),
+            int('00111111111111111111111111111111', 2),
+            int('01111111111111111111111111111111', 2),
+            int('11111111111111111111111111111111', 2),
+        ]
+
+        for entry in self._entries:
+
+            net_start = entry[start]
+            net_end = entry[end]
+
+            previous_loop_end = net_start
+
+            while net_start <= net_end:
+
+                if net_start == net_end:
+                    result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 32))
+                    break
+
+                for netmask in range(1, 32, 1):
+                    new_end = net_start | masks[netmask]
+                    #print("{}/{}/{}/{}".format(ipaddress.IPv4Address(net_start), ipaddress.IPv4Address(net_end), ipaddress.IPv4Address(new_end), 32 - netmask))
+
+                    if new_end > net_end:
+                        result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 33 - netmask))
+                        net_start = previous_loop_end + 1
+                        previous_loop_end = net_start
+                        #print("breaking loop with {}/{}".format(ipaddress.IPv4Address(net_start), ipaddress.IPv4Address(previous_loop_end)))
+                        break
+
+                    if new_end == net_end:
+                        result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 33 - netmask))
+                        net_start = net_end+1
+                        break
+                    else:
+                        previous_loop_end = new_end
+
+
+        return result
+
+
 
     def count_ips(self) -> int:
         count = 0
