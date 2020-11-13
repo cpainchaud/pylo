@@ -233,7 +233,7 @@ class RuleSecurityPrincipalContainer(pylo.Referencer):
 
 
 class DirectServiceInRule:
-    def __init__(self, proto: int, port: int, toport: int = None):
+    def __init__(self, proto: int, port: int=None, toport: int = None):
         self.protocol = proto
         self.port = port
         self.to_port = toport
@@ -264,10 +264,63 @@ class DirectServiceInRule:
 
         return str(self.protocol) + '/proto'
 
-    def get_api_json(self):
+    def get_api_json(self) -> Dict:
+        if self.protocol != 17 and self.protocol != 6:
+            return {'proto': self.protocol}
+
         if self.to_port is None:
             return {'proto': self.protocol, 'port': self.port}
-        return {'proto': self.protocol, 'port': self.port, 'toport': self.to_port}
+        return {'proto': self.protocol, 'port': self.port, 'to_port': self.to_port}
+
+    @staticmethod
+    def create_from_text(txt: str, seperator='/', protocol_first=True) -> 'DirectServiceInRule':
+        parts = txt.split(seperator)
+
+        if len(parts) != 2:
+            lower = txt.lower()
+            if lower == 'icmp':
+                return pylo.DirectServiceInRule(proto=1)
+            raise pylo.PyloEx("Invalid service syntax '{}'".format(txt))
+
+        if protocol_first:
+            proto = parts[0]
+            port_input = parts[1]
+        else:
+            proto = parts[1]
+            port_input = parts[0]
+
+        if not proto.isdigit():
+            proto_lower = proto.lower()
+            if proto_lower == 'tcp':
+                protocol_int = 6
+            elif proto_lower == 'udp':
+                protocol_int = 17
+            else:
+                raise pylo.PyloEx("Invalid protocol provided: {}".format(proto))
+        else:
+            protocol_int = int(proto)
+
+        port_parts = port_input.split('-')
+        if len(port_parts) > 2:
+            raise pylo.PyloEx("Invalid port provided: '{}' in string '{}'".format(port_input, txt))
+
+        if len(port_parts) == 2:
+            if protocol_int != 17 and protocol_int != 6:
+                raise pylo.PyloEx("Only TCP and UDP support port ranges so this service in invalid: '{}'".format(txt))
+            from_port_input = port_parts[0]
+            to_port_input = port_parts[1]
+
+            if not from_port_input.isdigit():
+                raise pylo.PyloEx("Invalid port provided: '{}' in string '{}'".format(from_port_input, txt))
+            if not to_port_input.isdigit():
+                raise pylo.PyloEx("Invalid port provided: '{}' in string '{}'".format(to_port_input, txt))
+
+            return pylo.DirectServiceInRule(protocol_int, port=int(from_port_input), toport=int(to_port_input))
+
+        if not port_input.isdigit():
+            raise pylo.PyloEx("Invalid port provided: '{}' in string '{}'".format(port_input, txt))
+
+        return pylo.DirectServiceInRule(protocol_int, port=int(port_input))
 
 
 
@@ -321,6 +374,7 @@ class RuleServiceContainer(pylo.Referencer):
 
     def get_services(self) -> List[pylo.Service]:
         return list(self._items.values())
+
 
 
 class RuleHostContainer(pylo.Referencer):

@@ -11,7 +11,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', '--host', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--include-deleted-workloads', type=bool, required=False, nargs='?', default=False, const=True,
                     help='should deleted workloads be downloaded as well')

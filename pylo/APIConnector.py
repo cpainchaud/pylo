@@ -800,16 +800,21 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
     class ExplorerFilterSetV1:
+        _exclude_direct_services: List['pylo.DirectServiceInRule']
         _time_from: Optional[datetime]
         _time_to: Optional[datetime]
         _policy_decision_filter: List[str]
         _consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
         __filter_provider_ip_exclude: List[str]
         __filter_consumer_ip_exclude: List[str]
+        __filter_provider_ip_include: List[str]
+        __filter_consumer_ip_include: List[str]
 
         def __init__(self, max_results=10000):
             self.__filter_consumer_ip_exclude = []
             self.__filter_provider_ip_exclude = []
+            self.__filter_consumer_ip_include = []
+            self.__filter_provider_ip_include = []
             self._consumer_labels = {}
             self._consumer_exclude_labels = {}
             self._provider_labels = {}
@@ -820,6 +825,7 @@ class APIConnector:
             self._time_to = None
             self._exclude_broadcast = False
             self._exclude_multicast = False
+            self._exclude_direct_services = []
 
         @staticmethod
         def __filter_prop_add_label(prop_dict, label_or_href):
@@ -861,6 +867,13 @@ class APIConnector:
             for item in map.to_list_of_cidr_string():
                 self.consumer_exclude_cidr(item)
 
+        def consumer_include_cidr(self, ipaddress: str):
+            self.__filter_consumer_ip_include.append(ipaddress)
+
+        def consumer_include_ip4map(self, map: 'pylo.IP4Map'):
+            for item in map.to_list_of_cidr_string():
+                self.consumer_include_cidr(item)
+
         def provider_include_label(self, label_or_href):
             """
 
@@ -881,6 +894,16 @@ class APIConnector:
         def provider_exclude_ip4map(self, map: 'pylo.IP4Map'):
             for item in map.to_list_of_cidr_string():
                 self.provider_exclude_cidr(item)
+
+        def provider_include_cidr(self, ipaddress: str):
+            self.__filter_provider_ip_include.append(ipaddress)
+
+        def provider_include_ip4map(self, map: 'pylo.IP4Map'):
+            for item in map.to_list_of_cidr_string():
+                self.provider_include_cidr(item)
+
+        def service_exclude_add(self, service: 'pylo.DirectServiceInRule'):
+            self._exclude_direct_services.append(service)
 
 
         def set_exclude_broadcast(self, exclude=True):
@@ -933,8 +956,8 @@ class APIConnector:
             #  "max_results":10000}
             #
             filters = {
-                "sources": {"include": [[]], "exclude": []},
-                "destinations": {"include": [[]], "exclude": []},
+                "sources": {"include": [], "exclude": []},
+                "destinations": {"include": [], "exclude": []},
                 "services": {"include": [], "exclude": []},
                 "sources_destinations_query_op": "and",
                 #"end_date":"2020-10-13T11:27:28.825Z",
@@ -958,13 +981,26 @@ class APIConnector:
                 tmp = []
                 for label_href in self._consumer_labels.keys():
                     tmp.append({'label': {'href': label_href}})
-                filters['sources']['include'] = [tmp]
+                filters['sources']['include'].append(tmp)
+
+            if len(self.__filter_consumer_ip_include) > 0:
+                tmp = []
+                for ip_txt in self.__filter_consumer_ip_include:
+                    tmp.append({'ip_address': ip_txt})
+                filters['sources']['include'].append(tmp)
+
 
             if len(self._provider_labels) > 0:
                 tmp = []
                 for label_href in self._provider_labels.keys():
                     tmp.append({'label': {'href': label_href}})
-                filters['destinations']['include'] = [tmp]
+                filters['destinations']['include'].append(tmp)
+
+            if len(self.__filter_provider_ip_include) > 0:
+                tmp = []
+                for ip_txt in self.__filter_provider_ip_include:
+                    tmp.append({'ip_address': ip_txt})
+                filters['destinations']['include'].append(tmp)
 
 
             consumer_exclude_json = []
@@ -985,6 +1021,11 @@ class APIConnector:
             if len(self.__filter_provider_ip_exclude) > 0:
                 for ipaddress in self.__filter_provider_ip_exclude:
                     filters['destinations']['exclude'].append({'ip_address': ipaddress})
+
+
+            if len(self._exclude_direct_services) > 0:
+                for service in self._exclude_direct_services:
+                    filters['services']['exclude'].append(service.get_api_json())
 
             return filters
 
@@ -1141,7 +1182,7 @@ class APIConnector:
                 return self._destination_iplists_href
 
             def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
-                if self._source_iplists is None:
+                if self._destination_iplists is None:
                     return {}
 
                 result = {}
