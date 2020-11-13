@@ -91,7 +91,8 @@ class APIConnector:
 
         return url
 
-    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None, skip_product_version_check=False):
+    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+                    params=None, skip_product_version_check=False):
         return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params)
 
@@ -109,7 +110,9 @@ class APIConnector:
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
 
 
-    def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False, skip_product_version_check=False, params=None):
+    def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False,
+                skip_product_version_check=False, params=None,
+                retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
 
         if self.version is None and not skip_product_version_check:
             self.collect_pce_infos()
@@ -124,95 +127,107 @@ class APIConnector:
         if asyncCall:
             headers['Prefer'] = 'respond-async'
 
-        log.info("Request URL: " + url)
-        req = self._cached_session.request(method, url, headers=headers, auth=(self.api_user, self.api_key),
-                               verify=(not self.skipSSLCertCheck), json=json_arguments, params=params)
+        while True:
 
-        answerSize = len(req.content) / 1024
-        log.info("URL downloaded (size "+str( int(answerSize) )+"KB) Reply headers:\n" +
-                 "HTTP " + method + " " + url + " STATUS " + str(req.status_code) + " " + req.reason)
-        log.info(req.headers)
-        log.info("Request Body:" + pylo.nice_json(json_arguments))
-        # log.info("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
+            log.info("Request URL: " + url)
+            req = self._cached_session.request(method, url, headers=headers, auth=(self.api_user, self.api_key),
+                                   verify=(not self.skipSSLCertCheck), json=json_arguments, params=params)
 
-        if asyncCall:
-            if method == 'GET' and req.status_code != 202:
-                orig_request = req.request  # type: requests.PreparedRequest
-                raise Exception("Status code for Async call should be 202 but " + str(req.status_code)
-                                + " " + req.reason + " was returned with the following body: " + req.text +
-                                "\n\n Request was: " + orig_request.url + "\nHEADERS: " + str(orig_request.headers) +
-                                "\nBODY:\n" + str(orig_request.body))
+            answerSize = len(req.content) / 1024
+            log.info("URL downloaded (size "+str( int(answerSize) )+"KB) Reply headers:\n" +
+                     "HTTP " + method + " " + url + " STATUS " + str(req.status_code) + " " + req.reason)
+            log.info(req.headers)
+            log.info("Request Body:" + pylo.nice_json(json_arguments))
+            # log.info("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
 
-            if 'Location' not in req.headers:
-                raise Exception('Header "Location" was not found in API answer!')
-            if 'Retry-After' not in req.headers:
-                raise Exception('Header "Retry-After" was not found in API answer!')
+            if asyncCall:
+                if method == 'GET' and req.status_code != 202:
+                    orig_request = req.request  # type: requests.PreparedRequest
+                    raise Exception("Status code for Async call should be 202 but " + str(req.status_code)
+                                    + " " + req.reason + " was returned with the following body: " + req.text +
+                                    "\n\n Request was: " + orig_request.url + "\nHEADERS: " + str(orig_request.headers) +
+                                    "\nBODY:\n" + str(orig_request.body))
 
-            jobLocation = req.headers['Location']
-            retryInterval = int(req.headers['Retry-After'])
+                if 'Location' not in req.headers:
+                    raise Exception('Header "Location" was not found in API answer!')
+                if 'Retry-After' not in req.headers:
+                    raise Exception('Header "Retry-After" was not found in API answer!')
 
-            retryLoopTimes = 0
+                jobLocation = req.headers['Location']
+                retryInterval = int(req.headers['Retry-After'])
 
-            while True:
-                log.info("Sleeping " + str(retryInterval) + " seconds before polling for job status, elapsed " + str(retryInterval*retryLoopTimes) + " seconds so far" )
-                retryLoopTimes += 1
-                time.sleep(retryInterval)
-                jobPoll = self.do_get_call(jobLocation, includeOrgID=False)
-                if 'status' not in jobPoll:
-                    raise Exception('Job polling request did not return a "status" field')
-                jobPollStatus = jobPoll['status']
+                retryLoopTimes = 0
 
-                if jobPollStatus == 'failed':
-                    if 'result' in jobPoll and 'message' in jobPoll['result']:
-                        raise Exception('Job polling return with status "Failed": ' + jobPoll['result']['message'])
-                    else:
-                        raise Exception('Job polling return with status "Failed": ' + jobPoll)
+                while True:
+                    log.info("Sleeping " + str(retryInterval) + " seconds before polling for job status, elapsed " + str(retryInterval*retryLoopTimes) + " seconds so far" )
+                    retryLoopTimes += 1
+                    time.sleep(retryInterval)
+                    jobPoll = self.do_get_call(jobLocation, includeOrgID=False)
+                    if 'status' not in jobPoll:
+                        raise Exception('Job polling request did not return a "status" field')
+                    jobPollStatus = jobPoll['status']
 
-                if jobPollStatus == 'done':
-                    if 'result' not in jobPoll:
-                        raise Exception('Job is marked as done but has no "result"')
-                    if 'href' not in jobPoll['result']:
-                        raise Exception("Job is marked as done but did not return a href to download resulting Dataset")
+                    if jobPollStatus == 'failed':
+                        if 'result' in jobPoll and 'message' in jobPoll['result']:
+                            raise Exception('Job polling return with status "Failed": ' + jobPoll['result']['message'])
+                        else:
+                            raise Exception('Job polling return with status "Failed": ' + jobPoll)
 
-                    resultHref = jobPoll['result']['href']
-                    break
+                    if jobPollStatus == 'done':
+                        if 'result' not in jobPoll:
+                            raise Exception('Job is marked as done but has no "result"')
+                        if 'href' not in jobPoll['result']:
+                            raise Exception("Job is marked as done but did not return a href to download resulting Dataset")
 
-                log.info("Job status is " + jobPollStatus)
+                        resultHref = jobPoll['result']['href']
+                        break
 
-            log.info("Job is done, we will now download the resulting dataset")
-            dataset = self.do_get_call(resultHref, includeOrgID=False)
+                    log.info("Job status is " + jobPollStatus)
 
-            return dataset
+                log.info("Job is done, we will now download the resulting dataset")
+                dataset = self.do_get_call(resultHref, includeOrgID=False)
 
-        if method == 'GET' and req.status_code != 200 \
-                or\
-                method == 'POST' and req.status_code != 201 and req.status_code != 204 and req.status_code != 200 \
-                or\
-                method == 'DELETE' and req.status_code != 204 \
-                or \
-                method == 'PUT' and req.status_code != 204 and req.status_code != 200:
+                return dataset
 
-            if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
+            if method == 'GET' and req.status_code != 200 \
+                    or\
+                    method == 'POST' and req.status_code != 201 and req.status_code != 204 and req.status_code != 200 \
+                    or\
+                    method == 'DELETE' and req.status_code != 204 \
+                    or \
+                    method == 'PUT' and req.status_code != 204 and req.status_code != 200:
+
+                if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
+                    jout = req.json()
+                    if len(jout) > 0:
+                        if "token" in jout[0]:
+                            if jout[0]['token'] == 'too_many_requests_error':
+                                if retry_count_if_api_call_limit_reached < 1:
+                                    raise pylo.PyloApiTooManyRequestsEx('API has hit DOS protection limit (X calls per minute)', jout)
+
+                                retry_count_if_api_call_limit_reached = retry_count_if_api_call_limit_reached - 1
+                                log.info("API has returned 'too_many_requests_error', we will sleep for {} seconds and retry {} more times".format(retry_wait_time_if_api_call_limit_reached,
+                                                                                                                                                   retry_count_if_api_call_limit_reached))
+                                time.sleep(retry_wait_time_if_api_call_limit_reached)
+                                continue
+
+
+                raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
+                                + '" and error message: ' + req.text)
+
+            if jsonOutputExpected:
+                log.info("Parsing API answer to JSON (with a size of " + str( int(answerSize) ) + "KB)")
                 jout = req.json()
-                if len(jout) > 0:
-                    if "token" in jout[0]:
-                        if jout[0]['token'] == 'too_many_requests_error':
-                            raise pylo.PyloApiTooManyRequestsEx('API has hit DOS protection limit (X calls per minute)', jout)
+                log.info("Done!")
+                if answerSize < 5:
+                    log.info("Resulting JSON object:")
+                    log.info(json.dumps(jout, indent=2, sort_keys=True))
+                return jout
 
+            return req.text
 
-            raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
-                            + '" and error message: ' + req.text)
+        raise pylo.PyloApiEx("Unexpected API output or race condition")
 
-        if jsonOutputExpected:
-            log.info("Parsing API answer to JSON (with a size of " + str( int(answerSize) ) + "KB)")
-            jout = req.json()
-            log.info("Done!")
-            if answerSize < 5:
-                log.info("Resulting JSON object:")
-                log.info(json.dumps(jout, indent=2, sort_keys=True))
-            return jout
-
-        return req.text
 
     def getSoftwareVersion(self):
         self.collect_pce_infos()
