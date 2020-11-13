@@ -91,23 +91,34 @@ class APIConnector:
 
         return url
 
-    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
-                    params=None, skip_product_version_check=False):
+    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None, skip_product_version_check=False,
+                    retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
         return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params)
+                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params,
+                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def do_post_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False):
+    def do_post_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+                     retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
         return self._doCall('POST', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
+                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
+                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def do_put_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False):
+    def do_put_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+                    retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
         return self._doCall('PUT', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
+                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
+                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
 
-    def do_delete_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False):
+    def do_delete_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+                       retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
         return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall)
+                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
+                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
 
     def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False,
