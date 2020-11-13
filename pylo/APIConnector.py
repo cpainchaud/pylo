@@ -13,6 +13,8 @@ from typing import Union, Dict, Any, List, Optional
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
 
+default_retry_count_if_api_call_limit_reached = 3
+default_retry_wait_time_if_api_call_limit_reached = 10
 
 def get_field_or_die(field_name: str, data):
     if type(data) is not dict:
@@ -92,21 +94,27 @@ class APIConnector:
         return url
 
     def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None, skip_product_version_check=False,
-                    retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
+                    retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                    retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
+
         return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
     def do_post_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
-                     retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
+                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
+
         return self._doCall('POST', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
     def do_put_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
-                    retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
+                    retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                    retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
+
         return self._doCall('PUT', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
@@ -114,7 +122,9 @@ class APIConnector:
 
 
     def do_delete_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
-                       retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
+                       retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                       retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
+
         return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
@@ -123,7 +133,8 @@ class APIConnector:
 
     def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False,
                 skip_product_version_check=False, params=None,
-                retry_count_if_api_call_limit_reached=3, retry_wait_time_if_api_call_limit_reached=10):
+                retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
         if self.version is None and not skip_product_version_check:
             self.collect_pce_infos()
@@ -316,7 +327,9 @@ class APIConnector:
         self.version_string = jout['version']
         self.version = pylo.SoftwareVersion(jout['long_display'])
 
-    def policy_check(self, protocol, port=None, src_ip=None, src_href=None, dst_ip=None, dst_href=None):
+    def policy_check(self, protocol, port=None, src_ip=None, src_href=None, dst_ip=None, dst_href=None,
+                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
         if type(port) is str:
             lower = protocol.lower()
@@ -352,7 +365,9 @@ class APIConnector:
         if dst_href is not None:
             path += "&dst_workload={}".format(dst_href)
 
-        return self.do_get_call(path=path, asyncCall=False)
+        return self.do_get_call(path=path, asyncCall=False,
+                                retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                                retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
     def rule_coverage_query(self, data):
         return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, includeOrgID=True, jsonOutputExpected=True, asyncCall=False)
