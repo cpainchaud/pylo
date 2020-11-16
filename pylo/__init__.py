@@ -7,7 +7,7 @@ sys.path.append(vendor_dir)
 
 from .tmp import *
 
-from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx
+from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexpectedSyntax
 from .SoftwareVersion import SoftwareVersion
 from .IPMap import IP4Map
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable

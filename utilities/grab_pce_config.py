@@ -22,7 +22,7 @@ args = vars(parser.parse_args())
 
 # print(args)
 
-hostname = args['host']
+hostname = args['pce']
 include_deleted = args['include_deleted_workloads']
 
 if args['debug']:

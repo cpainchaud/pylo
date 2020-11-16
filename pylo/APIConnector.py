@@ -1075,13 +1075,17 @@ class APIConnector:
 
         owner: 'pylo.APIConnector'
 
+        class Tracker:
+            def __init__(self, owner):
+                self.owner = owner
+
         class ExplorerResult:
             _draft_mode_policy_decision_is_blocked: Optional[bool]
             destination_workload_labels_href: List[str]
             source_workload_labels_href: List[str]
 
             def __init__(self, data):
-                self._raw_json=data
+                self._raw_json = data
                 self.num_connections = data['num_connections']
                 self.policy_decision_string = data['policy_decision']
                 self._draft_mode_policy_decision_is_blocked = None
@@ -1097,7 +1101,9 @@ class APIConnector:
                 self.source_workload_href = None
                 workload_data = src.get('workload')
                 if workload_data is not None:
-                    self.source_workload_href = workload_data['href']
+                    self.source_workload_href = workload_data.get('href')
+                    if self.source_workload_href is None:
+                        raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
 
                     self.source_workload_labels_href = []
                     workload_labels_data = workload_data.get('labels')
@@ -1113,10 +1119,13 @@ class APIConnector:
                 if self._destination_iplists is not None:
                     for href in self._destination_iplists:
                         self._destination_iplists_href.append(href['href'])
+
                 self.destination_workload_href = None
                 workload_data = dst.get('workload')
                 if workload_data is not None:
-                    self.destination_workload_href = workload_data['href']
+                    self.destination_workload_href = workload_data.get('href')
+                    if self.destination_workload_href is None:
+                        raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
 
                     self.destination_workload_labels_href = []
                     workload_labels_data = workload_data.get('labels')
@@ -1267,10 +1276,14 @@ class APIConnector:
                 """
                 return self._draft_mode_policy_decision_is_blocked is not None and not self._draft_mode_policy_decision_is_blocked
 
+            def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
+                return self._draft_mode_policy_decision_is_blocked is None
+
 
         def __init__(self, data, owner: 'pylo.APIConnector'):
             self._raw_results = data
             self.owner = owner
+            self.tracker = APIConnector.ExplorerResultSetV1.Tracker(self)
             # print(data)
             #_print('Received {} Explorer results'.format(len(data)))
 
@@ -1292,7 +1305,14 @@ class APIConnector:
                             ) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
             result = []
             for data in self._raw_results:
-                result.append(APIConnector.ExplorerResultSetV1.ExplorerResult(data))
+                try:
+                    new_record = APIConnector.ExplorerResultSetV1.ExplorerResult(data)
+                    result.append(new_record)
+
+                except pylo.PyloApiUnexpectedSyntax as error:
+                    pylo.log.warn(error)
+
+
 
             if len(result) > 0 and draft_mode:
                 draft_reply_to_record_table: List[APIConnector.ExplorerResultSetV1.ExplorerResult] = []
@@ -1399,7 +1419,12 @@ class APIConnector:
                         rule_list = response_data[0]
                         #print(rule_list)
                         explorer_result = draft_reply_to_record_table[query_index]
-                        explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list)<1)
+                        if explorer_result.draft_mode_policy_decision_is_not_defined():
+                            explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) < 1)
+
+                        elif explorer_result.draft_mode_policy_decision_is_blocked():
+                            explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) < 1)
+
 
                     index += draft_mode_request_count_per_batch
 

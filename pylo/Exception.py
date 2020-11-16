@@ -8,7 +8,7 @@ class PyloEx(Exception):
             return
 
         text = "{}\nJSON output:\n{}".format(arg, pylo.nice_json(json_object))
-        Exception.__init__(self, text)
+        super().__init__(self, text)
 
 
 class PyloApiEx(PyloEx):
@@ -18,6 +18,11 @@ class PyloApiEx(PyloEx):
 
 
 class PyloApiTooManyRequestsEx(PyloApiEx):
+    def __init__(self, arg, json_object=None):
+        PyloApiEx(arg, json_object)
+
+
+class PyloApiUnexpectedSyntax(PyloApiEx):
     def __init__(self, arg, json_object=None):
         PyloApiEx(arg, json_object)
 

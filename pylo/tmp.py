@@ -2,8 +2,16 @@ import logging
 import pylo
 
 log = logging.getLogger('PYLO')
-console_logger = logging.StreamHandler()
-log.addHandler(console_logger)
+
+
+def init_logger():
+    console_logger = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_logger.setFormatter(formatter)
+    log.addHandler(console_logger)
+
+
+init_logger()
 
 
 def log_set_debug():
