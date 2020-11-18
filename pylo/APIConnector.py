@@ -1301,7 +1301,7 @@ class APIConnector:
 
         def get_all_records(self,
                             draft_mode=False,
-                            draft_mode_request_count_per_batch=100
+                            draft_mode_request_count_per_batch=50
                             ) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
             result = []
             for data in self._raw_results:

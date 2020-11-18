@@ -136,18 +136,30 @@ class ServiceEntry:
     def is_udp(self):
         return self.protocol == 17
 
-    def to_string_standard(self):
+    def to_string_standard(self, protocol_first=True):
+
+        if protocol_first:
+            if self.protocol == 17:
+                if self.to_port is None:
+                    return 'udp/' + str(self.port)
+                return 'udp/' + str(self.port) + '-' + str(self.to_port)
+            elif self.protocol == 6:
+                if self.to_port is None:
+                    return 'tcp/' + str(self.port)
+                return 'tcp/' + str(self.port) + '-' + str(self.to_port)
+
+            return 'proto/' + str(self.protocol)
 
         if self.protocol == 17:
             if self.to_port is None:
-                return 'udp/' + str(self.port)
-            return 'udp/' + str(self.port) + '-' + str(self.to_port)
+                return str(self.port) + '/udp'
+            return str(self.port) + '-' + str(self.to_port) + '/udp'
         elif self.protocol == 6:
             if self.to_port is None:
-                return 'tcp/' + str(self.port)
-            return 'tcp/' + str(self.port) + '-' + str(self.to_port)
+                return str(self.port) + '/tcp'
+            return str(self.port) + '-' + str(self.to_port) + '/tcp'
 
-        return 'proto/' + str(self.protocol)
+        return str(self.protocol) + '/proto'
 
 
 

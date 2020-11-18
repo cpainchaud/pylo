@@ -28,7 +28,7 @@ class Organization:
         self.SecurityPrincipalStore = pylo.SecurityPrincipalStore(self)
         self.pce_version = None
 
-    def load_from_cached_file(self, hostname: str, ):
+    def load_from_cached_file(self, hostname: str, no_exception_if_file_does_not_exist=False) -> bool:
         # filename should be like 'cache_xxx.yyy.zzz.json'
         filename = 'cache_' + hostname + '.json'
 
@@ -42,7 +42,10 @@ class Organization:
                 if 'data' not in data:
                     raise pylo.PyloEx("Cache file '%s' was found and successfully loaded but no 'data' object could be found" % filename)
                 self.load_from_json(data['data'])
-                return
+                return True
+
+        if no_exception_if_file_does_not_exist:
+            return False
 
         raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
 
