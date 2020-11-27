@@ -211,8 +211,8 @@ class ArraysToExcel:
 
                 if self._width[header_index] > 0:
                     if column_name_length > self._width[header_index]:
-                        self._width[header_index] =  column_name_length
-                        
+                        self._width[header_index] = column_name_length
+
                     xls_worksheet.set_column(header_index, header_index, width=self._width[header_index]+1)
 
                 header_index += 1
@@ -263,7 +263,7 @@ class ArraysToExcel:
         self._sheets[sheet_name].add_line_from_list_of_objects(list_of_objects)
 
     def add_line_from_list(self, line: list, sheet_name: str):
-        self._sheets[sheet_name].add_line_from_list(list)
+        self._sheets[sheet_name].add_line_from_list(line)
 
 
 
