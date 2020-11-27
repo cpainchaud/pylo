@@ -1438,7 +1438,8 @@ class APIConnector:
     def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
         path = "/traffic_flows/traffic_analysis_queries"
         data = filters.generate_json_query()
-        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True), owner=self)
+        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True),
+                                                  owner=self)
         return result
 
 

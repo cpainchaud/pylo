@@ -204,11 +204,17 @@ class ArraysToExcel:
 
                 if type(header) is str:
                     xls_headers.append({'header': header, 'format': cell_format})
+                    column_name_length = len(header)
                 else:
                     xls_headers.append({'header': header['nice_name'], 'format': cell_format})
+                    column_name_length = len(header['nice_name'])
 
                 if self._width[header_index] > 0:
+                    if column_name_length > self._width[header_index]:
+                        self._width[header_index] =  column_name_length
+                        
                     xls_worksheet.set_column(header_index, header_index, width=self._width[header_index]+1)
+
                 header_index += 1
 
 
