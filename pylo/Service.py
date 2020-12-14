@@ -114,7 +114,7 @@ class ServiceEntry:
         self.icmp_code = icmp_code
 
     @staticmethod
-    def create_from_json(data):
+    def create_from_json(data: Dict):
         protocol = data['proto']
         if protocol == 1:
             icmp_code = data['icmp_code']
@@ -130,13 +130,16 @@ class ServiceEntry:
         return entry
 
 
-    def is_tcp(self):
+    def is_tcp(self) -> bool:
         return self.protocol == 6
 
-    def is_udp(self):
+    def is_udp(self) -> bool:
         return self.protocol == 17
 
-    def to_string_standard(self, protocol_first=True):
+    def to_string_standard(self, protocol_first=True) -> str :
+
+        if self.protocol == -1:
+            return 'All Services'
 
         if protocol_first:
             if self.protocol == 17:
