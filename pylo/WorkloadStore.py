@@ -5,12 +5,13 @@ from typing import Optional, List
 
 
 class WorkloadInterface():
-    def __init__(self, owner: 'pylo.Workload', name: str, ip: str, network: str, gateway: str):
+    def __init__(self, owner: 'pylo.Workload', name: str, ip: str, network: str, gateway: str, ignored: bool):
         self.owner = owner
         self.name = name
         self.ip = ip
         self.network = network
         self.gateway = gateway
+        self.is_ignored = ignored
 
 
 class Workload(pylo.ReferenceTracker):
@@ -81,11 +82,19 @@ class Workload(pylo.ReferenceTracker):
             if desc is not None:
                 self.description = desc
 
+        ignored_interfaces_index = {}
+        ignored_interfaces_json = data.get('ignored_interface_names')
+
+        if ignored_interfaces_json is not None:
+            for interface_name in ignored_interfaces_json:
+                ignored_interfaces_index[interface_name] = True
+
         interfaces_json = data.get('interfaces')
         if interfaces_json is not None:
             for interface_json in interfaces_json:
                 if_object = WorkloadInterface(self, interface_json.get('name'), interface_json.get('address'),
-                                              interface_json.get('cidr_block'), interface_json.get('default_gateway_address'))
+                                              interface_json.get('cidr_block'), interface_json.get('default_gateway_address'),
+                                              ignored=interface_json.get('name') in ignored_interfaces_index)
                 self.interfaces.append(if_object)
 
         self.deleted = data['deleted']
@@ -128,10 +137,12 @@ class Workload(pylo.ReferenceTracker):
                     self.roleLabel = label_object
 
 
-    def interfaces_to_string(self, separator=','):
+    def interfaces_to_string(self, separator=',', show_ignored=True):
         tmp = []
 
         for interface in self.interfaces:
+            if not show_ignored and interface.is_ignored:
+                continue
             tmp.append('{}:{}'.format(interface.name, interface.ip))
 
         return pylo.string_list_to_text(tmp, separator)
@@ -391,6 +402,8 @@ class WorkloadStore:
         for href, workload in self.itemsByHRef.items():
             matched = True
             for label in labels:
+                if label is None:
+                    continue
                 if not workload.is_using_label(label):
                     matched = False
                     break
