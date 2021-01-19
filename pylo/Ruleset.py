@@ -453,6 +453,42 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
+    def get_role_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        result = []
+
+        for item in self._items.values():
+            if (isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup)) and item.type_is_role():
+                result.append(item)
+
+        return result
+
+    def get_app_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        result = []
+
+        for item in self._items.values():
+            if (isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup)) and item.type_is_application():
+                result.append(item)
+
+        return result
+
+    def get_env_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        result = []
+
+        for item in self._items.values():
+            if (isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup)) and item.type_is_environment():
+                result.append(item)
+
+        return result
+
+    def get_loc_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        result = []
+
+        for item in self._items.values():
+            if (isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup)) and item.type_is_location():
+                result.append(item)
+
+        return result
+
 
     def has_iplists(self):
         for item in self._items.values():

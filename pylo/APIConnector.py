@@ -8,7 +8,7 @@ from queue import Queue
 from datetime import datetime, timedelta
 import pylo
 from pylo import log
-from typing import Union, Dict, Any, List, Optional
+from typing import Union, Dict, Any, List, Optional, Tuple
 
 #urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
@@ -841,6 +841,8 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
 
     class ExplorerFilterSetV1:
+        exclude_processes_emulate: Dict[str,str]
+        _exclude_processes: List[str]
         _exclude_direct_services: List['pylo.DirectServiceInRule']
         _time_from: Optional[datetime]
         _time_to: Optional[datetime]
@@ -867,6 +869,8 @@ class APIConnector:
             self._exclude_broadcast = False
             self._exclude_multicast = False
             self._exclude_direct_services = []
+            self.exclude_processes_emulate = {}
+            self._exclude_processes = []
 
         @staticmethod
         def __filter_prop_add_label(prop_dict, label_or_href):
@@ -946,6 +950,11 @@ class APIConnector:
         def service_exclude_add(self, service: 'pylo.DirectServiceInRule'):
             self._exclude_direct_services.append(service)
 
+        def process_exclude_add(self, process_name: str, emulate_on_client=False):
+            if emulate_on_client:
+                self.exclude_processes_emulate[process_name] = process_name
+            else:
+                self._exclude_processes.append(process_name)
 
         def set_exclude_broadcast(self, exclude=True):
             self._exclude_broadcast = exclude
@@ -1067,6 +1076,10 @@ class APIConnector:
             if len(self._exclude_direct_services) > 0:
                 for service in self._exclude_direct_services:
                     filters['services']['exclude'].append(service.get_api_json())
+
+            if len(self._exclude_processes) > 0:
+                for process in self._exclude_processes:
+                    filters['services']['exclude'].append({'process_name': process})
 
             return filters
 
@@ -1280,8 +1293,18 @@ class APIConnector:
                 return self._draft_mode_policy_decision_is_blocked is None
 
 
-        def __init__(self, data, owner: 'pylo.APIConnector'):
+        def __init__(self, data, owner: 'pylo.APIConnector', emulated_process_exclusion={}):
             self._raw_results = data
+            if len(emulated_process_exclusion) > 0:
+                new_data = []
+                for record in self._raw_results:
+                    if 'process_name' in record['service']:
+                        if record['service']['process_name'] in emulated_process_exclusion:
+                            continue
+                    new_data.append(record)
+                self._raw_results = new_data
+
+
             self.owner = owner
             self.tracker = APIConnector.ExplorerResultSetV1.Tracker(self)
             # print(data)
@@ -1439,7 +1462,8 @@ class APIConnector:
         path = "/traffic_flows/traffic_analysis_queries"
         data = filters.generate_json_query()
         result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True),
-                                                  owner=self)
+                                                  owner=self, emulated_process_exclusion=filters.exclude_processes_emulate)
+
         return result
 
 
