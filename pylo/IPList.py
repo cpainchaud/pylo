@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pylo
 from pylo import log
 from .Helpers import *
@@ -81,10 +83,8 @@ class IPList(pylo.ReferenceTracker):
 
 class IPListStore:
 
-    """
-    :type itemsByHRef: dict[str,pylo.IPList]
-    :type itemsByName: dict[str,pylo.IPList]
-    """
+    itemsByName: Dict[str, 'pylo.IPList']
+    itemsByHRef: Dict[str, 'pylo.IPList']
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
