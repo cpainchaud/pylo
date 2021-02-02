@@ -1,20 +1,25 @@
-import pylo
+from .ReferenceTracker import ReferenceTracker
+
+from .LabelCommon import LabelCommon
 
 
-class Label(pylo.ReferenceTracker, pylo.LabelCommon):
+
+class Label(ReferenceTracker, LabelCommon):
 
     def __init__(self, name, href, ltype, owner):
-        pylo.ReferenceTracker.__init__(self)
-        pylo.LabelCommon.__init__(self, name, href, ltype, owner)
+        ReferenceTracker.__init__(self)
+        LabelCommon.__init__(self, name, href, ltype, owner)
 
     def is_group(self):
-        return True
-
-    def is_label(self):
         return False
 
+    def is_label(self):
+        return True
+
     def reference_obj(self):
-        return { "href": self.href, "value": self.name, "key": self.type_to_short_string() }
+        return {"href": self.href,
+                "value": self.name,
+                "key": self.type_to_short_string()}
 
     def get_api_reference_json(self):
         return {'label': {'href': self.href}}

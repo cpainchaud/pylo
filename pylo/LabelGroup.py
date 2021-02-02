@@ -1,13 +1,15 @@
+from typing import Dict, Union
 import pylo
+from typing import *
+
+from pylo import Label
 
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
-    """
-    :type _members: dict[str,pylo.Label|pylo.LabelGroup]
-    """
+    _members: Dict[str, Union[Label, 'LabelGroup']]
 
-    def __init__(self, name, href, ltype, owner):
+    def __init__(self, name: str, href: str, ltype: int, owner):
         pylo.ReferenceTracker.__init__(self)
         pylo.LabelCommon.__init__(self, name, href, ltype, owner)
         self._members = {}
@@ -39,6 +41,12 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
     def get_api_reference_json(self):
         return {'label_group': {'href': self.href}}
 
+
+    def get_members(self) -> Dict[str, 'pylo.Label']:
+        data = {}
+        for label in self._members.values():
+            data[label.href] = label
+        return data
 
     def is_group(self):
         return True

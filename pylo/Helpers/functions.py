@@ -30,6 +30,25 @@ def string_list_to_text(string_list, separator=',') -> str:
     return msg
 
 
+def obj_with_href_list_to_text(string_list, separator=',') -> str:
+    """
+
+    :type string_list: List[str]
+    :type separator: str
+    """
+    msg = ""
+    first = True
+    for stringItem in string_list:
+        str_to_print = stringItem.href
+
+        if not first:
+            msg += separator
+        first = False
+        msg += str_to_print
+    # print("list length {} and msg ='{}'".format(len(string_list), msg))
+    return msg
+
+
 def file_clean(path, no_print=False):
     if not no_print:
         print(" * Cleaning file '{}' from previous runs... ".format(path), end='', flush=True)

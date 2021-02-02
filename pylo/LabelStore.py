@@ -129,6 +129,22 @@ class LabelStore:
     def get_location_labels_as_list(self):
         return self.locationLabels.values()
 
+    def get_labels_no_groups(self) -> Dict[str, 'pylo.Label']:
+        data = {}
+        for label in self.itemsByHRef.values():
+            if label.is_label():
+                data[label.href] = label
+        return data
+
+    def get_label_groups(self) -> Dict[str, 'pylo.LabelGroup']:
+        data = {}
+
+        for label in self.itemsByHRef.values():
+            if label.is_group():
+                data[label.href] = label
+        return data
+
+
     def find_label_by_name_whatever_type(self, name: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
 
         find = self.locationLabels.get(name)

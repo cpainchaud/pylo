@@ -1,14 +1,10 @@
-import pylo
+from .Exception import PyloEx
 from .LabelStore import label_type_role, label_type_env, label_type_loc, label_type_app
 
 
 class LabelCommon:
 
-    owner = ...  # type: pylo.LabelStore
-    name = ...  # type: str
-    href = ...  # type: str
-
-    def __init__(self, name, href, ltype, owner):
+    def __init__(self, name: str, href: str, ltype: int, owner):
         """
         :param name: str
         :param href: str
@@ -28,15 +24,15 @@ class LabelCommon:
             elif ltype == 'role':
                 ltype = label_type_role
             else:
-                raise Exception("Tried to initialize a Label object with unsupported type '%s'" % (ltype) )
+                raise PyloEx("Tried to initialize a Label object with unsupported type '%s'" % (ltype) )
 
         self._type = ltype
 
     def is_label(self):
-        raise Exception("not implemented")
+        raise PyloEx("not implemented")
 
     def is_group(self):
-        raise Exception("not implemented")
+        raise PyloEx("not implemented")
 
     def type_to_short_string(self):
         if self.type_is_location():
@@ -48,7 +44,7 @@ class LabelCommon:
         elif self.type_is_role():
             return "role"
 
-        raise Exception("unsupported yet")
+        raise PyloEx("unsupported yet")
 
 
     def type_is_location(self):
@@ -66,7 +62,7 @@ class LabelCommon:
     def type(self):
         return self._type
 
-    def type_string(self):
+    def type_string(self) -> str:
         if self._type == label_type_loc:
             return 'loc'
         if self._type == label_type_env:
@@ -75,4 +71,5 @@ class LabelCommon:
             return 'app'
         if self._type == label_type_role:
             return 'role'
+        raise PyloEx("unsupported Label type #{} for label href={}".format(self._type, self.href))
 

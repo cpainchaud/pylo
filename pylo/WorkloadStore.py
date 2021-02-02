@@ -239,6 +239,27 @@ class Workload(pylo.ReferenceTracker):
                 return none_str
             return self.locationLabel.name
 
+    def get_label_href_by_type(self, type: str, none_str='') -> str:
+        if type == 'role':
+            if self.roleLabel is None:
+                return none_str
+            return self.roleLabel.href
+
+        if type == 'app':
+            if self.applicationLabel is None:
+                return none_str
+            return self.applicationLabel.href
+
+        if type == 'env':
+            if self.environmentLabel is None:
+                return none_str
+            return self.environmentLabel.href
+
+        if type == 'loc':
+            if self.locationLabel is None:
+                return none_str
+            return self.locationLabel.href
+
 
     def get_appgroup_str(self):
         labels = ''

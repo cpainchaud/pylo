@@ -23,14 +23,14 @@ class RulesetScope:
             self.scope_entries[scope_entry] = scope_entry
 
 
-    def get_all_scopes_str(self, label_separator='|', scope_separator="\n"):
+    def get_all_scopes_str(self, label_separator='|', scope_separator="\n", use_href: bool = False):
         result = ''
         for scope in self.scope_entries.keys():
             if len(result) < 1:
-                result += scope.to_string(label_separator)
+                result += scope.to_string(label_separator,use_href=use_href)
             else:
                 result += scope_separator
-                result += scope.to_string(label_separator)
+                result += scope.to_string(label_separator,use_href=use_href)
 
         return result
 
@@ -70,20 +70,29 @@ class RulesetScopeEntry:
             else:
                 raise pylo.PyloEx("Unsupported label type '{}' in scope".format(label.type_string()))
 
-    def to_string(self, label_separator = '|'):
+    def to_string(self, label_separator = '|', use_href=False):
         string = 'All' + label_separator
         if self.app_label is not None:
-            string = self.app_label.name + label_separator
+            if use_href:
+                string = self.app_label.href + label_separator
+            else:
+                string = self.app_label.name + label_separator
 
         if self.env_label is None:
             string += 'All' + label_separator
         else:
-            string += self.env_label.name + label_separator
+            if use_href:
+                string += self.env_label.href + label_separator
+            else:
+                string += self.env_label.name + label_separator
 
         if self.loc_label is None:
             string += 'All'
         else:
-            string += self.loc_label.name
+            if use_href:
+                string += self.loc_label.href
+            else:
+                string += self.loc_label.name
 
         return string
 

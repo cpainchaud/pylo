@@ -191,7 +191,7 @@ class IP4Map:
         return ranges
 
 
-    def to_list_of_cidr_string(self):
+    def to_list_of_cidr_string(self, skip_netmask_for_32=False):
 
         result = []
 
@@ -241,7 +241,10 @@ class IP4Map:
             while net_start <= net_end:
 
                 if net_start == net_end:
-                    result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 32))
+                    if skip_netmask_for_32:
+                        result.append('{}'.format(ipaddress.IPv4Address(net_start)))
+                    else:
+                        result.append('{}'.format(ipaddress.IPv4Address(net_start), 32))
                     break
 
                 for netmask in range(1, 32, 1):
@@ -256,7 +259,10 @@ class IP4Map:
                         break
 
                     if new_end == net_end:
-                        result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 32 - netmask))
+                        if skip_netmask_for_32 and netmask == 0:
+                            result.append('{}'.format(ipaddress.IPv4Address(net_start)))
+                        else:
+                            result.append('{}/{}'.format(ipaddress.IPv4Address(net_start), 32 - netmask))
                         net_start = net_end+1
                         break
                     else:

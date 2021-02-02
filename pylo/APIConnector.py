@@ -916,7 +916,7 @@ class APIConnector:
             self.__filter_consumer_ip_include.append(ipaddress)
 
         def consumer_include_ip4map(self, map: 'pylo.IP4Map'):
-            for item in map.to_list_of_cidr_string():
+            for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
                 self.consumer_include_cidr(item)
 
         def provider_include_label(self, label_or_href):
@@ -937,7 +937,7 @@ class APIConnector:
             self.__filter_provider_ip_exclude.append(ipaddress)
 
         def provider_exclude_ip4map(self, map: 'pylo.IP4Map'):
-            for item in map.to_list_of_cidr_string():
+            for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
                 self.provider_exclude_cidr(item)
 
         def provider_include_cidr(self, ipaddress: str):
