@@ -141,7 +141,7 @@ class APIConnector:
 
         url = self._make_url(path, include_org_id)
 
-        headers = {'Accept' : 'application/json'}
+        headers = {'Accept': 'application/json'}
 
         if json_arguments is not None:
             headers['Content-Type'] = 'application/json'
@@ -152,8 +152,13 @@ class APIConnector:
         while True:
 
             log.info("Request URL: " + url)
-            req = self._cached_session.request(method, url, headers=headers, auth=(self.api_user, self.api_key),
-                                   verify=(not self.skipSSLCertCheck), json=json_arguments, params=params)
+
+            try:
+                req = self._cached_session.request(method, url, headers=headers, auth=(self.api_user, self.api_key),
+                                       verify=(not self.skipSSLCertCheck), json=json_arguments, params=params)
+            except Exception as e:
+                raise pylo.PyloApiEx("PCE connectivity or low level issue: {}".format(e))
+
 
             answerSize = len(req.content) / 1024
             log.info("URL downloaded (size "+str( int(answerSize) )+"KB) Reply headers:\n" +
