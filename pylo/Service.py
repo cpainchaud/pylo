@@ -1,6 +1,9 @@
+from typing import Dict, List, Any
+
 import pylo
 from pylo import log
 from .Helpers import *
+from typing import *
 
 
 class PortMap:
@@ -170,8 +173,13 @@ class ServiceEntry:
 
 class Service(pylo.ReferenceTracker):
 
-    """:type owner: ServiceStore"""
-    def __init__(self, name, href, owner):
+    name: str
+    href: str
+    owner: 'pylo.ServiceStore'
+    description: Optional[str]
+    entries: List['pylo.ServiceEntry']
+
+    def __init__(self, name: str, href: str, owner: 'pylo.ServiceStore'):
         """
         :type name: str
         :type href: str
@@ -183,9 +191,9 @@ class Service(pylo.ReferenceTracker):
         self.name = name
         self.href = href
 
-        self.entries = []  # type: list[ServiceEntry]
+        self.entries = []
 
-        self.description = None  # type: str
+        self.description = None
         self.processName = None
 
         self.deleted = False
@@ -210,14 +218,23 @@ class Service(pylo.ReferenceTracker):
     def get_api_reference_json(self):
         return {'service': {'href': self.href}}
 
+    def get_entries_str_list(self, procolFirst=True) -> List[str]:
+        result: List[str] = []
+        for entry in self.entries:
+            result.append(entry.to_string_standard(protocol_first=procolFirst))
+        return result
+
 
 class ServiceStore(pylo.Referencer):
+    itemsByName: Dict[str, Service]
+    itemsByHRef: Dict[str, Service]
+
     def __init__(self, owner):
         """:type owner: pylo.Organization"""
         pylo.Referencer.__init__(self)
         self.owner = owner
-        self.itemsByHRef = {}  # type: dict[str,Service]
-        self.itemsByName = {}  # type: dict[str,Service]
+        self.itemsByHRef = {}
+        self.itemsByName = {}
 
         self.special_allservices = pylo.Service('All Services', '/api/v1/orgs/1/sec_policy/draft/services/1', self)
 

@@ -19,7 +19,7 @@ from .LabelStore import LabelStore, label_type_app, label_type_env, label_type_l
 from .IPList import IPList, IPListStore
 from .AgentStore import AgentStore, VENAgent
 from .WorkloadStore import WorkloadStore, Workload
-from .Service import Service, ServiceStore
+from .Service import Service, ServiceStore, PortMap
 from .Ruleset import Ruleset, RulesetStore, Rule, RuleServiceContainer, RuleHostContainer, \
     RuleSecurityPrincipalContainer, RulesetScope, RulesetScopeEntry, DirectServiceInRule
 from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
