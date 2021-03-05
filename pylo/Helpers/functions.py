@@ -146,21 +146,21 @@ __clocks_end = {}
 
 
 def clock_start(name:str = 'default'):
-    __clocks_start[name] = time.clock()
+    __clocks_start[name] = time.time()
 
 
 def clock_stop(name:str = 'default'):
-    __clocks_end[name] = time.clock()
+    __clocks_end[name] = time.time()
 
 
 import functools
 
 
 def clock_elapsed_str(name:str = 'default'):
-    t = time.clock()-__clocks_start[name]
+    t = time.time()-__clocks_start[name]
     return "%d:%02d:%02d.%03d" % \
            functools.reduce(lambda ll,b : divmod(ll[0],b) + ll[1:],
                   [(t*1000,),1000,60,60])
-    return "{}".format(time.clock()-__clocks_start[name])
+    return "{}".format(time.time()-__clocks_start[name])
 
 

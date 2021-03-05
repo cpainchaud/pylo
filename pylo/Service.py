@@ -168,9 +168,6 @@ class ServiceEntry:
         return str(self.protocol) + '/proto'
 
 
-
-
-
 class Service(pylo.ReferenceTracker):
 
     name: str
