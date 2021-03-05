@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 """Workbook is the top-level container for all document information."""
 from copy import copy
@@ -110,7 +110,7 @@ class Workbook(object):
         self._colors = COLOR_INDEX
         self._cell_styles = IndexedList([StyleArray()])
         self._named_styles = NamedStyleList()
-        self.add_named_style(NamedStyle(font=copy(DEFAULT_FONT), builtinId=0))
+        self.add_named_style(NamedStyle(font=copy(DEFAULT_FONT), border=copy(DEFAULT_BORDER), builtinId=0))
         self._table_styles = TableStyleList()
         self._differential_styles = DifferentialStyleList()
 
@@ -126,22 +126,6 @@ class Workbook(object):
     @property
     def write_only(self):
         return self.__write_only
-
-
-    @property
-    def guess_types(self):
-        return getattr(self, '__guess_types', False)
-
-
-    @guess_types.setter
-    def guess_types(self, value):
-        self.__guess_types = value
-
-
-    @deprecated("Use the .active property")
-    def get_active_sheet(self):
-        """Returns the current active sheet."""
-        return self.active
 
 
     @property
@@ -442,3 +426,19 @@ class Workbook(object):
         """
         if hasattr(self, '_archive'):
             self._archive.close()
+
+
+    def _duplicate_name(self, name):
+        """
+        Check for duplicate name in defined name list and table list of each worksheet.
+        Names are not case sensitive.
+        """
+        name = name.lower()
+        for sheet in self.worksheets:
+            for t in sheet.tables:
+                if name == t.lower():
+                    return True
+
+        if name in self.defined_names:
+            return True
+

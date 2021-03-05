@@ -2,7 +2,7 @@
 #
 # Exceptions - A class for XlsxWriter exceptions.
 #
-# Copyright 2013-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2013-2020, John McNamara, jmcnamara@cpan.org
 #
 
 
@@ -32,10 +32,6 @@ class InvalidWorksheetName(XlsxInputError):
 
 class DuplicateWorksheetName(XlsxInputError):
     """Worksheet name already exists."""
-
-
-class ReservedWorksheetName(XlsxInputError):
-    """Worksheet name 'History' is reserved by Excel."""
 
 
 class UndefinedImageSize(XlsxFileError):

@@ -2,7 +2,7 @@
 #
 # Worksheet - A class for writing Excel Worksheets.
 #
-# Copyright 2013-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2013-2020, John McNamara, jmcnamara@cpan.org
 #
 import re
 import datetime
@@ -202,7 +202,10 @@ def xl_range(first_row, first_col, last_row, last_col):
         warn("Row and column numbers must be >= 0")
         return None
 
-    return range1 + ':' + range2
+    if range1 == range2:
+        return range1
+    else:
+        return range1 + ':' + range2
 
 
 def xl_range_abs(first_row, first_col, last_row, last_col):
@@ -227,7 +230,10 @@ def xl_range_abs(first_row, first_col, last_row, last_col):
         warn("Row and column numbers must be >= 0")
         return None
 
-    return range1 + ':' + range2
+    if range1 == range2:
+        return range1
+    else:
+        return range1 + ':' + range2
 
 
 def xl_range_formula(sheetname, first_row, first_col, last_row, last_col):

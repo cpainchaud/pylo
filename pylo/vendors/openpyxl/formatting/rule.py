@@ -1,4 +1,4 @@
-# copyright openpyxl 2010-2019
+# Copyright (c) 2010-2021 openpyxl
 
 from openpyxl.descriptors.serialisable import Serialisable
 from openpyxl.descriptors import (
@@ -11,7 +11,7 @@ from openpyxl.descriptors import (
     Integer,
     Float,
 )
-from openpyxl.descriptors.excel import HexBinary, ExtensionList
+from openpyxl.descriptors.excel import ExtensionList
 from openpyxl.styles.colors import Color, ColorDescriptor
 from openpyxl.styles.differential import DifferentialStyle
 

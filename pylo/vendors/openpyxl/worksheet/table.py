@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 from openpyxl.descriptors.serialisable import Serialisable
 from openpyxl.descriptors import (
@@ -329,6 +329,11 @@ class Table(Serialisable):
             self.autoFilter = AutoFilter(ref=self.ref)
 
 
+    @property
+    def column_names(self):
+        return [column.name for column in self.tableColumns]
+
+
 class TablePartList(Serialisable):
 
     tagname = "tableParts"
@@ -358,4 +363,23 @@ class TablePartList(Serialisable):
     def __bool__(self):
         return bool(self.tablePart)
 
-    __nonzero__ = __bool__
+
+class TableList(dict):
+
+
+    def add(self, table):
+        if not isinstance(table, Table):
+            raise TypeError("You can only add tables")
+        self[table.name] = table
+
+
+    def get(self, name=None, table_range=None):
+        if name is not None:
+            return super().get(name)
+        for table in self.values():
+            if table_range == table.ref:
+                return table
+
+
+    def items(self):
+        return [(name, table.ref) for name, table in super().items()]

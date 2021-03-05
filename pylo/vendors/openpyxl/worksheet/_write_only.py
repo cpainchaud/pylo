@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 
 """Write worksheets to xml representations in an optimized way"""
@@ -34,6 +34,7 @@ class WriteOnlyWorksheet(_WorkbookChild):
     add_chart = Worksheet.add_chart
     add_image = Worksheet.add_image
     add_table = Worksheet.add_table
+    tables = Worksheet.tables
     print_titles = Worksheet.print_titles
     print_title_cols = Worksheet.print_title_cols
     print_title_rows = Worksheet.print_title_rows

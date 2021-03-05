@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 from openpyxl.descriptors.serialisable import Serialisable
 from openpyxl.descriptors import (
@@ -83,7 +83,6 @@ class PrintPageSetup(Serialisable):
         return bool(dict(self))
 
 
-    __nonzero__ = __bool__
 
 
     @property
@@ -146,9 +145,6 @@ class PrintOptions(Serialisable):
 
     def __bool__(self):
         return bool(dict(self))
-
-
-    __nonzero__ = __bool__
 
 
 class PageMargins(Serialisable):

@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 import atexit
 from collections import defaultdict
@@ -46,6 +46,7 @@ class WorksheetWriter:
 
     def __init__(self, ws, out=None):
         self.ws = ws
+        self.ws._hyperlinks = []
         self.ws._comments = []
         if out is None:
             out = create_temporary_file()
@@ -262,15 +263,18 @@ class WorksheetWriter:
     def write_tables(self):
         tables = TablePartList()
 
-        for table in self.ws._tables:
+        for table in self.ws.tables.values():
             if not table.tableColumns:
                 table._initialise_columns()
                 if table.headerRowCount:
-                    row = self.ws[table.ref][0]
-                    for cell, col in zip(row, table.tableColumns):
-                        if cell.data_type != "s":
-                            warn("File may not be readable: column headings must be strings.")
-                        col.name = str(cell.value)
+                    try:
+                        row = self.ws[table.ref][0]
+                        for cell, col in zip(row, table.tableColumns):
+                            if cell.data_type != "s":
+                                warn("File may not be readable: column headings must be strings.")
+                            col.name = str(cell.value)
+                    except TypeError:
+                        warn("Column headings are missing, file may not be readable")
             rel = Relationship(Type=table._rel_type, Target="")
             self._rels.append(rel)
             table._rel_id = rel.Id

@@ -2,7 +2,7 @@
 #
 # Worksheet - A class for writing the Excel XLSX Worksheet file.
 #
-# Copyright 2013-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2013-2020, John McNamara, jmcnamara@cpan.org
 #
 
 # Standard packages.
@@ -244,6 +244,8 @@ class Worksheet(xmlwriter.XMLwriter):
         self.vbreaks = []
 
         self.protect_options = {}
+        self.protected_ranges = []
+        self.num_protected_ranges = 0
         self.set_cols = {}
         self.set_rows = defaultdict(dict)
 
@@ -317,6 +319,10 @@ class Worksheet(xmlwriter.XMLwriter):
         self.shapes = []
         self.shape_hash = {}
         self.drawing = 0
+        self.drawing_rels = {}
+        self.drawing_rels_id = 0
+        self.vml_drawing_rels = {}
+        self.vml_drawing_rels_id = 0
 
         self.rstring = ''
         self.previous_row = 0
@@ -341,6 +347,7 @@ class Worksheet(xmlwriter.XMLwriter):
         self.default_date_format = None
         self.default_url_format = None
         self.remove_timezone = False
+        self.max_url_length = 2079
 
         self.row_data_filename = None
         self.row_data_fh = None
@@ -355,10 +362,14 @@ class Worksheet(xmlwriter.XMLwriter):
         self.vertical_dpi = 0
         self.horizontal_dpi = 0
 
+        self.write_handlers = {}
+
+        self.ignored_errors = None
+
     # Utility function for writing different types of strings.
     def _write_token_as_string(self, token, row, col, *args):
         # Map the data to the appropriate write_*() method.
-        if token is '':
+        if token == '':
             return self._write_blank(row, col, *args)
 
         if self.strings_to_formulas and token.startswith('='):
@@ -419,13 +430,27 @@ class Worksheet(xmlwriter.XMLwriter):
         # The first arg should be the token for all write calls.
         token = args[0]
 
+        # Avoid isinstance() for better performance.
+        token_type = type(token)
+
+        # Check for any user defined type handlers with callback functions.
+        if token_type in self.write_handlers:
+            write_handler = self.write_handlers[token_type]
+            function_return = write_handler(self, row, col, *args)
+
+            # If the return value is None then the callback has returned
+            # control to this function and we should continue as
+            # normal. Otherwise we return the value to the caller and exit.
+            if function_return is None:
+                pass
+            else:
+                return function_return
+
         # Write None as a blank cell.
         if token is None:
             return self._write_blank(row, col, *args)
 
-        # Avoid isinstance() for better performance.
-        token_type = type(token)
-
+        # Check for standard Python types.
         if token_type is bool:
             return self._write_boolean(row, col, *args)
 
@@ -692,7 +717,9 @@ class Worksheet(xmlwriter.XMLwriter):
         if first_col > last_col:
             first_col, last_col = last_col, first_col
 
-        # Check that row and col are valid and store max and min values
+        # Check that row and col are valid and store max and min values.
+        if self._check_dimensions(first_row, first_col):
+            return -1
         if self._check_dimensions(last_row, last_col):
             return -1
 
@@ -909,10 +936,11 @@ class Worksheet(xmlwriter.XMLwriter):
 
         # Excel limits the escaped URL and location/anchor to 255 characters.
         tmp_url_str = url_str or ''
-        if len(url) > 255 or len(tmp_url_str) > 255:
-            warn("Ignoring URL '%s' with link or location/anchor > 255 "
+        max_url = self.max_url_length
+        if len(url) > max_url or len(tmp_url_str) > max_url:
+            warn("Ignoring URL '%s' with link or location/anchor > %d "
                  "characters since it exceeds Excel's limit for URLS" %
-                 force_unicode(url))
+                 (force_unicode(url), max_url))
             return -3
 
         # Check the limit of URLS per worksheet.
@@ -999,7 +1027,7 @@ class Worksheet(xmlwriter.XMLwriter):
         pos = 0
 
         if len(tokens) <= 2:
-            warn("You must specify more then 2 format/fragments for rich "
+            warn("You must specify more than 2 format/fragments for rich "
                  "strings. Ignoring input in write_rich_string().")
             return -5
 
@@ -1060,6 +1088,8 @@ class Worksheet(xmlwriter.XMLwriter):
 
         # Check that the string is < 32767 chars.
         if str_length > self.xls_strmax:
+            warn("String length must be less than or equal to Excel's limit "
+                 "of 32,767 characters in write_rich_string().")
             return -2
 
         # Write a shared string or an in-line string in constant_memory mode.
@@ -1076,6 +1106,21 @@ class Worksheet(xmlwriter.XMLwriter):
         self.table[row][col] = cell_string_tuple(string_index, cell_format)
 
         return 0
+
+    def add_write_handler(self, user_type, user_function):
+        """
+        Add a callback function to the write() method to handle user defined
+        types.
+
+        Args:
+            user_type:      The user type() to match on.
+            user_function:  The user defined function to write the type data.
+        Returns:
+            Nothing.
+
+        """
+
+        self.write_handlers[user_type] = user_function
 
     @convert_cell_args
     def write_row(self, row, col, data, cell_format=None):
@@ -1186,6 +1231,9 @@ class Worksheet(xmlwriter.XMLwriter):
         if self._check_dimensions(row, col, True, True):
             warn('Cannot insert textbox at (%d, %d).' % (row, col))
             return -1
+
+        if text is None:
+            text = ''
 
         if options is None:
             options = {}
@@ -1596,9 +1644,11 @@ class Worksheet(xmlwriter.XMLwriter):
         if first_col > last_col:
             (first_col, last_col) = (last_col, first_col)
 
-        # Check that column number is valid and store the max value
-        if self._check_dimensions(last_row, last_col) == -1:
-            return
+        # Check that row and col are valid and store max and min values.
+        if self._check_dimensions(first_row, first_col):
+            return -1
+        if self._check_dimensions(last_row, last_col):
+            return -1
 
         # Store the merge range.
         self.merge.append([first_row, first_col, last_row, last_col])
@@ -2216,13 +2266,8 @@ class Worksheet(xmlwriter.XMLwriter):
             first_col, last_col = last_col, first_col
 
         # Set the formatting range.
-        # If the first and last cell are the same write a single cell.
-        if first_row == last_row and first_col == last_col:
-            cell_range = xl_rowcol_to_cell(first_row, first_col)
-            start_cell = cell_range
-        else:
-            cell_range = xl_range(first_row, first_col, last_row, last_col)
-            start_cell = xl_rowcol_to_cell(first_row, first_col)
+        cell_range = xl_range(first_row, first_col, last_row, last_col)
+        start_cell = xl_rowcol_to_cell(first_row, first_col)
 
         # Override with user defined multiple range if provided.
         if 'multi_range' in options:
@@ -2438,10 +2483,10 @@ class Worksheet(xmlwriter.XMLwriter):
         if options.get('is_data_bar_2010'):
             self.excel_version = 2010
 
-            if options['min_type'] is 'min' and options['min_value'] == 0:
+            if options['min_type'] == 'min' and options['min_value'] == 0:
                 options['min_value'] = None
 
-            if options['max_type'] is 'max' and options['max_value'] == 0:
+            if options['max_type'] == 'max' and options['max_value'] == 0:
                 options['max_value'] = None
 
             options['range'] = cell_range
@@ -2504,6 +2549,12 @@ class Worksheet(xmlwriter.XMLwriter):
         if self._check_dimensions(last_row, last_col, True, True):
             return -2
 
+        # Swap last row/col for first row/col as necessary.
+        if first_row > last_row:
+            (first_row, last_row) = (last_row, first_row)
+        if first_col > last_col:
+            (first_col, last_col) = (last_col, first_col)
+
         # Valid input parameters.
         valid_parameter = {
             'autofilter': True,
@@ -2529,6 +2580,15 @@ class Worksheet(xmlwriter.XMLwriter):
         options['banded_rows'] = options.get('banded_rows', True)
         options['header_row'] = options.get('header_row', True)
         options['autofilter'] = options.get('autofilter', True)
+
+        # Check that there are enough rows.
+        num_rows = last_row - first_row
+        if options['header_row']:
+            num_rows -= 1
+
+        if num_rows < 0:
+            warn("Must have at least one data row in in add_table()")
+            return -3
 
         # Set the table options.
         table['show_first_col'] = options.get('first_column', False)
@@ -2571,16 +2631,14 @@ class Worksheet(xmlwriter.XMLwriter):
         # Set the table style.
         if 'style' in options:
             table['style'] = options['style']
+
+            if table['style'] is None:
+                table['style'] = ''
+
             # Remove whitespace from style name.
             table['style'] = table['style'].replace(' ', '')
         else:
             table['style'] = "TableStyleMedium9"
-
-        # Swap last row/col for first row/col as necessary.
-        if first_row > last_row:
-            (first_row, last_row) = (last_row, first_row)
-        if first_col > last_col:
-            (first_col, last_col) = (last_col, first_col)
 
         # Set the data range rows (without the header and footer).
         first_data_row = first_row
@@ -2956,11 +3014,7 @@ class Worksheet(xmlwriter.XMLwriter):
         if first_col > last_col:
             (first_col, last_col) = (last_col, first_col)
 
-        # If the first and last cell are the same write a single cell.
-        if (first_row == last_row) and (first_col == last_col):
-            sqref = active_cell
-        else:
-            sqref = xl_range(first_row, first_col, last_row, last_col)
+        sqref = xl_range(first_row, first_col, last_row, last_col)
 
         # Selection isn't set for cell A1.
         if sqref == 'A1':
@@ -3140,6 +3194,37 @@ class Worksheet(xmlwriter.XMLwriter):
 
         self.protect_options = defaults
 
+    def unprotect_range(self, cell_range, range_name=None, password=None):
+        """
+        Unprotect ranges within a protected worksheet.
+
+        Args:
+            cell_range: The cell or cell range to unprotect.
+            range_name: An optional name for the range.
+            password:   An optional password string. (undocumented)
+
+        Returns:
+            Nothing.
+
+        """
+        if cell_range is None:
+            warn('Cell range must be specified in unprotect_range()')
+            return -1
+
+        # Sanitize the cell range.
+        cell_range = cell_range.lstrip('=')
+        cell_range = cell_range.replace('$', '')
+
+        self.num_protected_ranges += 1
+
+        if range_name is None:
+            range_name = 'Range' + str(self.num_protected_ranges)
+
+        if password:
+            password = self._encode_password(password)
+
+        self.protected_ranges.append((cell_range, range_name, password))
+
     @convert_cell_args
     def insert_button(self, row, col, options=None):
         """
@@ -3293,8 +3378,9 @@ class Worksheet(xmlwriter.XMLwriter):
         header_orig = header
         header = header.replace('&[Picture]', '&G')
 
-        if len(header) >= 255:
-            warn('Header string must be less than 255 characters')
+        if len(header) > 255:
+            warn("Header string cannot be longer than Excel's "
+                 "limit of 255 characters")
             return
 
         if options is not None:
@@ -3368,8 +3454,9 @@ class Worksheet(xmlwriter.XMLwriter):
         footer_orig = footer
         footer = footer.replace('&[Picture]', '&G')
 
-        if len(footer) >= 255:
-            warn('Footer string must be less than 255 characters')
+        if len(footer) > 255:
+            warn("Footer string cannot be longer than Excel's "
+                 "limit of 255 characters")
             return
 
         if options is not None:
@@ -3668,7 +3755,49 @@ class Worksheet(xmlwriter.XMLwriter):
         if name is not None:
             self.vba_codename = name
         else:
-            self.vba_codename = self.name
+            self.vba_codename = 'Sheet' + str(self.index + 1)
+
+    def ignore_errors(self, options=None):
+        """
+        Ignore various Excel errors/warnings in a worksheet for user defined
+        ranges.
+
+        Args:
+            options: A dict of ignore errors keys with cell range values.
+
+        Returns:
+            0: Success.
+           -1: Incorrect parameter or option.
+
+        """
+        if options is None:
+            return -1
+        else:
+            # Copy the user defined options so they aren't modified.
+            options = options.copy()
+
+        # Valid input parameters.
+        valid_parameters = {
+            'number_stored_as_text': True,
+            'eval_error': True,
+            'formula_differs': True,
+            'formula_range': True,
+            'formula_unlocked': True,
+            'empty_cell_reference': True,
+            'list_data_validation': True,
+            'calculated_column': True,
+            'two_digit_text_year': True,
+        }
+
+        # Check for valid input parameters.
+        for param_key in options.keys():
+            if param_key not in valid_parameters:
+                warn("Unknown parameter '%s' in ignore_errors()" % param_key)
+                return -1
+
+        self.ignored_errors = options
+
+        return 0
 
     ###########################################################################
     #
@@ -3691,6 +3820,7 @@ class Worksheet(xmlwriter.XMLwriter):
         self.default_url_format = init_data['default_url_format']
         self.excel2003_style = init_data['excel2003_style']
         self.remove_timezone = init_data['remove_timezone']
+        self.max_url_length = init_data['max_url_length']
 
         if self.excel2003_style:
             self.original_row_height = 12.75
@@ -3749,6 +3879,9 @@ class Worksheet(xmlwriter.XMLwriter):
         # Write the sheetProtection element.
         self._write_sheet_protection()
 
+        # Write the protectedRanges element.
+        self._write_protected_ranges()
+
         # Write the phoneticPr element.
         if self.excel2003_style:
             self._write_phonetic_pr()
@@ -3785,6 +3918,9 @@ class Worksheet(xmlwriter.XMLwriter):
 
         # Write the colBreaks element.
         self._write_col_breaks()
+
+        # Write the ignoredErrors element.
+        self._write_ignored_errors()
 
         # Write the drawing element.
         self._write_drawings()
@@ -4082,7 +4218,8 @@ class Worksheet(xmlwriter.XMLwriter):
         return "%X" % password_hash
 
     def _prepare_image(self, index, image_id, drawing_id, width, height,
-                       name, image_type, x_dpi, y_dpi):
+                       name, image_type, x_dpi, y_dpi, digest):
+
         # Set up images/drawings.
         drawing_type = 2
         (row, col, _, x_offset, y_offset,
@@ -4114,32 +4251,64 @@ class Worksheet(xmlwriter.XMLwriter):
         else:
             drawing = self.drawing
 
-        drawing_object = [drawing_type]
-        drawing_object.extend(dimensions)
-        drawing_object.extend([width, height, name, None, url, tip, anchor])
-
-        drawing._add_drawing_object(drawing_object)
+        drawing_object = drawing._add_drawing_object()
+        drawing_object['type'] = drawing_type
+        drawing_object['dimensions'] = dimensions
+        drawing_object['width'] = width
+        drawing_object['height'] = height
+        drawing_object['description'] = name
+        drawing_object['shape'] = None
+        drawing_object['anchor'] = anchor
+        drawing_object['rel_index'] = 0
+        drawing_object['url_rel_index'] = 0
+        drawing_object['tip'] = tip
 
         if url:
-            rel_type = "/hyperlink"
-            target_mode = "External"
+            target = None
+            rel_type = '/hyperlink'
+            target_mode = 'External'
 
             if re.match('(ftp|http)s?://', url):
-                target = url
+                target = self._escape_url(url)
+
+            if re.match('^mailto:', url):
+                target = self._escape_url(url)
 
             if re.match('external:', url):
                 target = url.replace('external:', '')
+                target = self._escape_url(target)
+                # Additional escape not required in worksheet hyperlinks.
+                target = target.replace('#', '%23')
 
-            if re.match("internal:", url):
+                if re.match(r'\w:', target) or re.match(r'\\', target):
+                    target = 'file:///' + target
+                else:
+                    target = re.sub(r'\\', '/', target)
+
+            if re.match('internal:', url):
                 target = url.replace('internal:', '#')
                 target_mode = None
 
-            self.drawing_links.append([rel_type, target, target_mode])
+            if target is not None:
+                if len(target) > self.max_url_length:
+                    warn("Ignoring URL '%s' with link and/or anchor > %d "
+                         "characters since it exceeds Excel's limit for URLS" %
+                         (force_unicode(url), self.max_url_length))
+                else:
+                    if not self.drawing_rels.get(url):
+                        self.drawing_links.append([rel_type, target,
+                                                   target_mode])
 
-        self.drawing_links.append(['/image',
-                                   '../media/image'
-                                   + str(image_id) + '.'
-                                   + image_type])
+                    drawing_object['url_rel_index'] = \
+                        self._get_drawing_rel_index(url)
+
+        if not self.drawing_rels.get(digest):
+            self.drawing_links.append(['/image',
+                                       '../media/image'
+                                       + str(image_id) + '.'
+                                       + image_type])
+
+        drawing_object['rel_index'] = self._get_drawing_rel_index(digest)
 
     def _prepare_shape(self, index, drawing_id):
         # Set up shapes/drawings.
@@ -4177,27 +4346,71 @@ class Worksheet(xmlwriter.XMLwriter):
         shape = Shape('rect', 'TextBox', options)
         shape.text = text
 
-        drawing_object = [drawing_type]
-        drawing_object.extend(dimensions)
-        drawing_object.extend([width, height, None, shape, None,
-                               None, anchor])
+        drawing_object = drawing._add_drawing_object()
+        drawing_object['type'] = drawing_type
+        drawing_object['dimensions'] = dimensions
+        drawing_object['width'] = width
+        drawing_object['height'] = height
+        drawing_object['description'] = None
+        drawing_object['shape'] = shape
+        drawing_object['anchor'] = anchor
+        drawing_object['rel_index'] = 0
+        drawing_object['url_rel_index'] = 0
+        drawing_object['tip'] = options.get('tip')
 
-        drawing._add_drawing_object(drawing_object)
+        url = options.get('url', None)
+        if url:
+            target = None
+            rel_type = '/hyperlink'
+            target_mode = 'External'
+
+            if re.match('(ftp|http)s?://', url):
+                target = self._escape_url(url)
+
+            if re.match('^mailto:', url):
+                target = self._escape_url(url)
+
+            if re.match('external:', url):
+                target = url.replace('external:', 'file:///')
+                target = self._escape_url(target)
+                # Additional escape not required in worksheet hyperlinks.
+                target = target.replace('#', '%23')
+
+            if re.match('internal:', url):
+                target = url.replace('internal:', '#')
+                target_mode = None
+
+            if target is not None:
+                if len(target) > self.max_url_length:
+                    warn("Ignoring URL '%s' with link and/or anchor > %d "
+                         "characters since it exceeds Excel's limit for URLS" %
+                         (force_unicode(url), self.max_url_length))
+                else:
+                    if not self.drawing_rels.get(url):
+                        self.drawing_links.append([rel_type, target,
+                                                   target_mode])
+
+                    drawing_object['url_rel_index'] = \
+                        self._get_drawing_rel_index(url)
 
     def _prepare_header_image(self, image_id, width, height, name, image_type,
-                              position, x_dpi, y_dpi):
+                              position, x_dpi, y_dpi, digest):
+
         # Set up an image without a drawing object for header/footer images.
 
         # Strip the extension from the filename.
         name = re.sub(r'\..*$', '', name)
 
-        self.header_images_list.append([width, height, name, position,
-                                        x_dpi, y_dpi])
+        if not self.vml_drawing_rels.get(digest):
+            self.vml_drawing_links.append(['/image',
+                                           '../media/image'
+                                           + str(image_id) + '.'
+                                           + image_type])
 
-        self.vml_drawing_links.append(['/image',
-                                       '../media/image'
-                                       + str(image_id) + '.'
-                                       + image_type])
+        ref_id = self._get_vml_drawing_rel_index(digest)
+
+        self.header_images_list.append([width, height, name, position,
+                                        x_dpi, y_dpi, ref_id])
 
     def _prepare_chart(self, index, chart_id, drawing_id):
         # Set up chart/drawings.
@@ -4231,11 +4444,17 @@ class Worksheet(xmlwriter.XMLwriter):
         else:
             drawing = self.drawing
 
-        drawing_object = [drawing_type]
-        drawing_object.extend(dimensions)
-        drawing_object.extend([width, height, name, None, None, None, anchor])
-
-        drawing._add_drawing_object(drawing_object)
+        drawing_object = drawing._add_drawing_object()
+        drawing_object['type'] = drawing_type
+        drawing_object['dimensions'] = dimensions
+        drawing_object['width'] = width
+        drawing_object['height'] = height
+        drawing_object['description'] = name
+        drawing_object['shape'] = None
+        drawing_object['anchor'] = anchor
+        drawing_object['rel_index'] = self._get_drawing_rel_index()
+        drawing_object['url_rel_index'] = 0
+        drawing_object['tip'] = None
 
         self.drawing_links.append(['/chart',
                                    '../charts/chart'
@@ -4360,25 +4579,23 @@ class Worksheet(xmlwriter.XMLwriter):
         y_abs += y1
 
         # Adjust start column for offsets that are greater than the col width.
-        if self._size_col(col_start) > 0:
-            while x1 >= self._size_col(col_start):
-                x1 -= self._size_col(col_start)
-                col_start += 1
+        while x1 >= self._size_col(col_start, anchor):
+            x1 -= self._size_col(col_start)
+            col_start += 1
 
         # Adjust start row for offsets that are greater than the row height.
-        if self._size_row(row_start) > 0:
-            while y1 >= self._size_row(row_start):
-                y1 -= self._size_row(row_start)
-                row_start += 1
+        while y1 >= self._size_row(row_start, anchor):
+            y1 -= self._size_row(row_start)
+            row_start += 1
 
         # Initialize end cell to the same as the start cell.
         col_end = col_start
         row_end = row_start
 
         # Don't offset the image in the cell if the row/col is hidden.
-        if self._size_col(col_start) > 0:
+        if self._size_col(col_start, anchor) > 0:
             width = width + x1
-        if self._size_row(row_start) > 0:
+        if self._size_row(row_start, anchor) > 0:
             height = height + y1
 
         # Subtract the underlying cell widths to find end cell of the object.
@@ -4842,6 +5059,27 @@ class Worksheet(xmlwriter.XMLwriter):
 
         return url
 
+    def _get_drawing_rel_index(self, target=None):
+        # Get the index used to address a drawing rel link.
+        if target is None:
+            self.drawing_rels_id += 1
+            return self.drawing_rels_id
+        elif self.drawing_rels.get(target):
+            return self.drawing_rels[target]
+        else:
+            self.drawing_rels_id += 1
+            self.drawing_rels[target] = self.drawing_rels_id
+            return self.drawing_rels_id
+
+    def _get_vml_drawing_rel_index(self, target=None):
+        # Get the index used to address a vml drawing rel link.
+        if self.vml_drawing_rels.get(target):
+            return self.vml_drawing_rels[target]
+        else:
+            self.vml_drawing_rels_id += 1
+            self.vml_drawing_rels[target] = self.vml_drawing_rels_id
+            return self.vml_drawing_rels_id
+
     ###########################################################################
     #
     # The following font methods are, more or less, duplicated from the
@@ -5009,7 +5247,7 @@ class Worksheet(xmlwriter.XMLwriter):
                     else:
                         props[i]['type'] = user_props[i]['type']
 
-                        if props[i]['type'] is 'number':
+                        if props[i]['type'] == 'number':
                             props[i]['type'] = 'num'
 
                 # Set the user defined 'criteria' property.
@@ -5669,7 +5907,11 @@ class Worksheet(xmlwriter.XMLwriter):
             elif isinstance(cell.value, str_types):
                 error_codes = ('#DIV/0!', '#N/A', '#NAME?', '#NULL!',
                                '#NUM!', '#REF!', '#VALUE!')
-                if cell.value in error_codes:
+
+                if cell.value == '':
+                    # Allow blank to force recalc in some third party apps.
+                    pass
+                elif cell.value in error_codes:
                     attributes.append(('t', 'e'))
                 else:
                     attributes.append(('t', 'str'))
@@ -5889,7 +6131,7 @@ class Worksheet(xmlwriter.XMLwriter):
             for col_num in col_nums:
                 # Get the link data for this cell.
                 link = self.hyperlinks[row_num][col_num]
-                link_type = link["link_type"]
+                link_type = link['link_type']
 
                 # If the cell isn't a string then we have to add the url as
                 # the string to display.
@@ -5898,7 +6140,7 @@ class Worksheet(xmlwriter.XMLwriter):
                         and self.table[row_num][col_num]):
                     cell = self.table[row_num][col_num]
                     if type(cell).__name__ != 'String':
-                        display = link["url"]
+                        display = link['url']
 
                 if link_type == 1:
                     # External link with rel file relationship.
@@ -5908,21 +6150,21 @@ class Worksheet(xmlwriter.XMLwriter):
                                        row_num,
                                        col_num,
                                        self.rel_count,
-                                       link["str"],
+                                       link['str'],
                                        display,
-                                       link["tip"]])
+                                       link['tip']])
 
                     # Links for use by the packager.
                     self.external_hyper_links.append(['/hyperlink',
-                                                      link["url"], 'External'])
+                                                      link['url'], 'External'])
                 else:
                     # Internal link with rel file relationship.
                     hlink_refs.append([link_type,
                                        row_num,
                                        col_num,
-                                       link["url"],
-                                       link["str"],
-                                       link["tip"]])
+                                       link['url'],
+                                       link['str'],
+                                       link['tip']])
 
         # Write the hyperlink elements.
         self._xml_start_tag('hyperlinks')
@@ -6145,6 +6387,30 @@ class Worksheet(xmlwriter.XMLwriter):
 
         self._xml_empty_tag('sheetProtection', attributes)
 
+    def _write_protected_ranges(self):
+        # Write the <protectedRanges> element.
+        if self.num_protected_ranges == 0:
+            return
+
+        self._xml_start_tag('protectedRanges')
+
+        for (cell_range, range_name, password) in self.protected_ranges:
+            self._write_protected_range(cell_range, range_name, password)
+
+        self._xml_end_tag('protectedRanges')
+
+    def _write_protected_range(self, cell_range, range_name, password):
+        # Write the <protectedRange> element.
+        attributes = []
+
+        if password:
+            attributes.append(('password', password))
+
+        attributes.append(('sqref', cell_range))
+        attributes.append(('name', range_name))
+
+        self._xml_empty_tag('protectedRange', attributes)
+
     def _write_drawings(self):
         # Write the <drawing> elements.
         if not self.drawing:
@@ -6227,11 +6493,7 @@ class Worksheet(xmlwriter.XMLwriter):
             if col_first > col_last:
                 (col_first, col_last) = (col_last, col_first)
 
-            # If the first and last cell are the same write a single cell.
-            if (row_first == row_last) and (col_first == col_last):
-                sqref += xl_rowcol_to_cell(row_first, col_first)
-            else:
-                sqref += xl_range(row_first, col_first, row_last, col_last)
+            sqref += xl_range(row_first, col_first, row_last, col_last)
 
         if options['validate'] != 'none':
             attributes.append(('type', options['validate']))
@@ -6837,7 +7099,7 @@ class Worksheet(xmlwriter.XMLwriter):
                 data_bar['bar_negative_border_color'])
 
         # Write the x14:axisColor element.
-        if data_bar['bar_axis_position'] is not 'none':
+        if data_bar['bar_axis_position'] != 'none':
             self._write_x14_axis_color(data_bar['bar_axis_color'])
 
         self._xml_end_tag('x14:dataBar')
@@ -6872,10 +7134,10 @@ class Worksheet(xmlwriter.XMLwriter):
         if data_bar['bar_solid']:
             attributes.append(('gradient', 0))
 
-        if data_bar['bar_direction'] is 'left':
+        if data_bar['bar_direction'] == 'left':
             attributes.append(('direction', 'leftToRight'))
 
-        if data_bar['bar_direction'] is 'right':
+        if data_bar['bar_direction'] == 'right':
             attributes.append(('direction', 'rightToLeft'))
 
         if data_bar['bar_negative_color_same']:
@@ -6885,10 +7147,10 @@ class Worksheet(xmlwriter.XMLwriter):
                 not data_bar['bar_negative_border_color_same']):
             attributes.append(('negativeBarBorderColorSameAsPositive', 0))
 
-        if data_bar['bar_axis_position'] is 'middle':
+        if data_bar['bar_axis_position'] == 'middle':
             attributes.append(('axisPosition', 'middle'))
 
-        if data_bar['bar_axis_position'] is 'none':
+        if data_bar['bar_axis_position'] == 'none':
             attributes.append(('axisPosition', 'none'))
 
         self._xml_start_tag('x14:dataBar', attributes)
@@ -7153,3 +7415,57 @@ class Worksheet(xmlwriter.XMLwriter):
         ]
 
         self._xml_empty_tag('phoneticPr', attributes)
+
+    def _write_ignored_errors(self):
+        # Write the <ignoredErrors> element.
+        if not self.ignored_errors:
+            return
+
+        self._xml_start_tag('ignoredErrors')
+
+        if self.ignored_errors.get('number_stored_as_text'):
+            range = self.ignored_errors['number_stored_as_text']
+            self._write_ignored_error('numberStoredAsText', range)
+
+        if self.ignored_errors.get('eval_error'):
+            range = self.ignored_errors['eval_error']
+            self._write_ignored_error('evalError', range)
+
+        if self.ignored_errors.get('formula_differs'):
+            range = self.ignored_errors['formula_differs']
+            self._write_ignored_error('formula', range)
+
+        if self.ignored_errors.get('formula_range'):
+            range = self.ignored_errors['formula_range']
+            self._write_ignored_error('formulaRange', range)
+
+        if self.ignored_errors.get('formula_unlocked'):
+            range = self.ignored_errors['formula_unlocked']
+            self._write_ignored_error('unlockedFormula', range)
+
+        if self.ignored_errors.get('empty_cell_reference'):
+            range = self.ignored_errors['empty_cell_reference']
+            self._write_ignored_error('emptyCellReference', range)
+
+        if self.ignored_errors.get('list_data_validation'):
+            range = self.ignored_errors['list_data_validation']
+            self._write_ignored_error('listDataValidation', range)
+
+        if self.ignored_errors.get('calculated_column'):
+            range = self.ignored_errors['calculated_column']
+            self._write_ignored_error('calculatedColumn', range)
+
+        if self.ignored_errors.get('two_digit_text_year'):
+            range = self.ignored_errors['two_digit_text_year']
+            self._write_ignored_error('twoDigitTextYear', range)
+
+        self._xml_end_tag('ignoredErrors')
+
+    def _write_ignored_error(self, type, range):
+        # Write the <ignoredError> element.
+        attributes = [
+            ('sqref', range),
+            (type, 1),
+        ]
+
+        self._xml_empty_tag('ignoredError', attributes)

@@ -2,10 +2,11 @@
 #
 # Workbook - A class for writing the Excel XLSX Workbook file.
 #
-# Copyright 2013-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2013-2020, John McNamara, jmcnamara@cpan.org
 #
 
 # Standard packages.
+import hashlib
 import re
 import os
 import operator
@@ -36,7 +37,6 @@ from .chart_scatter import ChartScatter
 from .chart_stock import ChartStock
 from .exceptions import InvalidWorksheetName
 from .exceptions import DuplicateWorksheetName
-from .exceptions import ReservedWorksheetName
 from .exceptions import UndefinedImageSize
 from .exceptions import UnsupportedImageFormat
 from .exceptions import FileCreateError
@@ -84,6 +84,15 @@ class Workbook(xmlwriter.XMLwriter):
         self.default_format_properties = \
             options.get('default_format_properties', {})
 
+        self.max_url_length = options.get('max_url_length', 2079)
+        if self.max_url_length < 255:
+            self.max_url_length = 2079
+
+        if options.get('use_zip64'):
+            self.allow_zip64 = True
+        else:
+            self.allow_zip64 = False
+
         self.worksheet_meta = WorksheetMeta()
         self.selected = 0
         self.fileclosed = 0
@@ -129,8 +138,8 @@ class Workbook(xmlwriter.XMLwriter):
         self.drawing_count = 0
         self.calc_mode = "auto"
         self.calc_on_load = True
-        self.allow_zip64 = False
         self.calc_id = 124519
+        self.has_comments = False
 
         # We can't do 'constant_memory' mode while doing 'in_memory' mode.
         if self.in_memory:
@@ -316,6 +325,8 @@ class Workbook(xmlwriter.XMLwriter):
                                     "Use workbook.use_zip64().")
 
             self.fileclosed = True
+        else:
+            warn("Calling close() on already closed file.")
 
     def set_size(self, width, height):
         """
@@ -627,7 +638,7 @@ class Workbook(xmlwriter.XMLwriter):
             raise e
 
         # Assemble worksheets into a workbook.
-        packager = Packager()
+        packager = self._get_packager()
 
         # Add a default worksheet if non have been added.
         if not self.worksheets():
@@ -740,6 +751,7 @@ class Workbook(xmlwriter.XMLwriter):
             'default_url_format': self.default_url_format,
             'excel2003_style': self.excel2003_style,
             'remove_timezone': self.remove_timezone,
+            'max_url_length': self.max_url_length,
         }
 
         worksheet._initialize(init_data)
@@ -784,11 +796,6 @@ class Workbook(xmlwriter.XMLwriter):
             raise InvalidWorksheetName(
                 "Sheet name cannot start or end with an apostrophe \"%s\"." %
                 sheetname)
-
-        # Check that sheetname isn't the reserved work "History".
-        if sheetname.lower() == 'history':
-            raise ReservedWorksheetName(
-                "Worksheet name 'History' is reserved by Excel")
 
         # Check that the worksheet name doesn't already exist since this is a
         # fatal Excel error. The check must be case insensitive like Excel.
@@ -1096,7 +1103,10 @@ class Workbook(xmlwriter.XMLwriter):
         # Iterate through the worksheets and set up chart and image drawings.
         chart_ref_id = 0
         image_ref_id = 0
+        ref_id = 0
         drawing_id = 0
+        image_ids = {}
+        header_image_ids = {}
 
         for sheet in self.worksheets():
             chart_count = len(sheet.charts)
@@ -1116,21 +1126,28 @@ class Workbook(xmlwriter.XMLwriter):
                 drawing_id += 1
                 has_drawing = True
 
-            # Prepare the worksheet charts.
-            for index in range(chart_count):
-                chart_ref_id += 1
-                sheet._prepare_chart(index, chart_ref_id, drawing_id)
-
             # Prepare the worksheet images.
             for index in range(image_count):
                 filename = sheet.images[index][2]
                 image_data = sheet.images[index][10]
-                (image_type, width, height, name, x_dpi, y_dpi) = \
+                (image_type, width, height, name, x_dpi, y_dpi, digest) = \
                     self._get_image_properties(filename, image_data)
-                image_ref_id += 1
 
-                sheet._prepare_image(index, image_ref_id, drawing_id, width,
-                                     height, name, image_type, x_dpi, y_dpi)
+                if digest in image_ids:
+                    ref_id = image_ids[digest]
+                else:
+                    image_ref_id += 1
+                    ref_id = image_ref_id
+                    image_ids[digest] = image_ref_id
+                    self.images.append([filename, image_type, image_data])
+
+                sheet._prepare_image(index, ref_id, drawing_id, width, height,
+                                     name, image_type, x_dpi, y_dpi, digest)
+
+            # Prepare the worksheet charts.
+            for index in range(chart_count):
+                chart_ref_id += 1
+                sheet._prepare_chart(index, chart_ref_id, drawing_id)
 
             # Prepare the worksheet shapes.
             for index in range(shape_count):
@@ -1143,14 +1160,20 @@ class Workbook(xmlwriter.XMLwriter):
                 image_data = sheet.header_images[index][1]
                 position = sheet.header_images[index][2]
 
-                (image_type, width, height, name, x_dpi, y_dpi) = \
+                (image_type, width, height, name, x_dpi, y_dpi, digest) = \
                     self._get_image_properties(filename, image_data)
 
-                image_ref_id += 1
+                if digest in header_image_ids:
+                    ref_id = header_image_ids[digest]
+                else:
+                    image_ref_id += 1
+                    ref_id = image_ref_id
+                    header_image_ids[digest] = image_ref_id
+                    self.images.append([filename, image_type, image_data])
 
-                sheet._prepare_header_image(image_ref_id, width, height,
+                sheet._prepare_header_image(ref_id, width, height,
                                             name, image_type, position,
-                                            x_dpi, y_dpi)
+                                            x_dpi, y_dpi, digest)
 
             # Prepare the footer images.
             for index in range(footer_image_count):
@@ -1159,14 +1182,20 @@ class Workbook(xmlwriter.XMLwriter):
                 image_data = sheet.footer_images[index][1]
                 position = sheet.footer_images[index][2]
 
-                (image_type, width, height, name, x_dpi, y_dpi) = \
+                (image_type, width, height, name, x_dpi, y_dpi, digest) = \
                     self._get_image_properties(filename, image_data)
 
-                image_ref_id += 1
+                if digest in header_image_ids:
+                    ref_id = header_image_ids[digest]
+                else:
+                    image_ref_id += 1
+                    ref_id = image_ref_id
+                    header_image_ids[digest] = image_ref_id
+                    self.images.append([filename, image_type, image_data])
 
                 sheet._prepare_header_image(image_ref_id, width, height,
                                             name, image_type, position,
-                                            x_dpi, y_dpi)
+                                            x_dpi, y_dpi, digest)
 
             if has_drawing:
                 drawing = sheet.drawing
@@ -1197,6 +1226,8 @@ class Workbook(xmlwriter.XMLwriter):
         else:
             # Read the image data from the user supplied byte stream.
             data = image_data.getvalue()
+
+        digest = hashlib.sha256(data).hexdigest()
 
         # Get the image filename without the path.
         image_name = os.path.basename(filename)
@@ -1241,9 +1272,6 @@ class Workbook(xmlwriter.XMLwriter):
             raise UndefinedImageSize(
                 "%s: no size data found in image file." % filename)
 
-        # Store image data to copy it into file container.
-        self.images.append([filename, image_type, image_data])
-
         if not image_data:
             fh.close()
 
@@ -1253,7 +1281,7 @@ class Workbook(xmlwriter.XMLwriter):
         if y_dpi == 0:
             y_dpi = 96
 
-        return image_type, width, height, image_name, x_dpi, y_dpi
+        return image_type, width, height, image_name, x_dpi, y_dpi, digest
 
     def _process_png(self, data):
         # Extract width and height information from a PNG file.
@@ -1472,6 +1500,7 @@ class Workbook(xmlwriter.XMLwriter):
                 if sheet.has_comments:
                     comment_files += 1
                     comment_id += 1
+                    self.has_comments = True
 
                 vml_drawing_id += 1
 
@@ -1492,12 +1521,6 @@ class Workbook(xmlwriter.XMLwriter):
 
             self.num_vml_files = vml_files
             self.num_comment_files = comment_files
-
-        # Add a font format for cell comments.
-        if comment_files > 0:
-            xf = self.add_format({'font_name': 'Tahoma', 'font_size': 8,
-                                  'color_indexed': 81, 'font_only': True})
-            xf._get_xf_index()
 
     def _prepare_tables(self):
         # Set the table ids for the worksheet tables.
@@ -1626,6 +1649,11 @@ class Workbook(xmlwriter.XMLwriter):
     def _prepare_sst_string_data(self):
         # Convert the SST string data from a dict to a list.
         self.str_table._sort_string_data()
+
+    def _get_packager(self):
+        # Get and instance of the Packager class to create the xlsx package.
+        # This allows the default packager to be over-ridden.
+        return Packager()
 
     ###########################################################################
     #

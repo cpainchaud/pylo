@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 from openpyxl.descriptors.serialisable import Serialisable
 from openpyxl.descriptors import (
@@ -25,6 +25,7 @@ from openpyxl.packaging.relationship import (
     Relationship,
     get_rels_path
 )
+from .fields import Index
 
 from openpyxl.worksheet.filters import (
     AutoFilter,
@@ -584,7 +585,7 @@ class RowColItem(Serialisable):
                      'blank']))
     r = Integer()
     i = Integer()
-    x = NestedInteger(allow_none=True, attribute="v")
+    x = Sequence(expected_type=Index, attribute="v")
 
     __elements__ = ('x',)
 
@@ -592,7 +593,7 @@ class RowColItem(Serialisable):
                  t="data",
                  r=0,
                  i=0,
-                 x=None,
+                 x=(),
                 ):
         self.t = t
         self.r = r

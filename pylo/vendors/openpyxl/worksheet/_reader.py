@@ -1,13 +1,14 @@
-# Copyright (c) 2010-2019 openpyxl
+# Copyright (c) 2010-2021 openpyxl
 
 """Reader for a single worksheet."""
+from copy import copy
 from warnings import warn
 
 # compatibility imports
 from openpyxl.xml.functions import iterparse
 
 # package imports
-from openpyxl.cell import Cell
+from openpyxl.cell import Cell, MergedCell
 from openpyxl.cell.text import Text
 from openpyxl.worksheet.dimensions import (
     ColumnDimension,
@@ -136,7 +137,7 @@ class WorkSheetParser(object):
 
         }
 
-        it = iterparse(self.source)
+        it = iterparse(self.source) # add a finaliser to close the source when this becomes possible
 
         for _, element in it:
             tag_name = element.tag
@@ -174,7 +175,6 @@ class WorkSheetParser(object):
     def parse_cell(self, element):
         data_type = element.get('t', 'n')
         coordinate = element.get('r')
-        self.col_counter += 1
         style_id = element.get('s', 0)
         if style_id:
             style_id = int(style_id)
@@ -186,7 +186,9 @@ class WorkSheetParser(object):
 
         if coordinate:
             row, column = coordinate_to_tuple(coordinate)
+            self.col_counter = column
         else:
+            self.col_counter += 1
             row, column = self.row_counter, self.col_counter
 
         if not self.data_only and element.find(FORMULA_TAG) is not None:
@@ -260,7 +262,14 @@ class WorkSheetParser(object):
         attrs = dict(row.attrib)
 
         if "r" in attrs:
-            self.row_counter = int(attrs['r'])
+            try:
+                self.row_counter = int(attrs['r'])
+            except ValueError:
+                val = float(attrs['r'])
+                if val.is_integer():
+                    self.row_counter = int(val)
+                else:
+                    raise ValueError(f"{attrs['r']} is not a valid row number")
         else:
             self.row_counter += 1
         self.col_counter = 0
@@ -275,8 +284,12 @@ class WorkSheetParser(object):
 
 
     def parse_formatting(self, element):
-        cf = ConditionalFormatting.from_tree(element)
-        self.formatting.append(cf)
+        try:
+            cf = ConditionalFormatting.from_tree(element)
+            self.formatting.append(cf)
+        except TypeError as e:
+            msg = f"Failed to load a conditional formatting rule. It will be discarded. Cause: {e}"
+            warn(msg)
 
 
     def parse_sheet_protection(self, element):
@@ -356,11 +369,17 @@ class WorksheetReader(object):
 
 
     def bind_merged_cells(self):
+        from openpyxl.worksheet.cell_range import MultiCellRange
+        from openpyxl.worksheet.merge import MergedCellRange
         if not self.parser.merged_cells:
             return
 
+        ranges = []
         for cr in self.parser.merged_cells.mergeCell:
-            self.ws.merge_cells(cr.ref)
+            mcr = MergedCellRange(self.ws, cr.ref)
+            self.ws._clean_merge_range(mcr)
+            ranges.append(mcr)
+        self.ws.merged_cells = MultiCellRange(ranges)
 
 
     def bind_hyperlinks(self):
@@ -373,12 +392,23 @@ class WorksheetReader(object):
                 for row in self.ws[link.ref]:
                     for cell in row:
                         try:
-                            cell.hyperlink = link
+                            cell.hyperlink = copy(link)
                         except AttributeError:
                             pass
             else:
-                self.ws[link.ref].hyperlink = link
+                cell = self.ws[link.ref]
+                if isinstance(cell, MergedCell):
+                    cell = self.normalize_merged_cell_link(cell.coordinate)
+                cell.hyperlink = link
 
+    def normalize_merged_cell_link(self, coord):
+        """
+        Returns the appropriate cell to which a hyperlink, which references a merged cell at the specified coordinates,
+        should be bound.
+        """
+        for rng in self.ws.merged_cells:
+            if coord in rng:
+                return self.ws.cell(*rng.top[0])
 
     def bind_col_dimensions(self):
         for col, cd in self.parser.column_dimensions.items():
@@ -400,7 +430,9 @@ class WorksheetReader(object):
         for k in ('print_options', 'page_margins', 'page_setup',
                   'HeaderFooter', 'auto_filter', 'data_validations',
                   'sheet_properties', 'views', 'sheet_format',
-                  'row_breaks', 'col_breaks', 'scenarios', 'legacy_drawing'):
+                  'row_breaks', 'col_breaks', 'scenarios', 'legacy_drawing',
+                  'protection',
+                  ):
             v = getattr(self.parser, k, None)
             if v is not None:
                 setattr(self.ws, k, v)
