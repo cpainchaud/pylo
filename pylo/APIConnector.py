@@ -970,7 +970,6 @@ class APIConnector:
         def set_time_from(self, time: datetime):
             self._time_from = time
 
-
         def set_time_from_x_seconds_ago(self, seconds: int):
             self._time_from = datetime.utcnow() - timedelta(seconds=seconds)
 
@@ -978,10 +977,11 @@ class APIConnector:
         def set_time_from_x_days_ago(self, days: int):
             return self.set_time_from_x_seconds_ago(days*60*60*24)
 
-
         def set_max_results(self, max: int):
             self.max_results = max
 
+        def set_time_to(self, time: datetime):
+            self._time_to = time
 
         def filter_on_policy_decision_blocked(self):
             self._policy_decision_filter.append('blocked')
@@ -1015,7 +1015,6 @@ class APIConnector:
                 "destinations": {"include": [], "exclude": []},
                 "services": {"include": [], "exclude": []},
                 "sources_destinations_query_op": "and",
-                #"end_date":"2020-10-13T11:27:28.825Z",
                 "policy_decisions": self._policy_decision_filter,
                 "max_results": self.max_results
                 }
@@ -1031,6 +1030,10 @@ class APIConnector:
             else:
                 filters["start_date"] = "2010-10-13T11:27:28.824Z",
 
+            if self._time_to is not None:
+                filters["end_date"] = self._time_to.strftime('%Y-%m-%dT%H:%M:%SZ')
+            else:
+                filters["end_date"] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
 
             if len(self._consumer_labels) > 0:
                 tmp = []
