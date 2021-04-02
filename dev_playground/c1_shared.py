@@ -13,7 +13,10 @@ excel_doc_sheet_inbound_identified_title = 'Id Inbound'
 excel_doc_sheet_outbound_identified_title = 'Id Outbound'
 
 excluded_ranges = pylo.IP4Map()
+excluded_broadcast = pylo.IP4Map()
 excluded_direct_services: List['pylo.DirectServiceInRule'] = []
+
+excluded_processes: Dict[str, str] = {}
 
 pce_listing: Dict[str, pylo.APIConnector] = {}
 
@@ -47,6 +50,14 @@ def load_config_file(filename='c1_config.json') -> bool:
             for network_range in excluded_ranges_data:
                 excluded_ranges.add_from_text(network_range)
 
+        excluded_broadcast_data: List[str] = data.get('excluded_broadcast_addresses')
+        if excluded_broadcast_data is not None:
+            if type(excluded_broadcast_data) is not list:
+                raise pylo.PyloEx("excluded_broadcast_addresses is not a list:", excluded_broadcast_data)
+
+            for broadcast_ip in excluded_broadcast_data:
+                excluded_broadcast.add_from_text(broadcast_ip)
+
         excluded_services_data: List[str] = data.get('excluded_services')
         if excluded_services_data is not None:
             if type(excluded_services_data) is not list:
@@ -56,13 +67,21 @@ def load_config_file(filename='c1_config.json') -> bool:
                 excluded_direct_services.append(pylo.DirectServiceInRule.create_from_text(service, protocol_first=False))
 
 
+        excluded_processes_data: List[str] = data.get('excluded_processes')
+        if excluded_processes_data is not None:
+            for process in excluded_processes_data:
+                excluded_processes[process] = process
+
+
     return True
 
 
 def print_stats():
     print("  - PCE listing entries count: {}".format(len(pce_listing)))
-    print("  - IP exclusions entries count: {}".format(excluded_ranges.count_entries()))
+    print("  - Network address exclusions entries count: {}".format(excluded_ranges.count_entries()))
+    print("  - Broadcast IP manual exclusion entries count: {}".format(excluded_broadcast.count_entries()))
     print("  - Service exclusions entries count: {}".format(len(excluded_direct_services)))
+    print("  - Process names exclusions entries count: {}".format(len(excluded_processes)))
 
 
 
