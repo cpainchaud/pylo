@@ -1354,6 +1354,8 @@ class APIConnector:
                 for record in result:
                     service_json: Dict = record.service_json.copy()
                     service_json['protocol'] = service_json.pop('proto')
+                    if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
+                        service_json.pop('port')
                     if 'user_name' in service_json:
                         service_json.pop('user_name')
 
