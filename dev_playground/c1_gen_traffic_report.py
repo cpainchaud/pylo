@@ -679,11 +679,12 @@ print("OK! (exec_time:{}, dns_count:{})".format(pylo.clock_elapsed_str('outbound
 excel_doc.create_sheet(c1_shared.excel_doc_sheet_fingerprint_title, ['app', 'env', 'loc'])
 tmp = {'app': None, 'env': None, 'loc': None}
 if app_label is not None:
-    tmp['app']: app_label.href
+    tmp['app'] = app_label.href
+tmp['app']: app_label
 if env_label is not None:
-    tmp['env']: env_label.href
+    tmp['env'] = env_label.href
 if loc_label is not None:
-    tmp['loc']: loc_label.href
+    tmp['loc'] = loc_label.href
 excel_doc.add_line_from_object(tmp, c1_shared.excel_doc_sheet_fingerprint_title)
 # </editor-fold>
 
