@@ -241,3 +241,6 @@ for agent in agents.values():
     connector.objects_workload_agent_upgrade(agent.workload.href, target_version_string)
 
 
+print("\n \n** All Agents Upgraded **\n")
+
+

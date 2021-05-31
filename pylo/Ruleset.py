@@ -68,7 +68,10 @@ class RulesetScopeEntry:
             elif label.type_is_application():
                 self.app_label = label
             else:
-                raise pylo.PyloEx("Unsupported label type '{}' in scope".format(label.type_string()))
+                raise pylo.PyloEx("Unsupported label type '{}' named '{}' in scope of ruleset '{}'/'{}'".format(label.type_string(),
+                                                                                                                label.name,
+                                                                                                                self.owner.owner.href,
+                                                                                                                self.owner.owner.name))
 
     def to_string(self, label_separator = '|', use_href=False):
         string = 'All' + label_separator
@@ -453,7 +456,7 @@ class RuleHostContainer(pylo.Referencer):
                 return True
         return False
 
-    def get_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+    def get_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         result = []
 
         for item in self._items.values():
