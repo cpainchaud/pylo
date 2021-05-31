@@ -216,6 +216,30 @@ class InboundRuleToCreate:
 
         self._services.append(pylo.DirectServiceInRule(proto=protocol_to_int, port=int(service_split[0])))
 
+    def create_in_pce(self, ruleset: 'pylo.Ruleset'):
+        ruleset.create_rule(
+            intra_scope=False,
+            consumers=[self.src_role_label, self.src_app_label, self.src_env_label, self.src_loc_label],
+            providers=[self.dst_role_label],
+            services=self._services
+        )
+
+
+    def quick_str(self):
+        return "FROM {} TO '{}  - {} - {} - {}' on port {}".format(self.src_role_label.name,
+                                                                   self.dst_role_label.name,
+                                                                   self.dst_app_label.name,
+                                                                   self.dst_env_label.name,
+                                                                   self.dst_loc_label.name,
+                                                                   self._services[0].to_string_standard())
+
+    def generate_expected_ruleset_name(self) -> str:
+            return '{}_{}_{}'.format(self.dst_app_label.name, self.dst_env_label.name, self.dst_loc_label.name)
+
+    def generate_api_payload(self):
+        result = {}
+        pass
+
 
 class OutboundRuleToCreate:
     _services: List[Union['pylo.DirectServiceInRule', 'pylo.Service']]
