@@ -39,12 +39,27 @@ parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, def
 parser.add_argument('--input-file', type=str, required=True,
                     help='input for rules creation')
 
+parser.add_argument('--use-config-file', type=str, required=False, default=None,
+                    help='')
 
 
 if args.args_from_input:
     args = vars(parser.parse_args(input_args))
 else:
     args = vars(parser.parse_args())
+
+
+settings_override_config_file = args['use_config_file']
+
+print(" * Looking for local configuration file to populate default settings...", end='')
+if settings_override_config_file is not None:
+    c1_config_file_loaded = c1_shared.load_config_file(filename=settings_override_config_file)
+else:
+    c1_config_file_loaded = c1_shared.load_config_file()
+
+print("OK")
+if c1_config_file_loaded:
+    c1_shared.print_stats()
 
 # </editor-fold>
 
@@ -118,15 +133,28 @@ if OutboundRuleData.count_lines() < 1 and InboundRuleData.count_lines() < 1:
     exit(0)
 
 
-# <editor-fold desc="PCE DB extraction">
+# <editor-fold desc="Getting PCE items database">
 if use_cached_config:
     print(" * Loading PCE Database from cached file or API if not available... ", end='', flush=True)
-    org.load_from_cache_or_saved_credentials(hostname, prompt_for_api_key_if_missing=False)
-    connector = org.connector
+    if hostname.lower() in c1_shared.pce_listing:
+        connector = c1_shared.pce_listing[hostname.lower()]
+        if not org.load_from_cached_file(connector.hostname.lower(), no_exception_if_file_does_not_exist=True):
+            print('(cache not found)... ', end='')
+            org.load_from_api(connector)
+    else:
+        connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
+        if not org.load_from_cached_file(hostname.lower(), no_exception_if_file_does_not_exist=True):
+            print('(cache not found)... ', end='')
+            org.load_from_api(connector)
+
+    org.connector = connector
     print("OK!")
 else:
     print(" * Looking for credentials for PCE '{}'... ".format(hostname), end="", flush=True)
-    connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
+    if hostname.lower() in c1_shared.pce_listing:
+        connector = c1_shared.pce_listing[hostname.lower()]
+    else:
+        connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
     print("OK!")
 
     print(" * Downloading and Parsing PCE Data... ", end="", flush=True)
@@ -134,7 +162,8 @@ else:
     print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
-# </editor-fold>
+print("")
+# </editor-fold desc="Getting PCE items database">
 
 
 print("")
@@ -351,7 +380,7 @@ else:
     inbound_ruleset = org.RulesetStore.find_ruleset_by_name(inbound_ruleset_name)
     if inbound_ruleset is None:
         print("    - ruleset not found, let's create it...", end='')
-        org.RulesetStore.create_ruleset(inbound_ruleset_name,
+        inbound_ruleset = org.RulesetStore.create_ruleset(inbound_ruleset_name,
                          inbound_rules[0].dst_app_label,
                          inbound_rules[0].dst_env_label,
                          inbound_rules[0].dst_loc_label)
