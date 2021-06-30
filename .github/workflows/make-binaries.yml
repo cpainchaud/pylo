@@ -13,8 +13,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: PyInstaller Windows
-        uses: JackMcKew/pyinstaller-action-windows@main
+
+      - name: Make executables
+        uses: cpainchaud/pyinstaller-action-windows@main
         with:
-          path: utilities
+          path: ./
+          spec: utilities/
+          extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo\\vendors;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
+
+
+      - name: Publish firmware for Master branch
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Latest Binaries"
+          files: |
+            dist/windows/*
 
