@@ -2,7 +2,12 @@ import json
 import time
 import os
 import getpass
-import pylo.vendors.requests as requests
+
+try:
+    import requests as requests
+except ImportError:
+    import pylo.vendors.requests as requests
+
 from threading import Thread
 from queue import Queue
 from datetime import datetime, timedelta
@@ -274,7 +279,7 @@ class APIConnector:
 
     def get_objects_count_by_type(self, object_type: str) -> int:
 
-        def extract_count(headers: pylo.vendors.requests.Response):
+        def extract_count(headers: requests.Response):
             count = headers.get('x-total-count')
             if count is None:
                 raise pylo.PyloApiEx('API didnt provide field "x-total-count"')

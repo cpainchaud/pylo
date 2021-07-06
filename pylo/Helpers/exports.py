@@ -1,7 +1,15 @@
 from typing import Dict, Any
 
-import pylo.vendors.xlsxwriter as xlsxwriter
-import pylo.vendors.openpyxl as openpyxl
+try:
+    import xlsxwriter
+except ImportError:
+    import pylo.vendors.xlsxwriter as xlsxwriter
+
+try:
+    import openpyxl
+except ImportError:
+    import pylo.vendors.openpyxl as openpyxl
+
 import csv
 import pylo
 import os
