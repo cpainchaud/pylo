@@ -1,13 +1,13 @@
 import os
 import sys
+import logging
+import argparse
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import pylo
 
 from pylo import log
-import logging
-
-import argparse
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')

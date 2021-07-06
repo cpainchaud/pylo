@@ -18,10 +18,12 @@ from .LabelGroup import LabelGroup
 from .LabelStore import LabelStore, label_type_app, label_type_env, label_type_loc, label_type_role
 from .IPList import IPList, IPListStore
 from .AgentStore import AgentStore, VENAgent
-from .WorkloadStore import WorkloadStore, Workload
+from .Workload import Workload, WorkloadInterface
+from .WorkloadStore import WorkloadStore
 from .Service import Service, ServiceStore, PortMap
-from .Ruleset import Ruleset, RulesetStore, Rule, RuleServiceContainer, RuleHostContainer, \
-    RuleSecurityPrincipalContainer, RulesetScope, RulesetScopeEntry, DirectServiceInRule
+from .Rule import Rule, RuleServiceContainer, RuleSecurityPrincipalContainer, DirectServiceInRule,RuleHostContainer
+from .Ruleset import Ruleset, RulesetScope, RulesetScopeEntry
+from .RulesetStore import RulesetStore
 from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
 from .Organization import Organization
 from .Query import Query

@@ -144,7 +144,6 @@ class LabelStore:
                 data[label.href] = label
         return data
 
-
     def find_label_by_name_whatever_type(self, name: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
 
         find = self.locationLabels.get(name)
@@ -164,7 +163,6 @@ class LabelStore:
             return find
 
         return None
-
 
     def find_label_by_name_and_type(self, name: str, type: int):
         if type == label_type_loc:

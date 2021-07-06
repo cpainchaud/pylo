@@ -95,15 +95,15 @@ file_clean(csv_iplists_file)
 
 class ScopeMatrix:
     def __init__(self):
-        self.rol_labels = {None: None}  # type: dict[pylo.Label,pylo.Label]
-        self.app_labels = {None: None}  # type: dict[pylo.Label,pylo.Label]
-        self.env_labels = {None: None}  # type: dict[pylo.Label,pylo.Label]
-        self.loc_labels = {None: None}  # type: dict[pylo.Label,pylo.Label]
+        self.rol_labels = {None: None}  # type: Dict[pylo.Label,pylo.Label]
+        self.app_labels = {None: None}  # type: Dict[pylo.Label,pylo.Label]
+        self.env_labels = {None: None}  # type: Dict[pylo.Label,pylo.Label]
+        self.loc_labels = {None: None}  # type: Dict[pylo.Label,pylo.Label]
 
-        self.rol_labels_by_string = {}  # type: dict[str,pylo.Label]
-        self.app_labels_by_string = {}  # type: dict[str,pylo.Label]
-        self.env_labels_by_string = {}  # type: dict[str,pylo.Label]
-        self.loc_labels_by_string = {}  # type: dict[str,pylo.Label]
+        self.rol_labels_by_string = {}  # type: Dict[str,pylo.Label]
+        self.app_labels_by_string = {}  # type: Dict[str,pylo.Label]
+        self.env_labels_by_string = {}  # type: Dict[str,pylo.Label]
+        self.loc_labels_by_string = {}  # type: Dict[str,pylo.Label]
 
     def is_empty(self):
         if None in self.rol_labels and None in self.app_labels and None in self.env_labels and None in self.loc_labels:

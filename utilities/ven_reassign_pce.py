@@ -6,7 +6,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 
-
 # <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--host', type=str, required=True,

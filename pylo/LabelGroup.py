@@ -7,7 +7,7 @@ from pylo import Label
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
-    _members: Dict[str, Union[Label, 'LabelGroup']]
+    _members: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
 
     def __init__(self, name: str, href: str, ltype: int, owner):
         pylo.ReferenceTracker.__init__(self)
@@ -40,7 +40,6 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
     def get_api_reference_json(self):
         return {'label_group': {'href': self.href}}
-
 
     def get_members(self) -> Dict[str, 'pylo.Label']:
         data = {}

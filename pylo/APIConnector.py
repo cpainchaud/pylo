@@ -1595,8 +1595,6 @@ class APIConnector:
                 new_node = APIConnector.ClusterHealth.ClusterHealthNode(node)
                 self.nodes_dict[new_node.name] = new_node
 
-
-
         def to_string(self):
             ret = ''
             ret += "cluster fqdn: '{}'\n".format(self.fqdn)
