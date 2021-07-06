@@ -10,11 +10,13 @@ import pylo
 from pylo import log
 from typing import Union, Dict, Any, List, Optional, Tuple
 
-#urllib3.disable_warnings()
+
 requests.packages.urllib3.disable_warnings()
 
 default_retry_count_if_api_call_limit_reached = 3
 default_retry_wait_time_if_api_call_limit_reached = 10
+default_max_objects_for_sync_calls = 99999
+
 
 def get_field_or_die(field_name: str, data):
     if type(data) is not dict:
@@ -30,18 +32,17 @@ def get_field_or_die(field_name: str, data):
 class APIConnector:
     """docstring for APIConnector."""
 
-
     def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, orgID=1):
-        self.hostname = hostname
+        self.hostname: str = hostname
         if type(port) is int:
             port = str(port)
-        self.port = port
-        self.api_key = apikey
-        self.api_user = apiuser
-        self.orgID = orgID
-        self.skipSSLCertCheck = skip_ssl_cert_check
-        self.version = None  # type: pylo.SoftwareVersion
-        self.version_string = "Not Defined"
+        self.port: int = port
+        self.api_key: str = apikey
+        self.api_user: str = apiuser
+        self.orgID: int = orgID
+        self.skipSSLCertCheck: bool = skip_ssl_cert_check
+        self.version: Optional['pylo.SoftwareVersio'] = None
+        self.version_string: str = "Not Defined"
         self._cached_session = requests.session()
 
     @staticmethod
@@ -84,7 +85,6 @@ class APIConnector:
         connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True)
         return connector
 
-
     def _make_url(self, path: str, includeOrgID):
         url = "https://" + self.hostname + ":" + self.port + "/api/v2"
         if includeOrgID:
@@ -95,12 +95,14 @@ class APIConnector:
 
     def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None, skip_product_version_check=False,
                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
-                    retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
+                    retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
+                    return_headers: bool = False):
 
         return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=includeOrgID,
                             jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
-                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
+                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached,
+                            return_headers=return_headers)
 
     def do_post_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
                      retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
@@ -134,7 +136,8 @@ class APIConnector:
     def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False,
                 skip_product_version_check=False, params=None,
                 retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
-                retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
+                retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
+                return_headers: bool = False):
 
         if self.version is None and not skip_product_version_check:
             self.collect_pce_infos()
@@ -164,7 +167,7 @@ class APIConnector:
             log.info("URL downloaded (size "+str( int(answerSize) )+"KB) Reply headers:\n" +
                      "HTTP " + method + " " + url + " STATUS " + str(req.status_code) + " " + req.reason)
             log.info(req.headers)
-            log.info("Request Body:" + pylo.nice_json(json_arguments))
+            # log.info("Request Body:" + pylo.nice_json(json_arguments))
             # log.info("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
 
             if asyncCall:
@@ -242,6 +245,9 @@ class APIConnector:
                 raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
                                 + '" and error message: ' + req.text)
 
+            if return_headers:
+                return req.headers
+
             if jsonOutputExpected:
                 log.info("Parsing API answer to JSON (with a size of " + str( int(answerSize) ) + "KB)")
                 jout = req.json()
@@ -249,6 +255,8 @@ class APIConnector:
                 if answerSize < 5:
                     log.info("Resulting JSON object:")
                     log.info(json.dumps(jout, indent=2, sort_keys=True))
+                else:
+                    log.info("Answer is too large to be printed")
                 return jout
 
             return req.text
@@ -263,6 +271,32 @@ class APIConnector:
     def getSoftwareVersionString(self):
         self.collect_pce_infos()
         return self.version_string
+
+    def get_objects_count_by_type(self, object_type: str) -> int:
+
+        def extract_count(headers: pylo.vendors.requests.Response):
+            count = headers.get('x-total-count')
+            if count is None:
+                raise pylo.PyloApiEx('API didnt provide field "x-total-count"')
+
+            return int(count)
+
+        if object_type == 'workloads':
+            return extract_count(self.do_get_call('/workloads', asyncCall=False, return_headers=True))
+        elif object_type == 'labels':
+            return extract_count(self.do_get_call('/labels', asyncCall=False, return_headers=True))
+        elif object_type == 'labelgroups':
+            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', asyncCall=False, return_headers=True))
+        elif object_type == 'iplists':
+            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', asyncCall=False, return_headers=True))
+        elif object_type == 'services':
+            return extract_count(self.do_get_call('/sec_policy/draft/services', asyncCall=False, return_headers=True))
+        elif object_type == 'rulesets':
+            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', asyncCall=False, return_headers=True))
+        elif object_type == 'security_principals':
+            return extract_count(self.do_get_call('/security_principals', asyncCall=False, return_headers=True))
+        else:
+            raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
     def get_pce_objects(self, include_deleted_workloads=False):
 
@@ -279,19 +313,47 @@ class APIConnector:
                         q.task_done()
                         continue
                     if object_type == 'workloads':
-                        data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads)
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads)
+                        else:
+                            data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads, async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'labels':
-                        data['labels'] = self.objects_label_get()
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['labels'] = self.objects_label_get()
+                        else:
+                            data['labels'] = self.objects_label_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'labelgroups':
-                        data['labelgroups'] = self.objects_labelgroup_get()
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['labelgroups'] = self.objects_labelgroup_get()
+                        else:
+                            data['labelgroups'] = self.objects_labelgroup_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'iplists':
-                        data['iplists'] = self.objects_iplist_get()
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['iplists'] = self.objects_iplist_get()
+                        else:
+                            data['iplists'] = self.objects_iplist_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'services':
-                        data['services'] = self.objects_service_get()
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['services'] = self.objects_service_get()
+                        else:
+                            data['services'] = self.objects_service_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'rulesets':
-                        data['rulesets'] = self.objects_ruleset_get()
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['rulesets'] = self.objects_ruleset_get()
+                        else:
+                            data['rulesets'] = self.objects_ruleset_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'security_principals':
-                        data['security_principals'] = self.objects_securityprincipal_get()
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['security_principals'] = self.objects_securityprincipal_get()
+                        else:
+                            data['security_principals'] = self.objects_securityprincipal_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     else:
                         raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
                 except Exception as e:
@@ -377,9 +439,14 @@ class APIConnector:
     def rule_coverage_query(self, data):
         return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, includeOrgID=True, jsonOutputExpected=True, asyncCall=False)
 
-    def objects_label_get(self):
+    def objects_label_get(self, max_results: int = None, async_mode=True):
         path = '/labels'
-        return self.do_get_call(path=path, asyncCall=True)
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
 
     def objects_label_delete(self, href):
         """
@@ -399,19 +466,29 @@ class APIConnector:
         data = {'key': label_type, 'value': label_name}
         return self.do_post_call(path=path, json_arguments=data)
 
-    def objects_labelgroup_get(self):
+    def objects_labelgroup_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/label_groups'
-        return self.do_get_call(path=path, asyncCall=True)
+        data = {}
 
-    def objects_iplist_get(self):
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+
+    def objects_iplist_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/ip_lists'
-        return self.do_get_call(path=path, asyncCall=True)
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
 
     def objects_iplist_create(self, json_blob):
         path = '/sec_policy/draft/ip_lists'
         return self.do_post_call(path=path, json_arguments=json_blob)
 
-    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None, fast_mode=False):
+    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None, async_mode=True):
         path = '/workloads'
         data = {}
 
@@ -424,7 +501,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=not fast_mode, params=data)
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
 
     def objects_workload_agent_upgrade(self, workload_href: str, target_version: str):
         path = '{}/upgrade'.format(workload_href)
@@ -610,9 +687,14 @@ class APIConnector:
         path = '/workloads/bulk_create'
         return self.do_put_call(path=path, json_arguments=json_object)
 
-    def objects_service_get(self):
+    def objects_service_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/services'
-        return self.do_get_call(path=path, asyncCall=True)
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
 
     def objects_service_delete(self, href):
         """
@@ -625,9 +707,14 @@ class APIConnector:
 
         return self.do_delete_call(path=path, jsonOutputExpected=False, includeOrgID=False)
 
-    def objects_ruleset_get(self):
+    def objects_ruleset_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/rule_sets'
-        return self.do_get_call(path=path, asyncCall=True)
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
 
     def objects_ruleset_create(self, name: str,
                                scope_app: 'pylo.Label' = None,
@@ -716,10 +803,14 @@ class APIConnector:
 
         return self.do_post_call(path, json_arguments=data, jsonOutputExpected=True, includeOrgID=False)
 
-
-    def objects_securityprincipal_get(self):
+    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True):
         path = '/security_principals'
-        return self.do_get_call(path=path, asyncCall=True)
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
 
     def objects_securityprincipal_create(self, name: str = None, sid: str = None, json_object=None):
         path = '/security_principals'

@@ -156,7 +156,7 @@ def do_log_resolution(q: Queue, thread_num: int):
             provider_workload_href = None
 
             if not consumer_is_unknown and consumer_ip not in resolution_cache:
-                workloads = local_connector.objects_workload_get(include_deleted=False, fast_mode=True, filter_by_ip=consumer_ip, max_results=1)
+                workloads = local_connector.objects_workload_get(include_deleted=False, async_mode=False, filter_by_ip=consumer_ip, max_results=1)
                 if len(workloads) == 0:
                     output_text += "  ** SKIPPING: cannot find workload with IP address {}\n".format(consumer_ip)
                     log.append('SKIPPED: cannot resolve consumer IP')
@@ -178,7 +178,7 @@ def do_log_resolution(q: Queue, thread_num: int):
                 consumer_workload_href = resolution_cache[consumer_ip]
 
             if not provider_is_unknown and provider_ip not in resolution_cache:
-                workloads = local_connector.objects_workload_get(include_deleted=False, fast_mode=True, filter_by_ip=provider_ip, max_results=1)
+                workloads = local_connector.objects_workload_get(include_deleted=False, async_mode=False, filter_by_ip=provider_ip, max_results=1)
                 if len(workloads) == 0:
                     output_text += "  ** SKIPPING: cannot find workload with IP address {}\n".format(provider_ip)
                     log.append('SKIPPED: cannot resolve provider IP')
