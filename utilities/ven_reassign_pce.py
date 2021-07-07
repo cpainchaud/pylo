@@ -8,7 +8,7 @@ import pylo
 
 # <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 
 parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, default=False, const=True,
@@ -39,7 +39,7 @@ args = vars(parser.parse_args())
 if args['debug']:
     pylo.log_set_debug()
 
-hostname = args['host']
+hostname = args['pce']
 use_cached_config = args['dev_use_cache']
 request_upgrades = args['confirm']
 target_pce_string = args['target_pce']

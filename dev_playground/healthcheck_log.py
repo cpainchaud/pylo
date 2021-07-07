@@ -8,10 +8,10 @@ requests.packages.urllib3.disable_warnings()
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 args = vars(parser.parse_args())
-hostname = args['host']
+hostname = args['pce']
 
 now = datetime.datetime.now()
 

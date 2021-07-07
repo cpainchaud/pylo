@@ -10,7 +10,7 @@ import pylo
 
 # <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
                     help='extra debugging messages for developers')
@@ -50,7 +50,7 @@ if args['debug']:
     pylo.log_set_debug()
 
 
-hostname = args['host']
+hostname = args['pce']
 input_file = args['input_file']
 input_file_delimiter = args['input_file_delimiter']
 batch_size = args['batch_size']

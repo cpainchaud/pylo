@@ -27,7 +27,7 @@ if args.args_from_input:
 
 # <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--pce', '--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,

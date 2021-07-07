@@ -9,7 +9,7 @@ import argparse
 import pylo
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Enabled extra debug output')
@@ -19,7 +19,7 @@ args = vars(parser.parse_args())
 if args['debug']:
     pylo.log_set_debug()
 
-targetHostname = args['host']
+targetHostname = args['pce']
 numberOfWorkloadsPerBatch = 100
 
 target = pylo.Organization(1)

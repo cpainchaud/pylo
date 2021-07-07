@@ -17,7 +17,7 @@ rules_xls_file = output_dir + '/rules.xlsx'
 log = pylo.get_logger()
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--use-cache', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Use cached configuration on local filesystem if it exists')
@@ -26,7 +26,7 @@ parser.add_argument('--debug', type=bool, nargs='?', required=False, default=Fal
 
 args = vars(parser.parse_args())
 
-hostname = args['host']
+hostname = args['pce']
 pylo.ignoreWorkloadsWithSameName = True
 
 if args['debug']:

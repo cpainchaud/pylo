@@ -10,7 +10,7 @@ import pylo
 
 # <editor-fold desc="Argparse stuff">
 parser = argparse.ArgumentParser(description='TODO LATER', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--pick-report-hostname', '-p', type=str, required=False, default=None,
                     help='if script cannot guess which PCE hostname you were looking for, use this option to force it')
@@ -23,7 +23,7 @@ args = vars(parser.parse_args())
 if args['debug']:
     pylo.log_set_debug()
 
-hostname = args['host']
+hostname = args['pce']
 
 pylo.log.debug(" * Looking for credentials for PCE '{}'... ".format(hostname))
 connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)

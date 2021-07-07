@@ -18,7 +18,7 @@ import codecs
 log = pylo.get_logger()
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Enabled extra debug output')
@@ -28,7 +28,7 @@ parser.add_argument('--input', type=str, required=True,
 
 args = vars(parser.parse_args())
 
-hostname = args['host']
+hostname = args['pce']
 input_file = args['input']
 pylo.ignoreWorkloadsWithSameName = True
 

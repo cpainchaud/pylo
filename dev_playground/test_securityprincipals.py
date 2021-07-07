@@ -5,12 +5,12 @@ import argparse
 import random
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 
 args = vars(parser.parse_args())
 
-hostname = args['host']
+hostname = args['pce']
 pylo.ignoreWorkloadsWithSameName = True
 
 org = pylo.Organization(1)

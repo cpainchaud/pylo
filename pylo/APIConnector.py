@@ -380,7 +380,7 @@ class APIConnector:
         thread_queue.put(('labelgroups', errors,))
         thread_queue.put(('services', errors,))
         thread_queue.put(('iplists', errors,))
-        thread_queue.put(('security_principals',errors, ))
+        thread_queue.put(('security_principals', errors, ))
 
         thread_queue.join()
 

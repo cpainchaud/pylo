@@ -10,7 +10,7 @@ import pylo
 
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, default=False, const=True,
                     help='For developers only')
@@ -35,7 +35,7 @@ if args['debug']:
     pylo.log_set_debug()
 
 
-hostname = args['host']
+hostname = args['pce']
 use_cached_config = args['dev_use_cache']
 input_file = args['input_file']
 input_file_delimiter = args['input_file_delimiter']
@@ -76,14 +76,14 @@ else:
     connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
     print("OK!")
 
-    print(" * Downloading IPLists listing from the PCE... ", end="", flush=True)
-    fake_config['iplists'] = connector.objects_iplist_get()
+    print(" * Downloading objects data from the PCE... ", end="", flush=True)
+    config = connector.get_pce_objects()
     print("OK!")
 
-    print(" * Parsing PCE data ... ", end="", flush=True)
+    print(" * Parsing PCE objects data ... ", end="", flush=True)
     org.pce_version = connector.version
     org.connector = connector
-    org.load_from_json(fake_config)
+    org.load_from_json(config)
     print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))

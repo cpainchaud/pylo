@@ -1,17 +1,19 @@
 import os
 import sys
+from typing import Dict
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import pylo
 import argparse
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 
 args = vars(parser.parse_args())
 
-hostname = args['host']
+hostname = args['pce']
 pylo.ignoreWorkloadsWithSameName = True
 
 org = pylo.Organization(1)
@@ -30,7 +32,7 @@ global_concerned_rules = {}
 
 
 for workload in workloads_to_inspect:
-    concerned_rulesets = {}  # type: dict[pylo.Ruleset, dict[pylo.Rule,pylo.Rule]]
+    concerned_rulesets: Dict[pylo.Ruleset, Dict[pylo.Rule,pylo.Rule]] = {}
     count_concerned_rules = 0
     for referencer in workload.get_references():
         if type(referencer) is pylo.RuleHostContainer:

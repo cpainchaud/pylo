@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description='TODO LATER', formatter_class=argpa
 parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, default=False, const=True,
                     help='For developers only')
 
-parser.add_argument('--host', type=str, required=True,
+parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
                     help='extra debugging messages for developers')
@@ -33,7 +33,7 @@ if args['debug']:
     pylo.log_set_debug()
 
 
-hostname = args['host']
+hostname = args['pce']
 verbose = args['verbose']
 use_cached_config = args['dev_use_cache']
 argument_confirm = args['confirm']
@@ -59,18 +59,14 @@ else:
     connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
     print("OK!")
 
-    print(" * Downloading Workloads/Agents listing from the PCE... ", end="", flush=True)
-    fake_config['workloads'] = connector.objects_workload_get()
+    print(" * Downloading objects data from the PCE... ", end="", flush=True)
+    config = connector.get_pce_objects()
     print("OK!")
 
-    print(" * Downloading Labels listing from the PCE... ", end="", flush=True)
-    fake_config['labels'] = connector.objects_label_get()
-    print("OK!")
-
-    print(" * Parsing PCE data ... ", end="", flush=True)
+    print(" * Parsing PCE objects data ... ", end="", flush=True)
     org.pce_version = connector.version
     org.connector = connector
-    org.load_from_json(fake_config)
+    org.load_from_json(config)
     print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
