@@ -11,7 +11,7 @@ class RulesetScope:
 
     def __init__(self, owner: 'pylo.Ruleset'):
         self.owner: 'pylo.Ruleset' = owner
-        self.scope_entrie: Dict['pylo.RulesetScopeEntry', 'pylo.RulesetScopeEntry'] = {}
+        self.scope_entries: Dict['pylo.RulesetScopeEntry', 'pylo.RulesetScopeEntry'] = {}
 
     def load_from_json(self, data):
         for scope_json in data:
