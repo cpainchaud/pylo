@@ -164,8 +164,7 @@ class ArraysToExcel:
                 raise pylo.PyloEx("line length ({}) does not match the number of columns ({})".format(len(line), self._columns_count))
             self._lines.append(line)
 
-
-        def add_to_document(self, xls_workbook: xlsxwriter.Workbook, sheet_name: str):
+        def add_to_document(self, xls_workbook: xlsxwriter.Workbook, sheet_name: str, multivalues_cell_delimiter=' '):
 
             def find_length(some_text: str) -> int:
                 if type(some_text) is bool or some_text is None:
@@ -364,7 +363,6 @@ class CsvExcelToObject:
                 source_worksheet = workbook.get_sheet_by_name(excel_sheet_name)
                 if source_worksheet is None:
                     raise pylo.PyloEx("Cannot find a Worksheet named '{}' in Excel file '{}'".format(excel_sheet_name, filename))
-
 
             # print("\n\nmax_col {} max_row {}\n\n".format(source_worksheet.max_column,source_worksheet.max_row))
 
