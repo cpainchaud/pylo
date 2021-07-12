@@ -59,7 +59,7 @@ parser.add_argument('--debug', type=bool, nargs='?', required=False, default=Fal
 args = vars(parser.parse_args())
 
 hostname = args['pce']
-pylo.ignoreWorkloadsWithSameName = True
+
 
 if args['debug']:
     pylo.log_set_debug()

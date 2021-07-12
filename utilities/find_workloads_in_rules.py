@@ -8,13 +8,13 @@ import pylo
 import argparse
 
 parser = argparse.ArgumentParser(description='TODO LATER')
-parser.add_argument('--pce', type=str, required=True,
-                    help='hostname of the PCE')
+parser.add_argument('--pce', type=str, required=True, help='hostname of the PCE')
+parser.add_argument('--only-deleted', type=bool, required=False, help='hostname of the PCE')
 
 args = vars(parser.parse_args())
 
 hostname = args['pce']
-pylo.ignoreWorkloadsWithSameName = True
+
 
 org = pylo.Organization(1)
 

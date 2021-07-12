@@ -5,7 +5,7 @@ import sys
 originHostname='10.107.3.2'
 targetHostname='ilo-emea-poc.xmp.net.intra'
 
-pylo.ignoreWorkloadsWithSameName = True
+
 
 
 origin = pylo.Organization(1)

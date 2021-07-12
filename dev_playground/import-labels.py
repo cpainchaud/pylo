@@ -9,7 +9,7 @@ sys.path.append('..')
 import argparse
 import pylo
 
-pylo.ignoreWorkloadsWithSameName = True
+
 
 
 #originHostname='ilo-amer-poc.xmp.net.intra'

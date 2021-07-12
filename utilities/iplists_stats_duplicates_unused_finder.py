@@ -13,7 +13,7 @@ parser.add_argument('--pce', type=str, required=True,
 args = vars(parser.parse_args())
 
 hostname = args['pce']
-pylo.ignoreWorkloadsWithSameName = True
+
 
 org = pylo.Organization(1)
 

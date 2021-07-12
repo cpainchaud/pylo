@@ -32,11 +32,11 @@ class WorkloadStore:
             if new_item_href in self.itemsByHRef:
                 raise pylo.PyloEx("A Workload with href '%s' already exists in the table", new_item_href)
 
-            if new_item_name in self.itemsByName:
-                if not pylo.ignoreWorkloadsWithSameName:
-                    raise pylo.PyloEx(
-                        "A Workload with name '%s' already exists in the table. This UID:%s vs other UID:%s" % (
-                        new_item_name, new_item_href, self.itemsByName[new_item_name].href))
+            # if new_item_name in self.itemsByName:
+            #     if not pylo.ignoreWorkloadsWithSameName:
+            #          raise pylo.PyloEx(
+            #             "A Workload with name '%s' already exists in the table. This UID:%s vs other UID:%s" % (
+            #             new_item_name, new_item_href, self.itemsByName[new_item_name].href))
                 # else:
                 #    #log.warning("A Workload with name '%s' already exists in the table. This UID:%s vs other UID:%s" % (new_item_name, new_item_href, self.itemsByName[new_item_name].href))
 

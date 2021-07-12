@@ -30,7 +30,7 @@ args = vars(parser.parse_args())
 
 hostname = args['pce']
 input_file = args['input']
-pylo.ignoreWorkloadsWithSameName = True
+
 
 if args['debug']:
     pylo.log_set_debug()

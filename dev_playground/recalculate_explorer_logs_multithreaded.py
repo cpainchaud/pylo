@@ -36,7 +36,7 @@ args = vars(parser.parse_args())
 hostname = args['pce']
 input_file = args['input']
 threads_count = args['threads_count']
-pylo.ignoreWorkloadsWithSameName = True
+
 
 if args['debug']:
     pylo.log_set_debug()
