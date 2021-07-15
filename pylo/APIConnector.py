@@ -1581,7 +1581,7 @@ class APIConnector:
 
             class ServiceStatus:
 
-                allowed_status = {'running': True, 'stopped': True, 'not_running': True }
+                allowed_status = {'running': True, 'stopped': True, 'partial': True, 'not_running': True}
 
                 def __init__(self, name: str, status: str):
                     self.name = name
