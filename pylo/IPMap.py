@@ -121,8 +121,6 @@ class IP4Map:
 
         return affected_rows
 
-
-
     def substract_from_text(self, entry: str, ignore_ipv6=False):
 
         new_entry = self.ip_entry_from_text(entry, ignore_ipv6=ignore_ipv6)
@@ -131,7 +129,6 @@ class IP4Map:
             return 0
 
         return self.substract_single_entry(new_entry)
-
 
     def sort_and_recalculate(self):
         new_entries = []
@@ -170,7 +167,6 @@ class IP4Map:
 
         self._entries = new_entries
 
-
     def to_string_list(self, separator=','):
         ranges = []
 
@@ -189,7 +185,6 @@ class IP4Map:
                 ranges.append('{}-{}'.format(ipaddress.IPv4Address(entry[start]), ipaddress.IPv4Address(entry[end])))
 
         return ranges
-
 
     def to_list_of_cidr_string(self, skip_netmask_for_32=False):
 
@@ -268,10 +263,7 @@ class IP4Map:
                     else:
                         previous_loop_end = new_end
 
-
         return result
-
-
 
     def count_ips(self) -> int:
         count = 0
