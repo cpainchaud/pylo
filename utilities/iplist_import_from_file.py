@@ -109,12 +109,12 @@ for csv_object in CsvData.objects():
         else:
             if 'csv' in name_cache[lower_name]:
                 pylo.log.error('CSV contains iplists with duplicates name: {}'.format(lower_name))
-                exit(1)
+                sys.exit(1)
             else:
                 csv_object['**not_created_reason**'] = 'Found duplicated name in PCE'
                 if not ignore_if_iplist_exists:
                     pylo.log.error("PCE contains iplists with duplicates name from CSV: '{}' at line #{}. Please fix CSV or look for --options to ignore it".format(lower_name, csv_object['*line*']))
-                    exit(1)
+                    sys.exit(1)
                 print("  - WARNING: CSV has an entry for iplist name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
 del name_cache
@@ -147,7 +147,7 @@ for data in csv_objects_to_create:
 
     if len(data['networks']) < 1:
         print('Iplist at line #{} has empty networks list'.format(data['*line*']))
-        exit(1)
+        sys.exit(1)
 
     network_delimiter = network_delimiter.replace("\\n", "\n")
     networks_strings = data['networks'].rsplit(network_delimiter)
@@ -165,7 +165,7 @@ for data in csv_objects_to_create:
         split_dash = network_string.split('-')
         if len(split_dash) > 2:
             pylo.log.error('Iplist at line #{} has invalid network entry: {}'.format(data['*line*'], network_string))
-            exit(1)
+            sys.exit(1)
         if len(split_dash) == 2:
             ip_ranges.append({'from_ip': split_dash[0], 'to_ip': split_dash[1], 'exclusion': exclusion})
             continue
@@ -173,11 +173,11 @@ for data in csv_objects_to_create:
         split_slash = network_string.split('/')
         if len(split_slash) > 2:
             pylo.log.error('Iplist at line #{} has invalid network entry: {}'.format(data['*line*'], network_string))
-            exit(1)
+            sys.exit(1)
         if len(split_slash) == 2:
             if len(split_slash[1]) > 2:
                 pylo.log.error('Iplist at line #{} has invalid network mask in CIDR {}'.format(data['*line*'], network_string))
-                exit(1)
+                sys.exit(1)
             ip_ranges.append({'from_ip': split_slash[0]+'/'+split_slash[1], 'exclusion': exclusion})
             continue
         else:
@@ -186,13 +186,13 @@ for data in csv_objects_to_create:
 
             if not is_ip4 and not is_ip6:
                 pylo.log.error('Iplist at line #{} has invalid address format: {}'.format(data['*line*'], network_string))
-                exit(1)
+                sys.exit(1)
             ip_ranges.append({'from_ip': network_string, 'exclusion': exclusion})
             continue
 
     if len(ip_ranges) == 0:
         pylo.log.error('Iplist at line #{} has no network entry'.format(data['*line*']))
-        exit(1)
+        sys.exit(1)
 
     print("  - iplist '{}' extracted with {} with networks".format(new_iplist['name'], len(new_iplist['ip_ranges'])))
     # print(new_iplist)

@@ -42,7 +42,7 @@ health_data = health_collection.get(picked_hostname)
 if health_data is None:
     pylo.log.error("No report for hostname '{}' was found in the collection! The following were available: {}.\n"
     "You can use --pick-report-hostname to force usage of specific one.".format(picked_hostname, pylo.string_list_to_text(health_collection.keys())))
-    exit(1)
+    sys.exit(1)
 
 pylo.log.debug("Status details:\n{}\n".format(health_data.to_string()))
 

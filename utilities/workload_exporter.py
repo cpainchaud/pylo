@@ -52,10 +52,10 @@ filter_data = None
 if filter_file is not None:
     if filter_fields is None:
         pylo.log.error("A filter file was provided but you didn't specify on which fields they should apply")
-        exit(1)
+        sys.exit(1)
     if len(filter_fields) < 1:
         pylo.log.error("A filter file was provided but you specified an empty filter-fields option")
-        exit(1)
+        sys.exit(1)
     for field in filter_fields:
         filter_csv_expected_fields.append({'name': field, 'optional': False})
 

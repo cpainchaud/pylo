@@ -191,7 +191,7 @@ for csv_object in CsvData.objects():
         ip = ip.strip(" \r\n")
         if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
             pylo.log.error("CSV/Excel at line #{} contains invalid IP addresses: '{}'".format(csv_object['*line*'], csv_object['ip']))
-            exit(1)
+            sys.exit(1)
 
         csv_object['**ip_array**'].append(ip)
 
@@ -202,7 +202,7 @@ for csv_object in CsvData.objects():
             csv_object['**not_created_reason**'] = "Duplicate IP address {} found in the PCE".format(ip)
             if not ignore_all_sorts_collisions:
                 print("Duplicate IP address {} found in the PCE and CSV/Excel at line #{}. (look for --options to bypass this if you know what you are doing)".format(ip,csv_object['*line*']))
-                exit(1)
+                sys.exit(1)
             break
 
 print("   - Found {} colliding IP addresses from CSV/Excel, they won't be imported".format(count_duplicate_ip_addresses_in_csv))
@@ -337,7 +337,7 @@ if len(labels_to_be_created) > 0:
         if keyboard_input == 'yes' or keyboard_input == 'y':
             break
         if keyboard_input == 'no' or keyboard_input == 'n':
-            exit(0)
+            sys.exit(0)
     for label_to_create in labels_to_be_created:
         print("   - Pushing '{}' with type '{}' to the PCE... ".format(label_to_create['name'], label_to_create['type']), end='', flush=True)
         org.LabelStore.api_create_label(label_to_create['name'], label_to_create['type'])
@@ -394,7 +394,7 @@ for data in csv_objects_to_create:
 
     if len(data['**ip_array**']) < 1:
         pylo.log.error('CSV/Excel worklaod at line #{} has no valid ip address defined'.format(data['*line*']))
-        exit(1)
+        sys.exit(1)
 
     new_workload['public_ip'] = data['**ip_array**'][0]
     new_workload['interfaces'] = []

@@ -79,7 +79,7 @@ csv_expected_fields = [
 
 if not input_match_on_ip and not input_match_on_hostname and not input_match_on_href:
     pylo.log.error('You must specify at least one (or several) property to match on for workloads vs input: href, ip or hostname')
-    exit(1)
+    sys.exit(1)
 
 
 csv_report = pylo.ArrayToExport(['name', 'role', 'app', 'env', 'loc', 'new_role', 'new_app', 'new_env', 'new_loc', '**updated**', '**reason**', 'href'])
@@ -229,7 +229,7 @@ if input_match_on_href:
 
 if csv_check_failed > 0:
     pylo.log.error("ERROR! Several ({}) inconsistencies were found in the CSV, please fix them before you continue!".format(csv_check_failed))
-    exit(1)
+    sys.exit(1)
 
 print("   * Done")
 # </editor-fold>
