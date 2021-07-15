@@ -25,6 +25,9 @@ parser.add_argument('--filter-role-label', type=str, required=False, default=Non
 parser.add_argument('--filter-ven-versions', nargs='+', type=str, required=False, default=None,
                     help='Filter agents by versions (separated by spaces)')
 
+parser.add_argument('--filter-on-href-from-file', type=str, required=False, default=None,
+                    help='Filter agents on workload href found in specific csv file')
+
 parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
                     help='Request upgrade of the Agents')
 
@@ -39,6 +42,7 @@ args = vars(parser.parse_args())
 
 hostname = args['pce']
 use_cached_config = args['dev_use_cache']
+settings_href_filter_file = args['filter_on_href_from_file']
 request_upgrades = args['confirm']
 
 if args['debug_pylo']:
@@ -57,11 +61,11 @@ else:
     print("OK!")
 
     print(" * Downloading Workloads/Agents listing from the PCE... ", end="", flush=True)
-    fake_config['workloads'] = connector.objects_workload_get()
+    fake_config['workloads'] = connector.objects_workload_get(async_mode=False, max_results=200000)
     print("OK!")
 
     print(" * Downloading Labels listing from the PCE... ", end="", flush=True)
-    fake_config['labels'] = connector.objects_label_get()
+    fake_config['labels'] = connector.objects_label_get(async_mode=False, max_results=200000)
     print("OK!")
 
     print(" * Parsing PCE data ... ", end="", flush=True)
@@ -70,6 +74,14 @@ else:
     print("OK!")
 
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
+
+href_filter_data = None
+if settings_href_filter_file is not None:
+    print(" * Loading CSV input file '{}'...".format(settings_href_filter_file), flush=True, end='')
+    href_filter_data = pylo.CsvExcelToObject(settings_href_filter_file, expected_headers=[{'name': 'href', 'optional': False}])
+    print('OK')
+    print("   - CSV has {} columns and {} lines (headers don't count)".format(href_filter_data.count_columns(), href_filter_data.count_lines()), flush=True)
+
 
 print(" * Listing VEN Agents TOTAL count per version:")
 version_count = {}
@@ -150,7 +162,7 @@ if args['filter_role_label'] is not None:
 filter_versions = {}
 if args['filter_ven_versions'] is not None:
     print("   * VEN versions specified")
-    for raw_version_name in args['filter_ven_versions'].split(','):
+    for raw_version_name in args['filter_ven_versions']:
         if len(raw_version_name) < 0:
             pylo.log.error("Unsupported version provided: '{}'".format(raw_version_name))
             sys.exit(1)
@@ -165,6 +177,18 @@ agents = org.AgentStore.itemsByHRef.copy()
 for agent_href in list(agents.keys()):
     agent = agents[agent_href]
     workload = agent.workload
+
+    if href_filter_data is not None:
+        workload_href_found = False
+        for href_entry in href_filter_data.objects():
+            workload_href = href_entry['href']
+            if workload_href is not None and workload_href == workload.href:
+                workload_href_found = True
+                break
+        if not workload_href_found:
+            pylo.log.debug(" - workload '{}' is not listed the CSV/Excel file".format(workload.get_name()))
+            del agents[agent_href]
+            continue
 
     if len(env_label_list) > 0 and (workload.environmentLabel is None or workload.environmentLabel not in env_label_list):
         pylo.log.debug(" - workload '{}' does not match env_label filters, it's out!".format(workload.get_name()))
@@ -226,7 +250,7 @@ if not request_upgrades:
     sys.exit(0)
 
 if len(agents) < 1:
-    print("\n\n *** After filtering there no Agent left for the upgrade process")
+    print("\n\n *** After filtering there is no Agent left for the upgrade process")
     sys.exit(0)
 
 print("\n *** Now Requesting Agents Upgrades from the PCE ***")
