@@ -67,7 +67,6 @@ class WorkloadStore:
 
         return new_tmp_item
 
-
     def find_workloads_matching_label(self, label: 'pylo.Label') -> Dict[str, 'pylo.Workload']:
         result = {}
 
@@ -76,7 +75,6 @@ class WorkloadStore:
                 result[href] = workload
 
         return result
-
 
     def find_workloads_matching_all_labels(self, labels: List[pylo.Label]) -> Dict[str, 'pylo.Workload']:
         result = {}
@@ -123,7 +121,7 @@ class WorkloadStore:
 
         return count
 
-    def get_managed_workloads_list(self):
+    def get_managed_workloads_list(self) -> List['pylo.Workload']:
         results = []
         for item in self.itemsByHRef.values():
             if not item.unmanaged:
@@ -131,7 +129,7 @@ class WorkloadStore:
 
         return results
 
-    def get_managed_workloads_dict_href(self):
+    def get_managed_workloads_dict_href(self) -> Dict[str, 'pylo.Workload']:
         results = {}
         for item in self.itemsByHRef.values():
             if not item.unmanaged:
