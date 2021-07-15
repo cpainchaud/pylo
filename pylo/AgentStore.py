@@ -34,7 +34,7 @@ class VENAgent(pylo.ReferenceTracker):
 
         self._status_security_policy_sync_state = None
         self._status_security_policy_applied_at = None
-        self._status_rule_count = 0
+        self._status_rule_count: Optional[int] = None
 
         self.mode = None
 
@@ -73,8 +73,8 @@ class VENAgent(pylo.ReferenceTracker):
         self._status_security_policy_sync_state = status_json.get('security_policy_sync_state')
 
         self._status_rule_count = status_json.get('firewall_rule_count')
-        if self._status_rule_count is None:
-            raise pylo.PyloEx("Cannot find VENAgent '{}' rule count ".format(self.href), status_json)
+        # if self._status_rule_count is None:
+        #    raise pylo.PyloEx("Cannot find firewall_rule_count VENAgent '{}' rule count ".format(self.href), status_json)
 
         config_json = data.get('config')
         if config_json is None:
