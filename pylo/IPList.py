@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 import pylo
 from pylo import log
@@ -114,6 +114,9 @@ class IPListStore:
 
             log.debug("Found iplist '%s' with href '%s'", new_iplist_name, new_iplist_href)
 
-
     def find_by_href(self, href: str) -> 'pylo.IPList':
         return self.itemsByHRef.get(href)
+
+    def find_by_name(self, name: str) -> Optional['pylo.IPList']:
+        return self.itemsByName.get(name)
+

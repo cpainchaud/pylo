@@ -179,5 +179,12 @@ class Ruleset:
 
         return match.group("id")
 
-    def get_ruleset_url(self, pce_hostname: str, pce_port):
+    def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None):
+        if pce_hostname is None or pce_port is None:
+            connector = pylo.find_connector_or_die(self)
+            if pce_hostname is None:
+                pce_hostname = connector.hostname
+            if pce_port is None:
+                pce_port = connector.port
+
         return 'https://{}:{}/#/rulesets/{}/draft/rules/'.format(pce_hostname, pce_port, self.extract_id_from_href())

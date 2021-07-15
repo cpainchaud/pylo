@@ -25,7 +25,7 @@ print(" * Loading Origin PCE configuration from " + hostname + " or cached file.
 if settings_use_cache:
     org.load_from_cache_or_saved_credentials(hostname)
 else:
-    org.load_from_saved_credentials(hostname)
+    org.load_from_saved_credentials(hostname, include_deleted_workloads=True)
 print("OK!\n")
 
 print(" * PCE statistics: ")
@@ -41,11 +41,12 @@ global_concerned_rules = {}
 
 
 for workload in workloads_to_inspect:
+
     if settings_only_delete_workloads:
         if workload.temporary is True or workload.deleted is True:
             continue
 
-    concerned_rulesets: Dict[pylo.Ruleset, Dict[pylo.Rule,pylo.Rule]] = {}
+    concerned_rulesets: Dict[pylo.Ruleset, Dict[pylo.Rule, pylo.Rule]] = {}
     count_concerned_rules = 0
     for referencer in workload.get_references():
         if type(referencer) is pylo.RuleHostContainer:
@@ -56,10 +57,12 @@ for workload in workloads_to_inspect:
             global_concerned_rules[concerned_rule] = True
 
             if concerned_ruleset not in concerned_rulesets:
-                concerned_rulesets[concerned_ruleset] = {concerned_rule: concerned_rule}
-                count_concerned_rules += 1
+                    concerned_rulesets[concerned_ruleset] = {concerned_rule: concerned_rule}
+                    count_concerned_rules = count_concerned_rules + 1
             else:
-                concerned_rulesets[concerned_ruleset][concerned_rule] = concerned_rule
+                if concerned_rule not in concerned_rulesets[concerned_ruleset]:
+                    concerned_rulesets[concerned_ruleset][concerned_rule] = concerned_rule
+                    count_concerned_rules = count_concerned_rules + 1
 
     if len(concerned_rulesets) < 1:  # this workload was not used in any ruleset
         continue
@@ -74,12 +77,13 @@ for workload in workloads_to_inspect:
 def get_name(obj):
     return obj.name
 
-tmp_rulesets = sorted(global_concerned_rulesets.keys(), key=get_name)
 
+tmp_rulesets = sorted(global_concerned_rulesets.keys(), key=get_name)
 
 print("\n* For convenience here is the consolidated list of Rulesets:")
 for ruleset in tmp_rulesets:
-    print("  - '{}' HREF: {}".format(ruleset.name, ruleset.href))
+    ruleset_url = ruleset.get_ruleset_url()
+    print("  - '{}' HREF: {} URL: {}".format(ruleset.name, ruleset.href, ruleset_url))
 
 
 print("\n*****  DONE with workloads & rules parsing  *****")
