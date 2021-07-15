@@ -17,7 +17,7 @@ class IP4Map:
         self._entries = []
 
     @staticmethod
-    def ip_entry_from_text(entry: str, ignore_ipv6=False) -> Optional[List[int]]:
+    def ip_entry_from_text(entry: str, ignore_ipv6=True) -> Optional[List[int]]:
         new_entry = None
 
         dash_find = entry.find('-')
@@ -52,7 +52,7 @@ class IP4Map:
 
         return new_entry
 
-    def add_from_text(self, entry: str, skip_recalculation=False, ignore_ipv6=False):
+    def add_from_text(self, entry: str, skip_recalculation=False, ignore_ipv6=True):
 
         new_entry = self.ip_entry_from_text(entry, ignore_ipv6=ignore_ipv6)
 
