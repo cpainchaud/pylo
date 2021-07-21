@@ -745,6 +745,13 @@ class APIConnector:
 
         return self.do_post_call(path=path, json_arguments=data, jsonOutputExpected=True)
 
+    def objects_rule_update(self, rule_href: str, update_data):
+        return self.do_put_call(path=rule_href,
+                                json_arguments=update_data,
+                                includeOrgID=False,
+                                jsonOutputExpected=False
+                                )
+
     def objects_rule_create(self, ruleset_href: str,
                             intra_scope: bool,
                             consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],

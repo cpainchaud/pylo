@@ -67,10 +67,16 @@ class RuleSecurityPrincipalContainer(pylo.Referencer):
 
 
 class DirectServiceInRule:
-    def __init__(self, proto: int, port: int=None, toport: int = None):
+    def __init__(self, proto: int, port: int = None, toport: int = None):
         self.protocol = proto
         self.port = port
         self.to_port = toport
+
+    def is_tcp(self):
+        return self.protocol == 6
+
+    def is_udp(self):
+        return self.protocol == 17
 
     def to_string_standard(self, protocol_first=True):
         if self.protocol == 17:
@@ -161,8 +167,8 @@ class RuleServiceContainer(pylo.Referencer):
     def __init__(self, owner: 'pylo.Rule'):
         pylo.Referencer.__init__(self)
         self.owner = owner
-        self._items = {}  # type: dict[pylo.Service, pylo.Service]
-        self._direct_services = []
+        self._items: Dict[pylo.Service, pylo.Service]= {}
+        self._direct_services: List[DirectServiceInRule] = []
 
     def load_from_json_legacy_single(self, data):
         href = data.get('href')
@@ -201,12 +207,30 @@ class RuleServiceContainer(pylo.Referencer):
             self._items[find_service] = find_service
             find_service.add_reference(self)
 
-
     def get_direct_services(self) -> List[DirectServiceInRule]:
         return self._direct_services
 
     def get_services(self) -> List[pylo.Service]:
         return list(self._items.values())
+
+    def remove_direct_service(self, service: DirectServiceInRule) -> bool:
+        for i in range(0, len(self._direct_services)):
+            if self._direct_services[i] is service:
+                del(self._direct_services[i])
+                return True
+        return False
+
+    def api_sync(self):
+        connector = pylo.find_connector_or_die(self)
+        data = []
+        for service in self._direct_services:
+            data.append({'port': service.port, 'proto': service.protocol, 'to_port': service.to_port})
+
+        for service in self._items.values():
+            data.append({'href': service.href})
+
+        data = {'ingress_services': data}
+        connector.objects_rule_update(self.owner.href, data)
 
 
 class RuleHostContainer(pylo.Referencer):
