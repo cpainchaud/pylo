@@ -25,7 +25,6 @@ def find_first_punctuation(text: str, start: int):
     return {'notfound': True}
 
 
-
 class get_block_response:
     def __init__(self, length=None, operator=None, error=None):
         self.length = length
@@ -73,11 +72,6 @@ def get_block_until_binary_ops_quotes_enabled(data: str):
         return get_block_response(length=len(data))
 
     return get_block_response(error="some quotes {} were not closed in expression: {}".format(detected_quote, data))
-
-
-
-
-
 
 
 class Query:

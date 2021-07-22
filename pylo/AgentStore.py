@@ -7,33 +7,22 @@ import re
 import datetime
 from typing import *
 
-
 # version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[0-9]+)-(?P<build>[0-9]+)(u[0-9]+)?$")
 
 
 class VENAgent(pylo.ReferenceTracker):
 
-    """
-    #:type software_version: pylo.SoftwareVersion
-    #:type _last_heartbeat: datetime.datetime
-    """
-    software_version: Optional['pylo.SoftwareVersion']
-    _last_heartbeat: Optional[datetime.datetime]
-    _status_security_policy_sync_state: Optional[str]
-    _status_security_policy_applied_at: Optional[str]
-    _status_rule_count: int
-
     def __init__(self, href: str, owner: 'pylo.AgentStore', workload: 'pylo.Workload' = None):
         pylo.ReferenceTracker.__init__(self)
-        self.href = href
-        self.owner = owner
-        self.workload = workload
+        self.href: str = href
+        self.owner: 'pylo.AgentStore' = owner
+        self.workload: Optional['pylo.Workload'] = workload
 
-        self.software_version = None
-        self._last_heartbeat = None
+        self.software_version: Optional['pylo.SoftwareVersion'] = None
+        self._last_heartbeat: Optional[datetime.datetime] = None
 
-        self._status_security_policy_sync_state = None
-        self._status_security_policy_applied_at = None
+        self._status_security_policy_sync_state: Optional[str] = None
+        self._status_security_policy_applied_at: Optional[str] = None
         self._status_rule_count: Optional[int] = None
 
         self.mode = None
@@ -50,7 +39,6 @@ class VENAgent(pylo.ReferenceTracker):
             return None
 
         return datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%S.%fZ")
-
 
     def load_from_json(self, data):
         self.raw_json = data
@@ -91,7 +79,6 @@ class VENAgent(pylo.ReferenceTracker):
             else:
                 self.mode = "build"
 
-
     def get_last_heartbeat_date(self) -> Optional[datetime.datetime]:
         if self._last_heartbeat is None:
             self._last_heartbeat = self._get_date_from_json('last_heartbeat_on')
@@ -106,15 +93,13 @@ class VENAgent(pylo.ReferenceTracker):
         return self._status_security_policy_sync_state
 
 
-
-
 class AgentStore:
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
-        self.itemsByHRef = {}  # type: dict[str,pylo.VENAgent]
+        self.itemsByHRef: Dict[str, pylo.VENAgent] = {}
 
-    def find_by_href_or_die(self, href: str):
+    def find_by_href_or_die(self, href: str) -> 'pylo.VENAgent':
 
         find_object = self.itemsByHRef.get(href)
         if find_object is None:
@@ -122,7 +107,7 @@ class AgentStore:
 
         return find_object
 
-    def create_venagent_from_workload_record(self, workload: 'pylo.Workload', json_data):
+    def create_venagent_from_workload_record(self, workload: 'pylo.Workload', json_data) -> 'pylo.VENAgent':
         href = json_data.get('href')
         if href is None:
             raise pylo.PyloEx("Cannot extract Agent href from workload '{}'".format(workload.href))
@@ -134,12 +119,7 @@ class AgentStore:
 
         return agent
 
-
-    def count_agents(self):
-        """
-
-        :rtype: int
-        """
+    def count_agents(self) -> int:
         return len(self.itemsByHRef)
 
 

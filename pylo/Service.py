@@ -12,7 +12,7 @@ class PortMap:
         self._udp_map = []
         self._protocol_map = {}
 
-    def add(self, protocol, start_port: int, end_port: int = None, skip_recalculation = False):
+    def add(self, protocol, start_port: int, end_port: int = None, skip_recalculation=False):
 
         proto = None
 
@@ -39,7 +39,6 @@ class PortMap:
 
         if not skip_recalculation:
             self.mergeOverlappingMaps()
-
 
     def mergeOverlappingMaps(self):
         self._sort_maps()
@@ -96,16 +95,12 @@ class PortMap:
             new_map.append(cur_entry)
             self._udp_map = new_map
 
-
-
     def _sort_maps(self):
         def firstEntry(my_list):
             return my_list[0]
 
         self._tcp_map.sort(key=firstEntry)
         self._udp_map.sort(key=firstEntry)
-
-
 
 
 class ServiceEntry:
@@ -131,7 +126,6 @@ class ServiceEntry:
             entry = ServiceEntry(protocol)
 
         return entry
-
 
     def is_tcp(self) -> bool:
         return self.protocol == 6
@@ -170,30 +164,20 @@ class ServiceEntry:
 
 class Service(pylo.ReferenceTracker):
 
-    name: str
-    href: str
-    owner: 'pylo.ServiceStore'
-    description: Optional[str]
-    entries: List['pylo.ServiceEntry']
 
     def __init__(self, name: str, href: str, owner: 'pylo.ServiceStore'):
-        """
-        :type name: str
-        :type href: str
-        :type owner: ServiceStore
-        """
         pylo.ReferenceTracker.__init__(self)
 
-        self.owner = owner
-        self.name = name
-        self.href = href
+        self.owner: 'pylo.ServiceStore' = owner
+        self.name: str = name
+        self.href: str = href
 
-        self.entries = []
+        self.entries: List['pylo.ServiceEntry'] = []
 
-        self.description = None
-        self.processName = None
+        self.description: Optional[str] = None
+        self.processName: Optional[str] = None
 
-        self.deleted = False
+        self.deleted: bool = False
 
         self.raw_json = None
 

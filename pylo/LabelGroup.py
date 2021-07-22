@@ -7,12 +7,10 @@ from pylo import Label
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
-    _members: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
-
     def __init__(self, name: str, href: str, ltype: int, owner):
         pylo.ReferenceTracker.__init__(self)
         pylo.LabelCommon.__init__(self, name, href, ltype, owner)
-        self._members = {}
+        self._members: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
         self.raw_json = None
 
     def load_from_json(self):
@@ -38,7 +36,7 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
                 raise pylo.PyloEx("Unsupported object type {}".format(type(label)))
         return list(results.values())
 
-    def get_api_reference_json(self):
+    def get_api_reference_json(self) -> Dict:
         return {'label_group': {'href': self.href}}
 
     def get_members(self) -> Dict[str, 'pylo.Label']:

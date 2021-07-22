@@ -105,6 +105,9 @@ class DirectServiceInRule:
         return str(self.protocol) + '/proto'
 
     def get_api_json(self) -> Dict:
+        """
+        Generates json payload to be included in a rule's service update or creation
+        """
         if self.protocol != 17 and self.protocol != 6:
             return {'proto': self.protocol}
 
@@ -208,6 +211,9 @@ class RuleServiceContainer(pylo.Referencer):
             find_service.add_reference(self)
 
     def get_direct_services(self) -> List[DirectServiceInRule]:
+        """
+        Return a list of services directly included in the Rule
+        """
         return self._direct_services
 
     def get_services(self) -> List[pylo.Service]:
@@ -220,11 +226,18 @@ class RuleServiceContainer(pylo.Referencer):
                 return True
         return False
 
+    def add_direct_service(self, service: DirectServiceInRule) -> bool:
+        for member in self._direct_services:
+            if service is member:
+                return False
+        self._direct_services.append(service)
+        return True
+
     def api_sync(self):
         connector = pylo.find_connector_or_die(self)
         data = []
         for service in self._direct_services:
-            data.append({'port': service.port, 'proto': service.protocol, 'to_port': service.to_port})
+            data.append(service.get_api_json())
 
         for service in self._items.values():
             data.append({'href': service.href})
@@ -288,13 +301,13 @@ class RuleHostContainer(pylo.Referencer):
                 self._items[find_object] = find_object
                 find_object.add_reference(self)
 
-    def has_workloads(self):
+    def has_workloads(self) -> bool:
         for item in self._items.values():
             if isinstance(item, pylo.Workload):
                 return True
         return False
 
-    def has_labels(self):
+    def has_labels(self) -> bool:
         for item in self._items.values():
             if isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup):
                 return True
@@ -345,13 +358,14 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-
-    def has_iplists(self):
+    def contains_iplists(self) -> bool:
+        """
+        Returns True if at least 1 iplist is part of this container
+        """
         for item in self._items.values():
             if isinstance(item, pylo.IPList):
                 return True
         return False
-
 
     def get_iplists(self) -> List[pylo.IPList]:
         result = []
@@ -362,5 +376,5 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def contains_all_workloads(self):
+    def contains_all_workloads(self) -> bool:
         return self._hasAllWorkloads

@@ -1,4 +1,6 @@
 import json
+from typing import Optional
+
 import pylo
 import os
 import time
@@ -9,24 +11,18 @@ from pylo import log, LabelStore
 
 class Organization:
 
-    """
-    :type id: int
-    :type connector: pylo.APIConnector
-    :type pce_version: pylo.SoftwareVersion
-    """
-
     def __init__(self, org_id):
         """@type org_id: int"""
-        self.id = org_id
-        self.connector = None
-        self.LabelStore = pylo.LabelStore(self)
-        self.IPListStore = pylo.IPListStore(self)
-        self.WorkloadStore = pylo.WorkloadStore(self)
-        self.AgentStore = pylo.AgentStore(self)
-        self.ServiceStore = pylo.ServiceStore(self)
-        self.RulesetStore = pylo.RulesetStore(self)
-        self.SecurityPrincipalStore = pylo.SecurityPrincipalStore(self)
-        self.pce_version = None
+        self.id: int = org_id
+        self.connector: Optional['pylo.APIConnector'] = None
+        self.LabelStore: 'pylo.LabelStore' = pylo.LabelStore(self)
+        self.IPListStore: 'pylo.IPListStore' = pylo.IPListStore(self)
+        self.WorkloadStore: 'pylo.WorkloadStore' = pylo.WorkloadStore(self)
+        self.AgentStore: 'pylo.AgentStore' = pylo.AgentStore(self)
+        self.ServiceStore: 'pylo.ServiceStore' = pylo.ServiceStore(self)
+        self.RulesetStore: 'pylo.RulesetStore' = pylo.RulesetStore(self)
+        self.SecurityPrincipalStore: 'pylo.SecurityPrincipalStore' = pylo.SecurityPrincipalStore(self)
+        self.pce_version: Optional['pylo.SoftwareVersion'] = None
 
     def load_from_cached_file(self, hostname: str, no_exception_if_file_does_not_exist=False) -> bool:
         # filename should be like 'cache_xxx.yyy.zzz.json'
@@ -49,7 +45,6 @@ class Organization:
 
         raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
 
-
     def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
         # filename should be like 'cache_xxx.yyy.zzz.json'
         filename = 'cache_' + hostname + '.json'
@@ -67,7 +62,6 @@ class Organization:
             self.connector = pylo.APIConnector.create_from_credentials_in_file(hostname)
         else:
             self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
-
 
     def make_cache_file_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
         # filename should be like 'cache_xxx.yyy.zzz.json'
@@ -152,12 +146,10 @@ class Organization:
                 'rulesets': [], 'security_principals': []
                 }
 
-
     def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
         self.connector = con
 
         return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads)
-
 
     def stats_to_str(self, padding=''):
         stats = ""
@@ -179,7 +171,6 @@ class Organization:
         stats += "\n{}- {} IPlists in total.". \
             format(padding,
                    self.IPListStore.count())
-
 
         stats += "\n{}- {} RuleSets and {} Rules.". \
             format(padding, self.RulesetStore.count_rulesets(), self.RulesetStore.count_rules())

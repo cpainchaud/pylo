@@ -16,7 +16,6 @@ class PyloApiEx(PyloEx):
         PyloEx(arg, json_object)
 
 
-
 class PyloApiTooManyRequestsEx(PyloApiEx):
     def __init__(self, arg, json_object=None):
         PyloApiEx(arg, json_object)

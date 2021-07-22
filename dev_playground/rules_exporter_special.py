@@ -94,13 +94,13 @@ for ruleset in org.RulesetStore.itemsByHRef.values():
 
     for rule in ruleset.rules_byHref.values():
         log.debug("   - Handling rule '{}'".format(rule.href))
-        if not(rule.consumers.has_iplists() and ( rule.consumers._hasAllWorkloads
-                                              or rule.consumers.has_labels()
-                                              or rule.consumers.has_workloads())
-            or
-            rule.providers.has_iplists() and ( rule.providers._hasAllWorkloads
-                                               or rule.providers.has_labels()
-                                               or rule.providers.has_workloads())):
+        if not(rule.consumers.contains_iplists() and (rule.consumers._hasAllWorkloads
+                                                      or rule.consumers.has_labels()
+                                                      or rule.consumers.has_workloads())
+               or
+               rule.providers.contains_iplists() and (rule.providers._hasAllWorkloads
+                                                      or rule.providers.has_labels()
+                                                      or rule.providers.has_workloads())):
             log.debug("     - SKIPPED because it does not match")
             continue
 

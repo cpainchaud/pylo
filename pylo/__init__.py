@@ -20,7 +20,7 @@ from .IPList import IPList, IPListStore
 from .AgentStore import AgentStore, VENAgent
 from .Workload import Workload, WorkloadInterface
 from .WorkloadStore import WorkloadStore
-from .Service import Service, ServiceStore, PortMap
+from .Service import Service, ServiceStore, PortMap, ServiceEntry
 from .Rule import Rule, RuleServiceContainer, RuleSecurityPrincipalContainer, DirectServiceInRule,RuleHostContainer
 from .Ruleset import Ruleset, RulesetScope, RulesetScopeEntry
 from .RulesetStore import RulesetStore
