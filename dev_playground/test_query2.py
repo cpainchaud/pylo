@@ -1,7 +1,9 @@
-
-import pylo
 import sys
+import os
 import argparse
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import pylo
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,
@@ -10,7 +12,6 @@ parser.add_argument('--pce', type=str, required=True,
 args = vars(parser.parse_args())
 
 hostname = args['pce']
-
 
 org = pylo.Organization(1)
 
@@ -29,9 +30,9 @@ queries = [ "name matches test",  # most simple example
             "(name matches test)"  # like previous example but with parenthesis,
             "description contains tic and name matches toc",  # multiple filters
             'name matches test and (name matches hello or name matches toc) or name matches "hello there"',
-            "name matches '(i am a regex)'", # some filters argument can be quoted because they contains spaces
+            "name matches '(i am a regex)'",  # some filters argument can be quoted because they contains spaces
             "name matches '(i am a regex and need to escape this quote \'here\')'",  # sometimes you need to escape forbidden chars
-            "(description contains this and (name matches that or name matches 'something else') ) or member.count = 1",  # nested-queries
+            "(description contains this and (name matches that or name matches 'something else') ) or name matches 1",  # nested-queries
             ]
 
 for query in queries:
@@ -51,6 +52,20 @@ print("\nTOTAL NUMBER OF FAILED QUERIES: {}".format(len(failed_queries)))
 
 if len(failed_queries) > 0:
     raise Exception("Failed one or more tests")
+
+
+current_query = 'name matches test'
+print()
+print("* Now testing query '{}' against PCEs workload:".format(current_query))
+query = pylo.Query()
+q.parse(current_query)
+
+for wkl in org.WorkloadStore.itemsByName.values():
+    print(" - wkl '{}': ".format(wkl.get_name()), end='', flush=True)
+    print(query.execute_on_single_object(wkl))
+
+print("** DONE")
+
 
 
 print("\nEND OF SCRIPT\n")

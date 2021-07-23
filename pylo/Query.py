@@ -79,7 +79,7 @@ class Query:
         self.level = level
         self.subQueries = []  # type: list[pylo.Query]
         self.raw_value = None
-        pass
+
 
     def parse(self, data: str):
         padding = ''.rjust(self.level*3)
@@ -264,6 +264,11 @@ class Query:
 
         # todo: optimize/handle inverters
 
+    def execute_on_single_object(self, object):
+        if len(self.subQueries) == 1:
+            pass
+
+        return False
 
 
 class Filter:
@@ -301,7 +306,6 @@ class FilterCollections:
         FilterCollections.workload_filters[name.lower()][operator.lower()] = new_filter
 
 
-
 def tmp_func(wkl: pylo.Workload, context: FilterContext):
     return wkl.name == context.argument
 
@@ -315,6 +319,14 @@ def tmp_func(wkl: pylo.Workload, context: FilterContext):
 
 
 FilterCollections.add_workload_filter('reference.count', '<>=!', tmp_func, 'int')
+
+
+def tmp_func(wkl: pylo.Workload, context: FilterContext):
+    return context.argument in wkl.description
+
+
+FilterCollections.add_workload_filter('description', 'contains', tmp_func, 'string')
+
 
 
 
