@@ -1,11 +1,11 @@
 import os
 import sys
 from typing import Dict
+import argparse
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
 import pylo
-import argparse
+
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True, help='hostname of the PCE')
@@ -21,7 +21,7 @@ settings_use_cache = args['use_cache']
 
 org = pylo.Organization(1)
 
-print(" * Loading Origin PCE configuration from " + hostname + " or cached file... ", end="", flush=True)
+print(" * Loading PCE configuration from " + hostname + " or cached file... ", end="", flush=True)
 if settings_use_cache:
     org.load_from_cache_or_saved_credentials(hostname)
 else:

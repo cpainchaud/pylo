@@ -358,6 +358,30 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
+    def members_to_str(self) -> str:
+        text = ''
+
+        if self._hasAllWorkloads:
+            text += "All Workloads"
+
+        for label in self.get_labels():
+            if len(text) > 0:
+                text += ','
+            text += label.name
+
+        for iplist in self.get_iplists():
+            if len(text) > 0:
+                text += ','
+            text += iplist.name
+
+        for item in self._items.values():
+            if isinstance(item, pylo.Workload):
+                if len(text) > 0:
+                    text += ','
+                text += item.get_name()
+
+        return text
+
     def contains_iplists(self) -> bool:
         """
         Returns True if at least 1 iplist is part of this container
