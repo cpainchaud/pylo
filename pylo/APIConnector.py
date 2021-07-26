@@ -90,55 +90,53 @@ class APIConnector:
         connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True)
         return connector
 
-    def _make_url(self, path: str, includeOrgID):
+    def _make_url(self, path: str, include_org_id):
         url = "https://" + self.hostname + ":" + self.port + "/api/v2"
-        if includeOrgID:
+        if include_org_id:
             url += '/orgs/' + str(self.orgID)
         url += path
 
         return url
 
-    def do_get_call(self, path, json_arguments=None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False, params=None, skip_product_version_check=False,
+    def do_get_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False, params=None, skip_product_version_check=False,
                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
                     return_headers: bool = False):
 
-        return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall, skip_product_version_check=skip_product_version_check, params=params,
+        return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                            json_output_expected=json_output_expected, async_call=async_call, skip_product_version_check=skip_product_version_check, params=params,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached,
                             return_headers=return_headers)
 
-    def do_post_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+    def do_post_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
                      retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                      retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
-        return self._doCall('POST', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
+        return self._doCall('POST', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                            json_output_expected=json_output_expected, async_call=async_call,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def do_put_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+    def do_put_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
-        return self._doCall('PUT', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
+        return self._doCall('PUT', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                            json_output_expected=json_output_expected, async_call=async_call,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-
-    def do_delete_call(self, path, json_arguments = None, includeOrgID=True, jsonOutputExpected=True, asyncCall=False,
+    def do_delete_call(self, path, json_arguments = None, include_org_id=True, json_output_expected=True, async_call=False,
                        retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                        retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
-        return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=includeOrgID,
-                            jsonOutputExpected=jsonOutputExpected, asyncCall=asyncCall,
+        return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                            json_output_expected=json_output_expected, async_call=async_call,
                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-
-    def _doCall(self, method, path, json_arguments=None, include_org_id=True, jsonOutputExpected=True, asyncCall=False,
+    def _doCall(self, method, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
                 skip_product_version_check=False, params=None,
                 retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                 retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
@@ -154,7 +152,7 @@ class APIConnector:
         if json_arguments is not None:
             headers['Content-Type'] = 'application/json'
 
-        if asyncCall:
+        if async_call:
             headers['Prefer'] = 'respond-async'
 
         while True:
@@ -175,7 +173,7 @@ class APIConnector:
             # log.info("Request Body:" + pylo.nice_json(json_arguments))
             # log.info("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
 
-            if asyncCall:
+            if async_call:
                 if method == 'GET' and req.status_code != 202:
                     orig_request = req.request  # type: requests.PreparedRequest
                     raise Exception("Status code for Async call should be 202 but " + str(req.status_code)
@@ -197,7 +195,7 @@ class APIConnector:
                     log.info("Sleeping " + str(retryInterval) + " seconds before polling for job status, elapsed " + str(retryInterval*retryLoopTimes) + " seconds so far" )
                     retryLoopTimes += 1
                     time.sleep(retryInterval)
-                    jobPoll = self.do_get_call(jobLocation, includeOrgID=False)
+                    jobPoll = self.do_get_call(jobLocation, include_org_id=False)
                     if 'status' not in jobPoll:
                         raise Exception('Job polling request did not return a "status" field')
                     jobPollStatus = jobPoll['status']
@@ -220,7 +218,7 @@ class APIConnector:
                     log.info("Job status is " + jobPollStatus)
 
                 log.info("Job is done, we will now download the resulting dataset")
-                dataset = self.do_get_call(resultHref, includeOrgID=False)
+                dataset = self.do_get_call(resultHref, include_org_id=False)
 
                 return dataset
 
@@ -253,7 +251,7 @@ class APIConnector:
             if return_headers:
                 return req.headers
 
-            if jsonOutputExpected:
+            if json_output_expected:
                 log.info("Parsing API answer to JSON (with a size of " + str( int(answerSize) ) + "KB)")
                 jout = req.json()
                 log.info("Done!")
@@ -268,12 +266,11 @@ class APIConnector:
 
         raise pylo.PyloApiEx("Unexpected API output or race condition")
 
-
-    def getSoftwareVersion(self):
+    def getSoftwareVersion(self) -> Optional['pylo.SoftwareVersion']:
         self.collect_pce_infos()
         return self.version
 
-    def getSoftwareVersionString(self):
+    def getSoftwareVersionString(self) -> str:
         self.collect_pce_infos()
         return self.version_string
 
@@ -287,19 +284,19 @@ class APIConnector:
             return int(count)
 
         if object_type == 'workloads':
-            return extract_count(self.do_get_call('/workloads', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/workloads', async_call=False, return_headers=True))
         elif object_type == 'labels':
-            return extract_count(self.do_get_call('/labels', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/labels', async_call=False, return_headers=True))
         elif object_type == 'labelgroups':
-            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', async_call=False, return_headers=True))
         elif object_type == 'iplists':
-            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', async_call=False, return_headers=True))
         elif object_type == 'services':
-            return extract_count(self.do_get_call('/sec_policy/draft/services', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/services', async_call=False, return_headers=True))
         elif object_type == 'rulesets':
-            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True))
         elif object_type == 'security_principals':
-            return extract_count(self.do_get_call('/security_principals', asyncCall=False, return_headers=True))
+            return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True))
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
@@ -372,7 +369,6 @@ class APIConnector:
 
                 q.task_done()
 
-
         for i in range(threads_count):
             worker = Thread(target=get_objects, args=(thread_queue, i))
             worker.setDaemon(True)
@@ -394,14 +390,13 @@ class APIConnector:
         if len(errors) > 0:
             raise errors[0]
 
-
         return data
 
     def collect_pce_infos(self):
         if self.version is not None:  # Make sure we collect data only once
             return
         path = "/product_version"
-        jout = self.do_get_call(path, includeOrgID=False, skip_product_version_check=True)
+        jout = self.do_get_call(path, include_org_id=False, skip_product_version_check=True)
 
         self.version_string = jout['version']
         self.version = pylo.SoftwareVersion(jout['long_display'])
@@ -444,12 +439,12 @@ class APIConnector:
         if dst_href is not None:
             path += "&dst_workload={}".format(dst_href)
 
-        return self.do_get_call(path=path, asyncCall=False,
+        return self.do_get_call(path=path, async_call=False,
                                 retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                                 retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
     def rule_coverage_query(self, data):
-        return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, includeOrgID=True, jsonOutputExpected=True, asyncCall=False)
+        return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False)
 
     def objects_label_get(self, max_results: int = None, async_mode=True):
         path = '/labels'
@@ -458,7 +453,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_label_delete(self, href):
         """
@@ -469,7 +464,7 @@ class APIConnector:
         if type(href) is pylo.Label:
             path = href.href
 
-        return self.do_delete_call(path=path, jsonOutputExpected=False, includeOrgID=False)
+        return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
     def objects_label_create(self, label_name: str, label_type: str):
         path = '/labels'
@@ -485,7 +480,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_virtual_service_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/virtual_services'
@@ -494,7 +489,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_iplist_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/ip_lists'
@@ -503,7 +498,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_iplist_create(self, json_blob):
         path = '/sec_policy/draft/ip_lists'
@@ -522,18 +517,18 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_workload_agent_upgrade(self, workload_href: str, target_version: str):
         path = '{}/upgrade'.format(workload_href)
         data = {"release": target_version}
 
-        return self.do_post_call(path=path, json_arguments=data, jsonOutputExpected=False, includeOrgID=False)
+        return self.do_post_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
     def objects_workload_update(self, href: str, data):
         path = href
 
-        return self.do_put_call(path=path, json_arguments=data, jsonOutputExpected=False, includeOrgID=False)
+        return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
     def objects_workload_update_bulk(self, json_object):
         path = '/workloads/bulk_update'
@@ -548,7 +543,7 @@ class APIConnector:
         if type(href) is pylo.Workload:
             path = href.href
 
-        return self.do_delete_call(path=path, jsonOutputExpected=False, includeOrgID=False)
+        return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
     class WorkloadMultiDeleteTracker:
         _errors: Dict[str, str]
@@ -581,7 +576,6 @@ class APIConnector:
         def get_error_by_href(self, href: str) -> Union[str, None]:
             return self._errors.get(href)
 
-
         def execute(self, unpair_agents=False):
 
             if len(self._hrefs) < 1:
@@ -612,7 +606,6 @@ class APIConnector:
             if len(agents_to_unpair) > 0:
                 self._unpair_agents(agents_to_unpair)
 
-
         def _unpair_agents(self, workloads_hrefs: [str]):
             for href in workloads_hrefs:
                 retryCount = 5
@@ -634,14 +627,11 @@ class APIConnector:
                         self._errors[href] = str(ex)
                         break
 
-
-
         def count_entries(self):
             return len(self._hrefs)
 
         def count_errors(self):
             return len(self._errors)
-
 
     def new_tracker_workload_multi_delete(self):
         return APIConnector.WorkloadMultiDeleteTracker(self)
@@ -669,8 +659,7 @@ class APIConnector:
 
         path = "/workloads/bulk_delete"
 
-        return self.do_put_call(path=path, json_arguments=json_data, jsonOutputExpected=True)
-
+        return self.do_put_call(path=path, json_arguments=json_data, json_output_expected=True)
 
     def objects_workload_unpair_multi(self, href_or_workload_array):
         """
@@ -698,7 +687,7 @@ class APIConnector:
 
         path = "/workloads/unpair"
 
-        return self.do_put_call(path=path, json_arguments=json_data, jsonOutputExpected=False)
+        return self.do_put_call(path=path, json_arguments=json_data, json_output_expected=False)
 
     def objects_workload_create_single_unmanaged(self, json_object):
         path = '/workloads'
@@ -715,7 +704,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_service_delete(self, href):
         """
@@ -726,7 +715,7 @@ class APIConnector:
         if type(href) is pylo.Service:
             path = href.href
 
-        return self.do_delete_call(path=path, jsonOutputExpected=False, includeOrgID=False)
+        return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
     def objects_ruleset_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/rule_sets'
@@ -735,7 +724,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_ruleset_create(self, name: str,
                                scope_app: 'pylo.Label' = None,
@@ -759,13 +748,13 @@ class APIConnector:
             'scopes': [scope]
         }
 
-        return self.do_post_call(path=path, json_arguments=data, jsonOutputExpected=True)
+        return self.do_post_call(path=path, json_arguments=data, json_output_expected=True)
 
     def objects_rule_update(self, rule_href: str, update_data):
         return self.do_put_call(path=rule_href,
                                 json_arguments=update_data,
-                                includeOrgID=False,
-                                jsonOutputExpected=False
+                                include_org_id=False,
+                                json_output_expected=False
                                 )
 
     def objects_rule_create(self, ruleset_href: str,
@@ -829,7 +818,7 @@ class APIConnector:
 
         path = ruleset_href+'/sec_rules'
 
-        return self.do_post_call(path, json_arguments=data, jsonOutputExpected=True, includeOrgID=False)
+        return self.do_post_call(path, json_arguments=data, json_output_expected=True, include_org_id=False)
 
     def objects_securityprincipal_get(self, max_results: int = None, async_mode=True):
         path = '/security_principals'
@@ -838,7 +827,7 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_securityprincipal_create(self, name: str = None, sid: str = None, json_object=None):
         path = '/security_principals'
@@ -855,7 +844,6 @@ class APIConnector:
             raise pylo.PyloApiEx("You need to provide a SID")
 
         return get_field_or_die('href', self.do_post_call(path=path, json_arguments={'name': name, 'sid': sid}))
-
 
     class ApiAgentCompatibilityReport:
 
@@ -902,7 +890,6 @@ class APIConnector:
                                 self._items[result_name].extra_debug_message = extra_infos
                                 break
 
-
         def get_failed_items(self) -> Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem']:
             results: Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem'] = {}
             for infos in self._items.values():
@@ -931,7 +918,7 @@ class APIConnector:
         while retryCount >= 0:
             retryCount -= 1
             try:
-                api_result = self.do_get_call(path=path, includeOrgID=False)
+                api_result = self.do_get_call(path=path, include_org_id=False)
                 break
 
             except pylo.PyloApiTooManyRequestsEx as ex:
@@ -957,12 +944,12 @@ class APIConnector:
 
         data = {"agent": {"config": {"mode": mode, 'log_traffic': log_traffic}}}
 
-        return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
+        return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)
 
     def objects_agent_reassign_pce(self, agent_href: str, target_pce: str):
         path = agent_href + '/update'
         data = {"target_pce_fqdn": target_pce}
-        return self.do_put_call(path, json_arguments=data, includeOrgID=False, jsonOutputExpected=False)
+        return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)
 
     class ExplorerFilterSetV1:
         exclude_processes_emulate: Dict[str,str]
@@ -1092,7 +1079,6 @@ class APIConnector:
         def set_time_from_x_seconds_ago(self, seconds: int):
             self._time_from = datetime.utcnow() - timedelta(seconds=seconds)
 
-
         def set_time_from_x_days_ago(self, days: int):
             return self.set_time_from_x_seconds_ago(days*60*60*24)
 
@@ -1105,19 +1091,15 @@ class APIConnector:
         def filter_on_policy_decision_blocked(self):
             self._policy_decision_filter.append('blocked')
 
-
         def filter_on_policy_decision_potentially_blocked(self):
             self._policy_decision_filter.append('potentially_blocked')
-
 
         def filter_on_policy_decision_all_blocked(self):
             self.filter_on_policy_decision_blocked()
             self.filter_on_policy_decision_potentially_blocked()
 
-
         def filter_on_policy_decision_allowed(self):
             self._policy_decision_filter.append('allowed')
-
 
         def generate_json_query(self):
             # examples:
@@ -1166,7 +1148,6 @@ class APIConnector:
                     tmp.append({'ip_address': ip_txt})
                 filters['sources']['include'].append(tmp)
 
-
             if len(self._provider_labels) > 0:
                 tmp = []
                 for label_href in self._provider_labels.keys():
@@ -1179,7 +1160,6 @@ class APIConnector:
                     tmp.append({'ip_address': ip_txt})
                 filters['destinations']['include'].append(tmp)
 
-
             consumer_exclude_json = []
             if len(self._consumer_exclude_labels) > 0:
                 for label_href in self._consumer_exclude_labels.keys():
@@ -1188,7 +1168,6 @@ class APIConnector:
             if len(self.__filter_consumer_ip_exclude) > 0:
                 for ipaddress in self.__filter_consumer_ip_exclude:
                     filters['sources']['exclude'].append({'ip_address': ipaddress})
-
 
             provider_exclude_json = []
             if len(self._provider_exclude_labels) > 0:
@@ -1199,7 +1178,6 @@ class APIConnector:
                 for ipaddress in self.__filter_provider_ip_exclude:
                     filters['destinations']['exclude'].append({'ip_address': ipaddress})
 
-
             if len(self._exclude_direct_services) > 0:
                 for service in self._exclude_direct_services:
                     filters['services']['exclude'].append(service.get_api_json())
@@ -1209,7 +1187,6 @@ class APIConnector:
                     filters['services']['exclude'].append({'process_name': process})
 
             return filters
-
 
     class ExplorerResultSetV1:
 
@@ -1251,7 +1228,6 @@ class APIConnector:
                         for label_data in workload_labels_data:
                             self.source_workload_labels_href.append(label_data.get('href'))
 
-
                 dst = data['dst']
                 self.destination_ip = dst['ip']
                 self._destination_iplists = dst.get('ip_lists')
@@ -1272,7 +1248,6 @@ class APIConnector:
                     if workload_labels_data is not None:
                         for label_data in workload_labels_data:
                             self.destination_workload_labels_href.append(label_data.get('href'))
-
 
                 service_json = data['service']
                 self.service_json = service_json
@@ -1308,8 +1283,6 @@ class APIConnector:
 
                     if self.service_protocol == 6:
                         return '{}/tcp'.format(self.service_port)
-
-
 
             def source_is_workload(self):
                 return self.source_workload_href is not None
@@ -1392,13 +1365,13 @@ class APIConnector:
             def pd_is_potentially_blocked(self):
                 return self.policy_decision_string == 'potentially_blocked'
 
-            def cast_isBroadcast(self):
+            def cast_is_broadcast(self):
                 return self._cast_type == 'broadcast'
 
-            def cast_isMulticast(self):
+            def cast_is_multicast(self):
                 return self._cast_type == 'multicast'
 
-            def cast_isUnicast(self):
+            def cast_is_unicast(self):
                 return self._cast_type is not None
 
             def set_draft_mode_policy_decision_blocked(self, blocked: bool=True):
@@ -1419,7 +1392,6 @@ class APIConnector:
             def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
                 return self._draft_mode_policy_decision_is_blocked is None
 
-
         def __init__(self, data, owner: 'pylo.APIConnector', emulated_process_exclusion={}):
             self._raw_results = data
             if len(emulated_process_exclusion) > 0:
@@ -1431,11 +1403,8 @@ class APIConnector:
                     new_data.append(record)
                 self._raw_results = new_data
 
-
             self.owner = owner
             self.tracker = APIConnector.ExplorerResultSetV1.Tracker(self)
-            # print(data)
-            #_print('Received {} Explorer results'.format(len(data)))
 
         def count_results(self):
             return len(self._raw_results)
@@ -1462,13 +1431,10 @@ class APIConnector:
                 except pylo.PyloApiUnexpectedSyntax as error:
                     pylo.log.warn(error)
 
-
-
             if len(result) > 0 and draft_mode:
                 draft_reply_to_record_table: List[APIConnector.ExplorerResultSetV1.ExplorerResult] = []
 
                 global_query_data = []
-
 
                 for record in result:
                     service_json: Dict = record.service_json.copy()
@@ -1532,7 +1498,6 @@ class APIConnector:
                                 draft_reply_to_record_table.append(record)
                                 global_query_data.append(local_unique_query_data)
 
-
                 pylo.log.debug("{} items in Rule Coverage query queue".format(len(global_query_data)))
 
                 index = 0
@@ -1580,21 +1545,15 @@ class APIConnector:
 
                     index += draft_mode_request_count_per_batch
 
-
-
-
             return result
-
-
 
     def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
         path = "/traffic_flows/traffic_analysis_queries"
         data = filters.generate_json_query()
-        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, includeOrgID=True, jsonOutputExpected=True),
+        result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, include_org_id=True, json_output_expected=True),
                                                   owner=self, emulated_process_exclusion=filters.exclude_processes_emulate)
 
         return result
-
 
     class ClusterHealth:
 
@@ -1622,8 +1581,6 @@ class APIConnector:
                 def is_partially_running(self):
                     return self.status == 'partial'
 
-
-
             def __init__(self, json_data):
                 self.name = get_field_or_die('hostname', json_data)  # type: str
                 self.type = get_field_or_die('type', json_data)  # type: str
@@ -1645,7 +1602,6 @@ class APIConnector:
                         if new_service.name in self.services:
                             raise pylo.PyloEx("duplicated service name '{}'".format(new_service.name))
                         self.services[new_service.name] = new_service
-
 
                 process_services(services_statuses, 'running')
                 process_services(services_statuses, 'not_running')
@@ -1671,7 +1627,6 @@ class APIConnector:
                         ret.append(service)
                 return ret
 
-
             def to_string(self, indent='', marker='*'):
                 def val_str(display_name: str, value):
                     return "{}{}{}: {}\n".format(indent, marker, display_name, value)
@@ -1696,7 +1651,6 @@ class APIConnector:
 
                 return ret
 
-
         def __init__(self, json_data):
             self.raw_json = json_data
 
@@ -1705,7 +1659,7 @@ class APIConnector:
             self.type = get_field_or_die('type', json_data)  # type: str
 
             if self._status not in APIConnector.ClusterHealth.allowed_status_list:
-                raise pylo.PyloEx("ClusterHealth has unsupported status '{}'".format(self.status))
+                raise pylo.PyloEx("ClusterHealth has unsupported status '{}'".format(self._status))
 
             nodes_list = get_field_or_die('nodes', json_data)
             self.nodes_dict = {}
@@ -1734,7 +1688,6 @@ class APIConnector:
         def status_is_error(self):
             return self._status == 'error'
 
-
     def cluster_health_get(self, return_object=False):
         path = '/health'
 
@@ -1742,7 +1695,7 @@ class APIConnector:
             return self.do_get_call(path)
 
         # cluster_health list
-        json_output = self.do_get_call(path, includeOrgID=False)
+        json_output = self.do_get_call(path, include_org_id=False)
         if type(json_output) is not list:
             raise pylo.PyloEx("A list object was expected but we received a '{}' instead".format(type(json_output)))
 
@@ -1834,10 +1787,8 @@ class APIConnector:
             # print(data)
             return self.connector.do_post_call(uri, data)
 
-
         def execute_and_resolve(self, organization: 'pylo.Organization'):
             return APIConnector.RuleSearchQuery.RuleSearchQueryResolvedResultSet(self.execute(), organization)
-
 
         class RuleSearchQueryResolvedResultSet:
             rules: Dict[str, 'pylo.Rule']
@@ -1862,12 +1813,11 @@ class APIConnector:
                     self.rules[rule_found.href] = rule_found
                     ruleset_found = self.rules_per_ruleset.get(rule_found.owner)
                     if ruleset_found is None:
-                        #print("new ruleset")
+                        # print("new ruleset")
                         self.rules_per_ruleset[rule_found.owner] = {rule_found.href: rule_found}
                     else:
-                        #print("existing rs")
+                        # print("existing rs")
                         self.rules_per_ruleset[rule_found.owner][rule_found.href] = rule_found
-
 
     def new_RuleSearchQuery(self):
         return self.RuleSearchQuery(self)

@@ -1,6 +1,5 @@
 import os
 import sys
-from typing import Dict
 import argparse
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -53,9 +52,3 @@ elif args['command'] == 'workload-export':
     commands.workload_export.run(args, org)
 elif args['command'] == 'workload-relabeler':
     commands.workload_relabeler.run(args, org)
-
-
-
-
-
-

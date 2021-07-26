@@ -23,7 +23,7 @@ from .WorkloadStore import WorkloadStore
 from .VirtualService import VirtualService
 from .VirtualServiceStore import VirtualServiceStore
 from .Service import Service, ServiceStore, PortMap, ServiceEntry
-from .Rule import Rule, RuleServiceContainer, RuleSecurityPrincipalContainer, DirectServiceInRule,RuleHostContainer
+from .Rule import Rule, RuleServiceContainer, RuleSecurityPrincipalContainer, DirectServiceInRule, RuleHostContainer
 from .Ruleset import Ruleset, RulesetScope, RulesetScopeEntry
 from .RulesetStore import RulesetStore
 from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
