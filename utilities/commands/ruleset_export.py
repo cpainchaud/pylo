@@ -13,7 +13,7 @@ def __main(options, org: pylo.Organization):
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
 
-    csv_report_headers = ['ruleset', 'scope', 'type', 'consumers', 'providers', 'service', 'options',
+    csv_report_headers = ['ruleset', 'scope', 'type', 'consumers', 'providers', 'services', 'options',
                           'ruleset_href', 'rule_href'
                           ]
 
@@ -24,6 +24,7 @@ def __main(options, org: pylo.Organization):
             data = {'ruleset': ruleset.name, 'ruleset_href': ruleset.href, 'scope': ruleset.scopes.get_all_scopes_str(),
                     'consumers': rule.consumers.members_to_str(),
                     'providers': rule.providers.members_to_str(),
+                    'services': rule.services.members_to_str(),
                     'rule_href': rule.href}
             if rule.is_extra_scope():
                 data['type'] = 'intra'

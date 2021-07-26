@@ -199,10 +199,10 @@ class Service(pylo.ReferenceTracker):
     def get_api_reference_json(self):
         return {'service': {'href': self.href}}
 
-    def get_entries_str_list(self, procolFirst=True) -> List[str]:
+    def get_entries_str_list(self, protocolFirst=True) -> List[str]:
         result: List[str] = []
         for entry in self.entries:
-            result.append(entry.to_string_standard(protocol_first=procolFirst))
+            result.append(entry.to_string_standard(protocol_first=protocolFirst))
         return result
 
 

@@ -340,7 +340,7 @@ print(" * Processing {} Services data... ".format(len(workload_for_report)), end
 for service in services:
     data = {'name': service.name,
             'href': service.href,
-            'members': pylo.string_list_to_text(service.get_entries_str_list(procolFirst=False))
+            'members': pylo.string_list_to_text(service.get_entries_str_list(protocolFirst=False))
             }
 
     csv_file.add_line_from_object(data)

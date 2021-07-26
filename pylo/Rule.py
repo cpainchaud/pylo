@@ -233,6 +233,21 @@ class RuleServiceContainer(pylo.Referencer):
         self._direct_services.append(service)
         return True
 
+    def members_to_str(self, separator: str = ',') -> str:
+        text: str = ''
+
+        for service in self._items.values():
+            if len(text) > 0:
+                text += separator
+            text += service.name + ': ' + pylo.string_list_to_text(service.get_entries_str_list())
+
+        for direct in self._direct_services:
+            if len(text) > 0:
+                text += separator
+            text += direct.to_string_standard()
+
+        return text
+
     def api_sync(self):
         connector = pylo.find_connector_or_die(self)
         data = []

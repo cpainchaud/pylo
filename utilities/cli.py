@@ -14,8 +14,6 @@ parser.add_argument('--pce', type=str, required=True,
 parser.add_argument('--use-cache', type=bool, nargs='?', required=False, default=False, const=True,
                     help='For developers only')
 
-# parser.add_argument('cli', type=str, help='CLI utility to run')
-
 sub_parsers = parser.add_subparsers(dest='command', title='command', help='sub-command help')
 sub_parsers.required = True
 
