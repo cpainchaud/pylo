@@ -31,7 +31,7 @@ if settings_use_cache:
     print(" * Loading objects from cached PCE '{}' or cached file... ".format(hostname), end="", flush=True)
     org.load_from_cached_file(hostname)
 else:
-    org.load_from_saved_credentials(hostname, include_deleted_workloads=True)
+    org.load_from_saved_credentials(hostname, include_deleted_workloads=True, prompt_for_api_key=True)
 print("OK!\n")
 
 print(" * PCE statistics: ")
