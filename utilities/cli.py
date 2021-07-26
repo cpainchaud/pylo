@@ -8,6 +8,7 @@ import pylo
 
 import commands.ruleset_export
 import commands.workload_export
+import commands.workload_relabeler
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,
@@ -21,6 +22,7 @@ sub_parsers = parser.add_subparsers(dest='command', required=True)
 
 commands.ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
 commands.workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
+commands.workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
 
 args = vars(parser.parse_args())
 
@@ -49,6 +51,8 @@ if args['command'] == 'rule-export':
     commands.ruleset_export.run(args, org)
 elif args['command'] == 'workload-export':
     commands.workload_export.run(args, org)
+elif args['command'] == 'workload-relabeler':
+    commands.workload_relabeler.run(args, org)
 
 
 
