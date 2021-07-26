@@ -7,10 +7,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 import commands.ruleset_export
+import commands.workload_export
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
+parser.add_argument('--debug', type=str, required=False, default=False,
+                    help='Enables extra debugging output in PYLO framework')
 parser.add_argument('--use-cache', type=bool, nargs='?', required=False, default=False, const=True,
                     help='For developers only')
 
@@ -18,8 +21,12 @@ sub_parsers = parser.add_subparsers(dest='command', title='command', help='sub-c
 sub_parsers.required = True
 
 commands.ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
+commands.workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
 
 args = vars(parser.parse_args())
+
+if args['debug']:
+    pylo.log_set_debug()
 
 hostname = args['pce']
 settings_use_cache = args['use_cache']
@@ -41,6 +48,8 @@ print()
 
 if args['command'] == 'rule-export':
     commands.ruleset_export.run(args, org)
+elif args['command'] == 'workload-export':
+    commands.workload_export.run(args, org)
 
 
 
