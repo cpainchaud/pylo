@@ -265,7 +265,7 @@ class RuleHostContainer(pylo.Referencer):
     def __init__(self, owner: 'pylo.Rule', name: str):
         pylo.Referencer.__init__(self)
         self.owner = owner
-        self._items = {}  # type: Dict[Union[pylo.Label, pylo.LabelGroup, pylo.Workload], Union[pylo.Label, pylo.LabelGroup, pylo.Workload]]
+        self._items = {}  # type: Dict[Union[pylo.Label, pylo.LabelGroup, pylo.Workload, pylo.VirtualService], Union[pylo.Label, pylo.LabelGroup, pylo.Workload, pylo.VirtualService]]
         self.name = name
         self._hasAllWorkloads = False
 
@@ -302,6 +302,15 @@ class RuleHostContainer(pylo.Referencer):
                 if find_object is None:
                     # raise Exception("Cannot find Workload with HREF {} in Rule {}. JSON:\n {}".format(href, self.owner.href, pylo.nice_json(host_data)))
                     find_object = self.owner.owner.owner.owner.WorkloadStore.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
+            elif 'virtual_service' in host_data:
+                href = host_data['virtual_service'].get('href')
+                if href is None:
+                    raise pylo.PyloEx('Cannot find object HREF ', host_data)
+                # @TODO : better handling of temporary objects
+                find_object = self.owner.owner.owner.owner.VirtualServiceStore.itemsByHRef.get(href)
+                if find_object is None:
+                    # raise Exception("Cannot find VirtualService with HREF {} in Rule {}. JSON:\n {}".format(href, self.owner.href, pylo.nice_json(host_data)))
+                    find_object = self.owner.owner.owner.owner.VirtualServiceStore.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
             elif 'actors' in host_data:
                 actor_value = host_data['actors']
                 if actor_value is not None and actor_value == 'ams':
@@ -384,16 +393,20 @@ class RuleHostContainer(pylo.Referencer):
                 text += ','
             text += label.name
 
-        for iplist in self.get_iplists():
+        for item in self.get_iplists():
             if len(text) > 0:
                 text += ','
-            text += iplist.name
+            text += item.name
 
-        for item in self._items.values():
-            if isinstance(item, pylo.Workload):
-                if len(text) > 0:
-                    text += ','
-                text += item.get_name()
+        for item in self.get_workloads():
+            if len(text) > 0:
+                text += ','
+            text += item.get_name()
+
+        for item in self.get_virtual_services():
+            if len(text) > 0:
+                text += ','
+            text += item.name
 
         return text
 
@@ -411,6 +424,24 @@ class RuleHostContainer(pylo.Referencer):
 
         for item in self._items.values():
             if isinstance(item, pylo.IPList):
+                result.append(item)
+
+        return result
+
+    def get_workloads(self) -> List[pylo.Workload]:
+        result = []
+
+        for item in self._items.values():
+            if isinstance(item, pylo.Workload):
+                result.append(item)
+
+        return result
+
+    def get_virtual_services(self) -> List[pylo.VirtualService]:
+        result = []
+
+        for item in self._items.values():
+            if isinstance(item, pylo.VirtualService):
                 result.append(item)
 
         return result

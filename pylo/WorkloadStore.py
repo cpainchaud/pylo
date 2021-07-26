@@ -45,7 +45,7 @@ class WorkloadStore:
 
             log.debug("Found Workload '%s' with href '%s'", new_item_name, new_item_href)
 
-    def find_by_href_or_die(self, href: str):
+    def find_by_href_or_die(self, href: str) -> 'pylo.Workload':
 
         find_object = self.itemsByHRef.get(href)
         if find_object is None:
@@ -53,7 +53,7 @@ class WorkloadStore:
 
         return find_object
 
-    def find_by_href_or_create_tmp(self, href: str, tmp_wkl_name: str):
+    def find_by_href_or_create_tmp(self, href: str, tmp_wkl_name: str) -> 'pylo.Workload':
         find_object = self.itemsByHRef.get(href)
         if find_object is not None:
             return find_object

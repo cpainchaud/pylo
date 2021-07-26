@@ -18,6 +18,7 @@ class Organization:
         self.LabelStore: 'pylo.LabelStore' = pylo.LabelStore(self)
         self.IPListStore: 'pylo.IPListStore' = pylo.IPListStore(self)
         self.WorkloadStore: 'pylo.WorkloadStore' = pylo.WorkloadStore(self)
+        self.VirtualServiceStore: 'pylo.VirtualServiceStore' = pylo.VirtualServiceStore(self)
         self.AgentStore: 'pylo.AgentStore' = pylo.AgentStore(self)
         self.ServiceStore: 'pylo.ServiceStore' = pylo.ServiceStore(self)
         self.RulesetStore: 'pylo.RulesetStore' = pylo.RulesetStore(self)
@@ -128,6 +129,10 @@ class Organization:
             raise Exception("'workloads' was not found in json data")
         self.WorkloadStore.load_workloads_from_json(data['workloads'])
 
+        if 'virtual_services' not in data:
+            raise Exception("'virtual_services' was not found in json data")
+        self.VirtualServiceStore.load_virtualservices_from_json(data['virtual_services'])
+
         if 'security_principals' not in data:
             raise Exception("'security_principals' was not found in json data")
         self.SecurityPrincipalStore.load_principals_from_json(data['security_principals'])
@@ -142,7 +147,7 @@ class Organization:
 
     @staticmethod
     def create_fake_empty_config():
-        return {'iplists': [], 'workloads': [], 'labels': [], 'labelgroups': [], 'services': [],
+        return {'iplists': [], 'workloads': [], 'virtual_services': [], 'labels': [], 'labelgroups': [], 'services': [],
                 'rulesets': [], 'security_principals': []
                 }
 

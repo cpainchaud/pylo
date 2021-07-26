@@ -323,6 +323,12 @@ class APIConnector:
                         else:
                             data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads, async_mode=False, max_results=default_max_objects_for_sync_calls)
 
+                    elif object_type == 'virtual_services':
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['virtual_services'] = self.objects_virtual_service_get()
+                        else:
+                            data['virtual_services'] = self.objects_virtual_service_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+
                     elif object_type == 'labels':
                         if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
                             data['labels'] = self.objects_label_get()
@@ -374,6 +380,7 @@ class APIConnector:
             worker.start()
 
         thread_queue.put(('workloads', errors,))
+        thread_queue.put(('virtual_services', errors,))
         thread_queue.put(('rulesets', errors,))
         thread_queue.put(('services', errors,))
         thread_queue.put(('labels', errors,))
@@ -473,6 +480,15 @@ class APIConnector:
 
     def objects_labelgroup_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/label_groups'
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, asyncCall=async_mode, params=data)
+
+    def objects_virtual_service_get(self, max_results: int = None, async_mode=True):
+        path = '/sec_policy/draft/virtual_services'
         data = {}
 
         if max_results is not None:
