@@ -14,11 +14,10 @@ parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--debug', type=str, required=False, default=False,
                     help='Enables extra debugging output in PYLO framework')
-parser.add_argument('--use-cache', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--use-cache', action='store_true',
                     help='For developers only')
 
-sub_parsers = parser.add_subparsers(dest='command', title='command', help='sub-command help')
-sub_parsers.required = True
+sub_parsers = parser.add_subparsers(dest='command', required=True)
 
 commands.ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
 commands.workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
