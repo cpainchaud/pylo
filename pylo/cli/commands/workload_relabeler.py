@@ -453,7 +453,6 @@ def __main(args, org: pylo.Organization):
     print("  * DONE")
     # </editor-fold>
 
-
     if confirmed_changes:
         # <editor-fold desc="Unmanaged Workloads PUSH to API">
         print(" * Updating {} Workloads in batches of {}".format(len(workloads_json_data), batch_size), flush=True)
@@ -463,7 +462,7 @@ def __main(args, org: pylo.Organization):
         while batch_cursor <= len(workloads_json_data):
             print("  - batch #{} of {}".format(math.ceil(batch_cursor/batch_size)+1, math.ceil(len(workloads_json_data)/batch_size)), flush=True)
             batch_json_data = workloads_json_data[batch_cursor:batch_cursor+batch_size-1]
-            results = connector.objects_workload_update_bulk(batch_json_data)
+            results = org.connector.objects_workload_update_bulk(batch_json_data)
             created_count = 0
             failed_count = 0
 
