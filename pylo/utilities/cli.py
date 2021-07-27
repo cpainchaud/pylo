@@ -2,12 +2,13 @@ import os
 import sys
 import argparse
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+# in case user wants to run this utility while having a version of pylo already installed
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 import pylo
 
-import commands.ruleset_export
-import commands.workload_export
-import commands.workload_relabeler
+from .commands import ruleset_export
+from .commands import workload_export
+from .commands import workload_relabeler
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,
@@ -19,9 +20,9 @@ parser.add_argument('--use-cache', action='store_true',
 
 sub_parsers = parser.add_subparsers(dest='command', required=True)
 
-commands.ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
-commands.workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
-commands.workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
+ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
+workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
+workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
 
 args = vars(parser.parse_args())
 
@@ -47,8 +48,8 @@ print(org.stats_to_str(padding='    '))
 print()
 
 if args['command'] == 'rule-export':
-    commands.ruleset_export.run(args, org)
+    ruleset_export.run(args, org)
 elif args['command'] == 'workload-export':
-    commands.workload_export.run(args, org)
+    workload_export.run(args, org)
 elif args['command'] == 'workload-relabeler':
-    commands.workload_relabeler.run(args, org)
+    workload_relabeler.run(args, org)
