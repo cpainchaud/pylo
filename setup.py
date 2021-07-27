@@ -19,5 +19,8 @@ setup(
     author_email='shellescape@gmail.com',
     url='',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs', 'pylo/vendors'))
+    packages=find_packages(exclude=('tests', 'docs', 'pylo/vendors')),
+    entry_points = {
+        'console_scripts': ['pylo-cli=pylo.utilities.cli'],
+    }
 )
