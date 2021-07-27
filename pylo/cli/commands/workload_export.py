@@ -3,6 +3,9 @@ import argparse
 import sys
 from datetime import datetime
 from .misc import make_filename_with_timestamp
+from . import Command
+
+command_name = 'workload-export'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -170,8 +173,10 @@ def __main(args, org: pylo.Organization):
 
 
 def run(options, org: pylo.Organization):
-    print("**** WORKLOAD-EXPORT UTILITY ****")
-    __main(options, org)
     print()
-    print("**** END OF WORKLOAD-EXPORT UTILITY ****")
-    pass
+    print("**** {} UTILITY ****".format(command_name.upper()))
+    __main(options, org)
+    print("**** END OF {} UTILITY ****".format(command_name.upper()))
+
+
+command_object = Command(command_name, run, fill_parser)

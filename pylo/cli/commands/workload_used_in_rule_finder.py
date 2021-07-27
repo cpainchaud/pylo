@@ -1,14 +1,9 @@
 import pylo
 import argparse
 from typing import *
-command_name = "WORKLOAD-USED-IN-RULES-FINDER"
+from . import Command
 
-
-def run(options, org: pylo.Organization):
-    print("**** {} UTILITY ****".format(command_name))
-    __main(options, org)
-    print()
-    print("**** END OF {} UTILITY ****".format(command_name))
+command_name = "workload-used-in-rules-finder"
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -76,3 +71,13 @@ def __main(args, org: pylo.Organization):
                                                                                 len(global_concerned_rules)))
 
     print("\n**** END OF SCRIPT ****\n")
+
+
+def run(options, org: pylo.Organization):
+    print()
+    print("**** {} UTILITY ****".format(command_name.upper()))
+    __main(options, org)
+    print("**** END OF {} UTILITY ****".format(command_name.upper()))
+
+
+command_object = Command(command_name, run, fill_parser)

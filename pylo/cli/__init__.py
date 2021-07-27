@@ -6,7 +6,6 @@ import argparse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 import pylo
 
-from .commands import ruleset_export
 from .commands import workload_export
 from .commands import workload_relabeler
 from .commands import workload_used_in_rule_finder
@@ -23,7 +22,10 @@ def run():
 
     sub_parsers = parser.add_subparsers(dest='command', required=True)
 
-    ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
+    for command in pylo.cli.commands.available_commands.values():
+        command.fill_parser(sub_parsers.add_parser(command.name, help=''))
+
+    # ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
     workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
     workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
     workload_used_in_rule_finder.fill_parser(sub_parsers.add_parser('workload-used-in-rule-finder', help=''))
@@ -51,8 +53,8 @@ def run():
 
     print()
 
-    if args['command'] == 'rule-export':
-        ruleset_export.run(args, org)
+    if args['command'] in commands.available_commands:
+        commands.available_commands[args['command']].main(args, org)
     elif args['command'] == 'workload-export':
         workload_export.run(args, org)
     elif args['command'] == 'workload-relabeler':

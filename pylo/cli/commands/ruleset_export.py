@@ -1,6 +1,9 @@
 import pylo
 import argparse
 from .misc import make_filename_with_timestamp
+from . import Command
+
+command_name = 'rule-export'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -41,10 +44,13 @@ def __main(options, org: pylo.Organization):
 
 
 def run(options, org: pylo.Organization):
-    print("**** RULE-EXPORT UTILITY ****")
+    print()
+    print("**** {} UTILITY ****".format(command_name.upper()))
     __main(options, org)
-    print("**** END OF RULE-EXPORT UTILITY ****")
-    pass
+    print("**** END OF {} UTILITY ****".format(command_name.upper()))
+
+
+command_object = Command(command_name, run, fill_parser)
 
 
 

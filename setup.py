@@ -26,7 +26,7 @@ setup(
         'xlsxwriter~=1.3.7',
     ],
     entry_points={
-        'console_scripts': ['pylo-cli=pylo.utilities.cli'],
+        'console_scripts': ['pylo-cli=pylo.cli'],
     },
     package_data={
         "": ["*.pem"],
