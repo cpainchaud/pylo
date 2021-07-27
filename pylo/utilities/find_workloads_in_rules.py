@@ -3,7 +3,7 @@ import sys
 from typing import Dict
 import argparse
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 import pylo
 
 
