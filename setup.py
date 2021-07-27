@@ -28,4 +28,7 @@ setup(
     entry_points={
         'console_scripts': ['pylo-cli=pylo.utilities.cli'],
     },
+    package_data={
+        "": ["*.pem"],
+    },
 )
