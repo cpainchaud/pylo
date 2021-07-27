@@ -9,6 +9,7 @@ import pylo
 from .commands import ruleset_export
 from .commands import workload_export
 from .commands import workload_relabeler
+from .commands import workload_used_in_rule_finder
 
 
 def run():
@@ -25,6 +26,7 @@ def run():
     ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
     workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
     workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
+    workload_used_in_rule_finder.fill_parser(sub_parsers.add_parser('workload-used-in-rule-finder', help=''))
 
     args = vars(parser.parse_args())
 
@@ -54,6 +56,8 @@ def run():
         workload_export.run(args, org)
     elif args['command'] == 'workload-relabeler':
         workload_relabeler.run(args, org)
+    elif args['command'] == 'workload-used-in-rule-finder':
+        workload_used_in_rule_finder.run(args, org)
 
 
 if __name__ == "__main__":

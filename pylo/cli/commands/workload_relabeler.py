@@ -510,4 +510,3 @@ def run(options, org: pylo.Organization):
     __main(options, org)
     print()
     print("**** END OF WORKLOAD-RELABELER UTILITY ****")
-    pass
