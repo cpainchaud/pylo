@@ -18,11 +18,11 @@ jobs:
         uses: cpainchaud/pyinstaller-action-windows@main
         with:
           path: ./
-          spec: utilities/
+          spec: pylo/utilities/
           extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo\\vendors;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
 
 
-      - name: Publish firmware for Master branch
+      - name: Publish executables for Master branch
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
