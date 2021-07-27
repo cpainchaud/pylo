@@ -39,9 +39,10 @@ def run():
     org = pylo.Organization(1)
 
     if settings_use_cache:
-        print(" * Loading objects from cached PCE '{}' or cached file... ".format(hostname), end="", flush=True)
+        print(" * Loading objects from cached PCE '{}' data... ".format(hostname), end="", flush=True)
         org.load_from_cached_file(hostname)
     else:
+        print(" * Loading objects from PCE '{}' via API... ".format(hostname), end="", flush=True)
         org.load_from_saved_credentials(hostname, include_deleted_workloads=True, prompt_for_api_key=True)
     print("OK!\n")
 
