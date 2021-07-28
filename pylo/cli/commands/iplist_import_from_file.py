@@ -44,24 +44,22 @@ def __main(args, org: pylo.Organization):
     pylo.file_clean(output_file_excel)
 
     print(" * Loading CSV input file '{}'...".format(input_file), flush=True, end='')
-    CsvData = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
+    csv_data = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
     print('OK')
-    print("   - CSV has {} columns and {} lines (headers don't count)".format(CsvData.count_columns(), CsvData.count_lines()))
-    # print(pylo.nice_json(CsvData._objects))
+    print("   - CSV has {} columns and {} lines (headers don't count)".format(csv_data.count_columns(), csv_data.count_lines()))
+    # print(pylo.nice_json(csv_data._objects))
 
     print(" * Checking for iplist name collisions:", flush=True)
     name_cache = {}
     for iplist in org.IPListStore.itemsByHRef.values():
-        lower_name = None
         if iplist.name is not None and len(iplist.name) > 0:
             lower_name = iplist.name.lower()
             if lower_name not in name_cache:
-                name_cache[lower_name] = {'pce': True }
+                name_cache[lower_name] = {'pce': True}
             else:
                 print("  - Warning duplicate found in the PCE for IPList name: {}".format(iplist.name))
 
-    for csv_object in CsvData.objects():
-        lower_name = None
+    for csv_object in csv_data.objects():
         if csv_object['name'] is not None and len(csv_object['name']) > 0:
             lower_name = csv_object['name'].lower()
             if lower_name not in name_cache:
@@ -80,16 +78,14 @@ def __main(args, org: pylo.Organization):
     del name_cache
     print("  * DONE", flush=True)
 
-
     # Listing objects to be created (filtering out inconsistent ones)
     csv_objects_to_create = []
     ignored_objects_count = 0
-    for csv_object in CsvData.objects():
+    for csv_object in csv_data.objects():
         if '**not_created_reason**' not in csv_object:
             csv_objects_to_create.append(csv_object)
         else:
             ignored_objects_count += 1
-
 
     print(' * Preparing Iplist JSON data...')
     iplists_json_data = []
@@ -110,7 +106,6 @@ def __main(args, org: pylo.Organization):
             sys.exit(1)
 
         network_delimiter = network_delimiter.replace("\\n", "\n")
-        networks_strings = data['networks'].rsplit(network_delimiter)
         ip_ranges = []
         new_iplist['ip_ranges'] = ip_ranges
 
@@ -176,11 +171,11 @@ def __main(args, org: pylo.Organization):
         total_created_count += 1
         csv_objects_to_create[index]['href'] = href
 
-        CsvData.save_to_csv(output_file_csv, csv_created_fields)
-        CsvData.save_to_excel(output_file_excel, csv_created_fields)
+        csv_data.save_to_csv(output_file_csv, csv_created_fields)
+        csv_data.save_to_excel(output_file_excel, csv_created_fields)
 
-    CsvData.save_to_csv(output_file_csv, csv_created_fields)
-    CsvData.save_to_excel(output_file_excel, csv_created_fields)
+    csv_data.save_to_csv(output_file_csv, csv_created_fields)
+    csv_data.save_to_excel(output_file_excel, csv_created_fields)
 
     print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_objects_count, output_file_csv, output_file_excel))
 
