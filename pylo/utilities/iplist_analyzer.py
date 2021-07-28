@@ -17,7 +17,7 @@ parser.add_argument('--dev-use-cache', type=bool, nargs='?', required=False, def
                     help='For developers only')
 parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
                     help='extra debugging messages for developers')
-parser.add_argument('--verbose', '-v', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--verbose', '-v', action='store_true',
                     help='')
 
 # </editor-fold>

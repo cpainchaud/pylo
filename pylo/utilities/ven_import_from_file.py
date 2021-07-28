@@ -1,4 +1,6 @@
 import os
+from typing import List, Dict
+
 import sys
 import argparse
 import math
@@ -315,7 +317,7 @@ for csv_object in CsvData.objects():
         else:
             raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(loc_label))
 
-labels_to_be_created = []
+labels_to_be_created: List[Dict] = []
 for label_entry in name_cache.values():
     if 'csv' in label_entry:
         labels_to_be_created.append({'name': label_entry['realcase'], 'type': label_entry['type']})

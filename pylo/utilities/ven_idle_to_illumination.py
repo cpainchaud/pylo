@@ -30,11 +30,11 @@ parser.add_argument('--filter-on-href-from-file', type=str, required=False, defa
 parser.add_argument('--ignore-incompatibilities', type=str, nargs='+', required=False, default=None,
                     help="Ignore specific incompatibilities and force mode switch!")
 
-parser.add_argument('--ignore-all-incompatibilities', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--ignore-all-incompatibilities', action='store_true',
                     help="Don't check compatibility report and just do the change!")
 
 
-parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--confirm', action='store_true',
                     help='Request upgrade of the Agents')
 
 parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,

@@ -20,7 +20,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='CSV field delimiter')
     parser.add_argument('--filter-fields', type=str, required=False, default=None, choices=['hostname'], nargs="+",
                         help='Fields on which you want to filter on')
-    parser.add_argument('--keep-filters-in-report', type=str, required=False, default=False, const=True, nargs='?',
+    parser.add_argument('--keep-filters-in-report', action='store_true',
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
 
 

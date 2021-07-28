@@ -14,7 +14,7 @@ parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
 parser.add_argument('--pick-report-hostname', '-p', type=str, required=False, default=None,
                     help='if script cannot guess which PCE hostname you were looking for, use this option to force it')
-parser.add_argument('--debug', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--debug', action='store_true',
                     help='extra debugging messages for developers')
 # </editor-fold>
 

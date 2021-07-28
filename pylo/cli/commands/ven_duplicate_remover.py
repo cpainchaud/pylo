@@ -10,7 +10,7 @@ command_name = 'ven-duplicate-remover'
 def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='')
-    parser.add_argument('--confirm', '-c', type=bool, nargs='?', required=False, default=False, const=True,
+    parser.add_argument('--confirm', '-c', action='store_true',
                         help='actually operate deletions')
 
 

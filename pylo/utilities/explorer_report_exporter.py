@@ -12,7 +12,7 @@ import pylo
 parser = argparse.ArgumentParser(description='TODO LATER', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
-parser.add_argument('--debug', '-d', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--debug', '-d', action='store_true',
                     help='extra debugging messages for developers')
 
 parser.add_argument('--consumer-labels', '-cl', type=str, nargs='+', required=False, default=False,

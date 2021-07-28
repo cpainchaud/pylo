@@ -12,7 +12,7 @@ from pylo import log
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')
-parser.add_argument('--include-deleted-workloads', type=bool, required=False, nargs='?', default=False, const=True,
+parser.add_argument('--include-deleted-workloads', action='store_true',
                     help='should deleted workloads be downloaded as well')
 parser.add_argument('--debug', type=bool, required=False, nargs='?', default=False, const=True,
                     help='should deleted workloads be downloaded as well')

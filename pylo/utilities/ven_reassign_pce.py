@@ -25,7 +25,7 @@ parser.add_argument('--filter-app-label', type=str, required=False, default=None
 parser.add_argument('--filter-role-label', type=str, required=False, default=None,
                     help='Filter agents by role labels (separated by commas)')
 
-parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--confirm', action='store_true',
                     help='Confirm reassignment request')
 parser.add_argument('--stop-after', type=int, nargs='?', required=False, default=False, const=True,
                     help='Stop reassigning agents after X number of agents have already been processed')

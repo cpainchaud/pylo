@@ -7,7 +7,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realp
 import pylo
 
 
-
 parser = argparse.ArgumentParser(description='Get compatibility reports from all your IDLE VEN so you can review and remediate them')
 parser.add_argument('--pce', type=str, required=True,
                     help='hostname of the PCE')

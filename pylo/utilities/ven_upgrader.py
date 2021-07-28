@@ -28,7 +28,7 @@ parser.add_argument('--filter-ven-versions', nargs='+', type=str, required=False
 parser.add_argument('--filter-on-href-from-file', type=str, required=False, default=None,
                     help='Filter agents on workload href found in specific csv file')
 
-parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
+parser.add_argument('--confirm', action='store_true',
                     help='Request upgrade of the Agents')
 
 parser.add_argument('--target-version', type=str, required=True,
