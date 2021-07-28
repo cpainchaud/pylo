@@ -23,11 +23,6 @@ def run():
     for command in commands.available_commands.values():
         command.fill_parser(sub_parsers.add_parser(command.name, help=''))
 
-    # ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
-    # workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
-    # workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
-    # workload_used_in_rule_finder.fill_parser(sub_parsers.add_parser('workload-used-in-rule-finder', help=''))
-
     args = vars(parser.parse_args())
 
     if args['debug']:
@@ -52,8 +47,8 @@ def run():
     print(flush=True)
 
     if args['command'] in commands.available_commands:
-        print()
-        print("**** {} UTILITY ****".format(command.name.upper()))
+        command = commands.available_commands[args['command']]
+        print("**** {} UTILITY ****".format(command.name.upper()), flush=True)
         commands.available_commands[args['command']].main(args, org)
         print("**** END OF {} UTILITY ****".format(command.name.upper()))
         print()
