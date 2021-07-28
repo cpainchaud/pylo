@@ -17,11 +17,11 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--input-file-delimiter', type=str, required=False, default=',',
                         help='CSV field delimiter')
 
-    parser.add_argument('--match-on-hostname', type=bool, nargs='?', required=False, default=False, const=True,
+    parser.add_argument('--match-on-hostname', action='store_true',
                         help="In order to be relabeled, a workload must match a HOSTNAME entry from the CSV file")
-    parser.add_argument('--match-on-ip', type=bool, nargs='?', required=False, default=False, const=True,
+    parser.add_argument('--match-on-ip', action='store_true',
                         help="In order to be relabeled, a workload must match an IP entry from the CSV file")
-    parser.add_argument('--match-on-href', type=bool, nargs='?', required=False, default=False, const=True,
+    parser.add_argument('--match-on-href', action='store_true',
                         help="In order to be relabeled, a workload must match a HREF entry from the CSV file")
 
     parser.add_argument('--filter-env-label', type=str, required=False, default=None,
@@ -39,7 +39,6 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 def __main(args, org: pylo.Organization):
 
-    hostname = args['pce']
     input_file = args['input_file']
     input_file_delimiter = args['input_file_delimiter']
     batch_size = args['batch_size']
@@ -49,7 +48,7 @@ def __main(args, org: pylo.Organization):
     input_match_on_ip = args['match_on_ip']
     input_match_on_href = args['match_on_href']
 
-    output_file_prefix = make_filename_with_timestamp('ven-relabeler-results_')
+    output_file_prefix = make_filename_with_timestamp('workload-relabeler-results_')
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
 
