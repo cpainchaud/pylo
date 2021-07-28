@@ -285,6 +285,8 @@ class APIConnector:
 
         if object_type == 'workloads':
             return extract_count(self.do_get_call('/workloads', async_call=False, return_headers=True))
+        elif object_type == 'virtual_services':
+            return extract_count(self.do_get_call('/sec_policy/draft/virtual_services', async_call=False, return_headers=True))
         elif object_type == 'labels':
             return extract_count(self.do_get_call('/labels', async_call=False, return_headers=True))
         elif object_type == 'labelgroups':
