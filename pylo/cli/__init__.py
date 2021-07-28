@@ -3,32 +3,30 @@ import sys
 import argparse
 
 # in case user wants to run this utility while having a version of pylo already installed
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 import pylo
-
-from .commands import workload_export
-from .commands import workload_relabeler
-from .commands import workload_used_in_rule_finder
+from pylo.cli import commands
 
 
 def run():
     parser = argparse.ArgumentParser(description='TODO LATER')
     parser.add_argument('--pce', type=str, required=True,
                         help='hostname of the PCE')
-    parser.add_argument('--debug', type=str, required=False, default=False,
+    parser.add_argument('--debug', action='store_true',
                         help='Enables extra debugging output in PYLO framework')
     parser.add_argument('--use-cache', action='store_true',
                         help='For developers only')
 
     sub_parsers = parser.add_subparsers(dest='command', required=True)
 
-    for command in pylo.cli.commands.available_commands.values():
+    for command in commands.available_commands.values():
         command.fill_parser(sub_parsers.add_parser(command.name, help=''))
 
     # ruleset_export.fill_parser(sub_parsers.add_parser('rule-export', help=''))
-    workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
-    workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
-    workload_used_in_rule_finder.fill_parser(sub_parsers.add_parser('workload-used-in-rule-finder', help=''))
+    # workload_export.fill_parser(sub_parsers.add_parser('workload-export', help=''))
+    # workload_relabeler.fill_parser(sub_parsers.add_parser('workload-relabeler', help=''))
+    # workload_used_in_rule_finder.fill_parser(sub_parsers.add_parser('workload-used-in-rule-finder', help=''))
 
     args = vars(parser.parse_args())
 
@@ -51,16 +49,16 @@ def run():
     print(" * PCE statistics: ")
     print(org.stats_to_str(padding='    '))
 
-    print()
+    print(flush=True)
 
     if args['command'] in commands.available_commands:
+        print()
+        print("**** {} UTILITY ****".format(command.name.upper()))
         commands.available_commands[args['command']].main(args, org)
-    elif args['command'] == 'workload-export':
-        workload_export.run(args, org)
-    elif args['command'] == 'workload-relabeler':
-        workload_relabeler.run(args, org)
-    elif args['command'] == 'workload-used-in-rule-finder':
-        workload_used_in_rule_finder.run(args, org)
+        print("**** END OF {} UTILITY ****".format(command.name.upper()))
+        print()
+    else:
+        raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ command_name = 'workload-relabeler'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--confirm', type=bool, nargs='?', required=False, default=False, const=True,
+    parser.add_argument('--confirm', action='store_true',
                         help="No change will be implemented in the PCE until you use this function to confirm you're good with them after review")
 
     parser.add_argument('--input-file', '-i', type=str, required=True,
@@ -507,11 +507,4 @@ def __main(args, org: pylo.Organization):
     print("DONE")
 
 
-def run(options, org: pylo.Organization):
-    print()
-    print("**** {} UTILITY ****".format(command_name.upper()))
-    __main(options, org)
-    print("**** END OF {} UTILITY ****".format(command_name.upper()))
-
-
-command_object = Command(command_name, run, fill_parser)
+command_object = Command(command_name, __main, fill_parser)

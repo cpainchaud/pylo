@@ -43,14 +43,7 @@ def __main(options, org: pylo.Organization):
     print("DONE")
 
 
-def run(options, org: pylo.Organization):
-    print()
-    print("**** {} UTILITY ****".format(command_name.upper()))
-    __main(options, org)
-    print("**** END OF {} UTILITY ****".format(command_name.upper()))
-
-
-command_object = Command(command_name, run, fill_parser)
+command_object = Command(command_name, __main, fill_parser)
 
 
 

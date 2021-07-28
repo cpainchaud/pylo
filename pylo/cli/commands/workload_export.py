@@ -11,7 +11,7 @@ command_name = 'workload-export'
 def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--output', required=False, default='.')
 
-    parser.add_argument('--verbose', '-v', type=bool, nargs='?', required=False, default=False, const=True,
+    parser.add_argument('--verbose', '-v', action='store_true',
                         help='')
 
     parser.add_argument('--filter-file', '-i', type=str, required=False, default=None,
@@ -172,11 +172,4 @@ def __main(args, org: pylo.Organization):
         print("\n** WARNING: no entry matched your filters so reports are empty !\n")
 
 
-def run(options, org: pylo.Organization):
-    print()
-    print("**** {} UTILITY ****".format(command_name.upper()))
-    __main(options, org)
-    print("**** END OF {} UTILITY ****".format(command_name.upper()))
-
-
-command_object = Command(command_name, run, fill_parser)
+command_object = Command(command_name, __main, fill_parser)

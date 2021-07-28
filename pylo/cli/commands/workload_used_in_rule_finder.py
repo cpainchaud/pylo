@@ -7,7 +7,7 @@ command_name = "workload-used-in-rules-finder"
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--only-deleted', type=bool, required=False, nargs='?', const=True, help='only look for deleted workloads')
+    parser.add_argument('--only-deleted', action='store_true', help='only look for deleted workloads')
 
 
 def __main(args, org: pylo.Organization):
