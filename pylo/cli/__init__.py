@@ -31,6 +31,11 @@ def run():
     hostname = args['pce']
     settings_use_cache = args['use_cache']
 
+    # We are getting the command object associated to the command name
+    selected_command = commands.available_commands[args['command']]
+    if selected_command is None:
+        raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
+
     org = pylo.Organization(1)
 
     if settings_use_cache:
@@ -38,7 +43,7 @@ def run():
         org.load_from_cached_file(hostname)
     else:
         print(" * Loading objects from PCE '{}' via API... ".format(hostname), end="", flush=True)
-        org.load_from_saved_credentials(hostname, include_deleted_workloads=True, prompt_for_api_key=True)
+        org.load_from_saved_credentials(hostname, include_deleted_workloads=True, prompt_for_api_key=True, list_of_objects_to_load=selected_command.load_specific_objects_only)
     print("OK!\n")
 
     print(" * PCE statistics: ")
@@ -46,14 +51,10 @@ def run():
 
     print(flush=True)
 
-    if args['command'] in commands.available_commands:
-        command = commands.available_commands[args['command']]
-        print("**** {} UTILITY ****".format(command.name.upper()), flush=True)
-        commands.available_commands[args['command']].main(args, org)
-        print("**** END OF {} UTILITY ****".format(command.name.upper()))
-        print()
-    else:
-        raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
+    print("**** {} UTILITY ****".format(selected_command.name.upper()), flush=True)
+    commands.available_commands[args['command']].main(args, org)
+    print("**** END OF {} UTILITY ****".format(selected_command.name.upper()))
+    print()
 
 
 if __name__ == "__main__":

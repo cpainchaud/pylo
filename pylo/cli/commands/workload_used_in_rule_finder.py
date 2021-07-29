@@ -4,6 +4,7 @@ from typing import *
 from . import Command
 
 command_name = "workload-used-in-rules-finder"
+objects_load_filter = ['workloads', 'rules', 'rulesets']
 
 
 def fill_parser(parser: argparse.ArgumentParser):

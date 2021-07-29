@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Optional, Dict, List
 
 import pylo
 import os
@@ -85,7 +85,8 @@ class Organization:
 
         return filename, size
 
-    def load_from_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key=False):
+    def load_from_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key=False,
+                                    list_of_objects_to_load: Optional[List[str]] = None):
         separator_pos = hostname.find(':')
         port = 8443
 
@@ -103,47 +104,67 @@ class Organization:
 
             connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True)
 
-        self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads)
+        self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads, list_of_objects_to_load=list_of_objects_to_load)
 
-    def load_from_json(self, data):
+    def load_from_json(self, data,  list_of_objects_to_load: Optional[List[str]] = None):
+
+        object_to_load = {}
+        if list_of_objects_to_load is not None:
+            all_types = pylo.APIConnector.get_all_object_types()
+            for object_type in list_of_objects_to_load:
+                if object_type not in all_types:
+                    raise pylo.PyloEx("Unknown object type '{}'".format(object_type))
+                object_to_load[object_type] = True
+        else:
+            object_to_load = pylo.APIConnector.get_all_object_types()
+
         if self.pce_version is None:
             raise pylo.PyloEx('Organization has no "version" specified')
 
-        if 'labels' not in data:
-            raise Exception("'labels' was not found in json data")
-        self.LabelStore.loadLabelsFromJson(data['labels'])
+        if 'labels' in object_to_load:
+            if 'labels' not in data:
+                raise Exception("'labels' was not found in json data")
+            self.LabelStore.loadLabelsFromJson(data['labels'])
 
-        if 'labelgroups' not in data:
-            raise Exception("'labelgroups' was not found in json data")
-        self.LabelStore.loadLabelGroupsFromJson(data['labelgroups'])
+        if 'labelgroups' in object_to_load:
+            if 'labelgroups' not in data:
+                raise Exception("'labelgroups' was not found in json data")
+            self.LabelStore.loadLabelGroupsFromJson(data['labelgroups'])
 
-        if 'iplists' not in data:
-            raise Exception("'iplists' was not found in json data")
-        self.IPListStore.load_iplists_from_json(data['iplists'])
+        if 'iplists' in object_to_load:
+            if 'iplists' not in data:
+                raise Exception("'iplists' was not found in json data")
+            self.IPListStore.load_iplists_from_json(data['iplists'])
 
-        if 'services' not in data:
-            raise Exception("'services' was not found in json data")
-        self.ServiceStore.load_services_from_json(data['services'])
+        if 'services' in object_to_load:
+            if 'services' not in data:
+                raise Exception("'services' was not found in json data")
+            self.ServiceStore.load_services_from_json(data['services'])
 
-        if 'workloads' not in data:
-            raise Exception("'workloads' was not found in json data")
-        self.WorkloadStore.load_workloads_from_json(data['workloads'])
+        if 'workloads' in object_to_load:
+            if 'workloads' not in data:
+                raise Exception("'workloads' was not found in json data")
+            self.WorkloadStore.load_workloads_from_json(data['workloads'])
 
-        if 'virtual_services' not in data:
-            raise Exception("'virtual_services' was not found in json data")
-        self.VirtualServiceStore.load_virtualservices_from_json(data['virtual_services'])
+        if 'virtual_services' in object_to_load:
+            if 'virtual_services' not in data:
+                raise Exception("'virtual_services' was not found in json data")
+            self.VirtualServiceStore.load_virtualservices_from_json(data['virtual_services'])
 
-        if 'security_principals' not in data:
-            raise Exception("'security_principals' was not found in json data")
-        self.SecurityPrincipalStore.load_principals_from_json(data['security_principals'])
+        if 'security_principals' in object_to_load:
+            if 'security_principals' not in data:
+                raise Exception("'security_principals' was not found in json data")
+            self.SecurityPrincipalStore.load_principals_from_json(data['security_principals'])
 
-        if 'rulesets' not in data:
-            raise Exception("'rulesets' was not found in json data")
-        self.RulesetStore.load_rulesets_from_json(data['rulesets'])
+        if 'rulesets' in object_to_load:
+            if 'rulesets' not in data:
+                raise Exception("'rulesets' was not found in json data")
+            self.RulesetStore.load_rulesets_from_json(data['rulesets'])
 
-    def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
+    def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
         self.pce_version = con.getSoftwareVersion()
-        return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads))
+        return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads,
+                                                            list_of_objects_to_load=list_of_objects_to_load))
 
     @staticmethod
     def create_fake_empty_config():
@@ -151,10 +172,10 @@ class Organization:
                 'rulesets': [], 'security_principals': []
                 }
 
-    def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
+    def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
         self.connector = con
 
-        return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads)
+        return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads, list_of_objects_to_load=list_of_objects_to_load)
 
     def stats_to_str(self, padding=''):
         stats = ""

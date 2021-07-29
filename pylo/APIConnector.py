@@ -34,6 +34,18 @@ def get_field_or_die(field_name: str, data):
     return field
 
 
+_all_object_types: Dict[str, str] = {
+        'iplists': 'iplists',
+        'workloads': 'workloads',
+        'virtual_services': 'virtual_services',
+        'labels': 'labels',
+        'labelgroups': 'labelgroups',
+        'services': 'services',
+        'rulesets': 'rulesets',
+        'security_principals': 'security_principals',
+    }
+
+
 class APIConnector:
     """docstring for APIConnector."""
 
@@ -49,6 +61,32 @@ class APIConnector:
         self.version: Optional['pylo.SoftwareVersio'] = None
         self.version_string: str = "Not Defined"
         self._cached_session = requests.session()
+
+    @staticmethod
+    def get_all_object_types_names_except(exception_list: List[str]):
+
+        if len(exception_list) == 0:
+            return _all_object_types.values()
+
+        # first let's check that all names in exception_list are valid
+        for name in exception_list:
+            if name not in _all_object_types:
+                raise pylo.PyloEx("object type named '{}' doesn't exist. The list of supported objects names is: {}".
+                                  format(name, pylo.string_list_to_text(_all_object_types.values())))
+
+        object_names_list: List[str] = []
+        for name in _all_object_types.values():
+            for lookup_name in exception_list:
+                if name == lookup_name:
+                    break
+            if lookup_name == name:
+                continue
+
+            object_names_list.append(name)
+
+    @staticmethod
+    def get_all_object_types():
+        return _all_object_types.copy()
 
     @staticmethod
     def create_from_credentials_in_file(hostname: str, request_if_missing = False):
@@ -302,7 +340,17 @@ class APIConnector:
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
-    def get_pce_objects(self, include_deleted_workloads=False):
+    def get_pce_objects(self, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
+
+        object_to_load = {}
+        if list_of_objects_to_load is not None:
+            all_types = pylo.APIConnector.get_all_object_types()
+            for object_type in list_of_objects_to_load:
+                if object_type not in all_types:
+                    raise pylo.PyloEx("Unknown object type '{}'".format(object_type))
+                object_to_load[object_type] = True
+        else:
+            object_to_load = pylo.APIConnector.get_all_object_types()
 
         threads_count = 4
         data = {}
@@ -377,15 +425,8 @@ class APIConnector:
             worker.daemon = True
             worker.start()
 
-        thread_queue.put(('workloads', errors,))
-        thread_queue.put(('virtual_services', errors,))
-        thread_queue.put(('rulesets', errors,))
-        thread_queue.put(('services', errors,))
-        thread_queue.put(('labels', errors,))
-        thread_queue.put(('labelgroups', errors,))
-        thread_queue.put(('services', errors,))
-        thread_queue.put(('iplists', errors,))
-        thread_queue.put(('security_principals', errors, ))
+        for type in object_to_load.keys():
+            thread_queue.put((type, errors,))
 
         thread_queue.join()
 

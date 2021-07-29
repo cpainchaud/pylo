@@ -5,6 +5,7 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'iplist-import'
+objects_load_filter = ['iplists']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -180,4 +181,5 @@ def __main(args, org: pylo.Organization):
     print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_objects_count, output_file_csv, output_file_excel))
 
 
-command_object = Command(command_name, __main, fill_parser)
+command_object = Command(command_name, __main, fill_parser, load_specific_objects_only=objects_load_filter)
+

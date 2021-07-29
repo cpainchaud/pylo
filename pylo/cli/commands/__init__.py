@@ -1,11 +1,12 @@
-from typing import Dict
+from typing import Dict, Optional, List
 
 
 class Command:
-    def __init__(self, name: str, main_func, parser_func):
+    def __init__(self, name: str, main_func, parser_func, load_specific_objects_only: Optional[List[str]] = None):
         self.name: str = name
         self.main = main_func
         self.fill_parser = parser_func
+        self.load_specific_objects_only: Optional[List[str]] = load_specific_objects_only
         available_commands[name] = self
 
 

@@ -6,6 +6,8 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'workload-relabeler'
+objects_load_filter_exceptions = ['security_principals']
+objects_load_filter = pylo.APIConnector.get_all_object_types_names_except(objects_load_filter_exceptions)
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -506,4 +508,4 @@ def __main(args, org: pylo.Organization):
     print("DONE")
 
 
-command_object = Command(command_name, __main, fill_parser)
+command_object = Command(command_name, __main, fill_parser, objects_load_filter)
