@@ -1,3 +1,4 @@
+from typing import Optional
 import pylo
 from .Helpers import nice_json
 from pylo import log
@@ -6,11 +7,11 @@ from pylo import log
 class SecurityPrincipal(pylo.ReferenceTracker):
     def __init__(self, name: str, href: str, owner: 'pylo.SecurityPrincipalStore'):
         pylo.ReferenceTracker.__init__(self)
-        self.owner = owner
-        self.name = name
-        self.href = href
-        self.sid = None
-        self.deleted = False
+        self.owner: 'pylo.SecurityPrincipalStore' = owner
+        self.name: str = name
+        self.href: str = href
+        self.sid: Optional[str] = None
+        self.deleted: bool = False
 
         self.raw_json = None
 

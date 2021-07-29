@@ -12,7 +12,6 @@ from pylo import log, LabelStore
 class Organization:
 
     def __init__(self, org_id):
-        """@type org_id: int"""
         self.id: int = org_id
         self.connector: Optional['pylo.APIConnector'] = None
         self.LabelStore: 'pylo.LabelStore' = pylo.LabelStore(self)

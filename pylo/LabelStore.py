@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 import pylo
 from pylo import log
 from .Helpers import *
@@ -13,26 +13,15 @@ label_type_role = 0
 
 class LabelStore:
 
-    """
-    :type owner: pylo.Organization
-    :type itemsByHRef: dict[str,pylo.Label|pylo.LabelGroup]
-    :type locationLabels: dict[str,pylo.Label|pylo.LabelGroup]
-    :type roleLabels: dict[str,pylo.Label|pylo.LabelGroup]
-    :type environmentLabels: dict[str,pylo.Label|pylo.LabelGroup]
-    :type applicationLabels: dict[str,pylo.Label|pylo.LabelGroup]
-    :type label_resolution_cache: dict[str,[pylo.Label|pylo.LabelGroup]]
-    """
-
     def __init__(self, owner: 'pylo.Organization'):
-        self.owner = owner
-        self.itemsByHRef = {}
+        self.owner: "pylo.Organization" = owner
+        self.itemsByHRef: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self.locationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self.environmentLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self.roleLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self.applicationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
 
-        self.locationLabels = {}
-        self.environmentLabels = {}
-        self.roleLabels = {}
-        self.applicationLabels = {}
-
-        self.label_resolution_cache = None
+        self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
 
     @staticmethod
     def label_type_str_to_int(label_type: str):

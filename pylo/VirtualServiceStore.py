@@ -7,7 +7,7 @@ from typing import Dict
 class VirtualServiceStore:
 
     def __init__(self, owner: 'pylo.Organization'):
-        self.owner = owner
+        self.owner: 'pylo.Organization' = owner
         self.itemsByHRef: Dict[str, 'pylo.VirtualService'] = {}
         self.itemsByName: Dict[str, 'pylo.VirtualService'] = {}
 

@@ -19,7 +19,6 @@ class RulesetScope:
             scope_entry.load_from_json(scope_json)
             self.scope_entries[scope_entry] = scope_entry
 
-
     def get_all_scopes_str(self, label_separator='|', scope_separator="\n", use_href: bool = False):
         result = ''
         for scope in self.scope_entries.keys():
