@@ -6,8 +6,7 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'workload-relabeler'
-objects_load_filter_exceptions = ['security_principals']
-objects_load_filter = pylo.APIConnector.get_all_object_types_names_except(objects_load_filter_exceptions)
+objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -39,7 +38,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Number of Workloads to update per API call')
 
 
-def __main(args, org: pylo.Organization):
+def __main(args, org: pylo.Organization, **kwargs):
 
     input_file = args['input_file']
     input_file_delimiter = args['input_file_delimiter']

@@ -11,7 +11,7 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--only-deleted', action='store_true', help='only look for deleted workloads')
 
 
-def __main(args, org: pylo.Organization):
+def __main(args, org: pylo.Organization, **kwargs):
 
     settings_only_delete_workloads = args['only_deleted']
 
@@ -74,11 +74,7 @@ def __main(args, org: pylo.Organization):
     print("\n**** END OF SCRIPT ****\n")
 
 
-def run(options, org: pylo.Organization):
-    print()
-    print("**** {} UTILITY ****".format(command_name.upper()))
-    __main(options, org)
-    print("**** END OF {} UTILITY ****".format(command_name.upper()))
-
-
-command_object = Command(command_name, run, fill_parser)
+command_object = Command(command_name, __main,
+                         fill_parser,
+                         load_specific_objects_only=objects_load_filter,
+                         skip_pce_config_loading=True)

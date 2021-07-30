@@ -24,7 +24,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
 
 
-def __main(args, org: pylo.Organization):
+def __main(args, org: pylo.Organization, **kwargs):
 
     filter_file = args['filter_file']
     filter_file_delimiter = args['filter_file_delimiter']
@@ -158,7 +158,6 @@ def __main(args, org: pylo.Organization):
                 count_unused_filters += 1
                 add_workload_to_report(wkl=None, filter=filter_data_row)
         print(" DONE! ({} found)".format(count_unused_filters))
-
 
     print()
     print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)

@@ -51,7 +51,7 @@ class IDTranslationTable:
         self.sourcesSorting = {}
         self.destSorting = {}
 
-    def addSource(self, key, value):
+    def add_source(self, key, value):
         if key in self.sourcesSorting:
             raise Exception("Duplicate key '%s'" % key)
         self.sourcesSorting[key] = value
@@ -63,7 +63,7 @@ class IDTranslationTable:
         self.OldToNew[value] = find
         self.NewToOld[find] = value
 
-    def addDestination(self, key, value):
+    def add_destination(self, key, value):
         if key in self.destSorting:
             raise Exception("Duplicate key '%s'" % key)
         self.destSorting[key] = value
@@ -102,9 +102,3 @@ class IDTranslationTable:
 
     def keys_old(self):
         return
-
-
-
-
-
-

@@ -21,7 +21,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='If an IPList with same same exists, ignore CSV entry')
 
 
-def __main(args, org: pylo.Organization):
+def __main(args, org: pylo.Organization, **kwargs):
     input_file = args['input_file']
     input_file_delimiter = args['input_file_delimiter']
     ignore_if_iplist_exists = args['ignore_if_iplist_exists']

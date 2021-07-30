@@ -353,7 +353,7 @@ class APIConnector:
             object_to_load = pylo.APIConnector.get_all_object_types()
 
         threads_count = 4
-        data = {}
+        data = pylo.Organization.create_fake_empty_config()
         errors = []
         thread_queue = Queue()
 

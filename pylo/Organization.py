@@ -167,9 +167,10 @@ class Organization:
 
     @staticmethod
     def create_fake_empty_config():
-        return {'iplists': [], 'workloads': [], 'virtual_services': [], 'labels': [], 'labelgroups': [], 'services': [],
-                'rulesets': [], 'security_principals': []
-                }
+        data = {}
+        for object_type in pylo.APIConnector.get_all_object_types().values():
+            data[object_type] = []
+        return data
 
     def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
         self.connector = con

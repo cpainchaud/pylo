@@ -1,4 +1,6 @@
 import os
+from typing import Optional
+
 import sys
 import argparse
 
@@ -37,22 +39,36 @@ def run():
         raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
 
     org = pylo.Organization(1)
+    connector: Optional[pylo.APIConnector] = None
 
     if settings_use_cache:
         print(" * Loading objects from cached PCE '{}' data... ".format(hostname), end="", flush=True)
         org.load_from_cached_file(hostname)
+        print("OK!")
     else:
-        print(" * Loading objects from PCE '{}' via API... ".format(hostname), end="", flush=True)
-        org.load_from_saved_credentials(hostname, include_deleted_workloads=True, prompt_for_api_key=True, list_of_objects_to_load=selected_command.load_specific_objects_only)
-    print("OK!\n")
+        print(" * Looking for PCE '{}' credentials... ".format(hostname), end="", flush=True)
+        connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
+        print("OK!")
 
-    print(" * PCE statistics: ")
-    print(org.stats_to_str(padding='    '))
+        print(" * Downloading PCE objects from API... ".format(hostname), end="", flush=True)
+        config_data = connector.get_pce_objects(list_of_objects_to_load=selected_command.load_specific_objects_only)
+        print("OK!")
 
-    print(flush=True)
+        if not selected_command.skip_pce_config_loading:
+            print(" * Loading objects from PCE '{}' via API... ".format(hostname), end="", flush=True)
+            org.pce_version = connector.getSoftwareVersion()
+            org.load_from_json(config_data, list_of_objects_to_load=selected_command.load_specific_objects_only)
+            print("OK!")
+
+    print()
+    if not selected_command.skip_pce_config_loading:
+        print(" * PCE statistics: ")
+        print(org.stats_to_str(padding='    '))
+
+        print(flush=True)
 
     print("**** {} UTILITY ****".format(selected_command.name.upper()), flush=True)
-    commands.available_commands[args['command']].main(args, org)
+    commands.available_commands[args['command']].main(args, org, config_data=config_data, connector=connector)
     print("**** END OF {} UTILITY ****".format(selected_command.name.upper()))
     print()
 

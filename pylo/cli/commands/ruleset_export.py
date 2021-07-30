@@ -10,7 +10,7 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--output', required=False, default='.')
 
 
-def __main(options, org: pylo.Organization):
+def __main(options, org: pylo.Organization, **kwargs):
 
     output_file_prefix = make_filename_with_timestamp('rule_export_')
     output_file_csv = output_file_prefix + '.csv'

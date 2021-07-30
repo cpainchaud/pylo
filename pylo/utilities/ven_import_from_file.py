@@ -443,4 +443,3 @@ CsvData.save_to_csv(report_file, csv_created_fields)
 CsvData.save_to_excel(report_file_excel, csv_created_fields)
 
 print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_objects_count, report_file, report_file_excel))
-

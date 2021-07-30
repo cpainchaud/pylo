@@ -42,7 +42,6 @@ filter_csv_expected_fields = []
 filter_data = None
 
 
-
 csv_report_headers = ['name', 'members', 'ip4_mapping', 'ip4_count', 'ip4_uncovered_count', 'covered_workloads_count',
                       'covered_workloads_list', 'covered_workloads_appgroups', 'href']
 

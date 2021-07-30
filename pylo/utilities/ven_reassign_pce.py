@@ -178,7 +178,6 @@ for agent in agents.values():
     processed_agent_count += 1
 
 
-
 print("\n ** {} Agents were reassigned to PCE '{}' **".format(processed_agent_count, target_pce_string))
 
 
