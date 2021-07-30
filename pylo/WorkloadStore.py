@@ -101,17 +101,17 @@ class WorkloadStore:
 
         return found
 
-    def count_workloads(self):
+    def count_workloads(self) -> int:
         """
 
-        :rtype: int
+
         """
         return len(self.itemsByHRef)
 
-    def count_managed_workloads(self):
+    def count_managed_workloads(self) -> int:
         """
 
-        :rtype: int
+
         """
         count = 0
 
@@ -137,10 +137,10 @@ class WorkloadStore:
 
         return results
 
-    def count_deleted_workloads(self):
+    def count_deleted_workloads(self) -> int:
         """
 
-        :rtype: int
+
         """
         count = 0
         for item in self.itemsByHRef.values():
@@ -150,10 +150,10 @@ class WorkloadStore:
 
         return count
 
-    def count_unamanaged_workloads(self, if_not_deleted=False):
+    def count_unmanaged_workloads(self, if_not_deleted=False) -> int:
         """
 
-        :rtype: int
+
         """
         count = 0
 

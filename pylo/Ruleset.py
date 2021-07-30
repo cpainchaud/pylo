@@ -145,7 +145,6 @@ class Ruleset:
         self.rules_byHref[new_rule.href] = new_rule
         return new_rule
 
-
     def create_rule(self, intra_scope: bool,
                     consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
                     providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],

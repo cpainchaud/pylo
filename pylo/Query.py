@@ -80,7 +80,6 @@ class Query:
         self.subQueries = []  # type: list[pylo.Query]
         self.raw_value = None
 
-
     def parse(self, data: str):
         padding = ''.rjust(self.level*3)
         data_len = len(data)
@@ -99,7 +98,7 @@ class Query:
             if find_punctuation['notfound']:
                 if len(parenthesis_opened) > 0:
                     raise pylo.PyloEx("Reached the end of string before closing parenthesis in block: {}".format(data[current_block_start-1:]))
-                blocks.append({'type':'text', 'text': data[current_block_start:]})
+                blocks.append({'type': 'text', 'text': data[current_block_start:]})
                 reached_end = True
                 print(padding + "{}-{} REACHED END OF STRING".format(self.level, len(blocks)))
                 break
@@ -153,11 +152,9 @@ class Query:
             raise pylo.PyloEx("Reached the end of string before closing parenthesis in block: {}".format(
                 data[current_block_start-1:]))
 
-
         print(padding + "* Query Level {} blocks:".format(self.level))
         for block in blocks:
             print(padding + "- {}: |{}|".format(block['type'], block['text']))
-
 
         # clear empty blocks, they're just noise
         cleared_blocks = []
@@ -167,7 +164,6 @@ class Query:
                 if len(block['text']) < 1:
                     continue
             cleared_blocks.append(block)
-
 
         # now building operator blocks
         operator_blocks = []
@@ -256,7 +252,6 @@ class Query:
                 if first_word_end >= text_len:
                     break
                 text = text[first_word_end + 1:].strip()
-
 
         # showing blocks to check how well we did
         for block in operator_blocks:

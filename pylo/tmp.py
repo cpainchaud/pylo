@@ -41,11 +41,6 @@ def find_connector_or_die(obj):
     return connector
 
 
-
-
-
-
-
 class IDTranslationTable:
     """docstring fo ID_TranslationTable."""
 
@@ -79,7 +74,6 @@ class IDTranslationTable:
 
         self.OldToNew[find] = value
         self.NewToOld[value] = find
-
 
     def find_new(self, old):
         return self.OldToNew.get(old)
