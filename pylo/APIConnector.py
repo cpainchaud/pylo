@@ -797,12 +797,18 @@ class APIConnector:
 
         return self.do_post_call(path=path, json_arguments=data, json_output_expected=True)
 
-    def objects_ruleset_update(self, rule_href: str, update_data):
-        return self.do_put_call(path=rule_href,
+    def objects_ruleset_update(self, ruleset_href: str, update_data):
+        return self.do_put_call(path=ruleset_href,
                                 json_arguments=update_data,
                                 include_org_id=False,
                                 json_output_expected=False
                                 )
+
+    def objects_ruleset_delete(self, ruleset_href: str):
+        return self.do_delete_call(path=ruleset_href,
+                                   include_org_id=False,
+                                   json_output_expected=False
+                                   )
 
     def objects_rule_update(self, rule_href: str, update_data):
         return self.do_put_call(path=rule_href,
@@ -810,6 +816,12 @@ class APIConnector:
                                 include_org_id=False,
                                 json_output_expected=False
                                 )
+
+    def objects_rule_delete(self, rule_href: str):
+        return self.do_delete_call(path=rule_href,
+                                   include_org_id=False,
+                                   json_output_expected=False
+                                   )
 
     def objects_rule_create(self, ruleset_href: str,
                             intra_scope: bool,

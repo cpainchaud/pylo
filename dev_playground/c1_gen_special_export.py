@@ -360,7 +360,7 @@ print("OK!  (received {} rules)".format(rules_results.count_results()))
 
 csv_file = pylo.Helpers.ArrayToExport(['ruleset_name',
                                        'ruleset_href',
-                                       'rule_href',
+                                       'ruleset_href',
                                        'scopes',
                                        'consumers',
                                        'providers',
@@ -442,7 +442,7 @@ for ruleset, rules in rules_results.rules_per_ruleset.items():
         data = {
             'ruleset_name': ruleset.name,
             'ruleset_href': ruleset.href,
-            'rule_href': rule.href,
+            'ruleset_href': rule.href,
             'scopes': ruleset.scopes.get_all_scopes_str(label_separator='|', scope_separator=",", use_href=True),
             'extra_scope': rule.is_extra_scope(),
             'consumers': rule_actors_to_str(rule.consumers),

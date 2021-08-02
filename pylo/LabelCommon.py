@@ -5,11 +5,6 @@ from .LabelStore import label_type_role, label_type_env, label_type_loc, label_t
 class LabelCommon:
 
     def __init__(self, name: str, href: str, ltype: int, owner: LabelStore):
-        """
-        :param name: str
-        :param href: str
-        :param ltype: int|str
-        """
         self.owner: LabelStore = owner
         self.name: str = name
         self.href: str = href

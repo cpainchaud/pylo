@@ -321,19 +321,19 @@ class TagIndex:
 start_time = time.time()
 print("*** Generating Rules ***")
 
-csv_rulesets_headers = ['ruleset_name', 'src', 'dst', 'svc', 'rule_description', 'ruleset_description', 'rule_href', 'ruleset_href']
+csv_rulesets_headers = ['ruleset_name', 'src', 'dst', 'svc', 'rule_description', 'ruleset_description', 'ruleset_href', 'ruleset_href']
 csv_rulesets_rows = []
 
 rulesets_tags = TagIndex()
 
-for ruleset in org.RulesetStore.itemsByHRef.values():
+for ruleset in org.RulesetStore.items_by_href.values():
     rules = []
     r_json = {'href': ruleset.href, 'name': ruleset.name, 'description': ruleset.description,'rules': rules}
     rulesets_json.append(r_json)
 
     log.debug(" - Handling ruleset '{}'".format(ruleset.name))
 
-    for rule in ruleset.rules_byHref.values():
+    for rule in ruleset.rules_by_href.values():
         log.debug("   - Handling rule '{}'".format(rule.href))
 
         if not rule.enabled:

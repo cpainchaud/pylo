@@ -110,12 +110,12 @@ class Ruleset:
     description: str
 
     def __init__(self, owner: 'pylo.RulesetStore'):
-        self.owner = owner
-        self.href = None
-        self.name = ''
-        self.description = ''
-        self.scopes = pylo.RulesetScope(self)
-        self.rules_byHref = {}  # type: dict[str,pylo.Rule]
+        self.owner: 'pylo.RulesetStore' = owner
+        self.href: Optional[str] = None
+        self.name: str = ''
+        self.description: str = ''
+        self.scopes: 'pylo.RulesetScope' = pylo.RulesetScope(self)
+        self.rules_by_href: Dict[str, 'pylo.Rule'] = {}
 
     def load_from_json(self, data):
         if 'name' not in data:
@@ -142,8 +142,24 @@ class Ruleset:
     def load_single_rule_from_json(self, rule_data) -> 'pylo.Rule':
         new_rule = pylo.Rule(self)
         new_rule.load_from_json(rule_data)
-        self.rules_byHref[new_rule.href] = new_rule
+        self.rules_by_href[new_rule.href] = new_rule
         return new_rule
+
+    def api_delete_rule(self, rule: Union[str, 'pylo.Rule']):
+        """
+
+        :param rule: should be href string or a Rule object
+        """
+        href = rule
+        if isinstance(rule, pylo.Rule):
+            href = rule.href
+
+        find_object = self.rules_by_href.get(href)
+        if find_object is None:
+            raise pylo.PyloEx("Cannot delete a Rule with href={} which is not part of ruleset {}/{}".format(href, self.name, self.href))
+
+        self.owner.owner.connector.objects_rule_delete(href)
+        del self.rules_by_href[href]
 
     def api_create_rule(self, intra_scope: bool,
                         consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
@@ -168,7 +184,7 @@ class Ruleset:
         return self.load_single_rule_from_json(new_rule_json)
 
     def count_rules(self):
-        return len(self.rules_byHref)
+        return len(self.rules_by_href)
 
     def extract_id_from_href(self):
         match = ruleset_id_extraction_regex.match(self.href)

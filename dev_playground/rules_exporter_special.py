@@ -78,21 +78,21 @@ rules_json_output = []
 start_time = time.time()
 print("*** Generating Rules ***")
 
-csv_rules_headers = ['ruleset_name', 'src', 'dst', 'svc', 'rule_description', 'ruleset_description', 'rule_href', 'ruleset_href']
+csv_rules_headers = ['ruleset_name', 'src', 'dst', 'svc', 'rule_description', 'ruleset_description', 'ruleset_href', 'ruleset_href']
 csv_rules_rows = []
 
-xls_rules_headers = ['ruleset_name', 'src', 'dst', 'svc', 'rule_description', 'ruleset_url', 'rule_href', 'ruleset_href']
+xls_rules_headers = ['ruleset_name', 'src', 'dst', 'svc', 'rule_description', 'ruleset_url', 'ruleset_href', 'ruleset_href']
 xls_rules_rows = []
 xls_column_width = {}
 for header in xls_rules_headers:
     xls_column_width[header] = 0
 
 
-for ruleset in org.RulesetStore.itemsByHRef.values():
+for ruleset in org.RulesetStore.items_by_href.values():
 
     log.debug(" - Handling ruleset '{}'".format(ruleset.name))
 
-    for rule in ruleset.rules_byHref.values():
+    for rule in ruleset.rules_by_href.values():
         log.debug("   - Handling rule '{}'".format(rule.href))
         if not(rule.consumers.contains_iplists() and (rule.consumers._hasAllWorkloads
                                                       or rule.consumers.has_labels()

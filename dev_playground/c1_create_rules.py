@@ -380,10 +380,10 @@ else:
     inbound_ruleset = org.RulesetStore.find_ruleset_by_name(inbound_ruleset_name)
     if inbound_ruleset is None:
         print("    - ruleset not found, let's create it...", end='')
-        inbound_ruleset = org.RulesetStore.create_ruleset(inbound_ruleset_name,
-                         inbound_rules[0].dst_app_label,
-                         inbound_rules[0].dst_env_label,
-                         inbound_rules[0].dst_loc_label)
+        inbound_ruleset = org.RulesetStore.api_create_ruleset(inbound_ruleset_name,
+                                                              inbound_rules[0].dst_app_label,
+                                                              inbound_rules[0].dst_env_label,
+                                                              inbound_rules[0].dst_loc_label)
         print("OK")
 
     for inbound_rule in inbound_rules:
@@ -421,10 +421,10 @@ else:
         outbound_ruleset = org.RulesetStore.find_ruleset_by_name(outbound_ruleset_name)
         if outbound_ruleset is None:
             print("        - ruleset not found, let's create it...", end='')
-            outbound_ruleset = org.RulesetStore.create_ruleset(outbound_ruleset_name,
-                                            outbound_rules[0].dst_app_label,
-                                            outbound_rules[0].dst_env_label,
-                                            outbound_rules[0].dst_loc_label)
+            outbound_ruleset = org.RulesetStore.api_create_ruleset(outbound_ruleset_name,
+                                                                   outbound_rules[0].dst_app_label,
+                                                                   outbound_rules[0].dst_env_label,
+                                                                   outbound_rules[0].dst_loc_label)
             print("OK")
 
         print("      - pushing rule to PCE... ", end='')

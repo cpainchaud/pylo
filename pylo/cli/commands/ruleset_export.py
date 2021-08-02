@@ -17,18 +17,18 @@ def __main(options, org: pylo.Organization, **kwargs):
     output_file_excel = output_file_prefix + '.xlsx'
 
     csv_report_headers = ['ruleset', 'scope', 'type', 'consumers', 'providers', 'services', 'options',
-                          'ruleset_href', 'rule_href'
+                          'ruleset_href', 'ruleset_href'
                           ]
 
     csv_report = pylo.ArrayToExport(csv_report_headers)
 
-    for ruleset in org.RulesetStore.itemsByHRef.values():
-        for rule in ruleset.rules_byHref.values():
+    for ruleset in org.RulesetStore.items_by_href.values():
+        for rule in ruleset.rules_by_href.values():
             data = {'ruleset': ruleset.name, 'ruleset_href': ruleset.href, 'scope': ruleset.scopes.get_all_scopes_str(),
                     'consumers': rule.consumers.members_to_str(),
                     'providers': rule.providers.members_to_str(),
                     'services': rule.services.members_to_str(),
-                    'rule_href': rule.href}
+                    'ruleset_href': rule.href}
             if rule.is_extra_scope():
                 data['type'] = 'intra'
             else:
