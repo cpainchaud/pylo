@@ -14,6 +14,23 @@ class WorkloadInterface:
         self.is_ignored: bool = ignored
 
 
+class WorkloadApiUpdateStack:
+    def __init__(self):
+        self.json_payload = {}
+
+    def add_payload(self, data: Dict[str, Any]):
+        for prop_name, prop_value in data.items():
+            self.json_payload[prop_name] = prop_value
+
+    def get_payload_and_reset(self) -> Dict[str, Any]:
+        data = self.json_payload
+        self.json_payload = {}
+        return data
+
+    def count_payloads(self) -> int:
+        return len(self.json_payload)
+
+
 class Workload(pylo.ReferenceTracker):
 
     def __init__(self, name: str, href: str, owner: 'pylo.WorkloadStore'):
@@ -46,7 +63,12 @@ class Workload(pylo.ReferenceTracker):
 
         self.raw_json = None
 
+        self._batch_update_stack: Optional[WorkloadApiUpdateStack] = None
+
     def load_from_json(self, data):
+        """
+        Parse and build workload properties from a PCE API JSON payload. Should be used internally by this library only.
+        """
         self.raw_json = data
         # print(pylo.nice_json(data))
 
@@ -144,6 +166,9 @@ class Workload(pylo.ReferenceTracker):
         return pylo.string_list_to_text(tmp, separator)
 
     def get_ip4map_from_interfaces(self) -> pylo.IP4Map:
+        """
+        Calculate and return a map of all IP4 covered by the Workload interfaces
+        """
         map = IP4Map()
 
         for interface in self.interfaces:
@@ -152,28 +177,49 @@ class Workload(pylo.ReferenceTracker):
         return map
 
     def is_using_label(self, label: 'pylo.Label') -> bool:
+        """
+        Check if a label is used by this Workload
+        :param label: label to check for usage
+        :return: true if label is used by this workload
+        """
         if self.locationLabel is label or self.environmentLabel is label \
                 or self.applicationLabel is label or self.applicationLabel is label:
             return True
         return False
 
     def api_update_description(self, new_description: str):
-        connector = pylo.find_connector_or_die(self.owner)
-        connector.objects_workload_update(self.href, data={'description': new_description})
+        data = {'description': new_description}
+        if self._batch_update_stack is None:
+            connector = pylo.find_connector_or_die(self.owner)
+            connector.objects_workload_update(self.href, data=data)
+        else:
+            self._batch_update_stack.add_payload(data)
         self.description = new_description
 
     def api_update_hostname(self, new_hostname: str):
-        connector = pylo.find_connector_or_die(self.owner)
-        connector.objects_workload_update(self.href, data={'hostname': new_hostname})
+        data = {'hostname': new_hostname}
+        if self._batch_update_stack is None:
+            connector = pylo.find_connector_or_die(self.owner)
+            connector.objects_workload_update(self.href, data=data)
+        else:
+            self._batch_update_stack.add_payload(data)
         self.description = new_hostname
 
     def api_update_forced_name(self, name: str):
-        connector = pylo.find_connector_or_die(self.owner)
-        connector.objects_workload_update(self.href, data={'name': name})
+
+        data = {'name': name}
+        if self._batch_update_stack is None:
+            connector = pylo.find_connector_or_die(self.owner)
+            connector.objects_workload_update(self.href, data=data)
+        else:
+            self._batch_update_stack.add_payload(data)
+
         self.description = name
 
     def api_update_labels(self):
-        connector = pylo.find_connector_or_die(self.owner)
+        """
+        Refresh assigned workload labels in the PCE (Labels must have been changed in the workload object prior to this)
+        """
         label_data = []
         if self.locationLabel is not None:
             label_data.append({'href': self.locationLabel.href})
@@ -184,25 +230,63 @@ class Workload(pylo.ReferenceTracker):
         if self.roleLabel is not None:
             label_data.append({'href': self.roleLabel.href})
 
-        connector.objects_workload_update(self.href, data={'labels': label_data})
+        data = {'labels': label_data}
 
-    def get_labels_str(self) -> str:
+        if self._batch_update_stack is None:
+            connector = pylo.find_connector_or_die(self.owner)
+            connector.objects_workload_update(self.href, data)
+        else:
+            self._batch_update_stack.add_payload(data)
+
+    def api_stacked_updates_start(self):
+        """
+        Turns on 'updates stacking' mode for this Worklaod which will not push changes to API as you make them but only
+        when you trigger 'api_push_stacked_updates()' function
+        """
+        self._batch_update_stack = WorkloadApiUpdateStack()
+
+    def api_stacked_updates_push(self):
+        """
+        Push all stacked changed to API and turns off 'updates stacking' mode
+        """
+        if self._batch_update_stack is None:
+            raise pylo.PyloEx("Workload was not in 'update stacking' mode")
+
+        connector = pylo.find_connector_or_die(self.owner)
+        connector.objects_workload_update(self.href, self._batch_update_stack.get_payload_and_reset())
+        self._batch_update_stack = None
+
+    def api_stacked_updates_count(self) -> int:
+        """
+        Counts the number of stacked changed for this Workload
+        :return:
+        """
+        if self._batch_update_stack is None:
+            raise pylo.PyloEx("Workload was not in 'update stacking' mode")
+        return self._batch_update_stack.count_payloads()
+
+    def get_labels_str(self, separator: str = '|') -> str:
+        """
+        Conveniently returns a string with all labels names in RAEL order
+        :param separator: default separator is |
+        :return: example: *None*|AppA|EnvC|LocZ
+        """
         labels = ''
 
         if self.roleLabel is None:
-            labels += '*None*|'
+            labels += '*None*' + separator
         else:
-            labels += self.roleLabel.name + '|'
+            labels += self.roleLabel.name + separator
 
         if self.applicationLabel is None:
-            labels += '*None*|'
+            labels += '*None*' + separator
         else:
-            labels += self.applicationLabel.name + '|'
+            labels += self.applicationLabel.name + separator
 
         if self.environmentLabel is None:
-            labels += '*None*|'
+            labels += '*None*' + separator
         else:
-            labels += self.environmentLabel.name + '|'
+            labels += self.environmentLabel.name + separator
 
         if self.locationLabel is None:
             labels += '*None*'
@@ -332,3 +416,4 @@ class Workload(pylo.ReferenceTracker):
         if self.ven_agent is None:
             return 'not-applicable'
         return self.ven_agent.mode
+

@@ -40,6 +40,7 @@ def run():
 
     org = pylo.Organization(1)
     connector: Optional[pylo.APIConnector] = None
+    config_data = None
 
     if settings_use_cache:
         print(" * Loading objects from cached PCE '{}' data... ".format(hostname), end="", flush=True)
