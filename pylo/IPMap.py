@@ -1,4 +1,5 @@
-import pylo
+from .Exception import PyloEx
+from .Helpers.functions import is_valid_ipv6, is_valid_ipv4, string_list_to_text
 import ipaddress
 import copy
 from typing import Optional, List, Dict
@@ -25,27 +26,27 @@ class IP4Map:
         if dash_find > 0:
             # this is a range entry
             start_txt = entry[0:dash_find]
-            if ignore_ipv6 and pylo.is_valid_ipv6(start_txt):
+            if ignore_ipv6 and is_valid_ipv6(start_txt):
                 return None
             end_txt = entry[dash_find+1:]
-            if ignore_ipv6 and pylo.is_valid_ipv6(end_txt):
+            if ignore_ipv6 and is_valid_ipv6(end_txt):
                 return None
             start_ip_object = ipaddress.IPv4Address(start_txt)
             end_ip_object = ipaddress.IPv4Address(end_txt)
             new_entry = [int(start_ip_object), int(end_ip_object)]
             if new_entry[start] > new_entry[end]:
-                raise pylo.PyloEx("Invalid IP Ranged entered with start address > end address: {}".format(entry))
+                raise PyloEx("Invalid IP Ranged entered with start address > end address: {}".format(entry))
         elif entry.find('/') > 0:
             # This is a network entry
             network_str = entry[0:(entry.find('/'))]
-            if ignore_ipv6 and (pylo.is_valid_ipv6(network_str) or network_str == '::'):
+            if ignore_ipv6 and (is_valid_ipv6(network_str) or network_str == '::'):
                 return None
             ip_object = ipaddress.IPv4Network(entry)
             new_entry = [int(ip_object.network_address), int(ip_object.broadcast_address)]
-            if ignore_ipv6 and pylo.is_valid_ipv6(ip_object.network_address.__str__()):
+            if ignore_ipv6 and is_valid_ipv6(ip_object.network_address.__str__()):
                 return None
         else:
-            if ignore_ipv6 and pylo.is_valid_ipv6(entry):
+            if ignore_ipv6 and is_valid_ipv6(entry):
                 return None
             ip_object = ipaddress.IPv4Address(entry)
             new_entry = [int(ip_object), int(ip_object)]
@@ -75,7 +76,7 @@ class IP4Map:
 
         return result
 
-    def contains(self, another_map: 'pylo.IP4Map') -> bool:
+    def contains(self, another_map: 'IP4Map') -> bool:
 
         if len(self._entries) < 1:
             return False
@@ -86,7 +87,6 @@ class IP4Map:
         if len(copyOfMap._entries) < 1:
             return True
         return False
-
 
     def substract(self, another_map: 'IP4Map'):
         affected_rows = 0
@@ -154,7 +154,7 @@ class IP4Map:
             if entry[end] < cursor[end]:
                 continue
 
-            raise pylo.PyloEx("Error while sorting IP4Map, unexpected value found: entry({}-{}) cursor({}-{})".format(
+            raise PyloEx("Error while sorting IP4Map, unexpected value found: entry({}-{}) cursor({}-{})".format(
                 ipaddress.IPv4Address(entry[start]),
                 ipaddress.IPv4Address(entry[end]),
                 ipaddress.IPv4Address(cursor[start]),
@@ -173,7 +173,7 @@ class IP4Map:
         for entry in self._entries:
             ranges.append('{}-{}'.format(ipaddress.IPv4Address(entry[start]), ipaddress.IPv4Address(entry[end])))
 
-        return pylo.string_list_to_text(ranges, separator=separator)
+        return string_list_to_text(ranges, separator=separator)
 
     def to_list_of_string(self):
         ranges = []
