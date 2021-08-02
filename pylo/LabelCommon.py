@@ -28,10 +28,10 @@ class LabelCommon:
 
         self._type = ltype
 
-    def is_label(self):
+    def is_label(self) -> bool:
         raise PyloEx("not implemented")
 
-    def is_group(self):
+    def is_group(self) -> bool:
         raise PyloEx("not implemented")
 
     def type_to_short_string(self):

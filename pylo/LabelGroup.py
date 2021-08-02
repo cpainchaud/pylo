@@ -45,9 +45,9 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
             data[label.href] = label
         return data
 
-    def is_group(self):
+    def is_group(self) -> bool:
         return True
 
-    def is_label(self):
+    def is_label(self) -> bool:
         return False
 

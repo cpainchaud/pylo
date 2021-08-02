@@ -1,19 +1,17 @@
 from .ReferenceTracker import ReferenceTracker
 from .LabelCommon import LabelCommon
-import pylo
-
+from .LabelStore import LabelStore
 
 
 class Label(ReferenceTracker, LabelCommon):
-
-    def __init__(self, name, href, ltype, owner: 'pylo.LabelStore'):
+    def __init__(self, name, href, ltype, owner: 'LabelStore'):
         ReferenceTracker.__init__(self)
         LabelCommon.__init__(self, name, href, ltype, owner)
 
-    def is_group(self):
+    def is_group(self) -> bool:
         return False
 
-    def is_label(self):
+    def is_label(self) -> bool:
         return True
 
     def reference_obj(self):
