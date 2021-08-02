@@ -24,7 +24,7 @@ class LabelCommon:
             elif ltype == 'role':
                 ltype = label_type_role
             else:
-                raise PyloEx("Tried to initialize a Label object with unsupported type '%s'" % (ltype) )
+                raise PyloEx("Tried to initialize a Label object with unsupported type '%s'" % (ltype))
 
         self._type = ltype
 

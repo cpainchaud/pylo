@@ -186,3 +186,15 @@ class Ruleset:
                 pce_port = connector.port
 
         return 'https://{}:{}/#/rulesets/{}/draft/rules/'.format(pce_hostname, pce_port, self.extract_id_from_href())
+
+    def api_set_name(self, new_name: str):
+        find_collision = self.owner.find_ruleset_by_name(new_name)
+        if find_collision is not self:
+            raise pylo.PyloEx("A Ruleset with name '{}' already exists".format(new_name))
+
+        self.owner.owner.connector.objects_ruleset_update(self.href, update_data={'name': new_name})
+        self.name = new_name
+
+    def api_set_description(self, new_description: str):
+        self.owner.owner.connector.objects_ruleset_update(self.href, update_data={'description': new_description})
+        self.description = new_description

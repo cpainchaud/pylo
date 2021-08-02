@@ -797,6 +797,13 @@ class APIConnector:
 
         return self.do_post_call(path=path, json_arguments=data, json_output_expected=True)
 
+    def objects_ruleset_update(self, rule_href: str, update_data):
+        return self.do_put_call(path=rule_href,
+                                json_arguments=update_data,
+                                include_org_id=False,
+                                json_output_expected=False
+                                )
+
     def objects_rule_update(self, rule_href: str, update_data):
         return self.do_put_call(path=rule_href,
                                 json_arguments=update_data,

@@ -5,6 +5,23 @@ from pylo import log, Organization
 import re
 
 
+class RuleApiUpdateStack:
+    def __init__(self):
+        self.json_payload = {}
+
+    def add_payload(self, data: Dict[str, Any]):
+        for prop_name, prop_value in data.items():
+            self.json_payload[prop_name] = prop_value
+
+    def get_payload_and_reset(self) -> Dict[str, Any]:
+        data = self.json_payload
+        self.json_payload = {}
+        return data
+
+    def count_payloads(self) -> int:
+        return len(self.json_payload)
+
+
 class Rule:
 
     def __init__(self, owner: 'pylo.Ruleset'):
@@ -18,7 +35,8 @@ class Rule:
         self.enabled = True
         self.secure_connect = False
         self.unscoped_consumers = False
-        self.raw_json = None
+        self.raw_json: Optional[Dict[str, Any]] = None
+        self.batch_update_stack: Optional[RuleApiUpdateStack] = None
 
     def load_from_json(self, data):
         self.raw_json = data
@@ -52,6 +70,41 @@ class Rule:
 
     def is_intra_scope(self):
         return not self.unscoped_consumers
+
+    def api_set_description(self, new_description: str):
+        data = {'description': new_description}
+        if self.batch_update_stack is None:
+            self.owner.owner.owner.connector.objects_rule_update(self.href, update_data=data)
+
+        self.raw_json.update(data)
+        self.description = new_description
+
+    def api_stacked_updates_start(self):
+        """
+        Turns on 'updates stacking' mode for this Rule which will not push changes to API as you make them but only
+        when you trigger 'api_push_stacked_updates()' function
+        """
+        self.batch_update_stack = RuleApiUpdateStack()
+
+    def api_stacked_updates_push(self):
+        """
+        Push all stacked changed to API and turns off 'updates stacking' mode
+        """
+        if self.batch_update_stack is None:
+            raise pylo.PyloEx("Workload was not in 'update stacking' mode")
+
+        connector = pylo.find_connector_or_die(self.owner)
+        connector.objects_rule_update(self.href, self.batch_update_stack.get_payload_and_reset())
+        self.batch_update_stack = None
+
+    def api_stacked_updates_count(self) -> int:
+        """
+        Counts the number of stacked changed for this Ruke
+        :return:
+        """
+        if self.batch_update_stack is None:
+            raise pylo.PyloEx("Workload was not in 'update stacking' mode")
+        return self.batch_update_stack.count_payloads()
 
 
 class RuleSecurityPrincipalContainer(pylo.Referencer):
@@ -272,8 +325,13 @@ class RuleServiceContainer(pylo.Referencer):
         connector = pylo.find_connector_or_die(self)
         data = self.get_api_json_payload()
         data = {'ingress_services': data}
-        connector.objects_rule_update(self.owner.href, data)
-        self.owner.raw_json['ingress_services'] = data
+
+        if self.owner.batch_update_stack is None:
+            connector.objects_rule_update(self.owner.href, update_data=data)
+        else:
+            self.owner.batch_update_stack.add_payload(data)
+
+        self.owner.raw_json.update(data)
 
 
 class RuleHostContainer(pylo.Referencer):

@@ -1,7 +1,7 @@
+from typing import Optional, List
 import pylo
 from pylo import log, IP4Map
 from .Helpers import *
-from typing import Optional, List
 
 
 class WorkloadInterface:
@@ -61,7 +61,7 @@ class Workload(pylo.ReferenceTracker):
         self.temporary = False
         self.deleted = False
 
-        self.raw_json = None
+        self.raw_json: Optional[Dict[str,Any]] = None
 
         self._batch_update_stack: Optional[WorkloadApiUpdateStack] = None
 
@@ -96,10 +96,7 @@ class Workload(pylo.ReferenceTracker):
             if self.os_detail is None:
                 raise pylo.PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
 
-        if 'description' in data:
-            desc = data['description']
-            if desc is not None:
-                self.description = desc
+        self.description = data.get('description')
 
         ignored_interfaces_index = {}
         ignored_interfaces_json = data.get('ignored_interface_names')
@@ -203,6 +200,8 @@ class Workload(pylo.ReferenceTracker):
             connector.objects_workload_update(self.href, data=data)
         else:
             self._batch_update_stack.add_payload(data)
+
+        self.raw_json.update(data)
         self.description = new_hostname
 
     def api_update_forced_name(self, name: str):
@@ -214,6 +213,7 @@ class Workload(pylo.ReferenceTracker):
         else:
             self._batch_update_stack.add_payload(data)
 
+        self.raw_json.update(data)
         self.description = name
 
     def api_update_labels(self):
@@ -237,6 +237,8 @@ class Workload(pylo.ReferenceTracker):
             connector.objects_workload_update(self.href, data)
         else:
             self._batch_update_stack.add_payload(data)
+
+        self.raw_json.update(data)
 
     def api_stacked_updates_start(self):
         """
