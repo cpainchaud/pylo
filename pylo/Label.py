@@ -1,12 +1,12 @@
 from .ReferenceTracker import ReferenceTracker
-
 from .LabelCommon import LabelCommon
+import pylo
 
 
 
 class Label(ReferenceTracker, LabelCommon):
 
-    def __init__(self, name, href, ltype, owner):
+    def __init__(self, name, href, ltype, owner: 'pylo.LabelStore'):
         ReferenceTracker.__init__(self)
         LabelCommon.__init__(self, name, href, ltype, owner)
 
@@ -23,3 +23,4 @@ class Label(ReferenceTracker, LabelCommon):
 
     def get_api_reference_json(self):
         return {'label': {'href': self.href}}
+

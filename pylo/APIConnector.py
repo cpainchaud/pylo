@@ -498,7 +498,11 @@ class APIConnector:
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
 
-    def objects_label_delete(self, href):
+    def objects_label_update(self, href: str, data: Dict[str, Any]):
+        path = href
+        return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
+
+    def objects_label_delete(self, href: str):
         """
 
         :type href: str|pylo.Label
@@ -808,7 +812,7 @@ class APIConnector:
                             description='', machine_auth=False, secure_connect=False, enabled=True,
                             stateless=False, consuming_security_principals=[],
                             resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
-                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True):
+                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> Dict[str, Any]:
 
         resolve_consumers = []
         if resolve_consumers_as_virtual_services:
@@ -863,7 +867,7 @@ class APIConnector:
 
         return self.do_post_call(path, json_arguments=data, json_output_expected=True, include_org_id=False)
 
-    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True):
+    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True) -> Dict[str, Any]:
         path = '/security_principals'
         data = {}
 
@@ -872,14 +876,21 @@ class APIConnector:
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
 
-    def objects_securityprincipal_create(self, name: str = None, sid: str = None, json_object=None):
+    def objects_securityprincipal_create(self, name: str = None, sid: str = None, json_data=None) -> str:
+        """
+
+        :param name: friendly name for this object
+        :param sid: Windows SID for that Group
+        :param json_data:
+        :return: HREF of the created Security Principal
+        """
         path = '/security_principals'
 
-        if json_object is not None and name is not None:
-            raise pylo.PyloApiEx("You must either use json_object or name but you cannot use both they are mutually exclusive")
+        if json_data is not None and name is not None:
+            raise pylo.PyloApiEx("You must either use json_data or name but you cannot use both they are mutually exclusive")
 
-        if json_object is not None:
-            return get_field_or_die('href', self.do_post_call(path=path, json_arguments=json_object))
+        if json_data is not None:
+            return get_field_or_die('href', self.do_post_call(path=path, json_arguments=json_data))
 
         if name is None:
             raise pylo.PyloApiEx("You need to provide a group name")
@@ -941,7 +952,7 @@ class APIConnector:
 
             return results
 
-    def agent_get_compatibility_report(self, agent_href: str = None, agent_id: str = None, return_raw_json=True):
+    def agent_get_compatibility_report(self, agent_href: str = None, agent_id: str = None, return_raw_json=True) -> 'pylo.APIConnector.ApiAgentCompatibilityReport':
         if agent_href is None and agent_id is None:
             raise pylo.PyloEx('you need to provide a HREF or an ID')
         if agent_href is not None and agent_id is not None:

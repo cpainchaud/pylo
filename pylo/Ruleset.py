@@ -145,14 +145,14 @@ class Ruleset:
         self.rules_byHref[new_rule.href] = new_rule
         return new_rule
 
-    def create_rule(self, intra_scope: bool,
-                    consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                    providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                    services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
-                    description='', machine_auth=False, secure_connect=False, enabled=True,
-                    stateless=False, consuming_security_principals=[],
-                    resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
-                    resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> 'pylo.Rule':
+    def api_create_rule(self, intra_scope: bool,
+                        consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                        providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                        services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                        description='', machine_auth=False, secure_connect=False, enabled=True,
+                        stateless=False, consuming_security_principals=[],
+                        resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
+                        resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> 'pylo.Rule':
 
         new_rule_json = self.owner.owner.connector.objects_rule_create(
             intra_scope=intra_scope, ruleset_href=self.href,

@@ -246,7 +246,7 @@ class InboundRuleToCreate:
         self._services.append(pylo.DirectServiceInRule(proto=protocol_to_int, port=int(service_split[0])))
 
     def create_in_pce(self, ruleset: 'pylo.Ruleset'):
-        ruleset.create_rule(
+        ruleset.api_create_rule(
             intra_scope=False,
             consumers=[self.src_role_label, self.src_app_label, self.src_env_label, self.src_loc_label],
             providers=[self.dst_role_label],
@@ -340,7 +340,7 @@ class OutboundRuleToCreate:
         pass
 
     def create_in_pce(self, ruleset: 'pylo.Ruleset'):
-        ruleset.create_rule(
+        ruleset.api_create_rule(
             intra_scope=False,
             consumers=[self.src_role_label, self.src_app_label, self.src_env_label, self.src_loc_label],
             providers=[self.dst_role_label],

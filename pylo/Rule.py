@@ -1,4 +1,4 @@
-from typing import Optional, List, Union, Dict
+from typing import Optional, List, Union, Dict, Any
 
 import pylo
 from pylo import log, Organization
@@ -18,8 +18,11 @@ class Rule:
         self.enabled = True
         self.secure_connect = False
         self.unscoped_consumers = False
+        self.raw_json = None
 
     def load_from_json(self, data):
+        self.raw_json = data
+
         self.href = data['href']
 
         self.description = data.get('description')
@@ -214,7 +217,7 @@ class RuleServiceContainer(pylo.Referencer):
         """
         Return a list of services directly included in the Rule
         """
-        return self._direct_services
+        return self._direct_services.copy()
 
     def get_services(self) -> List[pylo.Service]:
         return list(self._items.values())
@@ -248,8 +251,11 @@ class RuleServiceContainer(pylo.Referencer):
 
         return text
 
-    def api_sync(self):
-        connector = pylo.find_connector_or_die(self)
+    def get_api_json_payload(self) -> List[Dict[str, Any]]:
+        """
+        Generate JSON payload for API update call
+        :return:
+        """
         data = []
         for service in self._direct_services:
             data.append(service.get_api_json())
@@ -257,8 +263,17 @@ class RuleServiceContainer(pylo.Referencer):
         for service in self._items.values():
             data.append({'href': service.href})
 
+        return data
+
+    def api_sync(self):
+        """
+        Synchronize a Rule's services after some changes were made
+        """
+        connector = pylo.find_connector_or_die(self)
+        data = self.get_api_json_payload()
         data = {'ingress_services': data}
         connector.objects_rule_update(self.owner.href, data)
+        self.owner.raw_json['ingress_services'] = data
 
 
 class RuleHostContainer(pylo.Referencer):
@@ -332,12 +347,20 @@ class RuleHostContainer(pylo.Referencer):
         return False
 
     def has_labels(self) -> bool:
+        """
+        Check if this container references at least one Label or LabelGroup
+        :return: True if contains at least one Label or LabelGroup
+        """
         for item in self._items.values():
             if isinstance(item, pylo.Label) or isinstance(item, pylo.LabelGroup):
                 return True
         return False
 
     def get_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
+        """
+        Get a list Labels and LabelGroups which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -347,6 +370,10 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def get_role_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        """
+        Get a list Role Labels and LabelGroups which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -356,6 +383,10 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def get_app_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        """
+        Get a list App Labels and LabelGroups which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -365,6 +396,10 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def get_env_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        """
+        Get a list Env Labels and LabelGroups which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -374,6 +409,10 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def get_loc_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+        """
+        Get a list Loc Labels and LabelGroups which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -420,6 +459,10 @@ class RuleHostContainer(pylo.Referencer):
         return False
 
     def get_iplists(self) -> List[pylo.IPList]:
+        """
+        Get a list of IPLists which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -429,6 +472,10 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def get_workloads(self) -> List[pylo.Workload]:
+        """
+        Get a list of Workloads which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -438,6 +485,10 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def get_virtual_services(self) -> List[pylo.VirtualService]:
+        """
+        Get a list of VirtualServices which are part of this container
+        :return:
+        """
         result = []
 
         for item in self._items.values():
@@ -447,4 +498,8 @@ class RuleHostContainer(pylo.Referencer):
         return result
 
     def contains_all_workloads(self) -> bool:
+        """
+
+        :return: True if "All Workloads" is referenced by this container
+        """
         return self._hasAllWorkloads

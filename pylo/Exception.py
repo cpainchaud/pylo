@@ -13,6 +13,10 @@ class PyloEx(Exception):
 
 class PyloApiEx(PyloEx):
     def __init__(self, arg, json_object=None):
+        """
+
+        :rtype: object
+        """
         PyloEx(arg, json_object)
 
 
