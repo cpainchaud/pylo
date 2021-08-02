@@ -178,7 +178,7 @@ for agent in agents.values():
         continue
 
     export_row.append(agent.workload.get_name())
-    labels = agent.workload.get_labels_list()
+    labels = agent.workload.get_labels_str_list()
     export_row.append(labels[0])
     export_row.append(labels[1])
     export_row.append(labels[2])

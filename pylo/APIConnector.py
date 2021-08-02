@@ -1590,9 +1590,17 @@ class APIConnector:
 
             return result
 
-    def explorer_search(self, filters: 'pylo.APIConnector.ExplorerFilterSetV1'):
+    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1']):
+        """
+
+        :param filters: should be an instance of ExplorerFilterSetV1 or a json payload built with your own logic
+        :return:
+        """
         path = "/traffic_flows/traffic_analysis_queries"
-        data = filters.generate_json_query()
+        if isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):
+            data = filters.generate_json_query()
+        else:
+            data = filters
         result = APIConnector.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, include_org_id=True, json_output_expected=True),
                                                   owner=self, emulated_process_exclusion=filters.exclude_processes_emulate)
 
@@ -1750,7 +1758,6 @@ class APIConnector:
 
         return dict_of_health_reports
 
-
     class RuleSearchQuery:
         _advanced_mode_consumer_labels: Dict[str, 'pylo.Label']
         _advanced_mode_provider_labels: Dict[str, 'pylo.Label']
@@ -1774,7 +1781,6 @@ class APIConnector:
         def set_advanced_mode(self):
             self.mode_is_basic = False
             self._basic_mode_labels = {}
-
 
         def set_draft_mode(self):
             self._mode_is_draft = True

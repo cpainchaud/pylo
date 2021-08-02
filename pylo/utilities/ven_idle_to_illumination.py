@@ -78,7 +78,7 @@ csv_report = pylo.ArrayToExport(csv_report_headers)
 
 
 def add_workload_to_report(wkl: pylo.Workload, changed_mode: str, details: str):
-    labels = workload.get_labels_list()
+    labels = workload.get_labels_str_list()
     new_row = {
         'hostname': wkl.name,
         'role': labels[0],

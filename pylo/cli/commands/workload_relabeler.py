@@ -79,7 +79,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     def workload_to_csv_report(workload: pylo.Workload, updated: bool, reason: str = '', new_labels=None):
 
-        labels = workload.get_labels_list()
+        labels = workload.get_labels_str_list()
 
         record = {
             'name': workload.get_name(),

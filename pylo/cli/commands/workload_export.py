@@ -67,7 +67,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     used_filters = {}
 
     def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append_prefix='_'):
-        labels = workload.get_labels_list()
+        labels = workload.get_labels_str_list()
 
         def none_or_date(date):
             if date is None:

@@ -30,7 +30,7 @@ def __main(args, org: pylo.Organization,**kwargs):
     used_filters = {}
 
     def add_workload_to_report(wkl: pylo.Workload, action: str):
-        labels = workload.get_labels_list()
+        labels = workload.get_labels_str_list()
         new_row = {
                 'hostname': wkl.name,
                 'role': labels[0],

@@ -337,18 +337,18 @@ class Workload(pylo.ReferenceTracker):
                 return none_str
             return self.locationLabel.href
 
-    def get_appgroup_str(self) -> str:
+    def get_appgroup_str(self, separator: str = '|') -> str:
         labels = ''
 
         if self.applicationLabel is None:
-            labels += '*None*|'
+            labels += '*None*' + separator
         else:
-            labels += self.applicationLabel.name + '|'
+            labels += self.applicationLabel.name + separator
 
         if self.environmentLabel is None:
-            labels += '*None*|'
+            labels += '*None*' + separator
         else:
-            labels += self.environmentLabel.name + '|'
+            labels += self.environmentLabel.name + separator
 
         if self.locationLabel is None:
             labels += '*None*'
@@ -357,8 +357,12 @@ class Workload(pylo.ReferenceTracker):
 
         return labels
 
-    def get_labels_list(self, missing_str=''):
-
+    def get_labels_str_list(self, missing_str: Optional[str] = '') -> List[str]:
+        """
+        Conveniently returns the list of Worklaod labels as a list of strings
+        :param missing_str: if a label type is missing then missing_str will be used to represent it
+        :return:
+        """
         labels = []
 
         if self.roleLabel is None:
@@ -383,7 +387,11 @@ class Workload(pylo.ReferenceTracker):
 
         return labels
 
-    def get_label_by_type_str(self, label_type: str):
+    def get_label_by_type_str(self, label_type: str) -> 'pylo.Label':
+        """
+        Return the label of specified type assigned to this Workload
+        :rtype: type of label (as a string: role, app, env or loc)
+        """
         label_type = label_type.lower()
         if label_type == 'role':
             return self.roleLabel
