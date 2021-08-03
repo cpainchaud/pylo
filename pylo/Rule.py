@@ -126,10 +126,10 @@ class RuleSecurityPrincipalContainer(pylo.Referencer):
         self._items: Dict[SecurityPrincipal, SecurityPrincipal] = {}  # type:
 
     def load_from_json(self, data):
-        ssStore = self.owner.owner.owner.owner.SecurityPrincipalStore
+        ss_store = self.owner.owner.owner.owner.SecurityPrincipalStore  # make it a local variable for fast lookups
         for item_data in data:
             wanted_href = item_data['href']
-            found_object = ssStore.find_by_href_or_die(wanted_href)
+            found_object = ss_store.find_by_href_or_die(wanted_href)
             found_object.add_reference(self)
             self._items[found_object] = found_object
 
@@ -156,7 +156,7 @@ class DirectServiceInRule:
             if protocol_first:
                 return 'udp/' + str(self.port) + '-' + str(self.to_port)
 
-            return str(self.port) + '-' + str(self.to_port)+ '/udp'
+            return str(self.port) + '-' + str(self.to_port) + '/udp'
         elif self.protocol == 6:
             if self.to_port is None:
                 if protocol_first:
@@ -165,7 +165,7 @@ class DirectServiceInRule:
 
             if protocol_first:
                 return 'tcp/' + str(self.port) + '-' + str(self.to_port)
-            return str(self.port) + '-' + str(self.to_port)+ '/tcp'
+            return str(self.port) + '-' + str(self.to_port) + '/tcp'
 
         if protocol_first:
             return 'proto/' + str(self.protocol)
@@ -254,6 +254,8 @@ class RuleServiceContainer(pylo.Referencer):
         find_service.add_reference(self)
 
     def load_from_json(self, data_list):
+        ss_store = self.owner.owner.owner.owner.ServiceStore  # make it a local variable for fast lookups
+
         for data in data_list:
             # print(data)
             href = data.get('href')
@@ -271,7 +273,7 @@ class RuleServiceContainer(pylo.Referencer):
 
                 continue
 
-            find_service = self.owner.owner.owner.owner.ServiceStore.itemsByHRef.get(href)
+            find_service = ss_store.itemsByHRef.get(href)
             if find_service is None:
                 raise Exception('Cannot find Service with HREF %s in Rule %s'.format(href, self.owner.href))
 
@@ -355,27 +357,33 @@ class RuleHostContainer(pylo.Referencer):
         self._hasAllWorkloads = False
 
     def load_from_json(self, data):
+
+        workload_store = self.owner.owner.owner.owner.WorkloadStore  # make it a local variable for fast lookups
+        label_store = self.owner.owner.owner.owner.LabelStore  # make it a local variable for fast lookups
+        virtual_service_store = self.owner.owner.owner.owner.VirtualServiceStore  # make it a local variable for fast lookups
+        iplist_store = self.owner.owner.owner.owner.IPListStore  # make it a local variable for fast lookups
+
         for host_data in data:
             find_object = None
             if 'label' in host_data:
                 href = host_data['label'].get('href')
                 if href is None:
                     PyloEx('Cannot find object HREF ', host_data)
-                find_object = self.owner.owner.owner.owner.LabelStore.itemsByHRef.get(href)
+                find_object = label_store.itemsByHRef.get(href)
                 if find_object is None:
                     raise Exception('Cannot find Label with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'label_group' in host_data:
                 href = host_data['label_group'].get('href')
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
-                find_object = self.owner.owner.owner.owner.LabelStore.itemsByHRef.get(href)
+                find_object = label_store.itemsByHRef.get(href)
                 if find_object is None:
                     raise Exception('Cannot find LabelGroup with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'ip_list' in host_data:
                 href = host_data['ip_list'].get('href')
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
-                find_object = self.owner.owner.owner.owner.IPListStore.itemsByHRef.get(href)
+                find_object = iplist_store.itemsByHRef.get(href)
                 if find_object is None:
                     raise Exception('Cannot find IPList with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'workload' in host_data:
@@ -383,16 +391,16 @@ class RuleHostContainer(pylo.Referencer):
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
                 # @TODO : better handling of temporary objects
-                find_object = self.owner.owner.owner.owner.WorkloadStore.itemsByHRef.get(href)
+                find_object = workload_store.itemsByHRef.get(href)
                 if find_object is None:
                     # raise Exception("Cannot find Workload with HREF {} in Rule {}. JSON:\n {}".format(href, self.owner.href, nice_json(host_data)))
-                    find_object = self.owner.owner.owner.owner.WorkloadStore.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
+                    find_object = workload_store.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
             elif 'virtual_service' in host_data:
                 href = host_data['virtual_service'].get('href')
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
                 # @TODO : better handling of temporary objects
-                find_object = self.owner.owner.owner.owner.VirtualServiceStore.itemsByHRef.get(href)
+                find_object = virtual_service_store.itemsByHRef.get(href)
                 if find_object is None:
                     # raise Exception("Cannot find VirtualService with HREF {} in Rule {}. JSON:\n {}".format(href, self.owner.href, nice_json(host_data)))
                     find_object = self.owner.owner.owner.owner.VirtualServiceStore.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
@@ -439,7 +447,7 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def get_role_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+    def get_role_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
         Get a list Role Labels and LabelGroups which are part of this container
         :return:
@@ -452,7 +460,7 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def get_app_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+    def get_app_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
         Get a list App Labels and LabelGroups which are part of this container
         :return:
@@ -465,7 +473,7 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def get_env_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+    def get_env_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
         Get a list Env Labels and LabelGroups which are part of this container
         :return:
@@ -478,7 +486,7 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def get_loc_labels(self) -> List[Union[pylo.Label,pylo.LabelGroup]]:
+    def get_loc_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
         Get a list Loc Labels and LabelGroups which are part of this container
         :return:
