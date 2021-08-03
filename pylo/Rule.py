@@ -31,10 +31,13 @@ class Rule:
         self.providers: 'pylo.RuleHostContainer' = pylo.RuleHostContainer(self, 'providers')
         self.consumers: 'pylo.RuleHostContainer' = pylo.RuleHostContainer(self, 'consumers')
         self.consuming_principals: 'pylo.RuleSecurityPrincipalContainer' = pylo.RuleSecurityPrincipalContainer(self)
-        self.href = None
-        self.enabled = True
-        self.secure_connect = False
-        self.unscoped_consumers = False
+        self.href: Optional[str] = None
+        self.enabled: bool = True
+        self.secure_connect: bool = False
+        self.unscoped_consumers: bool = False
+        self.stateless: bool = False
+        self.machine_auth: bool = False
+
         self.raw_json: Optional[Dict[str, Any]] = None
         self.batch_update_stack: Optional[RuleApiUpdateStack] = None
 
@@ -52,6 +55,14 @@ class Rule:
         enabled = data.get('enabled')
         if enabled is not None:
             self.enabled = enabled
+
+        stateless = data.get('stateless')
+        if stateless is not None:
+            self.stateless = stateless
+
+        machine_auth = data.get('machine_auth')
+        if machine_auth is not None:
+            self.machine_auth = machine_auth
 
         secure_connect = data.get('sec_connect')
         if secure_connect is not None:

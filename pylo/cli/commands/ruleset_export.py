@@ -24,10 +24,21 @@ def __main(options, org: pylo.Organization, **kwargs):
 
     for ruleset in org.RulesetStore.items_by_href.values():
         for rule in ruleset.rules_by_href.values():
+            options = []
+            if not rule.enabled:
+                options.append('disabled')
+            if rule.secure_connect:
+                options.append('secure-connect')
+            if rule.stateless:
+                options.append('stateless')
+            if rule.machine_auth:
+                options.append('machine_auth')
+
             data = {'ruleset': ruleset.name, 'ruleset_href': ruleset.href, 'scope': ruleset.scopes.get_all_scopes_str(),
                     'consumers': rule.consumers.members_to_str(),
                     'providers': rule.providers.members_to_str(),
-                    'services': rule.services.members_to_str(), }
+                    'services': rule.services.members_to_str(),
+                    'options': pylo.string_list_to_text(options)}
             if rule.is_extra_scope():
                 data['type'] = 'intra'
             else:

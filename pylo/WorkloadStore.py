@@ -151,6 +151,32 @@ class WorkloadStore:
 
         return None
 
+    def find_all_workloads_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> List[pylo.Workload]:
+        """
+        Find all workloads based on their hostnames.
+        :param name: the name string you are looking for
+        :param case_sensitive: make it a case sensitive search or not
+        :param strip_fqdn: remove the fqdn part of the hostname
+        :return: list of matching Workloads
+        """
+        result = []
+
+        if case_sensitive:
+            name = name.lower()
+
+        for workload in self.itemsByHRef.values():
+            wkl_name = workload.hostname
+            if strip_fqdn:
+                wkl_name = pylo.Workload.static_name_stripped_fqdn(wkl_name)
+            if case_sensitive:
+                if wkl_name == name:
+                    result.append(workload)
+            else:
+                if wkl_name.lower() == name:
+                    result.append(workload)
+
+        return result
+
     def count_workloads(self) -> int:
         """
 
