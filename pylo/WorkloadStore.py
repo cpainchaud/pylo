@@ -1,5 +1,4 @@
-import pylo
-from pylo import log, IP4Map
+from pylo import log, IP4Map, PyloEx
 from .Helpers import *
 from typing import Optional, List
 
@@ -8,8 +7,8 @@ class WorkloadStore:
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
-        self.itemsByHRef = {}  # type: dict[str,pylo.Workload]
-        self.itemsByName = {}  # type: dict[str,pylo.Workload]
+        self.itemsByHRef: Dict[str, pylo.Workload] = {}
+        self.itemsByName: Dict[str, pylo.Workload] = {}
 
     def load_workloads_from_json(self, json_list):
         for json_item in json_list:
@@ -19,7 +18,7 @@ class WorkloadStore:
             new_item_name = json_item['name']
             new_item_href = json_item['href']
 
-            # Workloads's name is None when it's provided by VEN through its hostname until it's manually overwritten
+            # Workload's name is None when it's provided by VEN through its hostname until it's manually overwritten
             # (eventually) by someone. In such a case, you need to use hostname instead
             if new_item_name is None:
                 if 'hostname' not in json_item:
@@ -46,14 +45,27 @@ class WorkloadStore:
             log.debug("Found Workload '%s' with href '%s'", new_item_name, new_item_href)
 
     def find_by_href_or_die(self, href: str) -> 'pylo.Workload':
+        """
+        Find a Workload from its HREF, throw an Exception if not found
 
+        :param href: the HREF you are looking for
+        :return:
+        :raises:
+            PyloEx: if no Workload matching provided HREF
+        """
         find_object = self.itemsByHRef.get(href)
         if find_object is None:
-            raise pylo.PyloEx("Workload with HREF '%s' was not found" % href)
+            raise PyloEx("Workload with HREF '%s' was not found" % href)
 
         return find_object
 
     def find_by_href_or_create_tmp(self, href: str, tmp_wkl_name: str) -> 'pylo.Workload':
+        """
+        Find a Workload from its HREF, creates a fake temporary one if not found. *Reserved for developers*
+
+        :param href: the HREF you are looking for
+        :return:
+        """
         find_object = self.itemsByHRef.get(href)
         if find_object is not None:
             return find_object
@@ -68,6 +80,12 @@ class WorkloadStore:
         return new_tmp_item
 
     def find_workloads_matching_label(self, label: 'pylo.Label') -> Dict[str, 'pylo.Workload']:
+        """
+        Find all Workloads which are using a specific Label.
+
+        :param label: Label you want to match on
+        :return: a dictionary of all matching Workloads using their HREF as key
+        """
         result = {}
 
         for href, workload in self.itemsByHRef.items():
@@ -77,6 +95,12 @@ class WorkloadStore:
         return result
 
     def find_workloads_matching_all_labels(self, labels: List[pylo.Label]) -> Dict[str, 'pylo.Workload']:
+        """
+        Find all Workloads which are using all the Labels from a specified list.
+
+        :param labels: list of Labels you want to match on
+        :return: a dictionary of all matching Workloads using their HREF as key
+        """
         result = {}
 
         for href, workload in self.itemsByHRef.items():
@@ -92,14 +116,40 @@ class WorkloadStore:
 
         return result
 
-    """
-    :return Workload|None
-    """
+    def find_workload_matching_name(self, name: str) -> Optional[pylo.Workload]:
+        """
+        Find a Workload based on its name (case sensitive). Beware that if several are matching, only the first one will be returned
 
-    def find_workload_matching_name(self, name: str):
+        :param name: the name you are looking for
+        :return: the Workload it found, None otherwise
+        """
         found = self.itemsByName.get(name)
 
         return found
+
+    def find_workload_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[pylo.Workload]:
+        """
+        Find a workload based on its hostname.Beware that if several are matching, only the first one will be returned
+        :param name: the name string you are looking for
+        :param case_sensitive: make it a case sensitive search or not
+        :param strip_fqdn: remove the fqdn part of the hostname
+        :return: the Workload it found, None otherwise
+        """
+        if case_sensitive:
+            name = name.lower()
+
+        for workload in self.itemsByHRef.values():
+            wkl_name = workload.hostname
+            if strip_fqdn:
+                wkl_name = pylo.Workload.static_name_stripped_fqdn(wkl_name)
+            if case_sensitive:
+                if wkl_name == name:
+                    return workload
+            else:
+                if wkl_name.lower() == name:
+                    return workload
+
+        return None
 
     def count_workloads(self) -> int:
         """
@@ -122,6 +172,10 @@ class WorkloadStore:
         return count
 
     def get_managed_workloads_list(self) -> List['pylo.Workload']:
+        """
+        Get a list of all managed workloads
+        :return:
+        """
         results = []
         for item in self.itemsByHRef.values():
             if not item.unmanaged:
@@ -130,6 +184,10 @@ class WorkloadStore:
         return results
 
     def get_managed_workloads_dict_href(self) -> Dict[str, 'pylo.Workload']:
+        """
+        Get a dictionary of all managed workloads using their HREF as key
+        :return:
+        """
         results = {}
         for item in self.itemsByHRef.values():
             if not item.unmanaged:
