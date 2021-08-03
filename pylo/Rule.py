@@ -357,7 +357,12 @@ class RuleHostContainer(pylo.Referencer):
         self._hasAllWorkloads = False
 
     def load_from_json(self, data):
+        """
+        Parse from a JSON payload.
+        *For developers only*
 
+        :param data: JSON payload to parse
+        """
         workload_store = self.owner.owner.owner.owner.WorkloadStore  # make it a local variable for fast lookups
         label_store = self.owner.owner.owner.owner.LabelStore  # make it a local variable for fast lookups
         virtual_service_store = self.owner.owner.owner.owner.VirtualServiceStore  # make it a local variable for fast lookups
@@ -419,8 +424,22 @@ class RuleHostContainer(pylo.Referencer):
                 find_object.add_reference(self)
 
     def has_workloads(self) -> bool:
+        """
+        Check if this container references at least one Workload
+        :return: True if contains at least one Workload
+        """
         for item in self._items.values():
             if isinstance(item, Workload):
+                return True
+        return False
+
+    def has_virtual_services(self) -> bool:
+        """
+        Check if this container references at least one Virtual Service
+        :return: True if contains at least one Virtual Service
+        """
+        for item in self._items.values():
+            if isinstance(item, VirtualService):
                 return True
         return False
 
@@ -499,7 +518,14 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def members_to_str(self) -> str:
+    def members_to_str(self, separator=',') -> str:
+        """
+        Conveniently creates a string with all members of this container, ordered by Label, IList, Workload,
+        and  Virtual Service
+
+        :param separator: string use to separate each member in the lit
+        :return:
+        """
         text = ''
 
         if self._hasAllWorkloads:
@@ -507,22 +533,22 @@ class RuleHostContainer(pylo.Referencer):
 
         for label in self.get_labels():
             if len(text) > 0:
-                text += ','
+                text += separator
             text += label.name
 
         for item in self.get_iplists():
             if len(text) > 0:
-                text += ','
+                text += separator
             text += item.name
 
         for item in self.get_workloads():
             if len(text) > 0:
-                text += ','
+                text += separator
             text += item.get_name()
 
         for item in self.get_virtual_services():
             if len(text) > 0:
-                text += ','
+                text += separator
             text += item.name
 
         return text
