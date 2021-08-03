@@ -6,6 +6,7 @@ vendor_dir = os.path.join(parent_dir, 'vendors')
 sys.path.append(vendor_dir)
 
 from .tmp import *
+from .Helpers import *
 
 from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexpectedSyntax
 from .SoftwareVersion import SoftwareVersion
@@ -30,8 +31,6 @@ from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
 from .Organization import Organization
 from .Query import Query
 
-
-from .Helpers import *
 
 ignoreWorkloadsWithSameName = True
 

@@ -1,7 +1,8 @@
 from typing import Optional, List, Union, Dict
 
 import pylo
-from pylo import log, Organization
+from pylo import log, Organization, PyloEx, Rule, Ruleset
+from .Helpers import nice_json
 import re
 
 
@@ -27,22 +28,25 @@ class RulesetStore:
             self.load_single_ruleset_from_json(json_item)
 
     def load_single_ruleset_from_json(self, json_item):
-        new_item = pylo.Ruleset(self)
+        new_item = Ruleset(self)
         new_item.load_from_json(json_item)
 
         if new_item.href in self.items_by_href:
-            raise Exception("A Ruleset with href '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
-                            % (new_item.href, pylo.nice_json(json_item)) )
+            raise PyloEx(
+                "A Ruleset with href '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
+                % (new_item.href, nice_json(json_item)))
 
         if new_item.name in self.items_by_name:
-            print("The following Ruleset is conflicting (name already exists): '%s' Href: '%s'" % (self.items_by_name[new_item.name].name, self.items_by_name[new_item.name].href), flush=True)
-            raise Exception("A Ruleset with name '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
-                            % (new_item.name, pylo.nice_json(json_item)))
+            print("The following Ruleset is conflicting (name already exists): '%s' Href: '%s'" % (
+                self.items_by_name[new_item.name].name, self.items_by_name[new_item.name].href), flush=True)
+            raise PyloEx(
+                "A Ruleset with name '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
+                % (new_item.name, nice_json(json_item)))
 
         self.items_by_href[new_item.href] = new_item
         self.items_by_name[new_item.name] = new_item
 
-        log.debug("Found Ruleset '%s' with href '%s'" % (new_item.name, new_item.href) )
+        log.debug("Found Ruleset '%s' with href '%s'" % (new_item.name, new_item.href))
 
         return new_item
 
@@ -82,12 +86,12 @@ class RulesetStore:
         :param ruleset: should be href string or a Ruleset object
         """
         href = ruleset
-        if isinstance(ruleset, pylo.Rule):
+        if isinstance(ruleset, Rule):
             href = ruleset.href
 
         find_object = self.items_by_href.get(href)
         if find_object is None:
-            raise pylo.PyloEx("Cannot delete a Ruleset with href={} which is not part of this RulesetStore".format(href))
+            raise PyloEx("Cannot delete a Ruleset with href={} which is not part of this RulesetStore".format(href))
 
         self.owner.connector.objects_ruleset_delete(href)
         del self.items_by_href[href]
