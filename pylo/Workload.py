@@ -1,5 +1,6 @@
 from typing import Optional, List
 from pylo import log
+from .AgentStore import VENAgent
 from .Helpers import *
 from .Exception import PyloEx
 from .Label import Label
@@ -9,7 +10,7 @@ from .IPMap import IP4Map
 
 class WorkloadInterface:
     def __init__(self, owner: 'pylo.Workload', name: str, ip: str, network: str, gateway: str, ignored: bool):
-        self.owner: 'pylo.Workload' = owner
+        self.owner: Workload = owner
         self.name: str = name
         self.ip: str = ip
         self.network: str = network
@@ -53,12 +54,12 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         self.os_id: Optional[str] = None
         self.os_detail: Optional[str] = None
 
-        self.loc_label: Optional['pylo.Label'] = None
-        self.env_label: Optional['pylo.Label'] = None
-        self.app_label: Optional['pylo.Label'] = None
-        self.role_label: Optional['pylo.Label'] = None
+        self.loc_label: Optional[Label] = None
+        self.env_label: Optional[Label] = None
+        self.app_label: Optional[Label] = None
+        self.role_label: Optional[Label] = None
 
-        self.ven_agent: Optional['pylo.VENAgent'] = None
+        self.ven_agent: Optional[VENAgent] = None
 
         self.unmanaged = True
 
@@ -216,7 +217,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             self._batch_update_stack.add_payload(data)
 
         self.raw_json.update(data)
-        self.description = new_hostname
+        self.hostname = new_hostname
 
     def api_update_forced_name(self, name: str):
 
@@ -228,7 +229,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             self._batch_update_stack.add_payload(data)
 
         self.raw_json.update(data)
-        self.description = name
+        self.forced_name = name
 
     def api_update_labels(self, list_of_labels: Optional[List[Label]] = None, missing_label_type_means_no_change=False):
         """
@@ -385,7 +386,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
 
     def get_labels_str_list(self, missing_str: Optional[str] = '') -> List[str]:
         """
-        Conveniently returns the list of Worklaod labels as a list of strings
+        Conveniently returns the list of Workload labels as a list of strings
         :param missing_str: if a label type is missing then missing_str will be used to represent it
         :return:
         """
@@ -436,8 +437,8 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
 
         :return:
         """
-        if self.name is not None:
-            return self.name
+        if self.forced_name is not None:
+            return self.forced_name
         if self.hostname is None:
             raise PyloEx("Cannot find workload name!")
         return self.hostname
