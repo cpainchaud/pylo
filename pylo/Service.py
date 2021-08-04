@@ -26,7 +26,6 @@ class PortMap:
         else:
             proto = protocol
 
-
         if proto != 6 and proto != 17:
             self._protocol_map[proto] = True
             return
@@ -37,9 +36,9 @@ class PortMap:
         new_entry = [start_port, end_port]
 
         if not skip_recalculation:
-            self.mergeOverlappingMaps()
+            self.merge_overlapping_maps()
 
-    def mergeOverlappingMaps(self):
+    def merge_overlapping_maps(self):
         self._sort_maps()
 
         new_map = []
@@ -95,20 +94,21 @@ class PortMap:
             self._udp_map = new_map
 
     def _sort_maps(self):
-        def firstEntry(my_list):
+        def first_entry(my_list):
             return my_list[0]
 
-        self._tcp_map.sort(key=firstEntry)
-        self._udp_map.sort(key=firstEntry)
+        self._tcp_map.sort(key=first_entry)
+        self._udp_map.sort(key=first_entry)
 
 
 class ServiceEntry:
-    def __init__(self, protocol: int, port: int = None, to_port: int = None, icmp_code=None, icmp_type = None):
+    def __init__(self, protocol: int, port: int = None, to_port: Optional[int] = None, icmp_code: Optional[int] = None,
+                 icmp_type: Optional[int] = None):
         self.protocol = protocol
-        self.port = port
-        self.to_port = to_port
-        self.icmp_type = icmp_type
-        self.icmp_code = icmp_code
+        self.port: int = port
+        self.to_port: Optional[int] = to_port
+        self.icmp_type: Optional[int] = icmp_type
+        self.icmp_code: Optional[int] = icmp_code
 
     @staticmethod
     def create_from_json(data: Dict):
@@ -132,7 +132,7 @@ class ServiceEntry:
     def is_udp(self) -> bool:
         return self.protocol == 17
 
-    def to_string_standard(self, protocol_first=True) -> str :
+    def to_string_standard(self, protocol_first=True) -> str:
 
         if self.protocol == -1:
             return 'All Services'
@@ -162,7 +162,6 @@ class ServiceEntry:
 
 
 class Service(pylo.ReferenceTracker):
-
 
     def __init__(self, name: str, href: str, owner: 'pylo.ServiceStore'):
         pylo.ReferenceTracker.__init__(self)
@@ -198,10 +197,10 @@ class Service(pylo.ReferenceTracker):
     def get_api_reference_json(self):
         return {'service': {'href': self.href}}
 
-    def get_entries_str_list(self, protocolFirst=True) -> List[str]:
+    def get_entries_str_list(self, protocol_first=True) -> List[str]:
         result: List[str] = []
         for entry in self.entries:
-            result.append(entry.to_string_standard(protocol_first=protocolFirst))
+            result.append(entry.to_string_standard(protocol_first=protocol_first))
         return result
 
 
@@ -235,4 +234,3 @@ class ServiceStore(pylo.Referencer):
             self.itemsByName[new_item_name] = new_item
 
             log.debug("Found service '%s' with href '%s'", new_item_name, new_item_href)
-

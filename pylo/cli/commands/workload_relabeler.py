@@ -254,25 +254,25 @@ def __main(args, org: pylo.Organization, **kwargs):
     for workload_href in list(workloads_to_relabel.keys()):
         workload = workloads_to_relabel[workload_href]
 
-        if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
+        if len(role_label_list) > 0 and (workload.role_label is None or workload.role_label not in role_label_list):
             del workloads_to_relabel[workload_href]
             ignored_workloads_count += 1
             csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Role label did not match filters'))
             continue
 
-        if len(app_label_list) > 0 and (workload.applicationLabel is None or workload.applicationLabel not in app_label_list):
+        if len(app_label_list) > 0 and (workload.app_label is None or workload.app_label not in app_label_list):
             del workloads_to_relabel[workload_href]
             ignored_workloads_count += 1
             csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Application label did not match filters'))
             continue
 
-        if len(env_label_list) > 0 and (workload.environmentLabel is None or workload.environmentLabel not in env_label_list):
+        if len(env_label_list) > 0 and (workload.env_label is None or workload.env_label not in env_label_list):
             del workloads_to_relabel[workload_href]
             ignored_workloads_count += 1
             csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Environment label did not match filters'))
             continue
 
-        if len(loc_label_list) > 0 and (workload.locationLabel is None or workload.locationLabel not in loc_label_list):
+        if len(loc_label_list) > 0 and (workload.loc_label is None or workload.loc_label not in loc_label_list):
             del workloads_to_relabel[workload_href]
             ignored_workloads_count += 1
             csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Location label did not match filters'))

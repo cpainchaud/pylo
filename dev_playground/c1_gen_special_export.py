@@ -249,17 +249,17 @@ for workload in workload_for_report.values():
     data = {'hostname': workload.hostname,
             'href': workload.href}
 
-    if workload.roleLabel is not None:
-        data['role'] = workload.roleLabel.href
+    if workload.role_label is not None:
+        data['role'] = workload.role_label.href
 
-    if workload.applicationLabel is not None:
-        data['application'] = workload.applicationLabel.href
+    if workload.app_label is not None:
+        data['application'] = workload.app_label.href
 
-    if workload.environmentLabel is not None:
-        data['environment'] = workload.environmentLabel.href
+    if workload.env_label is not None:
+        data['environment'] = workload.env_label.href
 
-    if workload.locationLabel is not None:
-        data['location'] = workload.locationLabel.href
+    if workload.loc_label is not None:
+        data['location'] = workload.loc_label.href
 
     data['interfaces'] = workload.interfaces_to_string(separator=',', show_ignored=False)
 
@@ -340,7 +340,7 @@ print(" * Processing {} Services data... ".format(len(workload_for_report)), end
 for service in services:
     data = {'name': service.name,
             'href': service.href,
-            'members': pylo.string_list_to_text(service.get_entries_str_list(protocolFirst=False))
+            'members': pylo.string_list_to_text(service.get_entries_str_list(protocol_first=False))
             }
 
     csv_file.add_line_from_object(data)

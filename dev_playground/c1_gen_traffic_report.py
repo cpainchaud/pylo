@@ -255,17 +255,17 @@ print(" * Processing {} workloads data... ".format(len(workload_for_report)), en
 for workload in workload_for_report.values():
     data = {'hostname': workload.hostname}
 
-    if workload.roleLabel is not None:
-        data['role'] = workload.roleLabel.name
+    if workload.role_label is not None:
+        data['role'] = workload.role_label.name
 
-    if workload.applicationLabel is not None:
-        data['application'] = workload.applicationLabel.name
+    if workload.app_label is not None:
+        data['application'] = workload.app_label.name
 
-    if workload.environmentLabel is not None:
-        data['environment'] = workload.environmentLabel.name
+    if workload.env_label is not None:
+        data['environment'] = workload.env_label.name
 
-    if workload.locationLabel is not None:
-        data['location'] = workload.locationLabel.name
+    if workload.loc_label is not None:
+        data['location'] = workload.loc_label.name
 
     data['interfaces'] = workload.interfaces_to_string(separator=',', show_ignored=False)
     

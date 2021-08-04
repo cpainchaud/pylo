@@ -81,17 +81,17 @@ for workload in workloads_selected_for_import.values():
 
     labels = []
 
-    if workload.locationLabel is not None:
-        newLabel = old_to_new_loc_labels.find_new_or_die(workload.locationLabel)  # type: pylo.Label
+    if workload.loc_label is not None:
+        newLabel = old_to_new_loc_labels.find_new_or_die(workload.loc_label)  # type: pylo.Label
         labels.append({'href': newLabel.href})
-    if workload.environmentLabel is not None:
-        newLabel = old_to_new_env_labels.find_new_or_die(workload.environmentLabel)  # type: pylo.Label
+    if workload.env_label is not None:
+        newLabel = old_to_new_env_labels.find_new_or_die(workload.env_label)  # type: pylo.Label
         labels.append({'href': newLabel.href})
-    if workload.applicationLabel is not None:
-        newLabel = old_to_new_app_labels.find_new_or_die(workload.applicationLabel)  # type: pylo.Label
+    if workload.app_label is not None:
+        newLabel = old_to_new_app_labels.find_new_or_die(workload.app_label)  # type: pylo.Label
         labels.append({'href': newLabel.href})
-    if workload.roleLabel is not None:
-        newLabel = old_to_new_role_labels.find_new_or_die(workload.roleLabel)  # type: pylo.Label
+    if workload.role_label is not None:
+        newLabel = old_to_new_role_labels.find_new_or_die(workload.role_label)  # type: pylo.Label
         labels.append({'href': newLabel.href})
 
     newWorkloadObject["labels"] = labels

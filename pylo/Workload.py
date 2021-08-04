@@ -1,7 +1,10 @@
 from typing import Optional, List
-import pylo
-from pylo import log, IP4Map
+from pylo import log
 from .Helpers import *
+from .Exception import PyloEx
+from .Label import Label
+from .ReferenceTracker import ReferenceTracker, Referencer
+from .IPMap import IP4Map
 
 
 class WorkloadInterface:
@@ -31,10 +34,11 @@ class WorkloadApiUpdateStack:
         return len(self.json_payload)
 
 
-class Workload(pylo.ReferenceTracker):
+class Workload(pylo.ReferenceTracker, pylo.Referencer):
 
     def __init__(self, name: str, href: str, owner: 'pylo.WorkloadStore'):
-        pylo.ReferenceTracker.__init__(self)
+        ReferenceTracker.__init__(self)
+        Referencer.__init__(self)
         self.owner = owner
         self.name: str = name
         self.href: str = href
@@ -49,10 +53,10 @@ class Workload(pylo.ReferenceTracker):
         self.os_id: Optional[str] = None
         self.os_detail: Optional[str] = None
 
-        self.locationLabel: Optional['pylo.Label'] = None
-        self.environmentLabel: Optional['pylo.Label'] = None
-        self.applicationLabel: Optional['pylo.Label'] = None
-        self.roleLabel: Optional['pylo.Label'] = None
+        self.loc_label: Optional['pylo.Label'] = None
+        self.env_label: Optional['pylo.Label'] = None
+        self.app_label: Optional['pylo.Label'] = None
+        self.role_label: Optional['pylo.Label'] = None
 
         self.ven_agent: Optional['pylo.VENAgent'] = None
 
@@ -61,7 +65,7 @@ class Workload(pylo.ReferenceTracker):
         self.temporary = False
         self.deleted = False
 
-        self.raw_json: Optional[Dict[str,Any]] = None
+        self.raw_json: Optional[Dict[str, Any]] = None
 
         self._batch_update_stack: Optional[WorkloadApiUpdateStack] = None
 
@@ -69,8 +73,9 @@ class Workload(pylo.ReferenceTracker):
         """
         Parse and build workload properties from a PCE API JSON payload. Should be used internally by this library only.
         """
+        label_store = self.owner.owner.LabelStore  # forced_name quick access
+
         self.raw_json = data
-        # print(pylo.nice_json(data))
 
         self.forced_name = data['name']
 
@@ -79,8 +84,8 @@ class Workload(pylo.ReferenceTracker):
         agent_json = data.get('agent')
 
         if agent_json is None:
-            raise pylo.PyloEx("Workload named '%s' has no Agent record:\n%s" % (
-                self.name, pylo.nice_json(data)))
+            raise PyloEx("Workload named '%s' has no Agent record:\n%s" % (
+                self.name, nice_json(data)))
 
         agent_href = agent_json.get('href')
         if agent_href is None:
@@ -91,10 +96,10 @@ class Workload(pylo.ReferenceTracker):
             self.online = data['online']
             self.os_id = data.get('os_id')
             if self.os_id is None:
-                raise pylo.PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
+                raise PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
             self.os_detail = data.get('os_detail')
             if self.os_detail is None:
-                raise pylo.PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
+                raise PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
 
         self.description = data.get('description')
 
@@ -119,40 +124,49 @@ class Workload(pylo.ReferenceTracker):
             labels = data['labels']
             for label in labels:
                 if 'href' not in label:
-                    raise pylo.PyloEx("Workload named '%s' has labels in JSON but without any HREF:\n%s" % (
-                        self.name, pylo.nice_json(labels)))
+                    raise PyloEx("Workload named '%s' has labels in JSON but without any HREF:\n%s" % (
+                        self.name, nice_json(labels)))
                 href = label['href']
-                label_object = self.owner.owner.LabelStore.find_by_href_or_die(href)
+                label_object = label_store.find_by_href_or_die(href)
 
                 if label_object.type_is_location():
-                    if self.locationLabel is not None:
-                        raise pylo.PyloEx(
+                    if self.loc_label is not None:
+                        raise PyloEx(
                             "Workload '%s' found 2 location labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.locationLabel.name, label_object.name))
-                    self.locationLabel = label_object
+                                self.name, self.loc_label.name, label_object.name))
+                    self.loc_label = label_object
 
                 elif label_object.type_is_environment():
-                    if self.environmentLabel is not None:
-                        raise pylo.PyloEx(
+                    if self.env_label is not None:
+                        raise PyloEx(
                             "Workload '%s' found 2 environment labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.environmentLabel.name, label_object.name))
-                    self.environmentLabel = label_object
+                                self.name, self.env_label.name, label_object.name))
+                    self.env_label = label_object
 
                 elif label_object.type_is_application():
-                    if self.applicationLabel is not None:
-                        raise pylo.PyloEx(
+                    if self.app_label is not None:
+                        raise PyloEx(
                             "Workload '%s' found 2 application labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.applicationLabel.name, label_object.name))
-                    self.applicationLabel = label_object
+                                self.name, self.app_label.name, label_object.name))
+                    self.app_label = label_object
 
                 elif label_object.type_is_role():
-                    if self.roleLabel is not None:
-                        raise pylo.PyloEx(
+                    if self.role_label is not None:
+                        raise PyloEx(
                             "Workload '%s' found 2 role labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.roleLabel.name, label_object.name))
-                    self.roleLabel = label_object
+                                self.name, self.role_label.name, label_object.name))
+                    self.role_label = label_object
 
-    def interfaces_to_string(self, separator=',', show_ignored=True) -> str:
+                label_object.add_reference(self)
+
+    def interfaces_to_string(self, separator: str = ',', show_ignored: bool = True) -> str:
+        """
+        Conveniently outputs all interface of this Workload to a string.
+
+        :param separator: string used to separate each interface in the string
+        :param show_ignored: whether or not ignored interfaces should be showing
+        :return: string with interfaces split by specified separator
+        """
         tmp = []
 
         for interface in self.interfaces:
@@ -166,12 +180,12 @@ class Workload(pylo.ReferenceTracker):
         """
         Calculate and return a map of all IP4 covered by the Workload interfaces
         """
-        map = IP4Map()
+        result = IP4Map()
 
         for interface in self.interfaces:
-            map.add_from_text(interface.ip)
+            result.add_from_text(interface.ip)
 
-        return map
+        return result
 
     def is_using_label(self, label: 'pylo.Label') -> bool:
         """
@@ -179,8 +193,8 @@ class Workload(pylo.ReferenceTracker):
         :param label: label to check for usage
         :return: true if label is used by this workload
         """
-        if self.locationLabel is label or self.environmentLabel is label \
-                or self.applicationLabel is label or self.applicationLabel is label:
+        if self.loc_label is label or self.env_label is label \
+                or self.app_label is label or self.app_label is label:
             return True
         return False
 
@@ -216,19 +230,29 @@ class Workload(pylo.ReferenceTracker):
         self.raw_json.update(data)
         self.description = name
 
-    def api_update_labels(self):
+    def api_update_labels(self, list_of_labels: Optional[List[Label]] = None, missing_label_type_means_no_change=False):
         """
-        Refresh assigned workload labels in the PCE (Labels must have been changed in the workload object prior to this)
+        Push Workload's assigned Labels to the PCE.
+
+        :param list_of_labels: labels to replace currently assigned ones. If not specified it will push current labels instead.
+        :param missing_label_type_means_no_change: if a label type is missing and this is False then existing label of type in the Workload will be removed
+        :return:
         """
+
+        if list_of_labels is not None:
+            # a list of labels were specified so are first going to change
+            if not self.update_labels(list_of_labels, missing_label_type_means_no_change):
+                return
+
         label_data = []
-        if self.locationLabel is not None:
-            label_data.append({'href': self.locationLabel.href})
-        if self.environmentLabel is not None:
-            label_data.append({'href': self.environmentLabel.href})
-        if self.applicationLabel is not None:
-            label_data.append({'href': self.applicationLabel.href})
-        if self.roleLabel is not None:
-            label_data.append({'href': self.roleLabel.href})
+        if self.loc_label is not None:
+            label_data.append({'href': self.loc_label.href})
+        if self.env_label is not None:
+            label_data.append({'href': self.env_label.href})
+        if self.app_label is not None:
+            label_data.append({'href': self.app_label.href})
+        if self.role_label is not None:
+            label_data.append({'href': self.role_label.href})
 
         data = {'labels': label_data}
 
@@ -252,7 +276,7 @@ class Workload(pylo.ReferenceTracker):
         Push all stacked changed to API and turns off 'updates stacking' mode
         """
         if self._batch_update_stack is None:
-            raise pylo.PyloEx("Workload was not in 'update stacking' mode")
+            raise PyloEx("Workload was not in 'update stacking' mode")
 
         connector = pylo.find_connector_or_die(self.owner)
         connector.objects_workload_update(self.href, self._batch_update_stack.get_payload_and_reset())
@@ -264,7 +288,7 @@ class Workload(pylo.ReferenceTracker):
         :return:
         """
         if self._batch_update_stack is None:
-            raise pylo.PyloEx("Workload was not in 'update stacking' mode")
+            raise PyloEx("Workload was not in 'update stacking' mode")
         return self._batch_update_stack.count_payloads()
 
     def get_labels_str(self, separator: str = '|') -> str:
@@ -275,87 +299,87 @@ class Workload(pylo.ReferenceTracker):
         """
         labels = ''
 
-        if self.roleLabel is None:
+        if self.role_label is None:
             labels += '*None*' + separator
         else:
-            labels += self.roleLabel.name + separator
+            labels += self.role_label.name + separator
 
-        if self.applicationLabel is None:
+        if self.app_label is None:
             labels += '*None*' + separator
         else:
-            labels += self.applicationLabel.name + separator
+            labels += self.app_label.name + separator
 
-        if self.environmentLabel is None:
+        if self.env_label is None:
             labels += '*None*' + separator
         else:
-            labels += self.environmentLabel.name + separator
+            labels += self.env_label.name + separator
 
-        if self.locationLabel is None:
+        if self.loc_label is None:
             labels += '*None*'
         else:
-            labels += self.locationLabel.name
+            labels += self.loc_label.name
 
         return labels
 
-    def get_label_str_by_type(self, type: str, none_str='') -> str:
-        if type == 'role':
-            if self.roleLabel is None:
+    def get_label_str_by_type(self, label_type: str, none_str='') -> str:
+        if label_type == 'role':
+            if self.role_label is None:
                 return none_str
-            return self.roleLabel.name
+            return self.role_label.name
 
-        if type == 'app':
-            if self.applicationLabel is None:
+        if label_type == 'app':
+            if self.app_label is None:
                 return none_str
-            return self.applicationLabel.name
+            return self.app_label.name
 
-        if type == 'env':
-            if self.environmentLabel is None:
+        if label_type == 'env':
+            if self.env_label is None:
                 return none_str
-            return self.environmentLabel.name
+            return self.env_label.name
 
-        if type == 'loc':
-            if self.locationLabel is None:
+        if label_type == 'loc':
+            if self.loc_label is None:
                 return none_str
-            return self.locationLabel.name
+            return self.loc_label.name
 
-    def get_label_href_by_type(self, type: str, none_str='') -> str:
-        if type == 'role':
-            if self.roleLabel is None:
+    def get_label_href_by_type(self, label_type: str, none_str='') -> str:
+        if label_type == 'role':
+            if self.role_label is None:
                 return none_str
-            return self.roleLabel.href
+            return self.role_label.href
 
-        if type == 'app':
-            if self.applicationLabel is None:
+        if label_type == 'app':
+            if self.app_label is None:
                 return none_str
-            return self.applicationLabel.href
+            return self.app_label.href
 
-        if type == 'env':
-            if self.environmentLabel is None:
+        if label_type == 'env':
+            if self.env_label is None:
                 return none_str
-            return self.environmentLabel.href
+            return self.env_label.href
 
-        if type == 'loc':
-            if self.locationLabel is None:
+        if label_type == 'loc':
+            if self.loc_label is None:
                 return none_str
-            return self.locationLabel.href
+            return self.loc_label.href
 
     def get_appgroup_str(self, separator: str = '|') -> str:
         labels = ''
 
-        if self.applicationLabel is None:
+        if self.app_label is None:
             labels += '*None*' + separator
         else:
-            labels += self.applicationLabel.name + separator
+            labels += self.app_label.name + separator
 
-        if self.environmentLabel is None:
+        if self.env_label is None:
             labels += '*None*' + separator
         else:
-            labels += self.environmentLabel.name + separator
+            labels += self.env_label.name + separator
 
-        if self.locationLabel is None:
+        if self.loc_label is None:
             labels += '*None*'
         else:
-            labels += self.locationLabel.name
+            labels += self.loc_label.name
 
         return labels
 
@@ -367,25 +391,25 @@ class Workload(pylo.ReferenceTracker):
         """
         labels = []
 
-        if self.roleLabel is None:
+        if self.role_label is None:
             labels.append(missing_str)
         else:
-            labels.append(self.roleLabel.name)
+            labels.append(self.role_label.name)
 
-        if self.applicationLabel is None:
+        if self.app_label is None:
             labels.append(missing_str)
         else:
-            labels.append(self.applicationLabel.name)
+            labels.append(self.app_label.name)
 
-        if self.environmentLabel is None:
+        if self.env_label is None:
             labels.append(missing_str)
         else:
-            labels.append(self.environmentLabel.name)
+            labels.append(self.env_label.name)
 
-        if self.locationLabel is None:
+        if self.loc_label is None:
             labels.append(missing_str)
         else:
-            labels.append(self.locationLabel.name)
+            labels.append(self.loc_label.name)
 
         return labels
 
@@ -396,21 +420,26 @@ class Workload(pylo.ReferenceTracker):
         """
         label_type = label_type.lower()
         if label_type == 'role':
-            return self.roleLabel
+            return self.role_label
         if label_type == 'app':
-            return self.applicationLabel
+            return self.app_label
         if label_type == 'env':
-            return self.environmentLabel
+            return self.env_label
         if label_type == 'loc':
-            return self.locationLabel
+            return self.loc_label
 
-        raise pylo.PyloEx("unsupported label_type '{}'".format(label_type))
+        raise PyloEx("unsupported label_type '{}'".format(label_type))
 
     def get_name(self) -> str:
+        """
+        Return forced name if it exists, hostname otherwise
+
+        :return:
+        """
         if self.name is not None:
             return self.name
         if self.hostname is None:
-            raise pylo.PyloEx("Cannot find workload name!")
+            raise PyloEx("Cannot find workload name!")
         return self.hostname
 
     def get_name_stripped_fqdn(self):
@@ -427,3 +456,91 @@ class Workload(pylo.ReferenceTracker):
             return 'not-applicable'
         return self.ven_agent.mode
 
+    def update_labels(self, list_of_labels: List[Label], missing_label_type_means_no_change=False) -> bool:
+        """
+        WARNING: this will not send updates to PCE API, use the 'api_' prefixed function for that
+
+        :param list_of_labels: labels to replace currently assigned ones
+        :param missing_label_type_means_no_change: if a label type is missing and this is False then existing label of type in the Workload will be removed
+        :return:
+        """
+        changes_occurred = False
+        role_label: Optional[Label] = None
+        app_label: Optional[Label] = None
+        env_label: Optional[Label] = None
+        loc_label: Optional[Label] = None
+
+        if len(list_of_labels) > 4:
+            raise PyloEx("More than 4 labels provided")
+
+        for label in list_of_labels:
+            if label.type_is_role():
+                if role_label is not None:
+                    raise PyloEx("ROLE label specified more than once ('{}' vs '{}')".format(role_label.name, label.name))
+                role_label = label
+            elif label.type_is_application():
+                if app_label is not None:
+                    raise PyloEx("APP label specified more than once ('{}' vs '{}')".format(app_label.name, label.name))
+                app_label = label
+            elif label.type_is_environment():
+                if env_label is not None:
+                    raise PyloEx("ENV label specified more than once ('{}' vs '{}')".format(env_label.name, label.name))
+                env_label = label
+            elif label.type_is_location():
+                if loc_label is not None:
+                    raise PyloEx("LOC label specified more than once ('{}' vs '{}')".format(loc_label.name, label.name))
+                loc_label = label
+
+        if role_label is None:
+            if not missing_label_type_means_no_change:
+                if self.role_label is not None:
+                    changes_occurred = True
+                    self.role_label.remove_reference(self)
+                    self.role_label = None
+        elif role_label is not self.role_label:
+            changes_occurred = True
+            if self.role_label is not None:
+                self.role_label.remove_reference(self)
+            role_label.add_reference(self)
+            self.role_label = role_label
+
+        if app_label is None:
+            if not missing_label_type_means_no_change:
+                if self.app_label is not None:
+                    changes_occurred = True
+                    self.app_label.remove_reference(self)
+                    self.app_label = None
+        elif app_label is not self.app_label:
+            changes_occurred = True
+            if self.app_label is not None:
+                self.app_label.remove_reference(self)
+            app_label.add_reference(self)
+            self.app_label = app_label
+
+        if env_label is None:
+            if not missing_label_type_means_no_change:
+                if self.env_label is not None:
+                    changes_occurred = True
+                    self.env_label.remove_reference(self)
+                    self.env_label = None
+        elif env_label is not self.env_label:
+            changes_occurred = True
+            if self.env_label is not None:
+                self.env_label.remove_reference(self)
+            env_label.add_reference(self)
+            self.env_label = env_label
+
+        if loc_label is None:
+            if not missing_label_type_means_no_change:
+                if self.loc_label is not None:
+                    changes_occurred = True
+                    self.loc_label.remove_reference(self)
+                    self.loc_label = None
+        elif loc_label is not self.loc_label:
+            changes_occurred = True
+            if self.loc_label is not None:
+                self.loc_label.remove_reference(self)
+            loc_label.add_reference(self)
+            self.loc_label = loc_label
+
+        return changes_occurred

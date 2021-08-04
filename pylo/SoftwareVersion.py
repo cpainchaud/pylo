@@ -39,7 +39,6 @@ class SoftwareVersion:
         else:
             self.build = int(match.group("build"))
 
-
     def is_greater_than(self, target_version: 'pylo.SoftwareVersion'):
         if self.major > target_version.major:
             return True
@@ -70,7 +69,6 @@ class SoftwareVersion:
 
         return False
 
-
     def is_lower_than(self, target_version: 'pylo.SoftwareVersion'):
         if self.major < target_version.major:
             return True
@@ -84,7 +82,6 @@ class SoftwareVersion:
                     if self.build < target_version.build:
                         return True
         return False
-
 
     def is_lower_or_equal_than(self, target_version: 'pylo.SoftwareVersion'):
         if self.major < target_version.major:

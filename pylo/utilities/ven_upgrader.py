@@ -190,19 +190,19 @@ for agent_href in list(agents.keys()):
             del agents[agent_href]
             continue
 
-    if len(env_label_list) > 0 and (workload.environmentLabel is None or workload.environmentLabel not in env_label_list):
+    if len(env_label_list) > 0 and (workload.env_label is None or workload.env_label not in env_label_list):
         pylo.log.debug(" - workload '{}' does not match env_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
-    if len(loc_label_list) > 0 and (workload.locationLabel is None or workload.locationLabel not in loc_label_list):
+    if len(loc_label_list) > 0 and (workload.loc_label is None or workload.loc_label not in loc_label_list):
         pylo.log.debug(" - workload '{}' does not match loc_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
-    if len(app_label_list) > 0 and (workload.applicationLabel is None or workload.applicationLabel not in app_label_list):
+    if len(app_label_list) > 0 and (workload.app_label is None or workload.app_label not in app_label_list):
         pylo.log.debug(" - workload '{}' does not match app_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue
-    if len(role_label_list) > 0 and (workload.roleLabel is None or workload.roleLabel not in role_label_list):
+    if len(role_label_list) > 0 and (workload.role_label is None or workload.role_label not in role_label_list):
         pylo.log.debug(" - workload '{}' does not match role_label filters, it's out!".format(workload.get_name()))
         del agents[agent_href]
         continue

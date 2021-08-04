@@ -212,20 +212,20 @@ class LabelStore:
             already_processed = {}
 
             for mask in masks:
-                if workload.roleLabel is not None and mask[0]:
-                    group_name = workload.roleLabel.name + LabelStore.cache_label_all_separator
+                if workload.role_label is not None and mask[0]:
+                    group_name = workload.role_label.name + LabelStore.cache_label_all_separator
                 else:
                     group_name = all_string_and_sep
-                if workload.applicationLabel is not None and mask[1]:
-                    group_name += workload.applicationLabel.name + LabelStore.cache_label_all_separator
+                if workload.app_label is not None and mask[1]:
+                    group_name += workload.app_label.name + LabelStore.cache_label_all_separator
                 else:
                     group_name += all_string_and_sep
-                if workload.environmentLabel is not None and mask[2]:
-                    group_name += workload.environmentLabel.name + LabelStore.cache_label_all_separator
+                if workload.env_label is not None and mask[2]:
+                    group_name += workload.env_label.name + LabelStore.cache_label_all_separator
                 else:
                     group_name += all_string_and_sep
-                if workload.locationLabel is not None and mask[3]:
-                    group_name += workload.locationLabel.name
+                if workload.loc_label is not None and mask[3]:
+                    group_name += workload.loc_label.name
                 else:
                     group_name += LabelStore.cache_label_all_string
 
