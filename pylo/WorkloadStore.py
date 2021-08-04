@@ -9,7 +9,6 @@ class WorkloadStore:
     def __init__(self, owner: 'Organization'):
         self.owner = owner
         self.itemsByHRef: Dict[str, Workload] = {}
-        self.itemsByName: Dict[str, Workload] = {}
 
     def load_workloads_from_json(self, json_list):
         for json_item in json_list:
@@ -32,16 +31,7 @@ class WorkloadStore:
             if new_item_href in self.itemsByHRef:
                 raise PyloEx("A Workload with href '%s' already exists in the table", new_item_href)
 
-            # if new_item_name in self.itemsByName:
-            #     if not pylo.ignoreWorkloadsWithSameName:
-            #          raise pylo.PyloEx(
-            #             "A Workload with name '%s' already exists in the table. This UID:%s vs other UID:%s" % (
-            #             new_item_name, new_item_href, self.itemsByName[new_item_name].href))
-                # else:
-                #    #log.warning("A Workload with name '%s' already exists in the table. This UID:%s vs other UID:%s" % (new_item_name, new_item_href, self.itemsByName[new_item_name].href))
-
             self.itemsByHRef[new_item_href] = new_item
-            self.itemsByName[new_item_name] = new_item
 
             log.debug("Found Workload '%s' with href '%s'", new_item_name, new_item_href)
 
@@ -76,7 +66,6 @@ class WorkloadStore:
         new_tmp_item.temporary = True
 
         self.itemsByHRef[href] = new_tmp_item
-        self.itemsByName[tmp_wkl_name] = new_tmp_item
 
         return new_tmp_item
 
@@ -117,20 +106,35 @@ class WorkloadStore:
 
         return result
 
-    def find_workload_matching_name(self, name: str) -> Optional[Workload]:
+    def find_workload_matching_forced_name(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[Workload]:
         """
         Find a Workload based on its name (case sensitive). Beware that if several are matching, only the first one will be returned
 
-        :param name: the name you are looking for
+        :param name: the name string you are looking for
+        :param case_sensitive: make it a case sensitive search or not
+        :param strip_fqdn: remove the fqdn part of the hostname
         :return: the Workload it found, None otherwise
         """
-        found = self.itemsByName.get(name)
+        if case_sensitive:
+            name = name.lower()
 
-        return found
+        for workload in self.itemsByHRef.values():
+            wkl_name = workload.forced_name
+            if strip_fqdn:
+                wkl_name = Workload.static_name_stripped_fqdn(wkl_name)
+            if case_sensitive:
+                if wkl_name == name:
+                    return workload
+            else:
+                if wkl_name.lower() == name:
+                    return workload
+
+        return None
 
     def find_workload_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[Workload]:
         """
         Find a workload based on its hostname.Beware that if several are matching, only the first one will be returned
+
         :param name: the name string you are looking for
         :param case_sensitive: make it a case sensitive search or not
         :param strip_fqdn: remove the fqdn part of the hostname

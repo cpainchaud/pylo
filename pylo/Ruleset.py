@@ -33,16 +33,11 @@ class RulesetScope:
 
 class RulesetScopeEntry:
 
-    owner: 'pylo.RulesetScope'
-    loc_label = Optional['pylo.Label']
-    env_label = Optional['pylo.Label']
-    app_label = Optional['pylo.Label']
-
     def __init__(self, owner: 'pylo.RulesetScope'):
-        self.owner = owner
-        self.loc_label = None
-        self.env_label = None
-        self.app_label = None
+        self.owner: pylo.RulesetScope = owner
+        self.loc_label: Optional['pylo.Label'] = None
+        self.env_label: Optional['pylo.Label'] = None
+        self.app_label: Optional['pylo.Label'] = None
 
     def load_from_json(self, data):
         self.loc_label = None

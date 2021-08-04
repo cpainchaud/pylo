@@ -52,7 +52,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
         global_count_concerned_workloads += 1
 
-        print(" - Workload {} HREF {} is used {} Rulesets and {} Rules".format(workload.name, workload.href, len(concerned_rulesets), count_concerned_rules))
+        print(" - Workload {} HREF {} is used {} Rulesets and {} Rules".format(workload.get_name(), workload.href, len(concerned_rulesets), count_concerned_rules))
         for ruleset in concerned_rulesets:
             print("   - in ruleset '{}' HREF:{}".format(ruleset.name, ruleset.href))
 

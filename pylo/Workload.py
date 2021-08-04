@@ -126,7 +126,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             for label in labels:
                 if 'href' not in label:
                     raise PyloEx("Workload named '%s' has labels in JSON but without any HREF:\n%s" % (
-                        self.name, nice_json(labels)))
+                        self.get_name(), nice_json(labels)))
                 href = label['href']
                 label_object = label_store.find_by_href_or_die(href)
 
@@ -134,28 +134,28 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
                     if self.loc_label is not None:
                         raise PyloEx(
                             "Workload '%s' found 2 location labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.loc_label.name, label_object.name))
+                                self.get_name(), self.loc_label.name, label_object.name))
                     self.loc_label = label_object
 
                 elif label_object.type_is_environment():
                     if self.env_label is not None:
                         raise PyloEx(
                             "Workload '%s' found 2 environment labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.env_label.name, label_object.name))
+                                self.get_name(), self.env_label.name, label_object.name))
                     self.env_label = label_object
 
                 elif label_object.type_is_application():
                     if self.app_label is not None:
                         raise PyloEx(
                             "Workload '%s' found 2 application labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.app_label.name, label_object.name))
+                                self.get_name(), self.app_label.name, label_object.name))
                     self.app_label = label_object
 
                 elif label_object.type_is_role():
                     if self.role_label is not None:
                         raise PyloEx(
                             "Workload '%s' found 2 role labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.name, self.role_label.name, label_object.name))
+                                self.get_name(), self.role_label.name, label_object.name))
                     self.role_label = label_object
 
                 label_object.add_reference(self)

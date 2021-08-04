@@ -76,7 +76,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
         if wkl is not None:
             new_row = {
-                'name': wkl.name,
+                'name': wkl.forced_name,
                 'hostname': wkl.hostname,
                 'role': labels[0],
                 'app': labels[1],

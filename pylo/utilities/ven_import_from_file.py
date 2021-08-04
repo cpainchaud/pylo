@@ -119,12 +119,12 @@ print(" * Checking for name/hostname collisions:", flush=True)
 name_cache = {}
 for workload in org.WorkloadStore.itemsByHRef.values():
     lower_name = None
-    if workload.name is not None and len(workload.name) > 0:
-        lower_name = workload.name.lower()
+    if workload.forced_name is not None and len(workload.forced_name) > 0:
+        lower_name = workload.forced_name.lower()
         if lower_name not in name_cache:
             name_cache[lower_name] = {'pce': True, 'managed': not workload.unmanaged}
         else:
-            print("  - Warning duplicate found in the PCE for hostname/name: {}".format(workload.name))
+            print("  - Warning duplicate found in the PCE for hostname/name: {}".format(workload.get_name()))
     if workload.hostname is not None and len(workload.hostname) > 0:
         lower_hostname = workload.hostname.lower()
         if lower_name != lower_hostname:
@@ -179,7 +179,7 @@ for workload in org.WorkloadStore.itemsByHRef.values():
         if interface.ip not in ip_cache:
             ip_cache[interface.ip] = {'pce': True, 'workload': workload}
         else:
-            print("  - Warning duplicate IPs found in the PCE for IP: {}".format(workload.name))
+            print("  - Warning duplicate IPs found in the PCE for IP: {}".format(interface.ip))
 
 for csv_object in CsvData.objects():
     if '**not_created_reason**' in csv_object:

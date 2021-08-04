@@ -302,7 +302,7 @@ class FilterCollections:
 
 
 def tmp_func(wkl: pylo.Workload, context: FilterContext):
-    return wkl.name == context.argument
+    return wkl.get_name() == context.argument
 
 
 FilterCollections.add_workload_filter('name', 'matches', tmp_func, 'string')

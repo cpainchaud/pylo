@@ -38,10 +38,10 @@ def check_conflicts_between_two_pce(origin: pylo.Organization, target: pylo.Orga
     names = {}  # type: dict[str, pylo.Workload]
     conflicts = {}  # type: dict[str, str]
 
-    for workload in origin.WorkloadStore.itemsByName.values():
+    for workload in origin.WorkloadStore.itemsByHRef.values():
         names[workload.name.lower()] = workload
 
-    for workload in target.WorkloadStore.itemsByName.values():
+    for workload in target.WorkloadStore.itemsByHRef.values():
         workload_name_lower = workload.name.lower()
         if workload_name_lower in names:
             conflicts[workload_name_lower] = workload_name_lower
