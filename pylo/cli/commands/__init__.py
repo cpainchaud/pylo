@@ -23,3 +23,4 @@ from .workload_export import command_object
 from .iplist_import_from_file import command_object
 from .update_pce_objects_cache import command_object
 from .ven_upgrader import command_object
+from .workload_import import command_object

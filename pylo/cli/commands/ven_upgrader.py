@@ -6,7 +6,8 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 
-command_name = 'ven-upgrader'
+command_name = 'ven-upgrade'
+objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -222,4 +223,4 @@ def __main(args, org: pylo.Organization, **kwargs):
     print("\n \n** All Agents Upgraded **\n")
 
 
-command_object = Command(command_name, __main, fill_parser)
+command_object = Command(command_name, __main, fill_parser, objects_load_filter)

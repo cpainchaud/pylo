@@ -5,6 +5,7 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'
+objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -142,7 +143,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
         for wkl in dup_record.unmanaged:
             deleteTracker.add_workload(wkl)
-            #deleteTracker.add_href('nope')
+            # deleteTracker.add_href('nope')
             print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
     print()
@@ -185,4 +186,4 @@ def __main(args, org: pylo.Organization, **kwargs):
         print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
 
 
-command_object = Command(command_name, __main, fill_parser)
+command_object = Command(command_name, __main, fill_parser, objects_load_filter)
