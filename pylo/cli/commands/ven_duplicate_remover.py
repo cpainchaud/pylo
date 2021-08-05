@@ -14,7 +14,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='actually operate deletions')
 
 
-def __main(args, org: pylo.Organization,**kwargs):
+def __main(args, org: pylo.Organization, **kwargs):
     verbose = args['verbose']
     argument_confirm = args['confirm']
 
