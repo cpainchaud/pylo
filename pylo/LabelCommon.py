@@ -1,27 +1,28 @@
+from typing import Union
 from .Exception import PyloEx
 from .LabelStore import label_type_role, label_type_env, label_type_loc, label_type_app, LabelStore
 
 
 class LabelCommon:
 
-    def __init__(self, name: str, href: str, ltype: int, owner: LabelStore):
+    def __init__(self, name: str, href: str, label_type: Union[int, str], owner: LabelStore):
         self.owner: LabelStore = owner
         self.name: str = name
         self.href: str = href
 
-        if type(ltype) is str:
-            if ltype == 'loc':
-                ltype = label_type_loc
-            elif ltype == 'env':
-                ltype = label_type_env
-            elif ltype == 'app':
-                ltype = label_type_app
-            elif ltype == 'role':
-                ltype = label_type_role
+        if type(label_type) is str:
+            if label_type == 'loc':
+                label_type = label_type_loc
+            elif label_type == 'env':
+                label_type = label_type_env
+            elif label_type == 'app':
+                label_type = label_type_app
+            elif label_type == 'role':
+                label_type = label_type_role
             else:
                 raise PyloEx("Tried to initialize a Label object with unsupported type '%s'" % (ltype))
 
-        self._type = ltype
+        self._type = label_type
 
     def is_label(self) -> bool:
         raise PyloEx("not implemented")

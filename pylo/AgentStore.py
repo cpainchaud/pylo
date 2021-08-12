@@ -107,7 +107,7 @@ class AgentStore:
 
         return find_object
 
-    def create_venagent_from_workload_record(self, workload: 'pylo.Workload', json_data) -> 'pylo.VENAgent':
+    def create_ven_agent_from_workload_record(self, workload: 'pylo.Workload', json_data) -> 'pylo.VENAgent':
         href = json_data.get('href')
         if href is None:
             raise pylo.PyloEx("Cannot extract Agent href from workload '{}'".format(workload.href))

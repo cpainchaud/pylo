@@ -93,7 +93,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             self.unmanaged = True
         else:
             self.unmanaged = False
-            self.ven_agent = self.owner.owner.AgentStore.create_venagent_from_workload_record(self, agent_json)
+            self.ven_agent = self.owner.owner.AgentStore.create_ven_agent_from_workload_record(self, agent_json)
             self.online = data['online']
             self.os_id = data.get('os_id')
             if self.os_id is None:
