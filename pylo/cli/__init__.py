@@ -49,6 +49,7 @@ def run():
     else:
         print(" * Looking for PCE '{}' credentials... ".format(hostname), end="", flush=True)
         connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
+        org.connector = connector
         print("OK!")
 
         print(" * Downloading PCE objects from API... ".format(hostname), end="", flush=True)

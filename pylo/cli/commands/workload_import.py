@@ -29,6 +29,9 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to create per API call')
 
+    parser.add_argument('--confirm', action='store_true',
+                        help="No change will be implemented in the PCE until you use this function to confirm you're good with them after review")
+
 
 def __main(args, org: pylo.Organization, **kwargs):
     input_file = args['input_file']
@@ -38,6 +41,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     ignore_all_sorts_collisions = ['ignore_all_sorts_collisions']
     # ignore_label_case_collisions = args['ignore_label_case_collisions']
     batch_size = args['batch_size']
+    confirmed_changes = args['confirm']
 
     output_file_prefix = make_filename_with_timestamp('import-umw-results_')
     output_file_csv = output_file_prefix + '.csv'
@@ -225,24 +229,37 @@ def __main(args, org: pylo.Organization, **kwargs):
             continue
 
         role_label = csv_object['role']
+        if role_label is None:
+            role_label = ''
         role_label_lower = role_label.lower()
+
         app_label = csv_object['app']
+        if app_label is None:
+            app_label = ''
         app_label_lower = app_label.lower()
+
         env_label = csv_object['env']
+        if env_label is None:
+            env_label = ''
         env_label_lower = env_label.lower()
+
         loc_label = csv_object['loc']
+        if loc_label is None:
+            loc_label = ''
         loc_label_lower = loc_label.lower()
 
-        if len(role_label_lower) < 1:
-            raise pylo.PyloEx("CSV Line #{} has no Role label defined".format(csv_object['*line*']))
-        if len(app_label_lower) < 1:
-            raise pylo.PyloEx("CSV Line #{} has no App label defined".format(csv_object['*line*']))
-        if len(env_label_lower) < 1:
-            raise pylo.PyloEx("CSV Line #{} has no Env label defined".format(csv_object['*line*']))
-        if len(loc_label_lower) < 1:
-            raise pylo.PyloEx("CSV Line #{} has no Loc label defined".format(csv_object['*line*']))
+        #if len(role_label_lower) < 1:
+        #    raise pylo.PyloEx("CSV Line #{} has no Role label defined".format(csv_object['*line*']))
+        #if len(app_label_lower) < 1:
+        #    raise pylo.PyloEx("CSV Line #{} has no App label defined".format(csv_object['*line*']))
+        #if len(env_label_lower) < 1:
+        #    raise pylo.PyloEx("CSV Line #{} has no Env label defined".format(csv_object['*line*']))
+        #if len(loc_label_lower) < 1:
+        #    raise pylo.PyloEx("CSV Line #{} has no Loc label defined".format(csv_object['*line*']))
 
-        if role_label_lower not in name_cache:
+        if len(role_label_lower) == 0:
+            pass
+        elif role_label_lower not in name_cache:
             name_cache[role_label_lower] = {'csv': True, 'realcase': role_label, 'type': 'role'}
         elif name_cache[role_label_lower]['realcase'] != role_label:
             if 'csv' in name_cache[role_label_lower]:
@@ -250,7 +267,9 @@ def __main(args, org: pylo.Organization, **kwargs):
             else:
                 raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(role_label))
 
-        if app_label_lower not in name_cache:
+        if len(app_label_lower) == 0:
+            pass
+        elif app_label_lower not in name_cache:
             name_cache[app_label_lower] = {'csv': True, 'realcase': app_label, 'type': 'app'}
         elif name_cache[app_label_lower]['realcase'] != app_label:
             if 'csv' in name_cache[app_label_lower]:
@@ -258,7 +277,9 @@ def __main(args, org: pylo.Organization, **kwargs):
             else:
                 raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(app_label))
 
-        if env_label_lower not in name_cache:
+        if len(env_label_lower) == 0:
+            pass
+        elif env_label_lower not in name_cache:
             name_cache[env_label_lower] = {'csv': True, 'realcase': env_label, 'type': 'env'}
         elif name_cache[env_label_lower]['realcase'] != env_label:
             if 'csv' in name_cache[env_label_lower]:
@@ -266,7 +287,9 @@ def __main(args, org: pylo.Organization, **kwargs):
             else:
                 raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(env_label))
 
-        if loc_label_lower not in name_cache:
+        if len(loc_label_lower) == 0:
+            pass
+        elif loc_label_lower not in name_cache:
             name_cache[loc_label_lower] = {'csv': True, 'realcase': loc_label, 'type': 'loc'}
         elif name_cache[loc_label_lower]['realcase'] != loc_label:
             if 'csv' in name_cache[loc_label_lower]:
@@ -329,29 +352,29 @@ def __main(args, org: pylo.Organization, **kwargs):
         else:
             new_workload['hostname'] = data['hostname']
 
-        found_role_label = org.LabelStore.find_label_by_name_and_type(data['role'], pylo.label_type_role)
-        if found_role_label is None:
-            raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data['role'], data['*line*']))
-        found_app_label = org.LabelStore.find_label_by_name_and_type(data['app'], pylo.label_type_app)
-        if found_app_label is None:
-            raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data['app'], data['*line*']))
-        found_env_label = org.LabelStore.find_label_by_name_and_type(data['env'], pylo.label_type_env)
-        if found_env_label is None:
-            raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data['env'], data['*line*']))
-        found_loc_label = org.LabelStore.find_label_by_name_and_type(data['loc'], pylo.label_type_loc)
-        if found_loc_label is None:
-            raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data['loc'], data['*line*']))
+        new_workload['labels'] = []
 
-        new_workload['labels'] = [{'href': found_role_label.href},
-                                  {'href': found_app_label.href},
-                                  {'href': found_env_label.href},
-                                  {'href': found_loc_label.href}]
+        found_role_label = org.LabelStore.find_label_by_name_and_type(data['role'], pylo.label_type_role)
+        if found_role_label is not None:
+            new_workload['labels'].append({'href': found_role_label.href})
+
+        found_app_label = org.LabelStore.find_label_by_name_and_type(data['app'], pylo.label_type_app)
+        if found_app_label is not None:
+            new_workload['labels'].append({'href': found_app_label.href})
+
+        found_env_label = org.LabelStore.find_label_by_name_and_type(data['env'], pylo.label_type_env)
+        if found_env_label is not None:
+            new_workload['labels'].append({'href': found_env_label.href})
+
+        found_loc_label = org.LabelStore.find_label_by_name_and_type(data['loc'], pylo.label_type_loc)
+        if found_loc_label is not None:
+            new_workload['labels'].append({'href': found_loc_label.href})
 
         if len(data['description']) > 0:
             new_workload['description'] = data['description']
 
         if len(data['**ip_array**']) < 1:
-            pylo.log.error('CSV/Excel worklaod at line #{} has no valid ip address defined'.format(data['*line*']))
+            pylo.log.error('CSV/Excel workload at line #{} has no valid ip address defined'.format(data['*line*']))
             sys.exit(1)
 
         new_workload['public_ip'] = data['**ip_array**'][0]

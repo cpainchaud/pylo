@@ -261,17 +261,14 @@ class ArraysToExcel:
 
         xls_workbook.close()
 
-
     def add_line_from_object(self, record, sheet_name: str):
         self._sheets[sheet_name].add_line_from_object(record)
-
 
     def add_line_from_list_of_objects(self, list_of_objects, sheet_name: str):
         self._sheets[sheet_name].add_line_from_list_of_objects(list_of_objects)
 
     def add_line_from_list(self, line: list, sheet_name: str):
         self._sheets[sheet_name].add_line_from_list(line)
-
 
 
 class CsvExcelToObject:
