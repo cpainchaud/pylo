@@ -86,7 +86,7 @@ class RulesetStore:
         :param ruleset: should be href string or a Ruleset object
         """
         href = ruleset
-        if isinstance(ruleset, Rule):
+        if isinstance(ruleset, Ruleset):
             href = ruleset.href
 
         find_object = self.items_by_href.get(href)

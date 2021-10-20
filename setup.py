@@ -12,7 +12,7 @@ licence = "TODO"
 
 setup(
     name='pylo',
-    version='0.2.3',
+    version='0.2.4',
     description='API Framework and Utilities for Illumio ASP platform',
     long_description=readme,
     author='Christophe Painchaud',
