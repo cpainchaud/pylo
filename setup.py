@@ -12,7 +12,7 @@ licence = "TODO"
 
 setup(
     name='pylo',
-    version='0.2.0',
+    version='0.2.3',
     description='API Framework and Utilities for Illumio ASP platform',
     long_description=readme,
     author='Christophe Painchaud',
@@ -26,7 +26,7 @@ setup(
         'xlsxwriter~=1.3.7',
     ],
     entry_points={
-        'console_scripts': ['pylo-cli=pylo.cli'],
+        'console_scripts': ['pylo-cli=pylo.cli:run'],
     },
     package_data={
         "": ["*.pem"],

@@ -48,7 +48,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     output_file_excel = output_file_prefix + '.xlsx'
 
     csv_expected_fields = [
-        {'name': 'name', 'optional': False},
+        {'name': 'name', 'optional': True, 'default': ''},
         {'name': 'hostname', 'optional': False},
         {'name': 'role', 'optional': True},
         {'name': 'app', 'optional': True},
@@ -342,9 +342,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         new_workload = {}
         workloads_json_data.append(new_workload)
 
-        if len(data['name']) < 1:
-            raise pylo.PyloEx('Workload at line #{} is missing a name in CSV'.format(data['*line*']))
-        else:
+        if len(data['name']) > 0:
             new_workload['name'] = data['name']
 
         if len(data['hostname']) < 1:
