@@ -265,7 +265,7 @@ class LabelStore:
 
         new_label_name = name
         new_label_type = label_type
-        new_label_href = '**fake-label-href**/{}'.format(md5(str(random.random()).encode('utf8')))
+        new_label_href = '**fake-label-href**/{}'.format( md5(str(random.random()).encode('utf8')).digest() )
 
         new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
 
