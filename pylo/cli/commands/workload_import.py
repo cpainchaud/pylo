@@ -1,4 +1,5 @@
 from typing import Dict, List, Any
+from dataclasses import dataclass
 import sys
 import argparse
 import math
@@ -8,6 +9,14 @@ from . import Command
 
 command_name = 'workload-import'
 objects_load_filter = ['workloads', 'labels']
+
+
+@dataclass
+class CollisionItem:
+    managed: bool
+    from_pce: bool = False
+    workload_object: pylo.Workload = None
+    csv_object: Dict[str, Any] = None
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -81,20 +90,20 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # <editor-fold desc="Name/Hostname collision detection">
     print(" * Checking for name/hostname collisions:", flush=True)
-    name_cache = {}
+    name_cache: Dict[str, CollisionItem] = {}
     for workload in org.WorkloadStore.itemsByHRef.values():
         lower_name = None
         if workload.forced_name is not None and len(workload.forced_name) > 0:
             lower_name = workload.forced_name.lower()
             if lower_name not in name_cache:
-                name_cache[lower_name] = {'pce': True, 'managed': not workload.unmanaged}
+                name_cache[lower_name] = CollisionItem(from_pce=True, workload_object=workload, managed=not workload.unmanaged)
             else:
                 print("  - Warning duplicate found in the PCE for hostname/name: {}".format(workload.get_name()))
         if workload.hostname is not None and len(workload.hostname) > 0:
             lower_hostname = workload.hostname.lower()
             if lower_name != lower_hostname:
                 if workload.hostname not in name_cache:
-                    name_cache[workload.hostname] = {'pce': True, 'managed': not workload.unmanaged}
+                    name_cache[workload.hostname] = CollisionItem(from_pce=True, workload_object=workload, managed=not workload.unmanaged)
                 else:
                     print("  - Warning duplicate found in the PCE for hostname/name: {}".format(workload.hostname))
 
@@ -105,7 +114,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         if csv_object['name'] is not None and len(csv_object['name']) > 0:
             lower_name = csv_object['name'].lower()
             if lower_name not in name_cache:
-                name_cache[lower_name] = {'csv': True}
+                name_cache[lower_name] = CollisionItem(from_pce=False, csv_object=csv_object, managed=False)
             else:
                 if 'csv' in name_cache[lower_name]:
                     raise pylo.PyloEx('CSV contains workloads with duplicates name/hostname: {}'.format(lower_name))
@@ -113,7 +122,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                     csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
                     if ignore_all_sorts_collisions or ignore_if_managed_workload_exists:
                         pass
-                    elif not name_cache[lower_name]['managed']:
+                    elif not name_cache[lower_name].managed:
                         raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
                     print("  - WARNING: CSV has an entry for workload name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
@@ -121,13 +130,13 @@ def __main(args, org: pylo.Organization, **kwargs):
             lower_hostname = csv_object['hostname'].lower()
             if lower_name != lower_hostname:
                 if csv_object['hostname'] not in name_cache:
-                    name_cache[csv_object['hostname']] = {'csv': True}
+                    name_cache[csv_object['hostname']] = CollisionItem(from_pce=False, csv_object=csv_object, managed=False)
                 else:
                     if 'csv' in name_cache[lower_name]:
                         raise pylo.PyloEx('CSV contains workloads with duplicates name/hostname: {}'.format(lower_name))
                     else:
                         csv_object['**not_created_reason**'] = 'Found duplicated name/hostname in PCE'
-                        if not ignore_all_sorts_collisions or not name_cache[lower_name]['managed'] or not ignore_if_managed_workload_exists:
+                        if not ignore_all_sorts_collisions or not name_cache[lower_name].managed or not ignore_if_managed_workload_exists:
                             raise pylo.PyloEx("PCE contains workloads with duplicates name/hostname from CSV: '{}' at line #{}".format(lower_name, csv_object['*line*']))
                         print("  - WARNING: CSV has an entry for workload hostname '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
 
@@ -137,15 +146,15 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # <editor-fold desc="IP Collision detection">
     print(" * Checking for IP addresses collisions:")
-    ip_cache = {}
+    ip_cache: Dict[str, CollisionItem] = {}
     count_duplicate_ip_addresses_in_csv = 0
     for workload in org.WorkloadStore.itemsByHRef.values():
         for interface in workload.interfaces:
             if interface.ip not in ip_cache:
-                ip_cache[interface.ip] = {'pce': True, 'workload': workload}
+                ip_cache[interface.ip] = CollisionItem(from_pce=True, workload_object=workload, managed=not workload.unmanaged)
             else:
                 print("  - Warning duplicate IPs found in the PCE between 2 workloads ({} and {}) for IP: {}".format(
-                    workload.get_name(),  ip_cache[interface.ip]['workload'].get_name(), interface.ip))
+                    workload.get_name(),  ip_cache[interface.ip].workload_object.get_name(), interface.ip))
 
     for csv_object in csv_data.objects():
         if '**not_created_reason**' in csv_object:
@@ -179,7 +188,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             csv_object['**ip_array**'].append(ip)
 
             if ip not in ip_cache:
-                ip_cache[ip] = {'csv': True, 'workload': csv_object}
+                ip_cache[ip] = CollisionItem(from_pce=False, csv_object=csv_object, managed=False)
             else:
                 count_duplicate_ip_addresses_in_csv += 1
                 csv_object['**not_created_reason**'] = "Duplicate IP address {} found in the PCE".format(ip)
@@ -201,7 +210,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # <editor-fold desc="Optional filters parsing">
     print(" * Filtering CSV/Excel based on optional filters...", flush=True)
-    count_filtered_from_file = 0
+
     if input_filter_file is None:
         print("   - No filter given (see --help)")
     else:
@@ -239,7 +248,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # <editor-fold desc="Label collision detection">
     print(" * Checking for Labels case collisions and missing ones to be created:")
-    name_cache = {}
+    name_cache: Dict[str, Any] = {}
     for label in org.LabelStore.itemsByHRef.values():
         lower_name = None
         if label.name is not None:
@@ -359,7 +368,6 @@ def __main(args, org: pylo.Organization, **kwargs):
             csv_objects_to_create.append(csv_object)
         else:
             ignored_objects_count += 1
-            
 
     # <editor-fold desc="JSON Payloads generation">
     print(' * Preparing Workloads JSON payloads...')

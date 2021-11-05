@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 try:
     import xlsxwriter
@@ -42,7 +42,6 @@ class ArrayToExport:
 
         self._lines.append(new_line)
 
-
     def add_line_from_list_of_objects(self, list_of_objects):
         for record in list_of_objects:
             self.add_line_from_object(record)
@@ -64,7 +63,6 @@ class ArrayToExport:
                     else:
                         new_line.append(item)
                 filewriter.writerow(new_line)
-
 
     def write_to_excel(self, filename, worksheet_name='worksheet1', multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)
@@ -154,7 +152,6 @@ class ArraysToExcel:
 
             self._lines.append(new_line)
 
-
         def add_line_from_list_of_objects(self, list_of_objects):
             for record in list_of_objects:
                 self.add_line_from_object(record)
@@ -179,7 +176,6 @@ class ArraysToExcel:
                         length = len(part)
 
                 return length
-
 
             xls_worksheet = xls_workbook.add_worksheet(sheet_name)
             xls_headers = []
@@ -208,7 +204,6 @@ class ArraysToExcel:
                 cell_format.set_text_wrap(self._columns_wrap[header_index])
                 cell_format.set_valign('vcenter')
 
-
                 if type(header) is str:
                     xls_headers.append({'header': header, 'format': cell_format})
                     column_name_length = len(header)
@@ -224,7 +219,6 @@ class ArraysToExcel:
 
                 header_index += 1
 
-
             if len(self._lines) > 0:
                 xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,
                                                 {'header_row': True, 'data': xls_data, 'columns': xls_headers}
@@ -238,7 +232,6 @@ class ArraysToExcel:
                                                     {'header_row': True, 'data': [fake_data], 'columns': xls_headers}
                                                     )
 
-
             xls_worksheet.freeze_panes(1, 0)
 
 
@@ -251,7 +244,6 @@ class ArraysToExcel:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))
 
         self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text)
-
 
     def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)
@@ -307,7 +299,6 @@ class CsvExcelToObject:
 
                     # this is Headers
                     if row_count == 0:
-                        item_count = 0
                         for item in row:
                             if item is None or len(item) < 1:
                                 raise pylo.PyloEx('CSV headers has blank fields, this is not supported')
@@ -423,7 +414,7 @@ class CsvExcelToObject:
     def objects(self):
         return list(self._objects)
 
-    def save_to_csv(self, filename: str, fields_filter: list):
+    def save_to_csv(self, filename: str, fields_filter: List[Any]):
         headers = []
         for field in fields_filter:
             headers.append(field['name'])
