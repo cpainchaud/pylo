@@ -19,12 +19,15 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--input-filter-file', type=str, required=False, default=None,
                         help='CSV/Excel file used to keep only the lines of interest from the input file')
 
-    parser.add_argument('--ignore-if-managed-workload-exists', type=bool, required=False, default=False, nargs='?', const=True,
+    parser.add_argument('--ignore-if-managed-workload-exists', action='store_true',
                         help='If a Managed Workload with same same exists, ignore CSV entry')
-    parser.add_argument('--ignore-all-sorts-collisions', type=bool, required=False, default=False, nargs='?', const=True,
-                        help='If names/hostnames/ips collisions are found ignore these CSV/Excel entries')
     # parser.add_argument('--ignore-label-case-collisions', type=bool, nargs='?', required=False, default=False, const=True,
     #                     help='Use this option if you want allow Workloads to be created with labels with same name but different case (Illumio PCE allows it but its definitely a bad practice!)')
+    parser.add_argument('--ignore-all-sorts-collisions', action='store_true',
+                        help='If names/hostnames/ips collisions are found ignore these CSV/Excel entries')
+
+    parser.add_argument('--ignore-empty-ip-entries', action='store_true',
+                        help="if an entry has no IP address it will be ignored")
 
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to create per API call')
@@ -38,10 +41,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     input_filter_file = args["input_filter_file"]
     input_file_delimiter = args['input_file_delimiter']
     ignore_if_managed_workload_exists = args['ignore_if_managed_workload_exists']
-    ignore_all_sorts_collisions = ['ignore_all_sorts_collisions']
+    ignore_all_sorts_collisions = args['ignore_all_sorts_collisions']
+    settings_ignore_empty_ip_entries: bool = args['ignore_empty_ip_entries']
     # ignore_label_case_collisions = args['ignore_label_case_collisions']
     batch_size = args['batch_size']
-    confirmed_changes = args['confirm']
+    settings_confirmed_change: bool = args['confirm']
 
     output_file_prefix = make_filename_with_timestamp('import-umw-results_')
     output_file_csv = output_file_prefix + '.csv'
@@ -140,18 +144,34 @@ def __main(args, org: pylo.Organization, **kwargs):
             if interface.ip not in ip_cache:
                 ip_cache[interface.ip] = {'pce': True, 'workload': workload}
             else:
-                print("  - Warning duplicate IPs found in the PCE for IP: {}".format(interface.ip))
+                print("  - Warning duplicate IPs found in the PCE between 2 workloads ({} and {}) for IP: {}".format(
+                    workload.get_name(),  ip_cache[interface.ip]['workload'].get_name(), interface.ip))
 
     for csv_object in csv_data.objects():
         if '**not_created_reason**' in csv_object:
             continue
 
-        ips = csv_object['ip'].rsplit(',')
+        ips = csv_object['ip']
+        if ips is None:
+            ips = ""
+        else:
+            ips.strip(" \r\n")
+
+        if len(ips) == 0:
+            if not settings_ignore_empty_ip_entries:
+                pylo.log.error("CSV/Excel at line #{} contains has empty IP address".format(csv_object['*line*']))
+                sys.exit(1)
+            else:
+                csv_object['**not_created_reason**'] = "Empty IP address provided"
+                continue
+
+        ips = ips.rsplit(',')
 
         csv_object['**ip_array**'] = []
 
         for ip in ips:
             ip = ip.strip(" \r\n")
+
             if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
                 pylo.log.error("CSV/Excel at line #{} contains invalid IP addresses: '{}'".format(csv_object['*line*'], csv_object['ip']))
                 sys.exit(1)
@@ -163,8 +183,13 @@ def __main(args, org: pylo.Organization, **kwargs):
             else:
                 count_duplicate_ip_addresses_in_csv += 1
                 csv_object['**not_created_reason**'] = "Duplicate IP address {} found in the PCE".format(ip)
+                print("  - IP address {} found in both the PCE and CSV (line #{}, name={}".format(
+                    ip, csv_object['*line*'], csv_object['name'])
+                )
                 if not ignore_all_sorts_collisions:
-                    print("Duplicate IP address {} found in the PCE and CSV/Excel at line #{}. (look for --options to bypass this if you know what you are doing)".format(ip,csv_object['*line*']))
+                    print("Duplicate IP address {} found in the PCE and CSV/Excel at line #{}. "
+                          "(look for --options to bypass this if you know what you are doing)"
+                          .format(ip, csv_object['*line*']))
                     sys.exit(1)
                 break
 
@@ -334,6 +359,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             csv_objects_to_create.append(csv_object)
         else:
             ignored_objects_count += 1
+            
 
     # <editor-fold desc="JSON Payloads generation">
     print(' * Preparing Workloads JSON payloads...')
