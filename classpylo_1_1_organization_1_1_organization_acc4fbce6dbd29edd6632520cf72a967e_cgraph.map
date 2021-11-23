@@ -1,0 +1,21 @@
+<map id="pylo.Organization.Organization.load_from_saved_credentials" name="pylo.Organization.Organization.load_from_saved_credentials">
+<area shape="rect" id="node1" title=" " alt="" coords="5,496,228,537"/>
+<area shape="rect" id="node2" href="$classpylo_1_1_organization_1_1_organization.html#ad6eb258cbb3bf1a3fe3ab55f2e9adac5" title=" " alt="" coords="276,496,499,537"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_organization_1_1_organization.html#a54249009756b17d80e96a65f1d4bf3ea" title=" " alt="" coords="553,5,769,47"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_label_group_1_1_label_group.html#a2e554feddbfbd06341fda307574aa493" title=" " alt="" coords="555,71,767,112"/>
+<area shape="rect" id="node5" href="$classpylo_1_1_agent_store_1_1_v_e_n_agent.html#a34aa2dc9e5f13b891ac1f6eebf91be48" title=" " alt="" coords="559,136,763,177"/>
+<area shape="rect" id="node6" href="$classpylo_1_1_rule_1_1_rule.html#a8169fed7d26e8690bb7fead3662e58a1" title=" " alt="" coords="596,201,727,243"/>
+<area shape="rect" id="node7" href="$classpylo_1_1_rule_1_1_rule_security_principal_container.html#a6ee39e8e3b5f8894938fb9637009dc52" title=" " alt="" coords="561,267,761,308"/>
+<area shape="rect" id="node8" href="$classpylo_1_1_rule_1_1_rule_host_container.html#aac5678f5280fd09ca76842bf5babbdfe" title=" " alt="" coords="555,332,768,373"/>
+<area shape="rect" id="node9" href="$classpylo_1_1_ruleset_1_1_ruleset_scope.html#a55b8a19954d49f43d13973e10d62a257" title=" " alt="" coords="560,397,763,439"/>
+<area shape="rect" id="node10" href="$classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a47a4ae9a2e6601d02c24b145c1e05a58" title=" " alt="" coords="573,463,749,504"/>
+<area shape="rect" id="node11" href="$classpylo_1_1_ruleset_1_1_ruleset.html#af6be5681b6ea8e668075cc6fdc032fd4" title=" " alt="" coords="578,528,745,569"/>
+<area shape="rect" id="node12" href="$classpylo_1_1_security_principal_1_1_security_principal.html#a3bef384a3563bb715d85f9e20da0d20a" title=" " alt="" coords="564,593,759,635"/>
+<area shape="rect" id="node13" href="$classpylo_1_1_service_1_1_service.html#aa391615a3fe045969f13a33f14ffc36c" title=" " alt="" coords="578,659,745,700"/>
+<area shape="rect" id="node14" href="$classpylo_1_1_virtual_service_1_1_virtual_service.html#a0b1b98c381017563c47872e670cf3e5c" title=" " alt="" coords="577,724,746,765"/>
+<area shape="rect" id="node15" href="$classpylo_1_1_workload_1_1_workload.html#ae125245a0530d204f7de2c034ff1ed14" title=" " alt="" coords="568,789,755,831"/>
+<area shape="rect" id="node16" href="$classpylo_1_1_organization_1_1_organization.html#a5a966f1b2bdd57102b1ce6ff8be206fb" title=" " alt="" coords="550,855,773,896"/>
+<area shape="rect" id="node17" href="$classpylo_1_1_rule_1_1_rule_service_container.html#a8b615b54f866ab8df67dc0a47d012139" title=" " alt="" coords="547,920,776,961"/>
+<area shape="rect" id="node19" href="$classpylo_1_1_i_p_list_1_1_i_p_list.html#a75ee93f461bf33a8e2c59d6422b9e44e" title=" " alt="" coords="587,985,735,1027"/>
+<area shape="rect" id="node18" href="$namespacepylo_1_1_helpers_1_1functions.html#a9c2f28527c4cf97809e2fce65ca2f594" title=" " alt="" coords="824,961,1031,987"/>
+</map>
