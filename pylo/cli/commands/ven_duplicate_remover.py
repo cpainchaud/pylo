@@ -130,7 +130,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                                                                                          len(dup_record.unmanaged)))
 
         if dup_record.count_online() == 0:
-            print("     - IGNORED: there no VEN online")
+            print("     - IGNORED: there is no VEN online")
             continue
 
         if dup_record.count_online() > 1:
