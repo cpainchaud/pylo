@@ -160,12 +160,13 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
 
                 label_object.add_reference(self)
 
-    def interfaces_to_string(self, separator: str = ',', show_ignored: bool = True) -> str:
+    def interfaces_to_string(self, separator: str = ',', show_ignored: bool = True, show_interface_name: bool = True) -> str:
         """
         Conveniently outputs all interface of this Workload to a string.
 
         :param separator: string used to separate each interface in the string
         :param show_ignored: whether or not ignored interfaces should be showing
+        :param show_interface_name:
         :return: string with interfaces split by specified separator
         """
         tmp = []
@@ -173,7 +174,10 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         for interface in self.interfaces:
             if not show_ignored and interface.is_ignored:
                 continue
-            tmp.append('{}:{}'.format(interface.name, interface.ip))
+            if show_interface_name:
+                tmp.append('{}:{}'.format(interface.name, interface.ip))
+            else:
+                tmp.append(interface.ip)
 
         return pylo.string_list_to_text(tmp, separator)
 

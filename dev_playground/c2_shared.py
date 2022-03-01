@@ -9,8 +9,11 @@ import pylo
 
 
 excel_doc_sheet_fingerprint_title = 'DO NOT EDIT'
-excel_doc_sheet_inbound_identified_title = 'Id Inbound'
-excel_doc_sheet_outbound_identified_title = 'Id Outbound'
+excel_doc_sheet_inbound_identified_title = 'Inbound ID'
+excel_doc_sheet_outbound_identified_title = 'Outbound ID'
+
+core_service_label_group_name: str = ''
+onboarded_apps_label_group: str = ''
 
 excluded_ranges = pylo.IP4Map()
 excluded_broadcast = pylo.IP4Map()
@@ -41,6 +44,15 @@ def load_config_file(filename='c2_config.json') -> bool:
                                               orgID=org_id, skip_ssl_cert_check=True)
                 pce_listing[pce_data['name'].lower()] = connector
 
+        global core_service_label_group_name
+        core_service_label_group_name = data.get('core_service_label_group')
+        if core_service_label_group_name is None:
+            raise pylo.PyloEx('Config file is missing property "core_service_label_group_name"')
+
+        global onboarded_apps_label_group
+        onboarded_apps_label_group = data.get('onboarded_apps_label_group')
+        if onboarded_apps_label_group is None:
+            raise pylo.PyloEx('Config file is missing property "onboarded_apps_label_group"')
 
         excluded_ranges_data: List[str] = data.get('excluded_networks')
         if excluded_ranges_data is not None:

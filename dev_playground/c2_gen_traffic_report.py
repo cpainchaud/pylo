@@ -58,9 +58,6 @@ parser.add_argument('--app', type=str, required=False, default=None,
                     help='Application Label name associated to the environment you are investigating for')
 parser.add_argument('--role', type=str, required=False, default=None,
                     help='Role Label name associated to the environment you are investigating for')
-parser.add_argument('--cs-label', type=str, required=True, default=None,
-                    help='Common Services Label/Label Group used to make the distinction between application flows and core services flows')
-
 parser.add_argument('--opposite-ip-filter-include', type=str, required=False, default=None,
                     help='Filter on IP network for the "other" side. Use this to narrow down your investigation to only this network (CIDR notation)')
 
@@ -217,8 +214,8 @@ if args['loc'] is not None:
 else:
     print("SKIPPED")
 
-print(" - Looking for CoreServices label '{}' in PCE database...".format(args['cs_label']), end='')
-find_cs_label = org.LabelStore.find_label_by_name_whatever_type(args['cs_label'])
+print(" - Looking for CoreServices label '{}' in PCE database...".format(c2_shared.core_service_label_group_name), end='')
+find_cs_label = org.LabelStore.find_label_by_name_whatever_type(c2_shared.core_service_label_group_name)
 if find_cs_label is None:
     pylo.log.error("NOT FOUND!\n\n** Please check that you didn't misspell the name (case-sensitive)**")
     exit(1)
@@ -230,6 +227,21 @@ if not find_cs_label.is_group():
 else:
     for label in find_cs_label.expand_nested_to_array():
         cs_labels[label.href] = label
+
+
+print(" - Looking for Onboarded label '{}' in PCE database...".format(c2_shared.onboarded_apps_label_group), end='')
+find_onboarded_label = org.LabelStore.find_label_by_name_whatever_type(c2_shared.onboarded_apps_label_group)
+if find_cs_label is None:
+    pylo.log.error("NOT FOUND!\n\n** Please check that you didn't misspell the name (case-sensitive)**")
+    exit(1)
+print(" OK!")
+
+onboarded_labels: Dict[str, pylo.Label] = {}
+if not find_onboarded_label.is_group():
+    onboarded_labels = {find_onboarded_label.href: find_onboarded_label}
+else:
+    for label in find_onboarded_label.expand_nested_to_array():
+        onboarded_labels[label.href] = label
 # </editor-fold desc="Looking for specific Labels and Item in the Database">
 
 # <editor-fold desc="Prepareing report filename">
@@ -267,7 +279,7 @@ for workload in workload_for_report.values():
     if workload.loc_label is not None:
         data['location'] = workload.loc_label.name
 
-    data['interfaces'] = workload.interfaces_to_string(separator=',', show_ignored=False)
+    data['interfaces'] = workload.interfaces_to_string(separator=',', show_ignored=False, show_interface_name=False)
     
     if not workload.unmanaged:
         data['ven version'] = workload.ven_agent.software_version.version_string
@@ -279,8 +291,6 @@ for workload in workload_for_report.values():
     else:
         data['ven version'] = 'not applicable'
         data['mode'] = 'unmanaged'
-
-
 
     excel_doc.add_line_from_object(data, excel_doc_sheet_workloads_title)
 
@@ -406,23 +416,32 @@ for ruleset, rules in rules_results.rules_per_ruleset.items():
 
 # <editor-fold desc="Inbound traffic handling">
 excel_doc.create_sheet(c2_shared.excel_doc_sheet_inbound_identified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                                                  'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                  'dst_port', 'count', 'last_seen', 'first_seen',
-                                                                  'process_name', 'username', 'to_be_implemented'],
+                                                                  'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                                                  'dst_port', 'count', 'process_name', 'username',
+                                                                  'last_seen', 'first_seen',
+                                                                  'to_be_implemented'],
                        force_all_wrap_text=False)
 
-excel_doc_sheet_inbound_unidentified_title = 'UnId Inbound'
+excel_doc_sheet_inbound_onboarded_title = 'I Onboarded'
+excel_doc.create_sheet(excel_doc_sheet_inbound_onboarded_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+                                                                 'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                                                 'dst_port', 'count', 'process_name', 'username',
+                                                                 'last_seen', 'first_seen',
+                                                                 'to_be_implemented'],
+                       force_all_wrap_text=False)
+
+excel_doc_sheet_inbound_unidentified_title = 'I Unknown'
 excel_doc.create_sheet(excel_doc_sheet_inbound_unidentified_title, ['src_ip', 'src_name', 'src_iplists',
-                                                                    'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                    'dst_port', 'count', 'last_seen', 'first_seen',
-                                                                    'process_name', 'username'],
+                                                                    'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                                                    'dst_port', 'count',
+                                                                    'process_name', 'username', 'last_seen', 'first_seen',],
                        force_all_wrap_text=False)
 
-excel_doc_sheet_inbound_cs_identified_title = 'Id Inbound Common Services'
+excel_doc_sheet_inbound_cs_identified_title = 'I CoreService'
 excel_doc.create_sheet(excel_doc_sheet_inbound_cs_identified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                                                     'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                     'dst_port', 'count', 'last_seen', 'first_seen',
-                                                                     'process_name', 'username'],
+                                                                     'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                                                     'dst_port', 'count',
+                                                                     'process_name', 'username', 'last_seen', 'first_seen',],
                        force_all_wrap_text=False)
 
 
@@ -474,10 +493,16 @@ for record in all_records:
     data = None
     if src_workload is not None:
         is_core_service = False
+        is_onboarded = False
 
         for label in cs_labels.values():
             if src_workload.is_using_label(label):
                 is_core_service = True
+                break
+
+        for label in onboarded_labels.values():
+            if src_workload.is_using_label(label):
+                is_onboarded = True
                 break
 
         #   print(record._raw_json)
@@ -506,6 +531,8 @@ for record in all_records:
 
         if is_core_service:
             excel_doc.add_line_from_object(data, excel_doc_sheet_inbound_cs_identified_title)
+        elif is_onboarded:
+            excel_doc.add_line_from_object(data, excel_doc_sheet_inbound_onboarded_title)
         else:
             excel_doc.add_line_from_object(data, c2_shared.excel_doc_sheet_inbound_identified_title)
 
@@ -541,24 +568,31 @@ print("OK! (exec_time:{}, dns_count:{})".format(pylo.clock_elapsed_str('inbound_
 # </editor-fold>
 
 # <editor-fold desc="Outbound traffic handling">
-excel_doc.create_sheet(c2_shared.excel_doc_sheet_outbound_identified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+excel_doc.create_sheet(c2_shared.excel_doc_sheet_outbound_identified_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                                                   'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                   'dst_port', 'count', 'last_seen', 'first_seen',
-                                                                  'process_name', 'username', 'to_be_implemented'],
+                                                                   'dst_port', 'count', 'process_name', 'username',
+                                                                    'last_seen', 'first_seen', 'to_be_implemented'],
                        force_all_wrap_text=False)
 
-excel_doc_sheet_outbound_unidentified_title = 'UnId Outbound'
-excel_doc.create_sheet(excel_doc_sheet_outbound_unidentified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+excel_doc_sheet_outbound_onboarded_title = 'O Onboarded'
+excel_doc.create_sheet(excel_doc_sheet_outbound_onboarded_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
+                                                                  'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+                                                                  'dst_port', 'count', 'process_name', 'username',
+                                                                  'last_seen', 'first_seen', 'to_be_implemented'],
+                       force_all_wrap_text=False)
+
+excel_doc_sheet_outbound_unidentified_title = 'O Unknown'
+excel_doc.create_sheet(excel_doc_sheet_outbound_unidentified_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                                                      'dst_ip', 'dst_name', 'dst_iplists',
-                                                                    'dst_port', 'count', 'last_seen', 'first_seen',
-                                                                    'process_name', 'username'],
+                                                                    'dst_port', 'count', 'process_name', 'username', 'last_seen', 'first_seen',
+                                                                    ],
                        force_all_wrap_text=False)
 
-excel_doc_sheet_outbound_cs_identified_title = 'Id Outbound Common Services'
-excel_doc.create_sheet(excel_doc_sheet_outbound_cs_identified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+excel_doc_sheet_outbound_cs_identified_title = 'O CoreService'
+excel_doc.create_sheet(excel_doc_sheet_outbound_cs_identified_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                                                      'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                     'dst_port', 'count', 'last_seen', 'first_seen',
-                                                                     'process_name', 'username'],
+                                                                     'dst_port', 'count',
+                                                                     'process_name', 'username' 'last_seen', 'first_seen',],
                        force_all_wrap_text=False)
 
 
@@ -612,10 +646,16 @@ for record in all_records:
     data = None
     if dst_workload is not None:
         is_core_service = False
+        is_onboarded = False
 
         for label in cs_labels.values():
             if dst_workload.is_using_label(label):
                 is_core_service = True
+                break
+
+        for label in onboarded_labels.values():
+            if dst_workload.is_using_label(label):
+                is_onboarded = True
                 break
 
         data = {'src_ip': record.source_ip,
@@ -641,6 +681,8 @@ for record in all_records:
 
         if is_core_service:
             excel_doc.add_line_from_object(data, excel_doc_sheet_outbound_cs_identified_title)
+        elif is_onboarded:
+            excel_doc.add_line_from_object(data, excel_doc_sheet_outbound_onboarded_title)
         else:
             excel_doc.add_line_from_object(data, c2_shared.excel_doc_sheet_outbound_identified_title)
 

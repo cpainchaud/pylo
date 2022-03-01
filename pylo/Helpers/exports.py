@@ -231,10 +231,7 @@ class ArraysToExcel:
                 xls_table = xls_worksheet.add_table(0, 0, 1, len(self._headers)-1,
                                                     {'header_row': True, 'data': [fake_data], 'columns': xls_headers}
                                                     )
-
             xls_worksheet.freeze_panes(1, 0)
-
-
 
     def __init__(self):
         self._sheets = {}
