@@ -370,6 +370,6 @@ class LabelStore:
         obj = self.itemsByHRef.get(href)
 
         if obj is None:
-            raise Exception("Workload with HREF '%s' was not found" % href)
+            raise Exception("Label with HREF '%s' was not found" % href)
 
         return obj
