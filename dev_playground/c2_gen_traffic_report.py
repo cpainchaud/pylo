@@ -247,7 +247,7 @@ else:
 # <editor-fold desc="Prepareing report filename">
 now = datetime.now()
 output_filename_xls = '{}/report_{}-{}-{}_{}.xlsx'.format(save_location,
-                                                          ('All' if app_label is None else app_label.name).replace('|', '_'),
+                                                          ('All' if app_label is None else app_label.name).replace('|', '_').replace('\\', ' ').replace('/', ' '),
                                                           'All' if env_label is None else env_label.name,
                                                           'All' if loc_label is None else loc_label.name,
                                                           now.strftime("%Y%m%d-%H%M%S"))
