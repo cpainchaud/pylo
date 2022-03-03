@@ -365,11 +365,14 @@ class LabelStore:
 
         return result
 
+    def find_by_href(self, href: str):
+        return self.itemsByHRef.get(href)
+
     def find_by_href_or_die(self, href: str):
 
         obj = self.itemsByHRef.get(href)
 
         if obj is None:
-            raise Exception("Label with HREF '%s' was not found" % href)
+            raise pylo.PyloObjectNotFound("Label with HREF '%s' was not found" % href)
 
         return obj

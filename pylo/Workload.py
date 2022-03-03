@@ -1,4 +1,6 @@
 from typing import Optional, List
+
+import pylo
 from pylo import log
 from .AgentStore import VENAgent
 from .Helpers import *
@@ -82,6 +84,8 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
 
         self.hostname = data['hostname']
 
+        self.deleted = data['deleted']
+
         agent_json = data.get('agent')
 
         if agent_json is None:
@@ -119,8 +123,6 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
                                               ignored=interface_json.get('name') in ignored_interfaces_index)
                 self.interfaces.append(if_object)
 
-        self.deleted = data['deleted']
-
         if 'labels' in data:
             labels = data['labels']
             for label in labels:
@@ -128,7 +130,12 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
                     raise PyloEx("Workload named '%s' has labels in JSON but without any HREF:\n%s" % (
                         self.get_name(), nice_json(labels)))
                 href = label['href']
-                label_object = label_store.find_by_href_or_die(href)
+                label_object = label_store.find_by_href(href)
+                if label_object is None:
+                    if not self.deleted:
+                        raise pylo.PyloObjectNotFound(
+                            "Workload '%s'/'%s' is referencing label href '%s' which does not exist" % (
+                            self.name, self.href, href))
 
                 if label_object.type_is_location():
                     if self.loc_label is not None:

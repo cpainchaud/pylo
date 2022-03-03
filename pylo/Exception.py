@@ -11,6 +11,11 @@ class PyloEx(Exception):
         super().__init__(self, text)
 
 
+class PyloObjectNotFound(PyloEx):
+    def __init__(self, arg, json_object=None):
+        PyloEx(arg, json_object)
+
+
 class PyloApiEx(PyloEx):
     def __init__(self, arg, json_object=None):
         PyloEx(arg, json_object)
