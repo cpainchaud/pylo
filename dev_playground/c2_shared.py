@@ -2,15 +2,12 @@ import os
 import json
 from typing import *
 import sys
-from typing import Dict, Any
+from typing import Dict, Any, List, TypedDict
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 
-excel_doc_sheet_fingerprint_title = 'DO NOT EDIT'
-excel_doc_sheet_inbound_identified_title = 'Inbound ID'
-excel_doc_sheet_outbound_identified_title = 'Outbound ID'
 
 core_service_label_group_name: str = ''
 onboarded_apps_label_group: str = ''
@@ -22,6 +19,108 @@ excluded_direct_services: List['pylo.DirectServiceInRule'] = []
 excluded_processes: Dict[str, str] = {}
 
 pce_listing: Dict[str, pylo.APIConnector] = {}
+
+excel_doc = pylo.ArraysToExcel()
+
+
+class ExcelStruct:
+    class Titles:
+        def __init__(self):
+            self.fingerprint = 'DO NOT EDIT'
+            self.workloads = 'Server Estate'
+            self.rulesets = 'Rulesets'
+            self.inbound_identified = 'Inbound Id'
+            self.outbound_identified = 'Outbound Id'
+            self.inbound_onboarded = 'I Onboarded'
+            self.inbound_unidentified = 'I Unknown'
+            self.inbound_cs_identified = 'I CoreService'
+            self.outbound_onboarded = 'O Onboarded'
+            self.outbound_unidentified = 'O Unknown'
+            self.outbound_cs_identified = 'O CoreService'
+
+    class Columns:
+        workloads = ['hostname', 'role', 'application', 'environment', 'location',
+                     'mode', 'interfaces', 'ven version', 'os', 'os_detail']
+        rulesets = [
+            {'name': 'ruleset', 'nice_name': 'Ruleset', },
+            {'name': 'scopes', 'nice_name': 'Scopes'},
+            # {'name': 'extra_scope', 'nice_name': 'Extra Scope'},
+            {'name': 'consumers', 'nice_name': 'Source'},
+            {'name': 'providers', 'nice_name': 'Destination'},
+            {'name': 'services', 'nice_name': 'Services'} ]
+        fingerprint = ['app', 'env', 'loc']
+        inbound_identified = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+                                           'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                           'dst_port', 'count', 'process_name', 'username',
+                                           'last_seen', 'first_seen',
+                                           'to_be_implemented']
+        outbound_identified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
+                                            'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+                                            'dst_port', 'count', 'process_name', 'username',
+                                            'last_seen', 'first_seen', 'to_be_implemented']
+        inbound_onboarded = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+                                          'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                          'dst_port', 'count', 'process_name', 'username',
+                                          'last_seen', 'first_seen',
+                                          'to_be_implemented']
+        outbound_onboarded =   ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
+                                             'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+                                             'dst_port', 'count', 'process_name', 'username',
+                                             'to_be_implemented', 'last_seen', 'first_seen',]
+        inbound_unidentified = ['src_ip', 'src_name', 'src_iplists',
+                                             'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                             'dst_port', 'count',
+                                             'process_name', 'username', 'last_seen', 'first_seen',]
+        outbound_unidentified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
+                                              'dst_ip', 'dst_name', 'dst_iplists',
+                                              'dst_port', 'count', 'process_name', 'username', 'last_seen', 'first_seen',
+                                              ]
+        inbound_cs_identified = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
+                                              'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+                                              'dst_port', 'count',
+                                              'process_name', 'username', 'last_seen', 'first_seen']
+        outbound_cs_identified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
+                                               'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+                                               'dst_port', 'count',
+                                               'process_name', 'username' 'last_seen', 'first_seen',]
+
+    def __init__(self):
+        self.title = self.Titles()
+        self.columns = self.Columns()
+
+
+excel_struct = ExcelStruct()
+
+
+class __Data(TypedDict):
+    title: str
+    columns: List[str]
+    force_all_wrap_text: bool
+
+
+excel_sheets_creation_order: List[__Data] = [
+
+    # Inbound
+    {'title': excel_struct.title.inbound_identified, 'columns': excel_struct.columns.inbound_identified, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.inbound_onboarded, 'columns': excel_struct.columns.inbound_onboarded, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.inbound_unidentified, 'columns': excel_struct.columns.inbound_unidentified, 'force_all_wrap_text': False},
+
+    # Outbound
+    {'title': excel_struct.title.outbound_identified, 'columns': excel_struct.columns.outbound_identified, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.outbound_onboarded, 'columns': excel_struct.columns.outbound_onboarded, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.outbound_unidentified, 'columns': excel_struct.columns.outbound_unidentified, 'force_all_wrap_text': False},
+
+
+    {'title': excel_struct.title.inbound_cs_identified, 'columns': excel_struct.columns.inbound_cs_identified, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.outbound_cs_identified, 'columns': excel_struct.columns.outbound_cs_identified, 'force_all_wrap_text': False},
+
+    {'title': excel_struct.title.workloads, 'columns': excel_struct.columns.workloads, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.rulesets, 'columns': excel_struct.columns.rulesets, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.fingerprint, 'columns': excel_struct.columns.fingerprint, 'force_all_wrap_text': False},
+]
+
+for(sheet_data) in excel_sheets_creation_order:
+    excel_doc.create_sheet(sheet_data['title'], sheet_data['columns'], sheet_data['force_all_wrap_text'])
 
 
 def load_config_file(filename='c2_config.json') -> bool:

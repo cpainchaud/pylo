@@ -8,6 +8,7 @@ import socket
 import time
 from typing import Union, Optional, Dict, List, Any
 import c2_shared
+from c2_shared import excel_struct
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
@@ -251,16 +252,10 @@ output_filename_xls = '{}/report_{}-{}-{}_{}.xlsx'.format(save_location,
                                                           'All' if env_label is None else env_label.name,
                                                           'All' if loc_label is None else loc_label.name,
                                                           now.strftime("%Y%m%d-%H%M%S"))
-excel_doc = pylo.ArraysToExcel()
+excel_doc = c2_shared.excel_doc
 # </editor-fold desc="Looking for specific Labels and Item in the Database">
 
 # <editor-fold desc="Workload export to Excel">
-excel_doc_sheet_workloads_title = 'Server Estate'
-excel_doc.create_sheet(excel_doc_sheet_workloads_title,
-                       ['hostname', 'role', 'application', 'environment', 'location',
-                            'mode', 'interfaces', 'ven version', 'os', 'os_detail'],
-                       force_all_wrap_text=False)
-
 print()
 workload_for_report = org.WorkloadStore.find_workloads_matching_all_labels([role_label, app_label, env_label, loc_label])
 print(" * Processing {} workloads data... ".format(len(workload_for_report)), end='')
@@ -292,7 +287,7 @@ for workload in workload_for_report.values():
         data['ven version'] = 'not applicable'
         data['mode'] = 'unmanaged'
 
-    excel_doc.add_line_from_object(data, excel_doc_sheet_workloads_title)
+    excel_doc.add_line_from_object(data, excel_struct.title.workloads)
 
 print("OK!")
 # </editor-fold>
@@ -313,17 +308,6 @@ if loc_label is not None:
 rules_query.use_resolved_matches()
 rules_results = rules_query.execute_and_resolve(organization=org)
 print("OK!  (received {} rules)".format(rules_results.count_results()))
-excel_doc_sheet_rulesets_title = 'Rulesets'
-excel_doc.create_sheet(
-    excel_doc_sheet_rulesets_title, [
-    {'name': 'ruleset', 'nice_name': 'Ruleset', },
-    {'name': 'scopes', 'nice_name': 'Scopes'},
-    # {'name': 'extra_scope', 'nice_name': 'Extra Scope'},
-    {'name': 'consumers', 'nice_name': 'Source'},
-    {'name': 'providers', 'nice_name': 'Destination'},
-    {'name': 'services', 'nice_name': 'Services'}],
-    force_all_wrap_text=False
-)
 
 
 def rule_actors_to_str(container: 'pylo.RuleHostContainer') -> str:
@@ -409,40 +393,12 @@ for ruleset, rules in rules_results.rules_per_ruleset.items():
             'providers': rule_actors_to_str(rule.providers),
             'services': rule_services_to_str(rule.services)
         }
-        excel_doc.add_line_from_object(data, excel_doc_sheet_rulesets_title)
+        excel_doc.add_line_from_object(data, excel_struct.title.rulesets)
 
 
 # </editor-fold>
 
 # <editor-fold desc="Inbound traffic handling">
-excel_doc.create_sheet(c2_shared.excel_doc_sheet_inbound_identified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                                                  'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                                                  'dst_port', 'count', 'process_name', 'username',
-                                                                  'last_seen', 'first_seen',
-                                                                  'to_be_implemented'],
-                       force_all_wrap_text=False)
-
-excel_doc_sheet_inbound_onboarded_title = 'I Onboarded'
-excel_doc.create_sheet(excel_doc_sheet_inbound_onboarded_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                                                 'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                                                 'dst_port', 'count', 'process_name', 'username',
-                                                                 'last_seen', 'first_seen',
-                                                                 'to_be_implemented'],
-                       force_all_wrap_text=False)
-
-excel_doc_sheet_inbound_unidentified_title = 'I Unknown'
-excel_doc.create_sheet(excel_doc_sheet_inbound_unidentified_title, ['src_ip', 'src_name', 'src_iplists',
-                                                                    'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                                                    'dst_port', 'count',
-                                                                    'process_name', 'username', 'last_seen', 'first_seen',],
-                       force_all_wrap_text=False)
-
-excel_doc_sheet_inbound_cs_identified_title = 'I CoreService'
-excel_doc.create_sheet(excel_doc_sheet_inbound_cs_identified_title, ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                                                     'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                                                     'dst_port', 'count',
-                                                                     'process_name', 'username', 'last_seen', 'first_seen',],
-                       force_all_wrap_text=False)
 
 
 print(" * Requesting 'Inbound' traffic records from PCE... ", end='')
@@ -530,11 +486,11 @@ for record in all_records:
                 }
 
         if is_core_service:
-            excel_doc.add_line_from_object(data, excel_doc_sheet_inbound_cs_identified_title)
+            excel_doc.add_line_from_object(data, excel_struct.title.inbound_cs_identified)
         elif is_onboarded:
-            excel_doc.add_line_from_object(data, excel_doc_sheet_inbound_onboarded_title)
+            excel_doc.add_line_from_object(data, excel_struct.title.inbound_onboarded)
         else:
-            excel_doc.add_line_from_object(data, c2_shared.excel_doc_sheet_inbound_identified_title)
+            excel_doc.add_line_from_object(data, excel_struct.title.inbound_identified)
 
     else:
         reverse_dns = None
@@ -563,39 +519,11 @@ for record in all_records:
                 'username': record.username
                 }
 
-        excel_doc.add_line_from_object(data, excel_doc_sheet_inbound_unidentified_title)
+        excel_doc.add_line_from_object(data, excel_struct.title.inbound_unidentified)
 print("OK! (exec_time:{}, dns_count:{})".format(pylo.clock_elapsed_str('inbound_log_process'), count_dns_resolutions))
 # </editor-fold>
 
 # <editor-fold desc="Outbound traffic handling">
-excel_doc.create_sheet(c2_shared.excel_doc_sheet_outbound_identified_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                                                  'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                   'dst_port', 'count', 'process_name', 'username',
-                                                                    'last_seen', 'first_seen', 'to_be_implemented'],
-                       force_all_wrap_text=False)
-
-excel_doc_sheet_outbound_onboarded_title = 'O Onboarded'
-excel_doc.create_sheet(excel_doc_sheet_outbound_onboarded_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                                                  'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                  'dst_port', 'count', 'process_name', 'username',
-                                                                  'last_seen', 'first_seen', 'to_be_implemented'],
-                       force_all_wrap_text=False)
-
-excel_doc_sheet_outbound_unidentified_title = 'O Unknown'
-excel_doc.create_sheet(excel_doc_sheet_outbound_unidentified_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                                                     'dst_ip', 'dst_name', 'dst_iplists',
-                                                                    'dst_port', 'count', 'process_name', 'username', 'last_seen', 'first_seen',
-                                                                    ],
-                       force_all_wrap_text=False)
-
-excel_doc_sheet_outbound_cs_identified_title = 'O CoreService'
-excel_doc.create_sheet(excel_doc_sheet_outbound_cs_identified_title, ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                                                     'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                                                     'dst_port', 'count',
-                                                                     'process_name', 'username' 'last_seen', 'first_seen',],
-                       force_all_wrap_text=False)
-
-
 print(" * Requesting 'Outbound' traffic records from PCE... ", end='')
 explorer_outbound_filters = connector.ExplorerFilterSetV1(max_results=traffic_max_results)
 if role_label is not None:
@@ -680,11 +608,11 @@ for record in all_records:
                 }
 
         if is_core_service:
-            excel_doc.add_line_from_object(data, excel_doc_sheet_outbound_cs_identified_title)
+            excel_doc.add_line_from_object(data, excel_struct.title.outbound_cs_identified)
         elif is_onboarded:
-            excel_doc.add_line_from_object(data, excel_doc_sheet_outbound_onboarded_title)
+            excel_doc.add_line_from_object(data, excel_struct.title.outbound_onboarded)
         else:
-            excel_doc.add_line_from_object(data, c2_shared.excel_doc_sheet_outbound_identified_title)
+            excel_doc.add_line_from_object(data, excel_struct.title.outbound_identified)
 
     else:
         reverse_dns = None
@@ -712,13 +640,12 @@ for record in all_records:
                 'username': record.username
                 }
 
-        excel_doc.add_line_from_object(data, excel_doc_sheet_outbound_unidentified_title)
+        excel_doc.add_line_from_object(data, excel_struct.title.outbound_unidentified)
 
 print("OK! (exec_time:{}, dns_count:{})".format(pylo.clock_elapsed_str('outbound_log_process'), count_dns_resolutions))
 # </editor-fold>
 
 # <editor-fold desc="Fingerprint in Excel">
-excel_doc.create_sheet(c2_shared.excel_doc_sheet_fingerprint_title, ['app', 'env', 'loc'])
 tmp = {'app': None, 'env': None, 'loc': None}
 if app_label is not None:
     tmp['app'] = app_label.href
@@ -727,7 +654,7 @@ if env_label is not None:
     tmp['env'] = env_label.href
 if loc_label is not None:
     tmp['loc'] = loc_label.href
-excel_doc.add_line_from_object(tmp, c2_shared.excel_doc_sheet_fingerprint_title)
+excel_doc.add_line_from_object(tmp, excel_struct.title.fingerprint)
 # </editor-fold>
 
 
