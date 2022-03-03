@@ -504,7 +504,7 @@ for record in all_records:
 
 
         data = {'src_ip': record.source_ip,
-                'src_name': reverse_dns,
+                'src_hostname': reverse_dns,
                 'src_iplists': pylo.string_list_to_text(record.get_source_iplists(org).values(), ","),
                 'dst_ip': record.destination_ip,
                 'dst_hostname': dst_workload.get_name(),
@@ -634,7 +634,7 @@ for record in all_records:
                 'src_location': src_workload.get_label_str_by_type('loc'),
                 'dst_iplists': pylo.string_list_to_text(record.get_destination_iplists(org).values(), ','),
                 'dst_ip': record.destination_ip,
-                'dst_name': reverse_dns,
+                'dst_hostname': reverse_dns,
                 'dst_port': record.service_to_str_array()[0],
                 'dst_proto': record.service_to_str_array()[1],
                 'count': record.num_connections,

@@ -39,6 +39,19 @@ class ExcelStruct:
             self.outbound_cs_identified = 'O CoreService'
 
     class Columns:
+
+        class Field:
+            class __Data(TypedDict):
+                nice_name: Optional[str]
+                max_width: Optional[int]
+            src_app: __Data = {'max_width': 15, 'name': 'src_application'}
+            src_loc: __Data = {'max_width': 15, 'name': 'src_location'}
+            src_hostname: __Data = {'max_width': 15, 'name': 'src_hostname'}
+            dst_app: __Data = {'max_width': 15, 'name': 'dst_application'}
+            dst_hostname: __Data = {'max_width': 15, 'name': 'dst_hostname'}
+
+        fields = Field()
+
         workloads = ['hostname', 'role', 'application', 'environment', 'location',
                      'mode', 'interfaces', 'ven version', 'os', 'os_detail']
         rulesets = [
@@ -49,38 +62,38 @@ class ExcelStruct:
             {'name': 'providers', 'nice_name': 'Destination'},
             {'name': 'services', 'nice_name': 'Services'} ]
         fingerprint = ['app', 'env', 'loc']
-        inbound_identified = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                           'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+        inbound_identified = ['src_ip', fields.src_hostname, 'src_role', fields.src_app, 'src_environment', fields.src_loc,
+                                           'dst_ip', fields.dst_hostname, 'dst_role', # fields.dst_app, 'dst_environment', 'dst_location',
                                            'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                            'last_seen', 'first_seen',
                                            'to_be_implemented']
-        outbound_identified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                            'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+        outbound_identified = ['src_ip', fields.src_hostname, 'src_role', # 'src_application', 'src_environment', fields.src_loc,
+                                            'dst_ip', fields.dst_hostname, 'dst_role', fields.dst_app, 'dst_environment', 'dst_location',
                                             'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                             'last_seen', 'first_seen', 'to_be_implemented']
-        inbound_onboarded = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                          'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+        inbound_onboarded = ['src_ip', fields.src_hostname, 'src_role', fields.src_app, 'src_environment', fields.src_loc,
+                                          'dst_ip', fields.dst_hostname, 'dst_role', # fields.dst_app, 'dst_environment', 'dst_location',
                                           'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                           'last_seen', 'first_seen',
                                           'to_be_implemented']
-        outbound_onboarded =   ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                             'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+        outbound_onboarded = ['src_ip', fields.src_hostname, 'src_role', # 'src_application', 'src_environment', fields.src_loc,
+                                             'dst_ip', fields.dst_hostname, 'dst_role', fields.dst_app, 'dst_environment', 'dst_location',
                                              'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                              'to_be_implemented', 'last_seen', 'first_seen',]
-        inbound_unidentified = ['src_ip', 'src_name', 'src_iplists',
-                                             'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+        inbound_unidentified = ['src_ip', fields.src_hostname, 'src_iplists',
+                                             'dst_ip', fields.dst_hostname, 'dst_role', # fields.dst_app, 'dst_environment', 'dst_location',
                                              'dst_port', 'dst_proto', 'count',
                                              'process_name', 'username', 'last_seen', 'first_seen',]
-        outbound_unidentified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                              'dst_ip', 'dst_name', 'dst_iplists',
+        outbound_unidentified = ['src_ip', fields.src_hostname, 'src_role', # 'src_application', 'src_environment', fields.src_loc,
+                                              'dst_ip', fields.dst_hostname, 'dst_iplists',
                                               'dst_port', 'dst_proto', 'count', 'process_name', 'username', 'last_seen', 'first_seen',
                                               ]
-        inbound_cs_identified = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
-                                              'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
+        inbound_cs_identified = ['src_ip', fields.src_hostname, 'src_role', fields.src_app, 'src_environment', fields.src_loc,
+                                              'dst_ip', fields.dst_hostname, 'dst_role', # fields.dst_app, 'dst_environment', 'dst_location',
                                               'dst_port', 'dst_proto', 'count',
                                               'process_name', 'username', 'last_seen', 'first_seen']
-        outbound_cs_identified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
-                                               'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
+        outbound_cs_identified = ['src_ip', fields.src_hostname, 'src_role', # 'src_application', 'src_environment', fields.src_loc,
+                                               'dst_ip', fields.dst_hostname, 'dst_role', fields.dst_app, 'dst_environment', 'dst_location',
                                                'dst_port', 'dst_proto', 'count',
                                                'process_name', 'username' 'last_seen', 'first_seen',]
 

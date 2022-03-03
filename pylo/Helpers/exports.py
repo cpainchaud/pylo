@@ -117,6 +117,7 @@ class ArraysToExcel:
                     self._headers_name_to_index[header_name] = index
                     self._width.append(0)
                 else:
+                    header_name['nice_name'] = header_name.get('nice_name', header_name['name'])
                     self._headers_index_to_name.append(header_name['name'])
                     self._headers_name_to_index[header_name['name']] = index
                     desired_width = header_name.get('width')
@@ -127,7 +128,6 @@ class ArraysToExcel:
                             self._width.append(0)
                         else:
                             self._width.append(-1)
-                    desired_width = header_name.get('width')
 
                     wrap = header_name.get('wrap_text')
                     if wrap is not None and not wrap:
@@ -204,18 +204,25 @@ class ArraysToExcel:
                 cell_format.set_text_wrap(self._columns_wrap[header_index])
                 cell_format.set_valign('vcenter')
 
+                desired_max_width = self._width[header_index]+1
+
                 if type(header) is str:
                     xls_headers.append({'header': header, 'format': cell_format})
                     column_name_length = len(header)
                 else:
-                    xls_headers.append({'header': header['nice_name'], 'format': cell_format})
+                    xls_headers.append({'header': header.get('nice_name') or header.get('name'), 'format': cell_format})
                     column_name_length = len(header['nice_name'])
+                    desired_max_width = header.get('max_width')
+
+                if(desired_max_width is not None):
+                    if self._width[header_index] > desired_max_width:
+                        self._width[header_index] = desired_max_width
 
                 if self._width[header_index] > 0:
                     if column_name_length > self._width[header_index]:
                         self._width[header_index] = column_name_length
 
-                    xls_worksheet.set_column(header_index, header_index, width=self._width[header_index]+1)
+                    xls_worksheet.set_column(header_index, header_index, width=desired_max_width)
 
                 header_index += 1
 
