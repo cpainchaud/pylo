@@ -1336,7 +1336,6 @@ class APIConnector:
 
                 self._cast_type = data.get('transmission')
 
-
             def service_to_str(self, protocol_first=True):
                 if protocol_first:
                     if self.service_port is None or self.service_port == 0:
@@ -1356,6 +1355,18 @@ class APIConnector:
 
                     if self.service_protocol == 6:
                         return '{}/tcp'.format(self.service_port)
+
+            def service_to_str_array(self):
+                if self.service_port is None or self.service_port == 0:
+                    return [str(self.service_protocol), 'proto']
+
+                if self.service_protocol == 17:
+                    return [str(self.service_port), 'udp']
+
+                if self.service_protocol == 6:
+                    return [str(self.service_port), 'tcp']
+
+                return ['n/a', 'n/a']
 
             def source_is_workload(self):
                 return self.source_workload_href is not None

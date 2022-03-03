@@ -51,37 +51,37 @@ class ExcelStruct:
         fingerprint = ['app', 'env', 'loc']
         inbound_identified = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
                                            'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                           'dst_port', 'count', 'process_name', 'username',
+                                           'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                            'last_seen', 'first_seen',
                                            'to_be_implemented']
         outbound_identified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                             'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                            'dst_port', 'count', 'process_name', 'username',
+                                            'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                             'last_seen', 'first_seen', 'to_be_implemented']
         inbound_onboarded = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
                                           'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                          'dst_port', 'count', 'process_name', 'username',
+                                          'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                           'last_seen', 'first_seen',
                                           'to_be_implemented']
         outbound_onboarded =   ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                              'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                             'dst_port', 'count', 'process_name', 'username',
+                                             'dst_port', 'dst_proto', 'count', 'process_name', 'username',
                                              'to_be_implemented', 'last_seen', 'first_seen',]
         inbound_unidentified = ['src_ip', 'src_name', 'src_iplists',
                                              'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                             'dst_port', 'count',
+                                             'dst_port', 'dst_proto', 'count',
                                              'process_name', 'username', 'last_seen', 'first_seen',]
         outbound_unidentified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                               'dst_ip', 'dst_name', 'dst_iplists',
-                                              'dst_port', 'count', 'process_name', 'username', 'last_seen', 'first_seen',
+                                              'dst_port', 'dst_proto', 'count', 'process_name', 'username', 'last_seen', 'first_seen',
                                               ]
         inbound_cs_identified = ['src_ip', 'src_hostname', 'src_role', 'src_application', 'src_environment', 'src_location',
                                               'dst_ip', 'dst_hostname', 'dst_role', # 'dst_application', 'dst_environment', 'dst_location',
-                                              'dst_port', 'count',
+                                              'dst_port', 'dst_proto', 'count',
                                               'process_name', 'username', 'last_seen', 'first_seen']
         outbound_cs_identified = ['src_ip', 'src_hostname', 'src_role', # 'src_application', 'src_environment', 'src_location',
                                                'dst_ip', 'dst_hostname', 'dst_role', 'dst_application', 'dst_environment', 'dst_location',
-                                               'dst_port', 'count',
+                                               'dst_port', 'dst_proto', 'count',
                                                'process_name', 'username' 'last_seen', 'first_seen',]
 
     def __init__(self):
