@@ -106,9 +106,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   22</span>    <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">   23</span>        self.json_payload = {}</div>
-<div class="line"><span class="lineno">   24</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>    <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">   25</span>        self.json_payload = {}</div>
+<div class="line"><span class="lineno">   26</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -138,10 +138,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   25</span>    <span class="keyword">def </span>add_payload(self, data: Dict[str, Any]):</div>
-<div class="line"><span class="lineno">   26</span>        <span class="keywordflow">for</span> prop_name, prop_value <span class="keywordflow">in</span> data.items():</div>
-<div class="line"><span class="lineno">   27</span>            self.json_payload[prop_name] = prop_value</div>
-<div class="line"><span class="lineno">   28</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>    <span class="keyword">def </span>add_payload(self, data: Dict[str, Any]):</div>
+<div class="line"><span class="lineno">   28</span>        <span class="keywordflow">for</span> prop_name, prop_value <span class="keywordflow">in</span> data.items():</div>
+<div class="line"><span class="lineno">   29</span>            self.json_payload[prop_name] = prop_value</div>
+<div class="line"><span class="lineno">   30</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -160,10 +160,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   34</span>    <span class="keyword">def </span>count_payloads(self) -&gt; int:</div>
-<div class="line"><span class="lineno">   35</span>        <span class="keywordflow">return</span> len(self.json_payload)</div>
-<div class="line"><span class="lineno">   36</span> </div>
-<div class="line"><span class="lineno">   37</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   36</span>    <span class="keyword">def </span>count_payloads(self) -&gt; int:</div>
+<div class="line"><span class="lineno">   37</span>        <span class="keywordflow">return</span> len(self.json_payload)</div>
+<div class="line"><span class="lineno">   38</span> </div>
+<div class="line"><span class="lineno">   39</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -182,11 +182,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   29</span>    <span class="keyword">def </span>get_payload_and_reset(self) -&gt; Dict[str, Any]:</div>
-<div class="line"><span class="lineno">   30</span>        data = self.json_payload</div>
-<div class="line"><span class="lineno">   31</span>        self.json_payload = {}</div>
-<div class="line"><span class="lineno">   32</span>        <span class="keywordflow">return</span> data</div>
-<div class="line"><span class="lineno">   33</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>    <span class="keyword">def </span>get_payload_and_reset(self) -&gt; Dict[str, Any]:</div>
+<div class="line"><span class="lineno">   32</span>        data = self.json_payload</div>
+<div class="line"><span class="lineno">   33</span>        self.json_payload = {}</div>
+<div class="line"><span class="lineno">   34</span>        <span class="keywordflow">return</span> data</div>
+<div class="line"><span class="lineno">   35</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -211,7 +211,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 2 2022 15:29:58 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Thu Mar 3 2022 10:27:34 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
