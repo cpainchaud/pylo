@@ -136,23 +136,23 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1746</span>        <span class="keyword">def </span>__init__(self, json_data):</div>
-<div class="line"><span class="lineno"> 1747</span>            self.raw_json = json_data</div>
-<div class="line"><span class="lineno"> 1748</span> </div>
-<div class="line"><span class="lineno"> 1749</span>            self.fqdn = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;fqdn&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
-<div class="line"><span class="lineno"> 1750</span>            self._status = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;status&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
-<div class="line"><span class="lineno"> 1751</span>            self.type = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;type&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
-<div class="line"><span class="lineno"> 1752</span> </div>
-<div class="line"><span class="lineno"> 1753</span>            <span class="keywordflow">if</span> self._status <span class="keywordflow">not</span> <span class="keywordflow">in</span> APIConnector.ClusterHealth.allowed_status_list:</div>
-<div class="line"><span class="lineno"> 1754</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;ClusterHealth has unsupported status &#39;{}&#39;&quot;</span>.format(self._status))</div>
-<div class="line"><span class="lineno"> 1755</span> </div>
-<div class="line"><span class="lineno"> 1756</span>            nodes_list = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;nodes&#39;</span>, json_data)</div>
-<div class="line"><span class="lineno"> 1757</span>            self.nodes_dict = {}</div>
-<div class="line"><span class="lineno"> 1758</span> </div>
-<div class="line"><span class="lineno"> 1759</span>            <span class="keywordflow">for</span> node <span class="keywordflow">in</span> nodes_list:</div>
-<div class="line"><span class="lineno"> 1760</span>                new_node = APIConnector.ClusterHealth.ClusterHealthNode(node)</div>
-<div class="line"><span class="lineno"> 1761</span>                self.nodes_dict[new_node.name] = new_node</div>
-<div class="line"><span class="lineno"> 1762</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1745</span>        <span class="keyword">def </span>__init__(self, json_data):</div>
+<div class="line"><span class="lineno"> 1746</span>            self.raw_json = json_data</div>
+<div class="line"><span class="lineno"> 1747</span> </div>
+<div class="line"><span class="lineno"> 1748</span>            self.fqdn = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;fqdn&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
+<div class="line"><span class="lineno"> 1749</span>            self._status = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;status&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
+<div class="line"><span class="lineno"> 1750</span>            self.type = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;type&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
+<div class="line"><span class="lineno"> 1751</span> </div>
+<div class="line"><span class="lineno"> 1752</span>            <span class="keywordflow">if</span> self._status <span class="keywordflow">not</span> <span class="keywordflow">in</span> APIConnector.ClusterHealth.allowed_status_list:</div>
+<div class="line"><span class="lineno"> 1753</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;ClusterHealth has unsupported status &#39;{}&#39;&quot;</span>.format(self._status))</div>
+<div class="line"><span class="lineno"> 1754</span> </div>
+<div class="line"><span class="lineno"> 1755</span>            nodes_list = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;nodes&#39;</span>, json_data)</div>
+<div class="line"><span class="lineno"> 1756</span>            self.nodes_dict = {}</div>
+<div class="line"><span class="lineno"> 1757</span> </div>
+<div class="line"><span class="lineno"> 1758</span>            <span class="keywordflow">for</span> node <span class="keywordflow">in</span> nodes_list:</div>
+<div class="line"><span class="lineno"> 1759</span>                new_node = APIConnector.ClusterHealth.ClusterHealthNode(node)</div>
+<div class="line"><span class="lineno"> 1760</span>                self.nodes_dict[new_node.name] = new_node</div>
+<div class="line"><span class="lineno"> 1761</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 <div class="ttc" id="anamespacepylo_1_1_a_p_i_connector_html_ae0f65daac93d1189e9c5ffbed3c42659"><div class="ttname"><a href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">pylo.APIConnector.get_field_or_die</a></div><div class="ttdeci">def get_field_or_die(str field_name, data)</div><div class="ttdef"><b>Definition:</b> APIConnector.py:26</div></div>
 </div><!-- fragment -->
@@ -174,10 +174,10 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1780</span>        <span class="keyword">def </span>status_is_error(self):</div>
-<div class="line"><span class="lineno"> 1781</span>            <span class="keywordflow">return</span> self._status == <span class="stringliteral">&#39;error&#39;</span></div>
-<div class="line"><span class="lineno"> 1782</span> </div>
-<div class="line"><span class="lineno"> 1783</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
+<div class="fragment"><div class="line"><span class="lineno"> 1779</span>        <span class="keyword">def </span>status_is_error(self):</div>
+<div class="line"><span class="lineno"> 1780</span>            <span class="keywordflow">return</span> self._status == <span class="stringliteral">&#39;error&#39;</span></div>
+<div class="line"><span class="lineno"> 1781</span> </div>
+<div class="line"><span class="lineno"> 1782</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -196,9 +196,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1774</span>        <span class="keyword">def </span>status_is_ok(self):</div>
-<div class="line"><span class="lineno"> 1775</span>            <span class="keywordflow">return</span> self._status == <span class="stringliteral">&#39;normal&#39;</span></div>
-<div class="line"><span class="lineno"> 1776</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1773</span>        <span class="keyword">def </span>status_is_ok(self):</div>
+<div class="line"><span class="lineno"> 1774</span>            <span class="keywordflow">return</span> self._status == <span class="stringliteral">&#39;normal&#39;</span></div>
+<div class="line"><span class="lineno"> 1775</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -217,9 +217,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1777</span>        <span class="keyword">def </span>status_is_warning(self):</div>
-<div class="line"><span class="lineno"> 1778</span>            <span class="keywordflow">return</span> self._status == <span class="stringliteral">&#39;warning&#39;</span></div>
-<div class="line"><span class="lineno"> 1779</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1776</span>        <span class="keyword">def </span>status_is_warning(self):</div>
+<div class="line"><span class="lineno"> 1777</span>            <span class="keywordflow">return</span> self._status == <span class="stringliteral">&#39;warning&#39;</span></div>
+<div class="line"><span class="lineno"> 1778</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -238,17 +238,17 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1763</span>        <span class="keyword">def </span>to_string(self):</div>
-<div class="line"><span class="lineno"> 1764</span>            ret = <span class="stringliteral">&#39;&#39;</span></div>
-<div class="line"><span class="lineno"> 1765</span>            ret += <span class="stringliteral">&quot;cluster fqdn: &#39;{}&#39;\n&quot;</span>.format(self.fqdn)</div>
-<div class="line"><span class="lineno"> 1766</span>            ret += <span class="stringliteral">&quot;type: &#39;{}&#39;\n&quot;</span>.format(self.type)</div>
-<div class="line"><span class="lineno"> 1767</span>            ret += <span class="stringliteral">&quot;status: &#39;{}&#39;\n&quot;</span>.format(self._status)</div>
-<div class="line"><span class="lineno"> 1768</span>            ret += <span class="stringliteral">&quot;nodes details:\n&quot;</span></div>
-<div class="line"><span class="lineno"> 1769</span>            <span class="keywordflow">for</span> node <span class="keywordflow">in</span> self.nodes_dict.values():</div>
-<div class="line"><span class="lineno"> 1770</span>                ret += node.to_string(indent=<span class="stringliteral">&#39;  &#39;</span>)</div>
-<div class="line"><span class="lineno"> 1771</span> </div>
-<div class="line"><span class="lineno"> 1772</span>            <span class="keywordflow">return</span> ret</div>
-<div class="line"><span class="lineno"> 1773</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1762</span>        <span class="keyword">def </span>to_string(self):</div>
+<div class="line"><span class="lineno"> 1763</span>            ret = <span class="stringliteral">&#39;&#39;</span></div>
+<div class="line"><span class="lineno"> 1764</span>            ret += <span class="stringliteral">&quot;cluster fqdn: &#39;{}&#39;\n&quot;</span>.format(self.fqdn)</div>
+<div class="line"><span class="lineno"> 1765</span>            ret += <span class="stringliteral">&quot;type: &#39;{}&#39;\n&quot;</span>.format(self.type)</div>
+<div class="line"><span class="lineno"> 1766</span>            ret += <span class="stringliteral">&quot;status: &#39;{}&#39;\n&quot;</span>.format(self._status)</div>
+<div class="line"><span class="lineno"> 1767</span>            ret += <span class="stringliteral">&quot;nodes details:\n&quot;</span></div>
+<div class="line"><span class="lineno"> 1768</span>            <span class="keywordflow">for</span> node <span class="keywordflow">in</span> self.nodes_dict.values():</div>
+<div class="line"><span class="lineno"> 1769</span>                ret += node.to_string(indent=<span class="stringliteral">&#39;  &#39;</span>)</div>
+<div class="line"><span class="lineno"> 1770</span> </div>
+<div class="line"><span class="lineno"> 1771</span>            <span class="keywordflow">return</span> ret</div>
+<div class="line"><span class="lineno"> 1772</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -346,7 +346,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 3 2022 17:29:02 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Sat Mar 5 2022 14:58:43 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
