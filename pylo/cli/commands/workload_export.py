@@ -28,7 +28,7 @@ class ExtraColumn:
     def apply_cli_args(self, parser: argparse.ArgumentParser):
         raise NotImplementedError()
 
-    def post_process_cli_args(self, args: Dict[str, any], , org: pylo.Organization):
+    def post_process_cli_args(self, args: Dict[str, any], org: pylo.Organization):
         raise NotImplementedError()
 
 
@@ -49,6 +49,8 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Fields on which you want to filter on')
     parser.add_argument('--keep-filters-in-report', action='store_true',
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
+    parser.add_argument('--save-location', type=str, required=False, default='./',
+                        help='The folder where this script will save generated Excel report')
 
     for extra_column in extra_columns:
         extra_column.apply_cli_args(parser)
@@ -60,12 +62,13 @@ def __main(args, org: pylo.Organization, **kwargs):
     filter_file_delimiter = args['filter_file_delimiter']
     filter_fields = args['filter_fields']
     filter_keep_in_report = args['keep_filters_in_report']
+    save_location = args['save_location']
     verbose = args['verbose']
     # print(args['filter_fields'])
 
     output_file_prefix = make_filename_with_timestamp('workload_export_')
-    output_file_csv = output_file_prefix + '.csv'
-    output_file_excel = output_file_prefix + '.xlsx'
+    output_file_csv = save_location + '/' + output_file_prefix + '.csv'
+    output_file_excel = save_location + '/' + output_file_prefix + '.xlsx'
 
     csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'managed',
                           'status', 'agent.last_heartbeat', 'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
