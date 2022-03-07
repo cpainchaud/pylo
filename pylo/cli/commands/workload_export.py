@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import pylo
 import argparse
 import sys
@@ -6,6 +8,31 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'workload-export'
+
+
+class ExtraColumn:
+    class ColumnDescription:
+        def __init__(self, name: str, nice_name: str):
+            self.name = name
+            self.nice_name = nice_name
+
+    def __init__(self):
+        extra_columns.append(self)
+
+    def column_description(self) -> ColumnDescription:
+        raise NotImplementedError()
+
+    def get_value(self, workload: pylo.Workload, org: pylo.Organization) -> str:
+        raise NotImplementedError()
+
+    def apply_cli_args(self, parser: argparse.ArgumentParser):
+        raise NotImplementedError()
+
+    def post_process_cli_args(self, args: Dict[str, any], , org: pylo.Organization):
+        raise NotImplementedError()
+
+
+extra_columns: List[ExtraColumn] = []
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -23,6 +50,9 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--keep-filters-in-report', action='store_true',
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
 
+    for extra_column in extra_columns:
+        extra_column.apply_cli_args(parser)
+
 
 def __main(args, org: pylo.Organization, **kwargs):
 
@@ -36,6 +66,14 @@ def __main(args, org: pylo.Organization, **kwargs):
     output_file_prefix = make_filename_with_timestamp('workload_export_')
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
+
+    csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'managed',
+                          'status', 'agent.last_heartbeat', 'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
+                          'href', 'agent.href']
+
+    for extra_column in extra_columns:
+        csv_report_headers.append(extra_column.column_description().name)
+        print(" - adding extra column from external plugin: " + extra_column.column_description().name)
 
     filter_csv_expected_fields = []
     filter_data = None
@@ -55,9 +93,6 @@ def __main(args, org: pylo.Organization, **kwargs):
         print('OK')
         print("   - CSV has {} columns and {} lines (headers don't count)".format(filter_data.count_columns(), filter_data.count_lines()))
 
-    csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'managed',
-                          'status', 'agent.last_heartbeat', 'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
-                          'href', 'agent.href']
     if filter_keep_in_report:
         for field in filter_data._detected_headers:
             csv_report_headers.append('_' + field)
@@ -92,6 +127,9 @@ def __main(args, org: pylo.Organization, **kwargs):
                 new_row['agent.sec_policy_sync_state'] = wkl.ven_agent.get_status_security_policy_sync_state()
                 new_row['agent.last_heartbeat'] = none_or_date(wkl.ven_agent.get_last_heartbeat_date())
                 new_row['agent.sec_policy_applied_at'] = none_or_date(wkl.ven_agent.get_status_security_policy_applied_at())
+
+            for extra_column in extra_columns:
+                new_row[extra_column.column_description().name] = extra_column.get_value(wkl, org)
         else:
             new_row = {}
 
