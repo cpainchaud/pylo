@@ -1281,42 +1281,42 @@ class APIConnector:
                 self._draft_mode_policy_decision_is_blocked = None
 
                 src = data['src']
-                self.source_ip = src['ip']
+                self.source_ip: str = src['ip']
                 self._source_iplists = src.get('ip_lists')
-                self._source_iplists_href = []
+                self._source_iplists_href: List[str] = []
                 if self._source_iplists is not None:
                     for href in self._source_iplists:
                         self._source_iplists_href.append(href['href'])
 
-                self.source_workload_href = None
+                self.source_workload_href: Optional[str] = None
                 workload_data = src.get('workload')
                 if workload_data is not None:
-                    self.source_workload_href = workload_data.get('href')
+                    self.source_workload_href: Optional[str] = workload_data.get('href')
                     if self.source_workload_href is None:
                         raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
 
-                    self.source_workload_labels_href = []
+                    self.source_workload_labels_href: Optional[List[str]] = []
                     workload_labels_data = workload_data.get('labels')
                     if workload_labels_data is not None:
                         for label_data in workload_labels_data:
                             self.source_workload_labels_href.append(label_data.get('href'))
 
                 dst = data['dst']
-                self.destination_ip = dst['ip']
+                self.destination_ip: str = dst['ip']
                 self._destination_iplists = dst.get('ip_lists')
-                self._destination_iplists_href = []
+                self._destination_iplists_href: List[str] = []
                 if self._destination_iplists is not None:
                     for href in self._destination_iplists:
                         self._destination_iplists_href.append(href['href'])
 
-                self.destination_workload_href = None
+                self.destination_workload_href: Optional[str] = None
                 workload_data = dst.get('workload')
                 if workload_data is not None:
                     self.destination_workload_href = workload_data.get('href')
                     if self.destination_workload_href is None:
                         raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
 
-                    self.destination_workload_labels_href = []
+                    self.destination_workload_labels_href: Optional[List[str]] = []
                     workload_labels_data = workload_data.get('labels')
                     if workload_labels_data is not None:
                         for label_data in workload_labels_data:
@@ -1325,16 +1325,15 @@ class APIConnector:
                 service_json = data['service']
                 self.service_json = service_json
 
-                self.service_protocol = service_json['proto']
-                self.service_port = service_json.get('port')
-                self.process_name = service_json.get('process_name')
-                self.username = service_json.get('user_name')
+                self.service_protocol: int = service_json['proto']
+                self.service_port: Optional[int] = service_json.get('port')
+                self.process_name: Optional[str] = service_json.get('process_name')
+                self.username: Optional[str] = service_json.get('user_name')
 
+                self.first_detected: str = data['timestamp_range']['first_detected']
+                self.last_detected: str = data['timestamp_range']['last_detected']
 
-                self.first_detected = data['timestamp_range']['first_detected']
-                self.last_detected = data['timestamp_range']['last_detected']
-
-                self._cast_type = data.get('transmission')
+                self._cast_type: Optional[str] = data.get('transmission')
 
             def service_to_str(self, protocol_first=True):
                 if protocol_first:
