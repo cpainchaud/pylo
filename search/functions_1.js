@@ -35,5 +35,6 @@ var searchData=
   ['api_5fupdate_5fdescription_32',['api_update_description',['../classpylo_1_1_workload_1_1_workload.html#a1ead44606c7c64cec1ef287356af45cc',1,'pylo::Workload::Workload']]],
   ['api_5fupdate_5fforced_5fname_33',['api_update_forced_name',['../classpylo_1_1_workload_1_1_workload.html#ab6e98309d319ac0d5bf702335529221f',1,'pylo::Workload::Workload']]],
   ['api_5fupdate_5fhostname_34',['api_update_hostname',['../classpylo_1_1_workload_1_1_workload.html#a062dd124803b728f2a20cff426d9bba6',1,'pylo::Workload::Workload']]],
-  ['api_5fupdate_5flabels_35',['api_update_labels',['../classpylo_1_1_workload_1_1_workload.html#aa46820ad95c7d8eb439737405d76d1bd',1,'pylo::Workload::Workload']]]
+  ['api_5fupdate_5flabels_35',['api_update_labels',['../classpylo_1_1_workload_1_1_workload.html#aa46820ad95c7d8eb439737405d76d1bd',1,'pylo::Workload::Workload']]],
+  ['apply_5fcli_5fargs_36',['apply_cli_args',['../classpylo_1_1cli_1_1commands_1_1workload__export_1_1_extra_column.html#aa6de7d76ed9fdcbdb34abb0ea9950800',1,'pylo::cli::commands::workload_export::ExtraColumn']]]
 ];
