@@ -1373,6 +1373,12 @@ class APIConnector:
             def destination_is_workload(self):
                 return self.destination_workload_href is not None
 
+            def get_source_workload_href(self):
+                return self.source_workload_href
+
+            def get_destination_workload_href(self):
+                return self.destination_workload_href
+
             def get_source_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
                 if self.source_workload_href is None:
                     return None
@@ -1392,7 +1398,6 @@ class APIConnector:
                 if not self.destination_is_workload():
                     return None
                 return self.destination_workload_labels_href
-
 
             def get_source_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
                 if self._source_iplists is None:
@@ -1503,6 +1508,7 @@ class APIConnector:
 
         def get_all_records(self,
                             draft_mode=False,
+                            deep_analysis=True,
                             draft_mode_request_count_per_batch=50
                             ) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
             result = []
@@ -1512,7 +1518,7 @@ class APIConnector:
                     result.append(new_record)
 
                 except pylo.PyloApiUnexpectedSyntax as error:
-                    pylo.log.warn(error)
+                    # pylo.log.warn(error)
 
             if len(result) > 0 and draft_mode:
                 draft_reply_to_record_table: List[APIConnector.ExplorerResultSetV1.ExplorerResult] = []
@@ -1536,15 +1542,20 @@ class APIConnector:
                         raise pylo.PyloEx("Both Source and Destinations are not workloads, it's unexpected")
 
                     if record.source_is_workload():
-
-                        local_query_data['source'] = {'labels': []}
-                        for href in record.get_source_labels_href():
-                            local_query_data['source']['labels'].append({'href': href})
+                        if deep_analysis:
+                            local_query_data['source'] = {'workload': {'href': record.get_source_workload_href()}}
+                        else:
+                            local_query_data['source'] = {'labels': []}
+                            for href in record.get_source_labels_href():
+                                local_query_data['source']['labels'].append({'href': href})
 
                         if record.destination_is_workload():
-                            local_query_data['destination'] = {'labels': []}
-                            for href in record.get_destination_labels_href():
-                                local_query_data['destination']['labels'].append({'href': href})
+                            if deep_analysis:
+                                local_query_data['destination'] = {'workload': {'href': record.get_destination_workload_href()}}
+                            else:
+                                local_query_data['destination'] = {'labels': []}
+                                for href in record.get_destination_labels_href():
+                                    local_query_data['destination']['labels'].append({'href': href})
 
                             draft_reply_to_record_table.append(record)
                             global_query_data.append(local_query_data)
@@ -1560,9 +1571,12 @@ class APIConnector:
 
                     else:
 
-                        local_query_data['destination'] = {'labels': []}
-                        for href in record.get_destination_labels_href():
-                            local_query_data['destination']['labels'].append({'href': href})
+                        if deep_analysis:
+                            local_query_data['destination'] = {'workload': {'href': record.get_destination_workload_href()}}
+                        else:
+                            local_query_data['destination'] = {'labels': []}
+                            for href in record.get_destination_labels_href():
+                                local_query_data['destination']['labels'].append({'href': href})
 
                         if record.source_is_workload():
                             local_query_data['source'] = {'labels': []}
@@ -1576,7 +1590,7 @@ class APIConnector:
                             iplists_href = record.get_source_iplists_href()
                             for iplist_href in iplists_href:
                                 local_unique_query_data = local_query_data.copy()
-                                local_unique_query_data['source'] = {'ip_list': { 'href': iplist_href}}
+                                local_unique_query_data['source'] = {'ip_list': {'href': iplist_href}}
 
                                 draft_reply_to_record_table.append(record)
                                 global_query_data.append(local_unique_query_data)
@@ -1613,7 +1627,7 @@ class APIConnector:
                         response_data = edges[query_index-local_index]
                         # print(response_data)
                         if type(response_data) is not list or len(response_data) != 1:
-                            raise pylo.PyloEx("rule_coverage has return invalid data: {}\n against query: {}".format(pylo.nice_json(response_data),
+                            raise pylo.PyloEx("rule_coverage has returned invalid data: {}\n against query: {}".format(pylo.nice_json(response_data),
                                                                                                                      pylo.nice_json(query_data[query_index])))
 
                         rule_list = response_data[0]
