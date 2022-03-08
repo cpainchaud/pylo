@@ -146,6 +146,9 @@ class DirectServiceInRule:
     def is_udp(self):
         return self.protocol == 17
 
+    def is_icmp(self):
+        return self.protocol == 1
+
     def to_string_standard(self, protocol_first=True):
         if self.protocol == 17:
             if self.to_port is None:
@@ -206,6 +209,8 @@ class DirectServiceInRule:
                 protocol_int = 6
             elif proto_lower == 'udp':
                 protocol_int = 17
+            elif proto_lower == 'proto':
+                return DirectServiceInRule(proto=int(port_input))
             else:
                 raise PyloEx("Invalid protocol provided: {}".format(proto))
         else:
