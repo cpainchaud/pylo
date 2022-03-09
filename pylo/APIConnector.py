@@ -1518,7 +1518,7 @@ class APIConnector:
                     result.append(new_record)
 
                 except pylo.PyloApiUnexpectedSyntax as error:
-                    # pylo.log.warn(error)
+                    pylo.log.warn(error)
 
             if len(result) > 0 and draft_mode:
                 draft_reply_to_record_table: List[APIConnector.ExplorerResultSetV1.ExplorerResult] = []
