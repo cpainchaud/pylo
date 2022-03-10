@@ -1524,7 +1524,8 @@ class APIConnector:
 
                     for record in records:
                         hash = record.source_ip + record.destination_ip + str(record.source_workload_href) + \
-                               str(record.destination_workload_href) + record.service_to_str() + record.draft_mode_policy_decision_to_str()
+                               str(record.destination_workload_href) + record.service_to_str() + \
+                               record.policy_decision_string + record.draft_mode_policy_decision_to_str()
                         hashEntry = self.entries.get(hash)
                         if hashEntry is None:
                             self.entries[hash] = [record]
