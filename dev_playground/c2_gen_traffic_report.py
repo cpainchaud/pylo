@@ -402,8 +402,7 @@ for ruleset, rules in rules_results.rules_per_ruleset.items():
 # </editor-fold>
 
 # <editor-fold desc="Inbound traffic handling">
-
-
+print()
 print(" * Requesting 'Inbound' traffic records from PCE... ", end='')
 explorer_inbound_filters = connector.ExplorerFilterSetV1(max_results=traffic_max_results)
 if app_label is not None:
@@ -437,6 +436,11 @@ pylo.clock_start('inbound_log_draft')
 print(" * Requesting 'Inbound' draft mode records... ", end='')
 all_records = inbound_results.get_all_records(draft_mode=True)
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('inbound_log_draft')))
+
+pylo.clock_start('inbound_log_merge')
+print(" * Merging similar logs... ", end='')
+all_records = connector.ExplorerResultSetV1.mergeRecordsProcessAndUserDiffers(all_records)
+print("OK!  {} records left (exec_time:{})".format(len(all_records), pylo.clock_elapsed_str('inbound_log_merge')))
 
 pylo.clock_start('inbound_log_process')
 print(" * Processing 'Inbound' traffic logs... ", end='')
@@ -528,6 +532,7 @@ print("OK! (exec_time:{}, dns_count:{})".format(pylo.clock_elapsed_str('inbound_
 # </editor-fold>
 
 # <editor-fold desc="Outbound traffic handling">
+print()
 print(" * Requesting 'Outbound' traffic records from PCE... ", end='')
 explorer_outbound_filters = connector.ExplorerFilterSetV1(max_results=traffic_max_results)
 if role_label is not None:
@@ -563,6 +568,11 @@ pylo.clock_start('outbound_log_draft')
 print(" * Requesting 'Outbound' draft mode records... ", end='')
 all_records = outbound_results.get_all_records(draft_mode=True)
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('outbound_log_draft')))
+
+pylo.clock_start('outbound_log_merge')
+print(" * Merging similar logs... ", end='')
+all_records = connector.ExplorerResultSetV1.mergeRecordsProcessAndUserDiffers(all_records)
+print("OK! {} records left (exec_time:{})".format(len(all_records), pylo.clock_elapsed_str('outbound_log_merge')))
 
 pylo.clock_start('outbound_log_process')
 print(" * Processing 'Outbound' traffic logs... ", end='')

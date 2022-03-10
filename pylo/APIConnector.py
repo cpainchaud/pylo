@@ -1480,6 +1480,14 @@ class APIConnector:
             def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
                 return self._draft_mode_policy_decision_is_blocked is None
 
+            def draft_mode_policy_decision_to_str(self) -> str:
+                if self._draft_mode_policy_decision_is_blocked is None:
+                    return 'not_available'
+                if self._draft_mode_policy_decision_is_blocked:
+                    return 'blocked'
+                return 'allow'
+
+
         def __init__(self, data, owner: 'pylo.APIConnector', emulated_process_exclusion={}):
             self._raw_results = data
             if len(emulated_process_exclusion) > 0:
@@ -1505,6 +1513,72 @@ class APIConnector:
                                   format(line, len(self._raw_results)))
 
             return APIConnector.ExplorerResultSetV1.ExplorerResult(self._raw_results[line])
+
+        @staticmethod
+        def mergeRecordsProcessAndUserDiffers(records: List['APIConnector.ExplorerResultSetV1.ExplorerResult']) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
+            class HashTable:
+                def __init__(self):
+                    self.entries: Dict[str, List['APIConnector.ExplorerResultSetV1.ExplorerResult']] = {}
+
+                def load(self, records: List['APIConnector.ExplorerResultSetV1.ExplorerResult']):
+
+                    for record in records:
+                        hash = record.source_ip + record.destination_ip + str(record.source_workload_href) + \
+                               str(record.destination_workload_href) + record.service_to_str() + record.draft_mode_policy_decision_to_str()
+                        hashEntry = self.entries.get(hash)
+                        if hashEntry is None:
+                            self.entries[hash] = [record]
+                        else:
+                            hashEntry.append(record)
+
+                def results(self) -> List['APIConnector.ExplorerResultSetV1.ExplorerResult']:
+
+                    results: List['APIConnector.ExplorerResultSetV1.ExplorerResult'] = []
+
+                    for hashEntry in self.entries.values():
+                        if len(hashEntry) == 1:
+                            results.append(hashEntry[0])
+                            continue
+
+                        ruleToKeep = hashEntry.pop()
+                        mergedUsers = []
+                        mergedProcesses = []
+                        count = 0
+                        last_detected = ruleToKeep.last_detected
+                        first_detected = ruleToKeep.first_detected
+
+                        for record in hashEntry:
+                            if record.username is not None and len(record.username) > 0:
+                                mergedUsers.append(record.username)
+                            if record.process_name is not None and len(record.process_name) > 0:
+                                mergedProcesses.append(record.process_name)
+                            if last_detected < record.last_detected:
+                                last_detected = record.last_detected
+                            if first_detected > record.first_detected:
+                                first_detected = record.first_detected
+
+                            count = count + record.num_connections
+
+                        mergedUsers = list(set(mergedUsers))
+                        mergedProcesses = list(set(mergedProcesses))
+
+                        ruleToKeep.process_name = mergedProcesses
+                        ruleToKeep.username = mergedUsers
+                        ruleToKeep.num_connections = count
+                        ruleToKeep.last_detected = last_detected
+                        ruleToKeep.first_detected = first_detected
+
+                        results.append(ruleToKeep)
+
+                    return results
+
+            hashTable: HashTable = HashTable()
+            hashTable.load(records)
+            results = hashTable.results()
+
+
+            return results
+
 
         def get_all_records(self,
                             draft_mode=False,
