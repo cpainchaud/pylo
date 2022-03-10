@@ -122,6 +122,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8c75a448a9ef05a46364f283da487468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a864c0ad275368f27c08d60b8d5859def"><td class="memItemLeft" align="right" valign="top">Optional[bool]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_result_set_v1_1_1_explorer_result.html#a864c0ad275368f27c08d60b8d5859def">draft_mode_policy_decision_is_not_defined</a> (self)</td></tr>
 <tr class="separator:a864c0ad275368f27c08d60b8d5859def"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a75add65d4fc443876eaccd3609569"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_result_set_v1_1_1_explorer_result.html#ab6a75add65d4fc443876eaccd3609569">draft_mode_policy_decision_to_str</a> (self)</td></tr>
+<tr class="separator:ab6a75add65d4fc443876eaccd3609569"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -382,7 +384,33 @@ Public Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno"> 1480</span>            <span class="keyword">def </span>draft_mode_policy_decision_is_not_defined(self) -&gt; Optional[bool]:</div>
 <div class="line"><span class="lineno"> 1481</span>                <span class="keywordflow">return</span> self._draft_mode_policy_decision_is_blocked <span class="keywordflow">is</span> <span class="keywordtype">None</span></div>
 <div class="line"><span class="lineno"> 1482</span> </div>
-<div class="line"><span class="lineno"> 1483</span>        <span class="keyword">def </span>__init__(self, data, owner: <span class="stringliteral">&#39;pylo.APIConnector&#39;</span>, emulated_process_exclusion={}):</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab6a75add65d4fc443876eaccd3609569" name="ab6a75add65d4fc443876eaccd3609569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6a75add65d4fc443876eaccd3609569">&#9670;&nbsp;</a></span>draft_mode_policy_decision_to_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> str pylo.APIConnector.APIConnector.ExplorerResultSetV1.ExplorerResult.draft_mode_policy_decision_to_str </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno"> 1483</span>            <span class="keyword">def </span>draft_mode_policy_decision_to_str(self) -&gt; str:</div>
+<div class="line"><span class="lineno"> 1484</span>                <span class="keywordflow">if</span> self._draft_mode_policy_decision_is_blocked <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1485</span>                    <span class="keywordflow">return</span> <span class="stringliteral">&#39;not_available&#39;</span></div>
+<div class="line"><span class="lineno"> 1486</span>                <span class="keywordflow">if</span> self._draft_mode_policy_decision_is_blocked:</div>
+<div class="line"><span class="lineno"> 1487</span>                    <span class="keywordflow">return</span> <span class="stringliteral">&#39;blocked&#39;</span></div>
+<div class="line"><span class="lineno"> 1488</span>                <span class="keywordflow">return</span> <span class="stringliteral">&#39;allow&#39;</span></div>
+<div class="line"><span class="lineno"> 1489</span> </div>
+<div class="line"><span class="lineno"> 1490</span> </div>
+<div class="line"><span class="lineno"> 1491</span>        <span class="keyword">def </span>__init__(self, data, owner: <span class="stringliteral">&#39;pylo.APIConnector&#39;</span>, emulated_process_exclusion={}):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -963,7 +991,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 10 2022 14:56:45 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Thu Mar 10 2022 17:00:18 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
