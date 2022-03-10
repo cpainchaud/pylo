@@ -7,10 +7,13 @@ from datetime import datetime, timedelta
 import socket
 import time
 from typing import Union, Optional, Dict, List, Any
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import c2_shared
 from c2_shared import excel_struct
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 # makes unbuffered output
@@ -483,13 +486,12 @@ for record in all_records:
                 'first_seen': record.first_detected,
                 'process_name': record.process_name,
                 'username': record.username,
-                'to_be_implemented': False
+                'to_be_implemented': False,
+                'onboarded': is_onboarded
                 }
 
         if is_core_service:
             excel_doc.add_line_from_object(data, excel_struct.title.inbound_cs_identified)
-        elif is_onboarded:
-            excel_doc.add_line_from_object(data, excel_struct.title.inbound_onboarded)
         else:
             excel_doc.add_line_from_object(data, excel_struct.title.inbound_identified)
 
@@ -607,13 +609,12 @@ for record in all_records:
                 'first_seen': record.first_detected,
                 'process_name': record.process_name,
                 'username': record.username,
-                'to_be_implemented': False
+                'to_be_implemented': False,
+                'onboarded': is_onboarded
                 }
 
         if is_core_service:
             excel_doc.add_line_from_object(data, excel_struct.title.outbound_cs_identified)
-        elif is_onboarded:
-            excel_doc.add_line_from_object(data, excel_struct.title.outbound_onboarded)
         else:
             excel_doc.add_line_from_object(data, excel_struct.title.outbound_identified)
 

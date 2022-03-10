@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 try:
     import xlsxwriter
@@ -99,12 +99,13 @@ class ArraysToExcel:
     _sheets: Dict[str, 'ArraysToExcel.Sheet']
 
     class Sheet:
-        def __init__(self, headers, force_all_wrap_text=True):
+        def __init__(self, headers, force_all_wrap_text=True, sheet_color: Optional[str] = None):
             self._headers = headers
             self._columns_count = len(headers)
             self._lines = []
             self._width = []
             self._columns_wrap = []
+            self._color = sheet_color
 
             self._headers_name_to_index = {}
             self._headers_index_to_name = []
@@ -178,6 +179,8 @@ class ArraysToExcel:
                 return length
 
             xls_worksheet = xls_workbook.add_worksheet(sheet_name)
+            if self._color is not None:
+                xls_worksheet.tab_color = self._color
             xls_headers = []
             xls_data = []
 
@@ -243,11 +246,11 @@ class ArraysToExcel:
     def __init__(self):
         self._sheets = {}
 
-    def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True):
+    def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None):
         if name in self._sheets:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))
 
-        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text)
+        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text, sheet_color=sheet_color)
 
     def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)

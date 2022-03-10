@@ -29,13 +29,13 @@ class ExcelStruct:
             self.fingerprint = 'DO NOT EDIT'
             self.workloads = 'Server Estate'
             self.rulesets = 'Rulesets'
-            self.inbound_identified = 'Inbound Id'
-            self.outbound_identified = 'Outbound Id'
-            self.inbound_onboarded = 'I Onboarded'
-            self.inbound_unidentified = 'I Unknown'
+            self.inbound_identified = 'Inbound Assets'
+            self.outbound_identified = 'Outbound Assets'
+#            self.inbound_onboarded = 'I Onboarded'
+            self.inbound_unidentified = 'Inbound IP'
             self.inbound_cs_identified = 'I CoreService'
-            self.outbound_onboarded = 'O Onboarded'
-            self.outbound_unidentified = 'O Unknown'
+#            self.outbound_onboarded = 'O Onboarded'
+            self.outbound_unidentified = 'Outbound IP'
             self.outbound_cs_identified = 'O CoreService'
 
     class Columns:
@@ -67,11 +67,11 @@ class ExcelStruct:
         inbound_identified = ['src_ip', fields.src_hostname, 'src_role', fields.src_app, 'src_environment', fields.src_loc,
                                            'dst_ip', fields.dst_hostname, 'dst_role', # fields.dst_app, 'dst_environment', 'dst_location',
                                            'dst_port', 'dst_proto', 'count', fields.proc_name, 'username','to_be_implemented',
-                                           'last_seen', 'first_seen',]
+                                           'last_seen', 'first_seen', 'onboarded']
         outbound_identified = ['src_ip', fields.src_hostname, 'src_role', # 'src_application', 'src_environment', fields.src_loc,
                                             'dst_ip', fields.dst_hostname, 'dst_role', fields.dst_app, 'dst_environment', 'dst_location',
                                             'dst_port', 'dst_proto', 'count', fields.proc_name, 'username', 'to_be_implemented',
-                                            'last_seen', 'first_seen']
+                                            'last_seen', 'first_seen', 'onboarded']
         inbound_onboarded = ['src_ip', fields.src_hostname, 'src_role', fields.src_app, 'src_environment', fields.src_loc,
                                           'dst_ip', fields.dst_hostname, 'dst_role', # fields.dst_app, 'dst_environment', 'dst_location',
                                           'dst_port', 'dst_proto', 'count', fields.proc_name, 'username', 'to_be_implemented',
@@ -114,14 +114,14 @@ class __Data(TypedDict):
 excel_sheets_creation_order: List[__Data] = [
 
     # Inbound
-    {'title': excel_struct.title.inbound_identified, 'columns': excel_struct.columns.inbound_identified, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.inbound_onboarded, 'columns': excel_struct.columns.inbound_onboarded, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.inbound_unidentified, 'columns': excel_struct.columns.inbound_unidentified, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.inbound_identified, 'columns': excel_struct.columns.inbound_identified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
+    #{'title': excel_struct.title.inbound_onboarded, 'columns': excel_struct.columns.inbound_onboarded, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.inbound_unidentified, 'columns': excel_struct.columns.inbound_unidentified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
 
     # Outbound
-    {'title': excel_struct.title.outbound_identified, 'columns': excel_struct.columns.outbound_identified, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.outbound_onboarded, 'columns': excel_struct.columns.outbound_onboarded, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.outbound_unidentified, 'columns': excel_struct.columns.outbound_unidentified, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.outbound_identified, 'columns': excel_struct.columns.outbound_identified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
+    #{'title': excel_struct.title.outbound_onboarded, 'columns': excel_struct.columns.outbound_onboarded, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.outbound_unidentified, 'columns': excel_struct.columns.outbound_unidentified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
 
 
     {'title': excel_struct.title.inbound_cs_identified, 'columns': excel_struct.columns.inbound_cs_identified, 'force_all_wrap_text': False},
@@ -133,7 +133,7 @@ excel_sheets_creation_order: List[__Data] = [
 ]
 
 for(sheet_data) in excel_sheets_creation_order:
-    excel_doc.create_sheet(sheet_data['title'], sheet_data['columns'], sheet_data['force_all_wrap_text'])
+    excel_doc.create_sheet(sheet_data['title'], sheet_data['columns'], sheet_data['force_all_wrap_text'], sheet_data.get('color'))
 
 
 def load_config_file(filename='c2_config.json') -> bool:
