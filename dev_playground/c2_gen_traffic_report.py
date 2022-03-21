@@ -235,7 +235,7 @@ else:
 
 print(" - Looking for Onboarded label '{}' in PCE database...".format(c2_shared.onboarded_apps_label_group), end='')
 find_onboarded_label = org.LabelStore.find_label_by_name_whatever_type(c2_shared.onboarded_apps_label_group)
-if find_cs_label is None:
+if find_onboarded_label is None:
     pylo.log.error("NOT FOUND!\n\n** Please check that you didn't misspell the name (case-sensitive)**")
     exit(1)
 print(" OK!")
