@@ -51,6 +51,7 @@ class ExcelStruct:
             dst_hostname: __Data = {'max_width': 15, 'name': 'dst_hostname'}
 
             proc_name: __Data = {'max_width': 15, 'name': 'process_name'}
+            username: __Data = {'max_width': 15, 'name': 'username'}
 
         fields = Field()
 

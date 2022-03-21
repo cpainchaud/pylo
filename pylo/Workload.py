@@ -451,7 +451,8 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         if self.forced_name is not None:
             return self.forced_name
         if self.hostname is None:
-            raise PyloEx("Cannot find workload name!")
+            pylo.get_logger().warning("workload with href '{}' has no name nor host name".format(self.href))
+            return "*unknown*"
         return self.hostname
 
     def get_name_stripped_fqdn(self):
