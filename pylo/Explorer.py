@@ -460,3 +460,135 @@ class ExplorerResultSetV1:
                 index += draft_mode_request_count_per_batch
 
         return result
+
+
+class RuleCoverageQueryManager:
+
+
+    class QueryServices:
+        def __init__(self):
+            self.service_hash_to_index: Dict[str, int] = {}
+            self.services_array: List[Dict] = []
+            self.service_index_to_log_ids: Dict[int, List[int]] = {}
+
+        def add_service(self, service_record: Dict, log_id: int):
+            service_hash = '' + str(service_record.get('proto', 'no_proto')) + '/' + str(service_record.get('port', 'no_port')) + '/' \
+                           + '/' + str(service_record.get('process_name', 'no_process_name')) \
+                           + '/' + str(service_record.get('username', 'no_username'))
+
+            # print(service_hash)
+
+            if service_hash not in self.service_hash_to_index:
+                self.service_hash_to_index[service_hash] = len(self.services_array)
+                self.services_array.append(service_record)
+
+            service_index = self.service_hash_to_index[service_hash]
+            if service_index not in self.service_index_to_log_ids:
+                self.service_index_to_log_ids[service_index] = []
+
+            for id in self.service_index_to_log_ids[service_index]:
+                if id != log_id:
+                    return
+
+            if log_id not in self.service_index_to_log_ids[service_index]:
+                self.service_index_to_log_ids[service_index].append(log_id)
+
+    class IPListToWorkloadQuery:
+        def __init__(self, ip_list_href: str, workload_href: str):
+            self.ip_list_href = ip_list_href
+            self.workload_href = workload_href
+            self.services = RuleCoverageQueryManager.QueryServices()
+
+        def add_service(self, service_record: Dict, log_id: int):
+            self.services.add_service(service_record, log_id)
+
+    class WorkloadToIPListQuery:
+        def __init__(self, workload_href: str, ip_list_href: str):
+            self.workload_href = workload_href
+            self.ip_list_href = ip_list_href
+            self.services = RuleCoverageQueryManager.QueryServices()
+
+        def add_service(self, service_record: Dict, log_id: int):
+            self.services.add_service(service_record, log_id)
+
+    class WorkloadToWorkloadQuery:
+        def __init__(self, src_workload_href: str, dst_workload_href: str):
+            self.src_workload_href = src_workload_href
+            self.dst_workload_href = dst_workload_href
+            self.services = RuleCoverageQueryManager.QueryServices()
+
+        def add_service(self, service_record: Dict, log_id: int):
+            self.services.add_service(service_record, log_id)
+
+    class IPListToWorkloadQueryManager:
+        def __init__(self):
+            self.queries: Dict[str, 'RuleCoverageQueryManager.IPListToWorkloadQuery'] = {}
+
+        def add_query(self, log_id: int, ip_list_href: str, workload_href: str, service_record):
+            hash_key = ip_list_href + workload_href
+            if hash_key not in self.queries:
+                self.queries[hash_key] = RuleCoverageQueryManager.IPListToWorkloadQuery(ip_list_href, workload_href)
+
+            self.queries[hash_key].add_service(service_record, log_id)
+
+    class WorkloadToIPListQueryManager:
+        def __init__(self):
+            self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToIPListQuery'] = {}
+
+        def add_query(self, log_id: int, workload_href: str, ip_list_href: str, service_record):
+            hash_key = workload_href + ip_list_href
+            if hash_key not in self.queries:
+                self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToIPListQuery(workload_href, ip_list_href)
+
+            self.queries[hash_key].add_service(service_record, log_id)
+
+    class WorkloadToWorkloadQueryManager:
+        def __init__(self):
+            self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToWorkloadQuery'] = {}
+
+        def add_query(self, log_id: int, src_workload_href: str, dst_workload_href: str, service_record):
+            hash_key = src_workload_href + dst_workload_href
+            if hash_key not in self.queries:
+                self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToWorkloadQuery(src_workload_href, dst_workload_href)
+
+            self.queries[hash_key].add_service(service_record, log_id)
+
+    def __init__(self, owner: APIConnector):
+        self.owner = owner
+        self.iplist_to_workload_query_manager = RuleCoverageQueryManager.IPListToWorkloadQueryManager()
+        self.workload_to_iplist_query_manager = RuleCoverageQueryManager.WorkloadToIPListQueryManager()
+        self.workload_to_workload_query_manager = RuleCoverageQueryManager.WorkloadToWorkloadQueryManager()
+        self.log_id = 0
+        self.log_to_id: Dict[ExplorerResultSetV1.ExplorerResult, int] = {}
+
+    def add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):
+        self.log_id += 1
+        self.log_to_id[log] = self.log_id
+
+        if not log.source_is_workload():
+            if log.destination_is_workload():
+                for iplist_href in log.get_source_iplists_href():
+                    self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,
+                                                                    ip_list_href=iplist_href,
+                                                                    workload_href=log.get_destination_workload_href(),
+                                                                    service_record=log.service_json)
+            else:  # IPList to IPList should never happen!
+                pass
+        else:
+            if not log.destination_is_workload():
+                for iplist_href in log.get_destination_iplists_href():
+                    self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,
+                                                                    ip_list_href=iplist_href,
+                                                                    workload_href=log.get_source_workload_href(),
+                                                                    service_record=log.service_json)
+            else:
+                self.workload_to_workload_query_manager.add_query(log_id=self.log_id,
+                                                                  src_workload_href=log.get_source_workload_href(),
+                                                                  dst_workload_href=log.get_destination_workload_href(),
+                                                                  service_record=log.service_json)
+
+    def count_queries(self):
+        return len(self.iplist_to_workload_query_manager.queries)\
+               + len(self.workload_to_iplist_query_manager.queries)\
+               + len(self.workload_to_workload_query_manager.queries)
+

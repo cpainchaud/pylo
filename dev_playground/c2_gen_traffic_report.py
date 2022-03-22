@@ -434,7 +434,13 @@ print("OK!  (received {} rows)".format(inbound_results.count_results()))
 
 pylo.clock_start('inbound_log_draft')
 print(" * Requesting 'Inbound' draft mode records... ", end='')
-all_records = inbound_results.get_all_records(draft_mode=True)
+# all_records = inbound_results.get_all_records(draft_mode=True)
+all_records = inbound_results.get_all_records()
+draftManager = pylo.RuleCoverageQueryManager(org.connector)
+for record in all_records:
+    draftManager.add_query_from_explorer_result(record)
+print("queries count to send to API: {}".format(draftManager.count_queries()))
+
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('inbound_log_draft')))
 
 pylo.clock_start('inbound_log_merge')
