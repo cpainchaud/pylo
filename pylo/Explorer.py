@@ -165,7 +165,7 @@ class ExplorerResultSetV1:
                 return None
             if self._source_iplists_href is None:
                 return []
-            return self._source_iplists_href
+            return self._source_iplists_href.copy()
 
         def get_destination_iplists_href(self) -> Optional[List[str]]:
             if self.destination_is_workload():
@@ -173,7 +173,7 @@ class ExplorerResultSetV1:
 
             if self._destination_iplists_href is None:
                 return []
-            return self._destination_iplists_href
+            return self._destination_iplists_href.copy()
 
         def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
             if self._destination_iplists is None:
@@ -448,7 +448,7 @@ class ExplorerResultSetV1:
                                                                                                                    pylo.nice_json(query_data[query_index])))
 
                     rule_list = response_data[0]
-                    #print(rule_list)
+                    # print(rule_list)
                     explorer_result = draft_reply_to_record_table[query_index]
                     if explorer_result.draft_mode_policy_decision_is_not_defined():
                         explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) < 1)
@@ -469,12 +469,13 @@ class RuleCoverageQueryManager:
             self.service_hash_to_index: Dict[str, int] = {}
             self.services_array: List[Dict] = []
             self.service_index_to_log_ids: Dict[int, List[int]] = {}
-            self.service_index_policy_coverage: Dict[int, List[Dict]] = {}
+            self.service_index_policy_coverage: Dict[int, List[str]] = {}
 
         def add_service(self, service_record: Dict, log_id: int):
             service_hash = '' + str(service_record.get('proto', 'no_proto')) + '/' + str(service_record.get('port', 'no_port')) + '/' \
                            + '/' + str(service_record.get('process_name', 'no_process_name')) \
-                           + '/' + str(service_record.get('username', 'no_username'))
+                           + '/' + str(service_record.get('windows_service_name', 'no_windows_service_name'))
+                            #  username is not allows in rule_coverage
 
             # print(service_hash)
 
@@ -495,9 +496,8 @@ class RuleCoverageQueryManager:
             for service_id, list_of_log_ids in self.service_index_to_log_ids.items():
                 if log_id in list_of_log_ids:
                     policy_decision = 'blocked'
-                    logid_position = list_of_log_ids.index(log_id)
-                    policy_coverage = self.service_index_policy_coverage[service_id][logid_position]
-                    if len(policy_coverage) > 0 :
+                    policy_coverage = self.service_index_policy_coverage[service_id]
+                    if len(policy_coverage) > 0:
                         policy_decision = 'allowed'
                         return policy_decision
 
@@ -515,6 +515,36 @@ class RuleCoverageQueryManager:
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
             return self.services.get_policy_decision_for_log_id(log_id)
 
+        def generate_api_payload(self) -> Dict:
+            payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
+                       'source': {'ip_list': {'href': self.ip_list_href}},
+                       'destination': {'workload': {'href': self.workload_href}}
+                       }
+
+            for service_id in range(0, len(self.services.services_array)):
+                service = self.services.services_array[service_id]
+                # print(service)
+                service_json: Dict = service.copy()
+                service_json['protocol'] = service_json.pop('proto')
+                if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
+                    service_json.pop('port')
+                if 'user_name' in service_json:
+                    service_json.pop('user_name')
+                payload['services'].append(service_json)
+
+            return payload
+
+        def process_response(self, rules: Dict[str, str], response: [[str]]):
+            if len(response) != len(self.services.services_array):
+                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
+
+            for index, single_response in enumerate(response):
+                rules_array: [Dict] = []
+                for rule in single_response:
+                    rules_array.append(rules[rule])
+                self.services.service_index_policy_coverage[index] = rules_array
+
+
     class WorkloadToIPListQuery:
         def __init__(self, workload_href: str, ip_list_href: str):
             self.workload_href = workload_href
@@ -526,6 +556,35 @@ class RuleCoverageQueryManager:
 
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
             return self.services.get_policy_decision_for_log_id(log_id)
+
+        def generate_api_payload(self) -> Dict:
+            payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
+                       'destination': {'ip_list': {'href': self.ip_list_href}},
+                       'source': {'workload': {'href': self.workload_href}}
+                       }
+
+            for service_id in range(0, len(self.services.services_array)):
+                service = self.services.services_array[service_id]
+                # print(service)
+                service_json: Dict = service.copy()
+                service_json['protocol'] = service_json.pop('proto')
+                if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
+                    service_json.pop('port')
+                if 'user_name' in service_json:
+                    service_json.pop('user_name')
+                payload['services'].append(service_json)
+
+            return payload
+
+        def process_response(self, rules: Dict[str, str], response: [[str]]):
+            if len(response) != len(self.services.services_array):
+                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
+
+            for index, single_response in enumerate(response):
+                rules_array: [Dict] = []
+                for rule in single_response:
+                    rules_array.append(rules[rule])
+                self.services.service_index_policy_coverage[index] = rules_array
 
     class WorkloadToWorkloadQuery:
         def __init__(self, src_workload_href: str, dst_workload_href: str):
@@ -539,7 +598,34 @@ class RuleCoverageQueryManager:
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
             return self.services.get_policy_decision_for_log_id(log_id)
 
+        def generate_api_payload(self) -> Dict:
+            payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
+                       'source': {'workload': {'href': self.src_workload_href}},
+                       'destination': {'workload': {'href': self.dst_workload_href}}
+                       }
 
+            for service_id in range(0, len(self.services.services_array)):
+                service = self.services.services_array[service_id]
+                # print(service)
+                service_json: Dict = service.copy()
+                service_json['protocol'] = service_json.pop('proto')
+                if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
+                    service_json.pop('port')
+                if 'user_name' in service_json:
+                    service_json.pop('user_name')
+                payload['services'].append(service_json)
+
+            return payload
+
+        def process_response(self, rules: Dict[str, str], response: [[str]]):
+            if len(response) != len(self.services.services_array):
+                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
+
+            for index, single_response in enumerate(response):
+                rules_array: [Dict] = []
+                for rule in single_response:
+                    rules_array.append(rules[rule])
+                self.services.service_index_policy_coverage[index] = rules_array
 
     class IPListToWorkloadQueryManager:
         def __init__(self):
@@ -555,11 +641,54 @@ class RuleCoverageQueryManager:
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
             policy_decision = None
             for query in self.queries.values():
-                policy_decision = query.get_policy_decision_for_log_id(log_id)
+                policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
+                # print('policy decision: ' + str(policy_decision) + ' for log id: ' + str(log_id))
                 if policy_decision == 'allowed':
                     return policy_decision
 
             return policy_decision
+
+        def execute(self, connector: APIConnector, queries_per_batch: int):
+            # split queries into arrays of size queries_per_batch
+            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
+            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
+            for query in self.queries.values():
+                query_batch.append(query)
+                if len(query_batch) == queries_per_batch:
+                    query_batches.append(query_batch)
+                    query_batch = []
+            if len(query_batch) > 0:
+                query_batches.append(query_batch)
+
+            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
+
+            for query_batch in query_batches:
+                # print(f'Executing batch of {len(query_batch)} queries')
+                payload = []
+                for query in query_batch:
+                    payload.append(query.generate_api_payload())
+
+                api_response = connector.rule_coverage_query(payload)
+                # print(api_response)
+                # print('-------------------------------------------------------')
+
+                edges = api_response.get('edges')
+                if edges is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
+
+                rules = api_response.get('rules')
+                if rules is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
+
+                if len(edges) != len(query_batch):
+                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
+
+                for response_index, edge in enumerate(edges):
+                    query = query_batch[response_index]
+                    # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
+                    query.process_response(rules, edge)
+
+
 
     class WorkloadToIPListQueryManager:
         def __init__(self):
@@ -575,11 +704,51 @@ class RuleCoverageQueryManager:
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
             policy_decision = None
             for query in self.queries.values():
-                policy_decision = query.get_policy_decision_for_log_id(log_id)
+                policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
                 if policy_decision == 'allowed':
                     return policy_decision
 
             return policy_decision
+
+        def execute(self, connector: APIConnector, queries_per_batch: int):
+            # split queries into arrays of size queries_per_batch
+            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
+            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
+            for query in self.queries.values():
+                query_batch.append(query)
+                if len(query_batch) == queries_per_batch:
+                    query_batches.append(query_batch)
+                    query_batch = []
+            if len(query_batch) > 0:
+                query_batches.append(query_batch)
+
+            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
+
+            for query_batch in query_batches:
+                # print(f'Executing batch of {len(query_batch)} queries')
+                payload = []
+                for query in query_batch:
+                    payload.append(query.generate_api_payload())
+
+                api_response = connector.rule_coverage_query(payload)
+                # print(api_response)
+                # print('-------------------------------------------------------')
+
+                edges = api_response.get('edges')
+                if edges is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
+
+                rules = api_response.get('rules')
+                if rules is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
+
+                if len(edges) != len(query_batch):
+                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
+
+                for response_index, edge in enumerate(edges):
+                    query = query_batch[response_index]
+                    # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
+                    query.process_response(rules, edge)
 
 
     class WorkloadToWorkloadQueryManager:
@@ -596,11 +765,51 @@ class RuleCoverageQueryManager:
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
             policy_decision = None
             for query in self.queries.values():
-                policy_decision = query.get_policy_decision_for_log_id(log_id)
+                policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
                 if policy_decision == 'allowed':
                     return policy_decision
 
             return policy_decision
+
+        def execute(self, connector: APIConnector, queries_per_batch: int):
+            # split queries into arrays of size queries_per_batch
+            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
+            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
+            for query in self.queries.values():
+                query_batch.append(query)
+                if len(query_batch) == queries_per_batch:
+                    query_batches.append(query_batch)
+                    query_batch = []
+            if len(query_batch) > 0:
+                query_batches.append(query_batch)
+
+            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
+
+            for query_batch in query_batches:
+                # print(f'Executing batch of {len(query_batch)} queries')
+                payload = []
+                for query in query_batch:
+                    payload.append(query.generate_api_payload())
+
+                api_response = connector.rule_coverage_query(payload)
+                # print(api_response)
+                # print('-------------------------------------------------------')
+
+                edges = api_response.get('edges')
+                if edges is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
+
+                rules = api_response.get('rules')
+                if rules is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
+
+                if len(edges) != len(query_batch):
+                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
+
+                for response_index, edge in enumerate(edges):
+                    query = query_batch[response_index]
+                    # print(f'Processing edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
+                    query.process_response(rules, edge)
 
     def __init__(self, owner: APIConnector):
         self.owner = owner
@@ -610,14 +819,25 @@ class RuleCoverageQueryManager:
         self.log_id = 0
         self.log_to_id: Dict[ExplorerResultSetV1.ExplorerResult, int] = {}
         self.count_invalid_records = 0
+        self.any_iplist_href = self.owner.objects_iplists_get_default_any()
+        if self.any_iplist_href is None:
+            raise pylo.PyloEx('No "any" iplist found')
 
     def add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):
         self.log_id += 1
         self.log_to_id[log] = self.log_id
 
+
         if not log.source_is_workload():
             if log.destination_is_workload():
-                for iplist_href in log.get_source_iplists_href():
+
+                iplist_hrefs = log.get_source_iplists_href()
+                if iplist_hrefs is None:
+                    iplist_hrefs = [self.any_iplist_href]
+                else:
+                    iplist_hrefs.append(self.any_iplist_href)
+
+                for iplist_href in iplist_hrefs:
                     self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,
                                                                     ip_list_href=iplist_href,
                                                                     workload_href=log.get_destination_workload_href(),
@@ -627,7 +847,13 @@ class RuleCoverageQueryManager:
                 pass
         else:
             if not log.destination_is_workload():
-                for iplist_href in log.get_destination_iplists_href():
+                iplist_hrefs = log.get_destination_iplists_href()
+                if iplist_hrefs is None:
+                    iplist_hrefs = [self.any_iplist_href]
+                else:
+                    iplist_hrefs.append(self.any_iplist_href)
+
+                for iplist_href in iplist_hrefs:
                     self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,
                                                                     ip_list_href=iplist_href,
                                                                     workload_href=log.get_source_workload_href(),
@@ -667,11 +893,13 @@ class RuleCoverageQueryManager:
         if decision == 'allowed':
             return decision
 
-        decision = self.workload_to_iplist_query_manager.get_policy_decision_for_log_id(log_id) or decision
+        newDecision = self.workload_to_iplist_query_manager.get_policy_decision_for_log_id(log_id)
+        decision = newDecision or decision
         if decision == 'allowed':
             return decision
 
-        decision = self.workload_to_workload_query_manager.get_policy_decision_for_log_id(log_id) or decision
+        newDecision = self.workload_to_workload_query_manager.get_policy_decision_for_log_id(log_id) or decision
+        decision = newDecision or decision
         if decision == 'allowed':
             return decision
 
@@ -681,9 +909,23 @@ class RuleCoverageQueryManager:
         for log, log_id in self.log_to_id.items():
             decision = self._get_policy_decision_for_log_id(log_id)
             if decision is None:
-                raise pylo.PyloEx('No decision found for log_id {}'.format(log_id))
+                # if len(log.get_source_iplists_href()) == 0 and len(log.get_destination_iplists_href()) == 0 is None:
+                #     #  happens when source or destination is part of no IPList
+                #     decision = 'blocked'
+                # else:
+                pylo.get_logger().error(pylo.nice_json(log._raw_json))
+                raise pylo.PyloEx('No decision found for log_id {}'.format(log._raw_json))
+
             log.set_draft_mode_policy_decision_blocked(decision == 'blocked')
 
     def execute(self):
-        pass
+        queries_per_batch = 100
+        self.iplist_to_workload_query_manager.execute(self.owner, queries_per_batch)
+        self.workload_to_iplist_query_manager.execute(self.owner, queries_per_batch)
+        self.workload_to_workload_query_manager.execute(self.owner, queries_per_batch)
+
+        self.apply_policy_decisions_to_logs()
+
+
+
 

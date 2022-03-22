@@ -441,6 +441,7 @@ for record in all_records:
     draftManager.add_query_from_explorer_result(record)
 print("queries count to send to API: reduced={}  total_unreduced={} invalid={} total_added={}".
       format(draftManager.count_queries(), draftManager.count_real_queries(), draftManager.count_invalid_records, draftManager.log_id))
+draftManager.execute()
 
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('inbound_log_draft')))
 
