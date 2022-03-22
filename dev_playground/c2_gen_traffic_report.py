@@ -439,7 +439,8 @@ all_records = inbound_results.get_all_records()
 draftManager = pylo.RuleCoverageQueryManager(org.connector)
 for record in all_records:
     draftManager.add_query_from_explorer_result(record)
-print("queries count to send to API: {}".format(draftManager.count_queries()))
+print("queries count to send to API: reduced={}  total_unreduced={} invalid={} total_added={}".
+      format(draftManager.count_queries(), draftManager.count_real_queries(), draftManager.count_invalid_records, draftManager.log_id))
 
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('inbound_log_draft')))
 

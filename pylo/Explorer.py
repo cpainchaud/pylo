@@ -464,12 +464,12 @@ class ExplorerResultSetV1:
 
 class RuleCoverageQueryManager:
 
-
     class QueryServices:
         def __init__(self):
             self.service_hash_to_index: Dict[str, int] = {}
             self.services_array: List[Dict] = []
             self.service_index_to_log_ids: Dict[int, List[int]] = {}
+            self.service_index_policy_coverage: Dict[int, List[Dict]] = {}
 
         def add_service(self, service_record: Dict, log_id: int):
             service_hash = '' + str(service_record.get('proto', 'no_proto')) + '/' + str(service_record.get('port', 'no_port')) + '/' \
@@ -486,12 +486,22 @@ class RuleCoverageQueryManager:
             if service_index not in self.service_index_to_log_ids:
                 self.service_index_to_log_ids[service_index] = []
 
-            for id in self.service_index_to_log_ids[service_index]:
-                if id != log_id:
-                    return
-
             if log_id not in self.service_index_to_log_ids[service_index]:
                 self.service_index_to_log_ids[service_index].append(log_id)
+
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            policy_decision = None
+
+            for service_id, list_of_log_ids in self.service_index_to_log_ids.items():
+                if log_id in list_of_log_ids:
+                    policy_decision = 'blocked'
+                    logid_position = list_of_log_ids.index(log_id)
+                    policy_coverage = self.service_index_policy_coverage[service_id][logid_position]
+                    if len(policy_coverage) > 0 :
+                        policy_decision = 'allowed'
+                        return policy_decision
+
+            return policy_decision
 
     class IPListToWorkloadQuery:
         def __init__(self, ip_list_href: str, workload_href: str):
@@ -502,6 +512,9 @@ class RuleCoverageQueryManager:
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
 
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            return self.services.get_policy_decision_for_log_id(log_id)
+
     class WorkloadToIPListQuery:
         def __init__(self, workload_href: str, ip_list_href: str):
             self.workload_href = workload_href
@@ -511,6 +524,9 @@ class RuleCoverageQueryManager:
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
 
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            return self.services.get_policy_decision_for_log_id(log_id)
+
     class WorkloadToWorkloadQuery:
         def __init__(self, src_workload_href: str, dst_workload_href: str):
             self.src_workload_href = src_workload_href
@@ -519,6 +535,11 @@ class RuleCoverageQueryManager:
 
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
+
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            return self.services.get_policy_decision_for_log_id(log_id)
+
+
 
     class IPListToWorkloadQueryManager:
         def __init__(self):
@@ -531,6 +552,15 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            policy_decision = None
+            for query in self.queries.values():
+                policy_decision = query.get_policy_decision_for_log_id(log_id)
+                if policy_decision == 'allowed':
+                    return policy_decision
+
+            return policy_decision
+
     class WorkloadToIPListQueryManager:
         def __init__(self):
             self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToIPListQuery'] = {}
@@ -541,6 +571,16 @@ class RuleCoverageQueryManager:
                 self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToIPListQuery(workload_href, ip_list_href)
 
             self.queries[hash_key].add_service(service_record, log_id)
+
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            policy_decision = None
+            for query in self.queries.values():
+                policy_decision = query.get_policy_decision_for_log_id(log_id)
+                if policy_decision == 'allowed':
+                    return policy_decision
+
+            return policy_decision
+
 
     class WorkloadToWorkloadQueryManager:
         def __init__(self):
@@ -553,6 +593,15 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+            policy_decision = None
+            for query in self.queries.values():
+                policy_decision = query.get_policy_decision_for_log_id(log_id)
+                if policy_decision == 'allowed':
+                    return policy_decision
+
+            return policy_decision
+
     def __init__(self, owner: APIConnector):
         self.owner = owner
         self.iplist_to_workload_query_manager = RuleCoverageQueryManager.IPListToWorkloadQueryManager()
@@ -560,6 +609,7 @@ class RuleCoverageQueryManager:
         self.workload_to_workload_query_manager = RuleCoverageQueryManager.WorkloadToWorkloadQueryManager()
         self.log_id = 0
         self.log_to_id: Dict[ExplorerResultSetV1.ExplorerResult, int] = {}
+        self.count_invalid_records = 0
 
     def add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):
         self.log_id += 1
@@ -573,6 +623,7 @@ class RuleCoverageQueryManager:
                                                                     workload_href=log.get_destination_workload_href(),
                                                                     service_record=log.service_json)
             else:  # IPList to IPList should never happen!
+                self.count_invalid_records += 1
                 pass
         else:
             if not log.destination_is_workload():
@@ -591,4 +642,48 @@ class RuleCoverageQueryManager:
         return len(self.iplist_to_workload_query_manager.queries)\
                + len(self.workload_to_iplist_query_manager.queries)\
                + len(self.workload_to_workload_query_manager.queries)
+
+    def count_real_queries(self):
+        _log_ids = {}
+        for query in self.iplist_to_workload_query_manager.queries.values():
+            for log_ids in query.services.service_index_to_log_ids.values():
+                for log_id in log_ids:
+                    _log_ids[log_id] = True
+
+        for query in self.workload_to_iplist_query_manager.queries.values():
+            for log_ids in query.services.service_index_to_log_ids.values():
+                for log_id in log_ids:
+                    _log_ids[log_id] = True
+
+        for query in self.workload_to_workload_query_manager.queries.values():
+            for log_ids in query.services.service_index_to_log_ids.values():
+                for log_id in log_ids:
+                    _log_ids[log_id] = True
+
+        return len(_log_ids)
+
+    def _get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        decision = self.iplist_to_workload_query_manager.get_policy_decision_for_log_id(log_id)
+        if decision == 'allowed':
+            return decision
+
+        decision = self.workload_to_iplist_query_manager.get_policy_decision_for_log_id(log_id) or decision
+        if decision == 'allowed':
+            return decision
+
+        decision = self.workload_to_workload_query_manager.get_policy_decision_for_log_id(log_id) or decision
+        if decision == 'allowed':
+            return decision
+
+        return decision
+
+    def apply_policy_decisions_to_logs(self):
+        for log, log_id in self.log_to_id.items():
+            decision = self._get_policy_decision_for_log_id(log_id)
+            if decision is None:
+                raise pylo.PyloEx('No decision found for log_id {}'.format(log_id))
+            log.set_draft_mode_policy_decision_blocked(decision == 'blocked')
+
+    def execute(self):
+        pass
 
