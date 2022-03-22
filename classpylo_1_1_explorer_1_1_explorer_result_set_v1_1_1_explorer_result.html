@@ -481,7 +481,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  173</span> </div>
 <div class="line"><span class="lineno">  174</span>            <span class="keywordflow">if</span> self._destination_iplists_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  175</span>                <span class="keywordflow">return</span> []</div>
-<div class="line"><span class="lineno">  176</span>            <span class="keywordflow">return</span> self._destination_iplists_href</div>
+<div class="line"><span class="lineno">  176</span>            <span class="keywordflow">return</span> self._destination_iplists_href.copy()</div>
 <div class="line"><span class="lineno">  177</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -647,7 +647,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  165</span>                <span class="keywordflow">return</span> <span class="keywordtype">None</span></div>
 <div class="line"><span class="lineno">  166</span>            <span class="keywordflow">if</span> self._source_iplists_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  167</span>                <span class="keywordflow">return</span> []</div>
-<div class="line"><span class="lineno">  168</span>            <span class="keywordflow">return</span> self._source_iplists_href</div>
+<div class="line"><span class="lineno">  168</span>            <span class="keywordflow">return</span> self._source_iplists_href.copy()</div>
 <div class="line"><span class="lineno">  169</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -990,7 +990,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 22 2022 18:03:27 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Tue Mar 22 2022 23:43:09 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

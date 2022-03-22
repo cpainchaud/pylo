@@ -82,6 +82,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a290360f786641ee88d0432928b00df21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad571540e9145c3b97ca65ff8ca31d9f5"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query.html#ad571540e9145c3b97ca65ff8ca31d9f5">get_policy_decision_for_log_id</a> (self, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
 <tr class="separator:ad571540e9145c3b97ca65ff8ca31d9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af35a7cad2f5fecdcc3425f3d9d75e5fb"><td class="memItemLeft" align="right" valign="top">Dict&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query.html#af35a7cad2f5fecdcc3425f3d9d75e5fb">generate_api_payload</a> (self)</td></tr>
+<tr class="separator:af35a7cad2f5fecdcc3425f3d9d75e5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a769e702c0c489726355d9e26fb168126"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query.html#a769e702c0c489726355d9e26fb168126">process_response</a> (self, Dict[str, str] rules, [[str]] response)</td></tr>
+<tr class="separator:a769e702c0c489726355d9e26fb168126"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -178,6 +182,43 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="af35a7cad2f5fecdcc3425f3d9d75e5fb" name="af35a7cad2f5fecdcc3425f3d9d75e5fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af35a7cad2f5fecdcc3425f3d9d75e5fb">&#9670;&nbsp;</a></span>generate_api_payload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Dict pylo.Explorer.RuleCoverageQueryManager.IPListToWorkloadQuery.generate_api_payload </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  518</span>        <span class="keyword">def </span>generate_api_payload(self) -&gt; Dict:</div>
+<div class="line"><span class="lineno">  519</span>            payload = {<span class="stringliteral">&quot;resolve_labels_as&quot;</span>: {<span class="stringliteral">&quot;source&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>], <span class="stringliteral">&quot;destination&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>]}, <span class="stringliteral">&quot;services&quot;</span>: [],</div>
+<div class="line"><span class="lineno">  520</span>                       <span class="stringliteral">&#39;source&#39;</span>: {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.ip_list_href}},</div>
+<div class="line"><span class="lineno">  521</span>                       <span class="stringliteral">&#39;destination&#39;</span>: {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.workload_href}}</div>
+<div class="line"><span class="lineno">  522</span>                       }</div>
+<div class="line"><span class="lineno">  523</span> </div>
+<div class="line"><span class="lineno">  524</span>            <span class="keywordflow">for</span> service_id <span class="keywordflow">in</span> range(0, len(self.services.services_array)):</div>
+<div class="line"><span class="lineno">  525</span>                service = self.services.services_array[service_id]</div>
+<div class="line"><span class="lineno">  526</span>                <span class="comment"># print(service)</span></div>
+<div class="line"><span class="lineno">  527</span>                service_json: Dict = service.copy()</div>
+<div class="line"><span class="lineno">  528</span>                service_json[<span class="stringliteral">&#39;protocol&#39;</span>] = service_json.pop(<span class="stringliteral">&#39;proto&#39;</span>)</div>
+<div class="line"><span class="lineno">  529</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;port&#39;</span> <span class="keywordflow">in</span> service_json <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 17 <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 6:</div>
+<div class="line"><span class="lineno">  530</span>                    service_json.pop(<span class="stringliteral">&#39;port&#39;</span>)</div>
+<div class="line"><span class="lineno">  531</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;user_name&#39;</span> <span class="keywordflow">in</span> service_json:</div>
+<div class="line"><span class="lineno">  532</span>                    service_json.pop(<span class="stringliteral">&#39;user_name&#39;</span>)</div>
+<div class="line"><span class="lineno">  533</span>                payload[<span class="stringliteral">&#39;services&#39;</span>].append(service_json)</div>
+<div class="line"><span class="lineno">  534</span> </div>
+<div class="line"><span class="lineno">  535</span>            <span class="keywordflow">return</span> payload</div>
+<div class="line"><span class="lineno">  536</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ad571540e9145c3b97ca65ff8ca31d9f5" name="ad571540e9145c3b97ca65ff8ca31d9f5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad571540e9145c3b97ca65ff8ca31d9f5">&#9670;&nbsp;</a></span>get_policy_decision_for_log_id()</h2>
 
@@ -206,7 +247,6 @@ Here is the call graph for this function:</div>
 <div class="fragment"><div class="line"><span class="lineno">  515</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
 <div class="line"><span class="lineno">  516</span>            <span class="keywordflow">return</span> self.services.get_policy_decision_for_log_id(log_id)</div>
 <div class="line"><span class="lineno">  517</span> </div>
-<div class="line"><span class="lineno">  518</span>    <span class="keyword">class </span>WorkloadToIPListQuery:</div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -216,6 +256,52 @@ Here is the call graph for this function:</div>
 </map>
 </div>
 
+</div>
+</div>
+<a id="a769e702c0c489726355d9e26fb168126" name="a769e702c0c489726355d9e26fb168126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a769e702c0c489726355d9e26fb168126">&#9670;&nbsp;</a></span>process_response()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def pylo.Explorer.RuleCoverageQueryManager.IPListToWorkloadQuery.process_response </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dict[str, str]&#160;</td>
+          <td class="paramname"><em>rules</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">[[str]]&#160;</td>
+          <td class="paramname"><em>response</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  537</span>        <span class="keyword">def </span>process_response(self, rules: Dict[str, str], response: [[str]]):</div>
+<div class="line"><span class="lineno">  538</span>            <span class="keywordflow">if</span> len(response) != len(self.services.services_array):</div>
+<div class="line"><span class="lineno">  539</span>                <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Unexpected response from rule coverage query with mis-matching services count vs reply&#39;</span>)</div>
+<div class="line"><span class="lineno">  540</span> </div>
+<div class="line"><span class="lineno">  541</span>            <span class="keywordflow">for</span> index, single_response <span class="keywordflow">in</span> enumerate(response):</div>
+<div class="line"><span class="lineno">  542</span>                rules_array: [Dict] = []</div>
+<div class="line"><span class="lineno">  543</span>                <span class="keywordflow">for</span> rule <span class="keywordflow">in</span> single_response:</div>
+<div class="line"><span class="lineno">  544</span>                    rules_array.append(rules[rule])</div>
+<div class="line"><span class="lineno">  545</span>                self.services.service_index_policy_coverage[index] = rules_array</div>
+<div class="line"><span class="lineno">  546</span> </div>
+<div class="line"><span class="lineno">  547</span> </div>
+<div class="line"><span class="lineno">  548</span>    <span class="keyword">class </span>WorkloadToIPListQuery:</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -267,7 +353,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 22 2022 18:03:27 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Tue Mar 22 2022 23:43:09 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

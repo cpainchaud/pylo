@@ -82,6 +82,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4aafe722898c8aebe22aca2d9ef164ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d983f1247d676549d96c78387b2848a"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query.html#a8d983f1247d676549d96c78387b2848a">get_policy_decision_for_log_id</a> (self, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
 <tr class="separator:a8d983f1247d676549d96c78387b2848a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a991fe9bbb64b842defc6f6d1e4bb4790"><td class="memItemLeft" align="right" valign="top">Dict&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query.html#a991fe9bbb64b842defc6f6d1e4bb4790">generate_api_payload</a> (self)</td></tr>
+<tr class="separator:a991fe9bbb64b842defc6f6d1e4bb4790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17bf3b2763cb21d93065cc6b288973e9"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query.html#a17bf3b2763cb21d93065cc6b288973e9">process_response</a> (self, Dict[str, str] rules, [[str]] response)</td></tr>
+<tr class="separator:a17bf3b2763cb21d93065cc6b288973e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -124,11 +128,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  531</span>        <span class="keyword">def </span>__init__(self, src_workload_href: str, dst_workload_href: str):</div>
-<div class="line"><span class="lineno">  532</span>            self.src_workload_href = src_workload_href</div>
-<div class="line"><span class="lineno">  533</span>            self.dst_workload_href = dst_workload_href</div>
-<div class="line"><span class="lineno">  534</span>            self.services = RuleCoverageQueryManager.QueryServices()</div>
-<div class="line"><span class="lineno">  535</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  590</span>        <span class="keyword">def </span>__init__(self, src_workload_href: str, dst_workload_href: str):</div>
+<div class="line"><span class="lineno">  591</span>            self.src_workload_href = src_workload_href</div>
+<div class="line"><span class="lineno">  592</span>            self.dst_workload_href = dst_workload_href</div>
+<div class="line"><span class="lineno">  593</span>            self.services = RuleCoverageQueryManager.QueryServices()</div>
+<div class="line"><span class="lineno">  594</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -164,9 +168,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  536</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
-<div class="line"><span class="lineno">  537</span>            self.services.add_service(service_record, log_id)</div>
-<div class="line"><span class="lineno">  538</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  595</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
+<div class="line"><span class="lineno">  596</span>            self.services.add_service(service_record, log_id)</div>
+<div class="line"><span class="lineno">  597</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -176,6 +180,43 @@ Here is the call graph for this function:</div>
 </map>
 </div>
 
+</div>
+</div>
+<a id="a991fe9bbb64b842defc6f6d1e4bb4790" name="a991fe9bbb64b842defc6f6d1e4bb4790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a991fe9bbb64b842defc6f6d1e4bb4790">&#9670;&nbsp;</a></span>generate_api_payload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Dict pylo.Explorer.RuleCoverageQueryManager.WorkloadToWorkloadQuery.generate_api_payload </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  601</span>        <span class="keyword">def </span>generate_api_payload(self) -&gt; Dict:</div>
+<div class="line"><span class="lineno">  602</span>            payload = {<span class="stringliteral">&quot;resolve_labels_as&quot;</span>: {<span class="stringliteral">&quot;source&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>], <span class="stringliteral">&quot;destination&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>]}, <span class="stringliteral">&quot;services&quot;</span>: [],</div>
+<div class="line"><span class="lineno">  603</span>                       <span class="stringliteral">&#39;source&#39;</span>: {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.src_workload_href}},</div>
+<div class="line"><span class="lineno">  604</span>                       <span class="stringliteral">&#39;destination&#39;</span>: {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.dst_workload_href}}</div>
+<div class="line"><span class="lineno">  605</span>                       }</div>
+<div class="line"><span class="lineno">  606</span> </div>
+<div class="line"><span class="lineno">  607</span>            <span class="keywordflow">for</span> service_id <span class="keywordflow">in</span> range(0, len(self.services.services_array)):</div>
+<div class="line"><span class="lineno">  608</span>                service = self.services.services_array[service_id]</div>
+<div class="line"><span class="lineno">  609</span>                <span class="comment"># print(service)</span></div>
+<div class="line"><span class="lineno">  610</span>                service_json: Dict = service.copy()</div>
+<div class="line"><span class="lineno">  611</span>                service_json[<span class="stringliteral">&#39;protocol&#39;</span>] = service_json.pop(<span class="stringliteral">&#39;proto&#39;</span>)</div>
+<div class="line"><span class="lineno">  612</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;port&#39;</span> <span class="keywordflow">in</span> service_json <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 17 <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 6:</div>
+<div class="line"><span class="lineno">  613</span>                    service_json.pop(<span class="stringliteral">&#39;port&#39;</span>)</div>
+<div class="line"><span class="lineno">  614</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;user_name&#39;</span> <span class="keywordflow">in</span> service_json:</div>
+<div class="line"><span class="lineno">  615</span>                    service_json.pop(<span class="stringliteral">&#39;user_name&#39;</span>)</div>
+<div class="line"><span class="lineno">  616</span>                payload[<span class="stringliteral">&#39;services&#39;</span>].append(service_json)</div>
+<div class="line"><span class="lineno">  617</span> </div>
+<div class="line"><span class="lineno">  618</span>            <span class="keywordflow">return</span> payload</div>
+<div class="line"><span class="lineno">  619</span> </div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a8d983f1247d676549d96c78387b2848a" name="a8d983f1247d676549d96c78387b2848a"></a>
@@ -203,12 +244,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  539</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
-<div class="line"><span class="lineno">  540</span>            <span class="keywordflow">return</span> self.services.get_policy_decision_for_log_id(log_id)</div>
-<div class="line"><span class="lineno">  541</span> </div>
-<div class="line"><span class="lineno">  542</span> </div>
-<div class="line"><span class="lineno">  543</span> </div>
-<div class="line"><span class="lineno">  544</span>    <span class="keyword">class </span>IPListToWorkloadQueryManager:</div>
+<div class="fragment"><div class="line"><span class="lineno">  598</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
+<div class="line"><span class="lineno">  599</span>            <span class="keywordflow">return</span> self.services.get_policy_decision_for_log_id(log_id)</div>
+<div class="line"><span class="lineno">  600</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -218,6 +256,51 @@ Here is the call graph for this function:</div>
 </map>
 </div>
 
+</div>
+</div>
+<a id="a17bf3b2763cb21d93065cc6b288973e9" name="a17bf3b2763cb21d93065cc6b288973e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17bf3b2763cb21d93065cc6b288973e9">&#9670;&nbsp;</a></span>process_response()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def pylo.Explorer.RuleCoverageQueryManager.WorkloadToWorkloadQuery.process_response </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dict[str, str]&#160;</td>
+          <td class="paramname"><em>rules</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">[[str]]&#160;</td>
+          <td class="paramname"><em>response</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  620</span>        <span class="keyword">def </span>process_response(self, rules: Dict[str, str], response: [[str]]):</div>
+<div class="line"><span class="lineno">  621</span>            <span class="keywordflow">if</span> len(response) != len(self.services.services_array):</div>
+<div class="line"><span class="lineno">  622</span>                <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Unexpected response from rule coverage query with mis-matching services count vs reply&#39;</span>)</div>
+<div class="line"><span class="lineno">  623</span> </div>
+<div class="line"><span class="lineno">  624</span>            <span class="keywordflow">for</span> index, single_response <span class="keywordflow">in</span> enumerate(response):</div>
+<div class="line"><span class="lineno">  625</span>                rules_array: [Dict] = []</div>
+<div class="line"><span class="lineno">  626</span>                <span class="keywordflow">for</span> rule <span class="keywordflow">in</span> single_response:</div>
+<div class="line"><span class="lineno">  627</span>                    rules_array.append(rules[rule])</div>
+<div class="line"><span class="lineno">  628</span>                self.services.service_index_policy_coverage[index] = rules_array</div>
+<div class="line"><span class="lineno">  629</span> </div>
+<div class="line"><span class="lineno">  630</span>    <span class="keyword">class </span>IPListToWorkloadQueryManager:</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -269,7 +352,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 22 2022 18:03:27 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Tue Mar 22 2022 23:43:09 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
