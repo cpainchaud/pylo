@@ -80,6 +80,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa15a326821703d208834d15c7ac8c2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a290360f786641ee88d0432928b00df21"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query.html#a290360f786641ee88d0432928b00df21">add_service</a> (self, Dict service_record, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
 <tr class="separator:a290360f786641ee88d0432928b00df21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad571540e9145c3b97ca65ff8ca31d9f5"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query.html#ad571540e9145c3b97ca65ff8ca31d9f5">get_policy_decision_for_log_id</a> (self, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
+<tr class="separator:ad571540e9145c3b97ca65ff8ca31d9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -122,11 +124,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  497</span>        <span class="keyword">def </span>__init__(self, ip_list_href: str, workload_href: str):</div>
-<div class="line"><span class="lineno">  498</span>            self.ip_list_href = ip_list_href</div>
-<div class="line"><span class="lineno">  499</span>            self.workload_href = workload_href</div>
-<div class="line"><span class="lineno">  500</span>            self.services = RuleCoverageQueryManager.QueryServices()</div>
-<div class="line"><span class="lineno">  501</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  507</span>        <span class="keyword">def </span>__init__(self, ip_list_href: str, workload_href: str):</div>
+<div class="line"><span class="lineno">  508</span>            self.ip_list_href = ip_list_href</div>
+<div class="line"><span class="lineno">  509</span>            self.workload_href = workload_href</div>
+<div class="line"><span class="lineno">  510</span>            self.services = RuleCoverageQueryManager.QueryServices()</div>
+<div class="line"><span class="lineno">  511</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -162,16 +164,55 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  502</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
-<div class="line"><span class="lineno">  503</span>            self.services.add_service(service_record, log_id)</div>
-<div class="line"><span class="lineno">  504</span> </div>
-<div class="line"><span class="lineno">  505</span>    <span class="keyword">class </span>WorkloadToIPListQuery:</div>
+<div class="fragment"><div class="line"><span class="lineno">  512</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
+<div class="line"><span class="lineno">  513</span>            self.services.add_service(service_record, log_id)</div>
+<div class="line"><span class="lineno">  514</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_a290360f786641ee88d0432928b00df21_cgraph.png" border="0" usemap="#aclasspylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_a290360f786641ee88d0432928b00df21_cgraph" alt=""/></div>
 <map name="aclasspylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_a290360f786641ee88d0432928b00df21_cgraph" id="aclasspylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_a290360f786641ee88d0432928b00df21_cgraph">
 <area shape="rect" title=" " alt="" coords="5,29,276,85"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad571540e9145c3b97ca65ff8ca31d9f5" name="ad571540e9145c3b97ca65ff8ca31d9f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad571540e9145c3b97ca65ff8ca31d9f5">&#9670;&nbsp;</a></span>get_policy_decision_for_log_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Optional[str] pylo.Explorer.RuleCoverageQueryManager.IPListToWorkloadQuery.get_policy_decision_for_log_id </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>log_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  515</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
+<div class="line"><span class="lineno">  516</span>            <span class="keywordflow">return</span> self.services.get_policy_decision_for_log_id(log_id)</div>
+<div class="line"><span class="lineno">  517</span> </div>
+<div class="line"><span class="lineno">  518</span>    <span class="keyword">class </span>WorkloadToIPListQuery:</div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_ad571540e9145c3b97ca65ff8ca31d9f5_cgraph.png" border="0" usemap="#aclasspylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_ad571540e9145c3b97ca65ff8ca31d9f5_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_ad571540e9145c3b97ca65ff8ca31d9f5_cgraph" id="aclasspylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_i_p_list_to_workload_query_ad571540e9145c3b97ca65ff8ca31d9f5_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,273,85"/>
 </map>
 </div>
 
@@ -226,7 +267,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 22 2022 15:13:38 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Tue Mar 22 2022 18:03:27 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

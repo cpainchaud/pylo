@@ -79,6 +79,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a926590b4aa56b191fe4dba81e5676ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d568faa5ddd0ef23fb9712e0ea74577"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query_manager.html#a8d568faa5ddd0ef23fb9712e0ea74577">add_query</a> (self, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>, str src_workload_href, str dst_workload_href, service_record)</td></tr>
 <tr class="separator:a8d568faa5ddd0ef23fb9712e0ea74577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add9a07be60bf81820a00031fb851d120"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query_manager.html#add9a07be60bf81820a00031fb851d120">get_policy_decision_for_log_id</a> (self, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
+<tr class="separator:add9a07be60bf81820a00031fb851d120"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a926590b4aa56b191fe4dba81e5676ab9" name="a926590b4aa56b191fe4dba81e5676ab9"></a>
@@ -96,9 +98,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  546</span>        <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">  547</span>            self.queries: Dict[str, <span class="stringliteral">&#39;RuleCoverageQueryManager.WorkloadToWorkloadQuery&#39;</span>] = {}</div>
-<div class="line"><span class="lineno">  548</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  586</span>        <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">  587</span>            self.queries: Dict[str, <span class="stringliteral">&#39;RuleCoverageQueryManager.WorkloadToWorkloadQuery&#39;</span>] = {}</div>
+<div class="line"><span class="lineno">  588</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -146,14 +148,51 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  549</span>        <span class="keyword">def </span>add_query(self, log_id: int, src_workload_href: str, dst_workload_href: str, service_record):</div>
-<div class="line"><span class="lineno">  550</span>            hash_key = src_workload_href + dst_workload_href</div>
-<div class="line"><span class="lineno">  551</span>            <span class="keywordflow">if</span> hash_key <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.queries:</div>
-<div class="line"><span class="lineno">  552</span>                self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToWorkloadQuery(src_workload_href, dst_workload_href)</div>
-<div class="line"><span class="lineno">  553</span> </div>
-<div class="line"><span class="lineno">  554</span>            self.queries[hash_key].add_service(service_record, log_id)</div>
-<div class="line"><span class="lineno">  555</span> </div>
-<div class="line"><span class="lineno">  556</span>    <span class="keyword">def </span>__init__(self, owner: APIConnector):</div>
+<div class="fragment"><div class="line"><span class="lineno">  589</span>        <span class="keyword">def </span>add_query(self, log_id: int, src_workload_href: str, dst_workload_href: str, service_record):</div>
+<div class="line"><span class="lineno">  590</span>            hash_key = src_workload_href + dst_workload_href</div>
+<div class="line"><span class="lineno">  591</span>            <span class="keywordflow">if</span> hash_key <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.queries:</div>
+<div class="line"><span class="lineno">  592</span>                self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToWorkloadQuery(src_workload_href, dst_workload_href)</div>
+<div class="line"><span class="lineno">  593</span> </div>
+<div class="line"><span class="lineno">  594</span>            self.queries[hash_key].add_service(service_record, log_id)</div>
+<div class="line"><span class="lineno">  595</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="add9a07be60bf81820a00031fb851d120" name="add9a07be60bf81820a00031fb851d120"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add9a07be60bf81820a00031fb851d120">&#9670;&nbsp;</a></span>get_policy_decision_for_log_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Optional[str] pylo.Explorer.RuleCoverageQueryManager.WorkloadToWorkloadQueryManager.get_policy_decision_for_log_id </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>log_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  596</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
+<div class="line"><span class="lineno">  597</span>            policy_decision = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  598</span>            <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.queries.values():</div>
+<div class="line"><span class="lineno">  599</span>                policy_decision = query.get_policy_decision_for_log_id(log_id)</div>
+<div class="line"><span class="lineno">  600</span>                <span class="keywordflow">if</span> policy_decision == <span class="stringliteral">&#39;allowed&#39;</span>:</div>
+<div class="line"><span class="lineno">  601</span>                    <span class="keywordflow">return</span> policy_decision</div>
+<div class="line"><span class="lineno">  602</span> </div>
+<div class="line"><span class="lineno">  603</span>            <span class="keywordflow">return</span> policy_decision</div>
+<div class="line"><span class="lineno">  604</span> </div>
+<div class="line"><span class="lineno">  605</span>    <span class="keyword">def </span>__init__(self, owner: APIConnector):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -163,7 +202,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 22 2022 15:13:38 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Tue Mar 22 2022 18:03:27 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

@@ -79,6 +79,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac73308184c334b823e5e8290bc1525e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a404be528d3f43d8686e7a48eb1458448"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_query_services.html#a404be528d3f43d8686e7a48eb1458448">add_service</a> (self, Dict service_record, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
 <tr class="separator:a404be528d3f43d8686e7a48eb1458448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affcdb40b24334736213b6b1f38003648"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager_1_1_query_services.html#affcdb40b24334736213b6b1f38003648">get_policy_decision_for_log_id</a> (self, int <a class="el" href="classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de">log_id</a>)</td></tr>
+<tr class="separator:affcdb40b24334736213b6b1f38003648"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac73308184c334b823e5e8290bc1525e7" name="ac73308184c334b823e5e8290bc1525e7"></a>
@@ -96,10 +98,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  469</span>        <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">  470</span>            self.service_hash_to_index: Dict[str, int] = {}</div>
-<div class="line"><span class="lineno">  471</span>            self.services_array: List[Dict] = []</div>
-<div class="line"><span class="lineno">  472</span>            self.service_index_to_log_ids: Dict[int, List[int]] = {}</div>
+<div class="fragment"><div class="line"><span class="lineno">  468</span>        <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">  469</span>            self.service_hash_to_index: Dict[str, int] = {}</div>
+<div class="line"><span class="lineno">  470</span>            self.services_array: List[Dict] = []</div>
+<div class="line"><span class="lineno">  471</span>            self.service_index_to_log_ids: Dict[int, List[int]] = {}</div>
+<div class="line"><span class="lineno">  472</span>            self.service_index_policy_coverage: Dict[int, List[Dict]] = {}</div>
 <div class="line"><span class="lineno">  473</span> </div>
 </div><!-- fragment -->
 </div>
@@ -151,15 +154,53 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  486</span>            <span class="keywordflow">if</span> service_index <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids:</div>
 <div class="line"><span class="lineno">  487</span>                self.service_index_to_log_ids[service_index] = []</div>
 <div class="line"><span class="lineno">  488</span> </div>
-<div class="line"><span class="lineno">  489</span>            <span class="keywordflow">for</span> id <span class="keywordflow">in</span> self.service_index_to_log_ids[service_index]:</div>
-<div class="line"><span class="lineno">  490</span>                <span class="keywordflow">if</span> id != log_id:</div>
-<div class="line"><span class="lineno">  491</span>                    <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">  492</span> </div>
-<div class="line"><span class="lineno">  493</span>            <span class="keywordflow">if</span> log_id <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids[service_index]:</div>
-<div class="line"><span class="lineno">  494</span>                self.service_index_to_log_ids[service_index].append(log_id)</div>
-<div class="line"><span class="lineno">  495</span> </div>
-<div class="line"><span class="lineno">  496</span>    <span class="keyword">class </span>IPListToWorkloadQuery:</div>
+<div class="line"><span class="lineno">  489</span>            <span class="keywordflow">if</span> log_id <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids[service_index]:</div>
+<div class="line"><span class="lineno">  490</span>                self.service_index_to_log_ids[service_index].append(log_id)</div>
+<div class="line"><span class="lineno">  491</span> </div>
 <div class="ttc" id="anamespacepylo_1_1utilities_1_1explorer__report__exporter_html_a855675a80c303501cebf61fde43c8dc9"><div class="ttname"><a href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a855675a80c303501cebf61fde43c8dc9">pylo.utilities.explorer_report_exporter.str</a></div><div class="ttdeci">str</div><div class="ttdef"><b>Definition:</b> explorer_report_exporter.py:13</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="affcdb40b24334736213b6b1f38003648" name="affcdb40b24334736213b6b1f38003648"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affcdb40b24334736213b6b1f38003648">&#9670;&nbsp;</a></span>get_policy_decision_for_log_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Optional[str] pylo.Explorer.RuleCoverageQueryManager.QueryServices.get_policy_decision_for_log_id </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>log_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">  492</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
+<div class="line"><span class="lineno">  493</span>            policy_decision = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  494</span> </div>
+<div class="line"><span class="lineno">  495</span>            <span class="keywordflow">for</span> service_id, list_of_log_ids <span class="keywordflow">in</span> self.service_index_to_log_ids.items():</div>
+<div class="line"><span class="lineno">  496</span>                <span class="keywordflow">if</span> log_id <span class="keywordflow">in</span> list_of_log_ids:</div>
+<div class="line"><span class="lineno">  497</span>                    policy_decision = <span class="stringliteral">&#39;blocked&#39;</span></div>
+<div class="line"><span class="lineno">  498</span>                    logid_position = list_of_log_ids.index(log_id)</div>
+<div class="line"><span class="lineno">  499</span>                    policy_coverage = self.service_index_policy_coverage[service_id][logid_position]</div>
+<div class="line"><span class="lineno">  500</span>                    <span class="keywordflow">if</span> len(policy_coverage) &gt; 0 :</div>
+<div class="line"><span class="lineno">  501</span>                        policy_decision = <span class="stringliteral">&#39;allowed&#39;</span></div>
+<div class="line"><span class="lineno">  502</span>                        <span class="keywordflow">return</span> policy_decision</div>
+<div class="line"><span class="lineno">  503</span> </div>
+<div class="line"><span class="lineno">  504</span>            <span class="keywordflow">return</span> policy_decision</div>
+<div class="line"><span class="lineno">  505</span> </div>
+<div class="line"><span class="lineno">  506</span>    <span class="keyword">class </span>IPListToWorkloadQuery:</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -169,7 +210,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 22 2022 15:13:38 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Tue Mar 22 2022 18:03:27 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
