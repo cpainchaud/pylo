@@ -12,5 +12,6 @@ var searchData=
   ['loc_5flabel_9',['loc_label',['../classpylo_1_1_workload_1_1_workload.html#a395e2a7b0aa4142e4ddf6ce0f5592067',1,'pylo.Workload.Workload.loc_label()'],['../classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a826db3fae71ca07b563b03e458ad4e55',1,'pylo.Ruleset.RulesetScopeEntry.loc_label()']]],
   ['loc_5flabel_5flist_10',['loc_label_list',['../namespacepylo_1_1utilities_1_1ven__compatibility__report__export.html#a68dee93bb465328ba178c94f43946b66',1,'pylo.utilities.ven_compatibility_report_export.loc_label_list()'],['../namespacepylo_1_1utilities_1_1ven__idle__to__illumination.html#ab05f6e8f1a7b72b62dd626b99a68136a',1,'pylo.utilities.ven_idle_to_illumination.loc_label_list()'],['../namespacepylo_1_1utilities_1_1ven__reassign__pce.html#ad5107904cfadf2229d7b8a4faf360693',1,'pylo.utilities.ven_reassign_pce.loc_label_list()']]],
   ['log_11',['log',['../namespacepylo_1_1tmp.html#aab558270bb990a7cfefe5bbbac1e47fb',1,'pylo::tmp']]],
-  ['lower_12',['lower',['../namespacepylo_1_1utilities_1_1ven__idle__to__illumination.html#afd7bc2dec7c7f91c6166325048c4438d',1,'pylo::utilities::ven_idle_to_illumination']]]
+  ['log_5fid_12',['log_id',['../classpylo_1_1_explorer_1_1_rule_coverage_query_manager.html#acb9281ca1803b2ffd8cfc96549e360de',1,'pylo::Explorer::RuleCoverageQueryManager']]],
+  ['lower_13',['lower',['../namespacepylo_1_1utilities_1_1ven__idle__to__illumination.html#afd7bc2dec7c7f91c6166325048c4438d',1,'pylo::utilities::ven_idle_to_illumination']]]
 ];
