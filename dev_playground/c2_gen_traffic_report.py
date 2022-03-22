@@ -439,7 +439,7 @@ print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('inbound_log_draft')))
 
 pylo.clock_start('inbound_log_merge')
 print(" * Merging similar logs... ", end='')
-all_records = connector.ExplorerResultSetV1.mergeRecordsProcessAndUserDiffers(all_records)
+all_records = pylo.ExplorerResultSetV1.mergeRecordsProcessAndUserDiffers(all_records)
 print("OK!  {} records left (exec_time:{})".format(len(all_records), pylo.clock_elapsed_str('inbound_log_merge')))
 
 pylo.clock_start('inbound_log_process')
@@ -571,7 +571,7 @@ print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('outbound_log_draft')))
 
 pylo.clock_start('outbound_log_merge')
 print(" * Merging similar logs... ", end='')
-all_records = connector.ExplorerResultSetV1.mergeRecordsProcessAndUserDiffers(all_records)
+all_records = pylo.ExplorerResultSetV1.mergeRecordsProcessAndUserDiffers(all_records)
 print("OK! {} records left (exec_time:{})".format(len(all_records), pylo.clock_elapsed_str('outbound_log_merge')))
 
 pylo.clock_start('outbound_log_process')
