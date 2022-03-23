@@ -823,6 +823,10 @@ class RuleCoverageQueryManager:
         if self.any_iplist_href is None:
             raise pylo.PyloEx('No "any" iplist found')
 
+    def add_query_from_explorer_results(self, explorer_results: List[ExplorerResultSetV1.ExplorerResult]) -> None:
+        for explorer_result in explorer_results:
+            self.add_query_from_explorer_result(explorer_result)
+
     def add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):
         self.log_id += 1
         self.log_to_id[log] = self.log_id

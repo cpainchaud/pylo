@@ -312,7 +312,6 @@ rules_query.use_resolved_matches()
 rules_results = rules_query.execute_and_resolve(organization=org)
 print("OK!  (received {} rules)".format(rules_results.count_results()))
 
-
 def rule_actors_to_str(container: 'pylo.RuleHostContainer') -> str:
     result = ''
 
@@ -437,12 +436,11 @@ print(" * Requesting 'Inbound' draft mode records... ", end='')
 # all_records = inbound_results.get_all_records(draft_mode=True)
 all_records = inbound_results.get_all_records()
 draftManager = pylo.RuleCoverageQueryManager(org.connector)
-for record in all_records:
-    draftManager.add_query_from_explorer_result(record)
-print("queries count to send to API: reduced={}  total_unreduced={} invalid={} total_added={}".
-      format(draftManager.count_queries(), draftManager.count_real_queries(), draftManager.count_invalid_records, draftManager.log_id))
+draftManager.add_query_from_explorer_results(all_records)
+print(" reduced={}  total_unreduced={} invalid={} total_added={} ".
+      format(draftManager.count_queries(), draftManager.count_real_queries(), draftManager.count_invalid_records, draftManager.log_id),
+      end='')
 draftManager.execute()
-
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('inbound_log_draft')))
 
 pylo.clock_start('inbound_log_merge')
@@ -574,7 +572,14 @@ print("OK!  (received {} rows)".format(outbound_results.count_results()))
 
 pylo.clock_start('outbound_log_draft')
 print(" * Requesting 'Outbound' draft mode records... ", end='')
-all_records = outbound_results.get_all_records(draft_mode=True)
+# all_records = outbound_results.get_all_records(draft_mode=True)
+all_records = outbound_results.get_all_records()
+draftManager = pylo.RuleCoverageQueryManager(org.connector)
+draftManager.add_query_from_explorer_results(all_records)
+print(" reduced={}  total_unreduced={} invalid={} total_added={} ".
+      format(draftManager.count_queries(), draftManager.count_real_queries(), draftManager.count_invalid_records, draftManager.log_id),
+      end='')
+draftManager.execute()
 print("OK! (exec_time:{})".format(pylo.clock_elapsed_str('outbound_log_draft')))
 
 pylo.clock_start('outbound_log_merge')
