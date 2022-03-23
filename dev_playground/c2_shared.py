@@ -3,6 +3,7 @@ import json
 from typing import *
 import sys
 from typing import Dict, Any, List, TypedDict
+import socket
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
@@ -205,6 +206,28 @@ def print_stats():
     print("  - Broadcast IP manual exclusion entries count: {}".format(excluded_broadcast.count_entries()))
     print("  - Service exclusions entries count: {}".format(len(excluded_direct_services)))
     print("  - Process names exclusions entries count: {}".format(len(excluded_processes)))
+
+
+_cached_dns_resolutions: Dict[str, str] = {}
+
+def get_dns_resolution(ip_address_str: str) -> str:
+    global _cached_dns_resolutions
+
+    if ip_address_str in _cached_dns_resolutions:
+        return _cached_dns_resolutions[ip_address_str]
+
+    try:
+        dns_name = socket.gethostbyaddr(ip_address_str)[0]
+        _cached_dns_resolutions[ip_address_str] = dns_name
+    except socket.herror:
+        _cached_dns_resolutions[ip_address_str] = ''
+
+    return _cached_dns_resolutions[ip_address_str]
+
+
+
+
+
 
 
 

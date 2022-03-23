@@ -918,7 +918,7 @@ class RuleCoverageQueryManager:
                 #     decision = 'blocked'
                 # else:
                 pylo.get_logger().error(pylo.nice_json(log._raw_json))
-                raise pylo.PyloEx('No decision found for log_id {}'.format(log._raw_json))
+                raise pylo.PyloEx('No decision found for log_id {}'.format(log_id))
 
             log.set_draft_mode_policy_decision_blocked(decision == 'blocked')
 

@@ -4,7 +4,6 @@ import io
 import argparse
 import shlex
 from datetime import datetime, timedelta
-import socket
 import time
 from typing import Union, Optional, Dict, List, Any
 
@@ -509,11 +508,7 @@ for record in all_records:
         reverse_dns = None
         if not settings_skip_dns_resolution:
             count_dns_resolutions += 1
-            try:
-                reverse_dns = socket.gethostbyaddr(record.source_ip)[0]
-            except socket.herror:
-                pass
-
+            reverse_dns = c2_shared.get_dns_resolution(record.source_ip)
 
         data = {'src_ip': record.source_ip,
                 'src_hostname': reverse_dns,
@@ -643,12 +638,9 @@ for record in all_records:
 
     else:
         reverse_dns = None
-        count_dns_resolutions += 1
-        try:
-            reverse_dns = socket.gethostbyaddr(record.destination_ip)[0]
-        except socket.herror:
-            pass
-
+        if not settings_skip_dns_resolution:
+            count_dns_resolutions += 1
+            reverse_dns = c2_shared.get_dns_resolution(record.destination_ip)
 
         data = {'src_ip': record.source_ip,
                 'src_hostname': src_workload.get_name(),
