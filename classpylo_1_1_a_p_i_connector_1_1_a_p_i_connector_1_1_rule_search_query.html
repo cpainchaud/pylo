@@ -140,15 +140,15 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1450</span>        <span class="keyword">def </span>__init__(self, connector: <span class="stringliteral">&#39;pylo.APIConnector&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1451</span>            self.connector = connector</div>
-<div class="line"><span class="lineno"> 1452</span>            self.mode_is_basic = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1453</span>            self._basic_mode_labels = {}</div>
-<div class="line"><span class="lineno"> 1454</span>            self._advanced_mode_provider_labels = {}</div>
-<div class="line"><span class="lineno"> 1455</span>            self._advanced_mode_consumer_labels = {}</div>
-<div class="line"><span class="lineno"> 1456</span>            self._exact_matches = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1457</span>            self._mode_is_draft = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1458</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1457</span>        <span class="keyword">def </span>__init__(self, connector: <span class="stringliteral">&#39;pylo.APIConnector&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1458</span>            self.connector = connector</div>
+<div class="line"><span class="lineno"> 1459</span>            self.mode_is_basic = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1460</span>            self._basic_mode_labels = {}</div>
+<div class="line"><span class="lineno"> 1461</span>            self._advanced_mode_provider_labels = {}</div>
+<div class="line"><span class="lineno"> 1462</span>            self._advanced_mode_consumer_labels = {}</div>
+<div class="line"><span class="lineno"> 1463</span>            self._exact_matches = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1464</span>            self._mode_is_draft = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1465</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -178,11 +178,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1479</span>        <span class="keyword">def </span>add_consumer_label(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1480</span>            <span class="keywordflow">if</span> self.mode_is_basic:</div>
-<div class="line"><span class="lineno"> 1481</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;You can add labels to RuleSearchQuery consumers only in Advanced mode&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1482</span>            self._advanced_mode_consumer_labels[label.href] = label</div>
-<div class="line"><span class="lineno"> 1483</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1486</span>        <span class="keyword">def </span>add_consumer_label(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1487</span>            <span class="keywordflow">if</span> self.mode_is_basic:</div>
+<div class="line"><span class="lineno"> 1488</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;You can add labels to RuleSearchQuery consumers only in Advanced mode&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1489</span>            self._advanced_mode_consumer_labels[label.href] = label</div>
+<div class="line"><span class="lineno"> 1490</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment -->
 </div>
@@ -212,11 +212,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1474</span>        <span class="keyword">def </span>add_label(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1475</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> self.mode_is_basic:</div>
-<div class="line"><span class="lineno"> 1476</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;You can add labels to RuleSearchQuery only in Basic mode. Use consumer/provider counterparts with Advanced mode&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1477</span>            self._basic_mode_labels[label.href] = label</div>
-<div class="line"><span class="lineno"> 1478</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1481</span>        <span class="keyword">def </span>add_label(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1482</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> self.mode_is_basic:</div>
+<div class="line"><span class="lineno"> 1483</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;You can add labels to RuleSearchQuery only in Basic mode. Use consumer/provider counterparts with Advanced mode&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1484</span>            self._basic_mode_labels[label.href] = label</div>
+<div class="line"><span class="lineno"> 1485</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -245,11 +245,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1484</span>        <span class="keyword">def </span>add_provider_label(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1485</span>            <span class="keywordflow">if</span> self.mode_is_basic:</div>
-<div class="line"><span class="lineno"> 1486</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;You can add labels to RuleSearchQuery providers only in Advanced mode&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1487</span>            self._advanced_mode_provider_labels[label.href] = label</div>
-<div class="line"><span class="lineno"> 1488</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1491</span>        <span class="keyword">def </span>add_provider_label(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1492</span>            <span class="keywordflow">if</span> self.mode_is_basic:</div>
+<div class="line"><span class="lineno"> 1493</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;You can add labels to RuleSearchQuery providers only in Advanced mode&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1494</span>            self._advanced_mode_provider_labels[label.href] = label</div>
+<div class="line"><span class="lineno"> 1495</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -268,33 +268,33 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1495</span>        <span class="keyword">def </span>execute(self):</div>
-<div class="line"><span class="lineno"> 1496</span>            data = {}</div>
-<div class="line"><span class="lineno"> 1497</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> self._exact_matches:</div>
-<div class="line"><span class="lineno"> 1498</span>                data[<span class="stringliteral">&#39;resolve_actors&#39;</span>] = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1499</span> </div>
-<div class="line"><span class="lineno"> 1500</span>            uri = <span class="stringliteral">&#39;/sec_policy/draft/rule_search&#39;</span></div>
-<div class="line"><span class="lineno"> 1501</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> self._mode_is_draft:</div>
-<div class="line"><span class="lineno"> 1502</span>                uri = <span class="stringliteral">&#39;/sec_policy/active/rule_search&#39;</span></div>
-<div class="line"><span class="lineno"> 1503</span> </div>
-<div class="line"><span class="lineno"> 1504</span>            <span class="keywordflow">if</span> self.mode_is_basic:</div>
-<div class="line"><span class="lineno"> 1505</span>                <span class="keywordflow">if</span> len(self._basic_mode_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1506</span>                    data[<span class="stringliteral">&#39;providers_or_consumers&#39;</span>] = []</div>
-<div class="line"><span class="lineno"> 1507</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._basic_mode_labels.keys():</div>
-<div class="line"><span class="lineno"> 1508</span>                        data[<span class="stringliteral">&#39;providers_or_consumers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1509</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1510</span>                <span class="keywordflow">if</span> len(self._advanced_mode_provider_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1511</span>                    data[<span class="stringliteral">&#39;providers&#39;</span>] = []</div>
-<div class="line"><span class="lineno"> 1512</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._advanced_mode_provider_labels.keys():</div>
-<div class="line"><span class="lineno"> 1513</span>                        data[<span class="stringliteral">&#39;providers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1514</span>                <span class="keywordflow">if</span> len(self._advanced_mode_consumer_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1515</span>                    data[<span class="stringliteral">&#39;consumers&#39;</span>] = []</div>
-<div class="line"><span class="lineno"> 1516</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._advanced_mode_consumer_labels.keys():</div>
-<div class="line"><span class="lineno"> 1517</span>                        data[<span class="stringliteral">&#39;consumers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1518</span> </div>
-<div class="line"><span class="lineno"> 1519</span>            <span class="comment"># print(data)</span></div>
-<div class="line"><span class="lineno"> 1520</span>            <span class="keywordflow">return</span> self.connector.do_post_call(uri, data)</div>
-<div class="line"><span class="lineno"> 1521</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1502</span>        <span class="keyword">def </span>execute(self):</div>
+<div class="line"><span class="lineno"> 1503</span>            data = {}</div>
+<div class="line"><span class="lineno"> 1504</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> self._exact_matches:</div>
+<div class="line"><span class="lineno"> 1505</span>                data[<span class="stringliteral">&#39;resolve_actors&#39;</span>] = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1506</span> </div>
+<div class="line"><span class="lineno"> 1507</span>            uri = <span class="stringliteral">&#39;/sec_policy/draft/rule_search&#39;</span></div>
+<div class="line"><span class="lineno"> 1508</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> self._mode_is_draft:</div>
+<div class="line"><span class="lineno"> 1509</span>                uri = <span class="stringliteral">&#39;/sec_policy/active/rule_search&#39;</span></div>
+<div class="line"><span class="lineno"> 1510</span> </div>
+<div class="line"><span class="lineno"> 1511</span>            <span class="keywordflow">if</span> self.mode_is_basic:</div>
+<div class="line"><span class="lineno"> 1512</span>                <span class="keywordflow">if</span> len(self._basic_mode_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1513</span>                    data[<span class="stringliteral">&#39;providers_or_consumers&#39;</span>] = []</div>
+<div class="line"><span class="lineno"> 1514</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._basic_mode_labels.keys():</div>
+<div class="line"><span class="lineno"> 1515</span>                        data[<span class="stringliteral">&#39;providers_or_consumers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1516</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1517</span>                <span class="keywordflow">if</span> len(self._advanced_mode_provider_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1518</span>                    data[<span class="stringliteral">&#39;providers&#39;</span>] = []</div>
+<div class="line"><span class="lineno"> 1519</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._advanced_mode_provider_labels.keys():</div>
+<div class="line"><span class="lineno"> 1520</span>                        data[<span class="stringliteral">&#39;providers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1521</span>                <span class="keywordflow">if</span> len(self._advanced_mode_consumer_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1522</span>                    data[<span class="stringliteral">&#39;consumers&#39;</span>] = []</div>
+<div class="line"><span class="lineno"> 1523</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._advanced_mode_consumer_labels.keys():</div>
+<div class="line"><span class="lineno"> 1524</span>                        data[<span class="stringliteral">&#39;consumers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1525</span> </div>
+<div class="line"><span class="lineno"> 1526</span>            <span class="comment"># print(data)</span></div>
+<div class="line"><span class="lineno"> 1527</span>            <span class="keywordflow">return</span> self.connector.do_post_call(uri, data)</div>
+<div class="line"><span class="lineno"> 1528</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -333,9 +333,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1522</span>        <span class="keyword">def </span>execute_and_resolve(self, organization: <span class="stringliteral">&#39;pylo.Organization&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1523</span>            <span class="keywordflow">return</span> APIConnector.RuleSearchQuery.RuleSearchQueryResolvedResultSet(self.execute(), organization)</div>
-<div class="line"><span class="lineno"> 1524</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1529</span>        <span class="keyword">def </span>execute_and_resolve(self, organization: <span class="stringliteral">&#39;pylo.Organization&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1530</span>            <span class="keywordflow">return</span> APIConnector.RuleSearchQuery.RuleSearchQueryResolvedResultSet(self.execute(), organization)</div>
+<div class="line"><span class="lineno"> 1531</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -376,9 +376,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1471</span>        <span class="keyword">def </span>set_active_mode(self):</div>
-<div class="line"><span class="lineno"> 1472</span>            self._mode_is_draft = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1473</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1478</span>        <span class="keyword">def </span>set_active_mode(self):</div>
+<div class="line"><span class="lineno"> 1479</span>            self._mode_is_draft = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno"> 1480</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -397,10 +397,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1464</span>        <span class="keyword">def </span>set_advanced_mode(self):</div>
-<div class="line"><span class="lineno"> 1465</span>            self.mode_is_basic = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1466</span>            self._basic_mode_labels = {}</div>
-<div class="line"><span class="lineno"> 1467</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1471</span>        <span class="keyword">def </span>set_advanced_mode(self):</div>
+<div class="line"><span class="lineno"> 1472</span>            self.mode_is_basic = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno"> 1473</span>            self._basic_mode_labels = {}</div>
+<div class="line"><span class="lineno"> 1474</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -419,11 +419,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1459</span>        <span class="keyword">def </span>set_basic_mode(self):</div>
-<div class="line"><span class="lineno"> 1460</span>            self.mode_is_basic = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1461</span>            self._advanced_mode_provider_labels = {}</div>
-<div class="line"><span class="lineno"> 1462</span>            self._advanced_mode_consumer_labels = {}</div>
-<div class="line"><span class="lineno"> 1463</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1466</span>        <span class="keyword">def </span>set_basic_mode(self):</div>
+<div class="line"><span class="lineno"> 1467</span>            self.mode_is_basic = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1468</span>            self._advanced_mode_provider_labels = {}</div>
+<div class="line"><span class="lineno"> 1469</span>            self._advanced_mode_consumer_labels = {}</div>
+<div class="line"><span class="lineno"> 1470</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -442,9 +442,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1468</span>        <span class="keyword">def </span>set_draft_mode(self):</div>
-<div class="line"><span class="lineno"> 1469</span>            self._mode_is_draft = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1470</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1475</span>        <span class="keyword">def </span>set_draft_mode(self):</div>
+<div class="line"><span class="lineno"> 1476</span>            self._mode_is_draft = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1477</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -463,9 +463,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1489</span>        <span class="keyword">def </span>use_exact_matches(self):</div>
-<div class="line"><span class="lineno"> 1490</span>            self._exact_matches = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1491</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1496</span>        <span class="keyword">def </span>use_exact_matches(self):</div>
+<div class="line"><span class="lineno"> 1497</span>            self._exact_matches = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1498</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -484,9 +484,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1492</span>        <span class="keyword">def </span>use_resolved_matches(self):</div>
-<div class="line"><span class="lineno"> 1493</span>            self._exact_matches = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1494</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1499</span>        <span class="keyword">def </span>use_resolved_matches(self):</div>
+<div class="line"><span class="lineno"> 1500</span>            self._exact_matches = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno"> 1501</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -525,7 +525,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 23 2022 09:22:48 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Wed Mar 30 2022 12:29:07 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
