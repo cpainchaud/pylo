@@ -100,13 +100,13 @@ class ExplorerResultSetV1:
 
         def service_to_str_array(self):
             if self.service_port is None or self.service_port == 0:
-                return [str(self.service_protocol), 'proto']
+                return [self.service_protocol, 'proto']
 
             if self.service_protocol == 17:
-                return [str(self.service_port), 'udp']
+                return [self.service_port, 'udp']
 
             if self.service_protocol == 6:
-                return [str(self.service_port), 'tcp']
+                return [self.service_port, 'tcp']
 
             return ['n/a', 'n/a']
 

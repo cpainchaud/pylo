@@ -2,6 +2,7 @@ import json
 import time
 import os
 import getpass
+from pathlib import Path
 
 try:
     import requests as requests
@@ -98,8 +99,14 @@ class APIConnector:
             port = hostname[separator_pos+1:]
             hostname = hostname[0:separator_pos]
 
-        if os.path.isfile('ilo.json'):
-            with open('ilo.json') as json_file:
+        filename = str(Path.home()) + '/pylo/credentials.json'
+        filename = Path(filename)
+
+        if not os.path.isfile(filename):
+            filename ='ilo.json'
+
+        if os.path.isfile(filename):
+            with open(filename) as json_file:
                 data = json.load(json_file)
                 if hostname in data:
                     cur = data[hostname]
