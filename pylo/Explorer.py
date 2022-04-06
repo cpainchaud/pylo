@@ -858,7 +858,7 @@ class RuleCoverageQueryManager:
                     iplist_hrefs.append(self.any_iplist_href)
 
                 for iplist_href in iplist_hrefs:
-                    self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,
+                    self.workload_to_iplist_query_manager.add_query(log_id=self.log_id,
                                                                     ip_list_href=iplist_href,
                                                                     workload_href=log.get_source_workload_href(),
                                                                     service_record=log.service_json)
