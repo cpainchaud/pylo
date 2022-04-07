@@ -495,7 +495,7 @@ for record in all_records:
                 'first_seen': record.first_detected,
                 'process_name': record.process_name,
                 'username': record.username,
-                'to_be_implemented': False,
+                'allow': None,
                 'onboarded': is_onboarded
                 }
 
@@ -525,7 +525,8 @@ for record in all_records:
                 'last_seen': record.last_detected,
                 'first_seen': record.first_detected,
                 'process_name': record.process_name,
-                'username': record.username
+                'username': record.username,
+                'allow': None
                 }
 
         excel_doc.add_line_from_object(data, excel_struct.title.inbound_unidentified)
@@ -627,7 +628,7 @@ for record in all_records:
                 'first_seen': record.first_detected,
                 'process_name': record.process_name,
                 'username': record.username,
-                'to_be_implemented': False,
+                'allow': None,
                 'onboarded': is_onboarded
                 }
 
@@ -657,7 +658,8 @@ for record in all_records:
                 'last_seen': record.last_detected,
                 'first_seen': record.first_detected,
                 'process_name': record.process_name,
-                'username': record.username
+                'username': record.username,
+                'allow': None,
                 }
 
         excel_doc.add_line_from_object(data, excel_struct.title.outbound_unidentified)
