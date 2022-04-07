@@ -99,13 +99,17 @@ class ArraysToExcel:
     _sheets: Dict[str, 'ArraysToExcel.Sheet']
 
     class Sheet:
-        def __init__(self, headers, force_all_wrap_text=True, sheet_color: Optional[str] = None):
+        def __init__(self, headers, force_all_wrap_text=True, sheet_color: Optional[str] = None, order_by: Optional[List[str]] = None, multivalues_cell_delimiter=' '):
             self._headers = headers
             self._columns_count = len(headers)
             self._lines = []
             self._width = []
             self._columns_wrap = []
             self._color = sheet_color
+
+            self._order_by = order_by
+
+            self._multivalues_cell_delimiter = multivalues_cell_delimiter
 
             self._headers_name_to_index = {}
             self._headers_index_to_name = []
@@ -162,7 +166,7 @@ class ArraysToExcel:
                 raise pylo.PyloEx("line length ({}) does not match the number of columns ({})".format(len(line), self._columns_count))
             self._lines.append(line)
 
-        def add_to_document(self, xls_workbook: xlsxwriter.Workbook, sheet_name: str, multivalues_cell_delimiter=' '):
+        def add_to_document(self, xls_workbook: xlsxwriter.Workbook, sheet_name: str):
 
             def find_length(some_text: str) -> int:
                 if type(some_text) is bool or some_text is None:
@@ -178,6 +182,12 @@ class ArraysToExcel:
 
                 return length
 
+
+            # Data may need to be sorted
+            if self._order_by is not None and len(self._order_by) > 0:
+                self._lines = sorted(self._lines, key=lambda x: [x[self._headers_name_to_index[header_name]] for header_name in self._order_by])
+                # print("********* Sorted by {}".format(self._order_by))
+
             xls_worksheet = xls_workbook.add_worksheet(sheet_name)
             if self._color is not None:
                 xls_worksheet.tab_color = self._color
@@ -189,7 +199,7 @@ class ArraysToExcel:
                 item_index = 0
                 for item in line:
                     if type(item) is list:
-                        new_line.append(pylo.string_list_to_text(item, multivalues_cell_delimiter))
+                        new_line.append(pylo.string_list_to_text(item, self._multivalues_cell_delimiter))
                     else:
                         new_line.append(item)
 
@@ -246,17 +256,20 @@ class ArraysToExcel:
     def __init__(self):
         self._sheets = {}
 
-    def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None):
+    def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None,
+                     order_by: Optional[List[str]] = None, multivalues_cell_delimiter: str = ' '):
         if name in self._sheets:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))
 
-        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text, sheet_color=sheet_color)
+        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text,
+                                                 sheet_color=sheet_color, order_by=order_by,
+                                                 multivalues_cell_delimiter=multivalues_cell_delimiter)
 
     def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)
 
-        for sheet_name, sheet_content in self._sheets.items():
-            sheet_content.add_to_document(xls_workbook, sheet_name)
+        for sheet_name, sheet_object in self._sheets.items():
+            sheet_object.add_to_document(xls_workbook, sheet_name)
 
         xls_workbook.close()
 

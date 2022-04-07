@@ -112,30 +112,36 @@ class __Data(TypedDict):
     columns: List[str]
     force_all_wrap_text: bool
 
-
+default_sheets_options = {'multivalue_cell_delimiter': "\n"}
 excel_sheets_creation_order: List[__Data] = [
 
     # Inbound
-    {'title': excel_struct.title.inbound_identified, 'columns': excel_struct.columns.inbound_identified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
-    #{'title': excel_struct.title.inbound_onboarded, 'columns': excel_struct.columns.inbound_onboarded, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.inbound_unidentified, 'columns': excel_struct.columns.inbound_unidentified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
+    {'title': excel_struct.title.inbound_identified, 'columns': excel_struct.columns.inbound_identified, 'force_all_wrap_text': True, 'color': 'CCCC00',
+     'order_by': ['dst_port', 'dst_proto', 'src_application', 'src_role', 'src_ip']},
+    #{'title': excel_struct.title.inbound_onboarded, 'columns': excel_struct.columns.inbound_onboarded, 'force_all_wrap_text': True},
+    {'title': excel_struct.title.inbound_unidentified, 'columns': excel_struct.columns.inbound_unidentified, 'force_all_wrap_text': True, 'color': 'CCCC00',
+     'order_by': ['dst_port', 'dst_proto', 'dst_role', 'src_ip']},
 
     # Outbound
-    {'title': excel_struct.title.outbound_identified, 'columns': excel_struct.columns.outbound_identified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
-    #{'title': excel_struct.title.outbound_onboarded, 'columns': excel_struct.columns.outbound_onboarded, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.outbound_unidentified, 'columns': excel_struct.columns.outbound_unidentified, 'force_all_wrap_text': False, 'color': 'CCCC00'},
+    {'title': excel_struct.title.outbound_identified, 'columns': excel_struct.columns.outbound_identified, 'force_all_wrap_text': True, 'color': 'CCCC00',
+     'order_by': ['dst_port', 'dst_proto', 'dst_application', 'dst_role', 'dst_ip']},
+    #{'title': excel_struct.title.outbound_onboarded, 'columns': excel_struct.columns.outbound_onboarded, 'force_all_wrap_text': True},
+    {'title': excel_struct.title.outbound_unidentified, 'columns': excel_struct.columns.outbound_unidentified, 'force_all_wrap_text': True, 'color': 'CCCC00',
+     'order_by': ['dst_port', 'dst_proto', 'src_role', 'dst_ip']},
 
 
-    {'title': excel_struct.title.inbound_cs_identified, 'columns': excel_struct.columns.inbound_cs_identified, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.outbound_cs_identified, 'columns': excel_struct.columns.outbound_cs_identified, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.inbound_cs_identified, 'columns': excel_struct.columns.inbound_cs_identified, 'force_all_wrap_text': True},
+    {'title': excel_struct.title.outbound_cs_identified, 'columns': excel_struct.columns.outbound_cs_identified, 'force_all_wrap_text': True},
 
-    {'title': excel_struct.title.workloads, 'columns': excel_struct.columns.workloads, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.rulesets, 'columns': excel_struct.columns.rulesets, 'force_all_wrap_text': False},
-    {'title': excel_struct.title.fingerprint, 'columns': excel_struct.columns.fingerprint, 'force_all_wrap_text': False},
+    {'title': excel_struct.title.workloads, 'columns': excel_struct.columns.workloads, 'force_all_wrap_text': True},
+    {'title': excel_struct.title.rulesets, 'columns': excel_struct.columns.rulesets, 'force_all_wrap_text': True},
+    {'title': excel_struct.title.fingerprint, 'columns': excel_struct.columns.fingerprint, 'force_all_wrap_text': True},
 ]
 
 for(sheet_data) in excel_sheets_creation_order:
-    excel_doc.create_sheet(sheet_data['title'], sheet_data['columns'], sheet_data['force_all_wrap_text'], sheet_data.get('color'))
+    excel_doc.create_sheet(sheet_data['title'], sheet_data['columns'], sheet_data['force_all_wrap_text'], sheet_data.get('color'),
+                           order_by=sheet_data.get('order_by', None),
+                           multivalues_cell_delimiter=sheet_data.get('multivalue_cell_delimiter', default_sheets_options['multivalue_cell_delimiter']))
 
 
 def load_config_file(filename='c2_config.json') -> bool:
