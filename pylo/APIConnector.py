@@ -1065,6 +1065,10 @@ class APIConnector:
             self._consumer_exclude_labels = {}
             self._provider_labels = {}
             self._provider_exclude_labels = {}
+
+            self._consumer_workloads = {}
+            self._provider_workloads = {}
+
             self.max_results = max_results
             self._policy_decision_filter = []
             self._time_from = None
@@ -1107,6 +1111,28 @@ class APIConnector:
             @type label_or_href: str|pylo.Label|pylo.LabelGroup
             """
             self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)
+
+        def consumer_include_workload(self, workload_or_href:Union[str, 'pylo.Workload']):
+            if isinstance(workload_or_href, str):
+                self._consumer_workloads[workload_or_href] = workload_or_href
+                return
+
+            if isinstance(workload_or_href, pylo.Workload):
+                self._consumer_workloads[workload_or_href.href] = workload_or_href.href
+                return
+
+            raise pylo.PyloEx("Unsupported object type {}".format(type(workload_or_href)))
+
+        def provider_include_workload(self, workload_or_href:Union[str, 'pylo.Workload']):
+            if isinstance(workload_or_href, str):
+                self._provider_workloads[workload_or_href] = workload_or_href
+                return
+
+            if isinstance(workload_or_href, pylo.Workload):
+                self._provider_workloads[workload_or_href.href] = workload_or_href.href
+                return
+
+            raise pylo.PyloEx("Unsupported object type {}".format(type(workload_or_href)))
 
         def consumer_exclude_cidr(self, ipaddress: str):
             self.__filter_consumer_ip_exclude.append(ipaddress)
@@ -1234,6 +1260,12 @@ class APIConnector:
                     tmp.append({'label': {'href': label_href}})
                 filters['sources']['include'].append(tmp)
 
+            if len(self._consumer_workloads) > 0:
+                tmp = []
+                for workload_href in self._consumer_workloads.keys():
+                    tmp.append({'workload': {'href': workload_href}})
+                filters['sources']['include'].append(tmp)
+
             if len(self.__filter_consumer_ip_include) > 0:
                 tmp = []
                 for ip_txt in self.__filter_consumer_ip_include:
@@ -1244,6 +1276,12 @@ class APIConnector:
                 tmp = []
                 for label_href in self._provider_labels.keys():
                     tmp.append({'label': {'href': label_href}})
+                filters['destinations']['include'].append(tmp)
+
+            if len(self._provider_workloads) > 0:
+                tmp = []
+                for workload_href in self._provider_workloads.keys():
+                    tmp.append({'workload': {'href': workload_href}})
                 filters['destinations']['include'].append(tmp)
 
             if len(self.__filter_provider_ip_include) > 0:
