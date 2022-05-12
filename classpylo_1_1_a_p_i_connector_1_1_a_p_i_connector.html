@@ -387,25 +387,25 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1432</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
-<div class="line"><span class="lineno"> 1433</span>        path = <span class="stringliteral">&#39;/health&#39;</span></div>
-<div class="line"><span class="lineno"> 1434</span> </div>
-<div class="line"><span class="lineno"> 1435</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> return_object:</div>
-<div class="line"><span class="lineno"> 1436</span>            <span class="keywordflow">return</span> self.do_get_call(path)</div>
-<div class="line"><span class="lineno"> 1437</span> </div>
-<div class="line"><span class="lineno"> 1438</span>        <span class="comment"># cluster_health list</span></div>
-<div class="line"><span class="lineno"> 1439</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1440</span>        <span class="keywordflow">if</span> <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
-<div class="line"><span class="lineno"> 1441</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(<a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output)))</div>
-<div class="line"><span class="lineno"> 1442</span> </div>
-<div class="line"><span class="lineno"> 1443</span>        dict_of_health_reports = {}</div>
-<div class="line"><span class="lineno"> 1444</span> </div>
-<div class="line"><span class="lineno"> 1445</span>        <span class="keywordflow">for</span> single_output <span class="keywordflow">in</span> json_output:</div>
-<div class="line"><span class="lineno"> 1446</span>            new_report = APIConnector.ClusterHealth(single_output)</div>
-<div class="line"><span class="lineno"> 1447</span>            dict_of_health_reports[new_report.fqdn] = new_report</div>
-<div class="line"><span class="lineno"> 1448</span> </div>
-<div class="line"><span class="lineno"> 1449</span>        <span class="keywordflow">return</span> dict_of_health_reports</div>
-<div class="line"><span class="lineno"> 1450</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1470</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
+<div class="line"><span class="lineno"> 1471</span>        path = <span class="stringliteral">&#39;/health&#39;</span></div>
+<div class="line"><span class="lineno"> 1472</span> </div>
+<div class="line"><span class="lineno"> 1473</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> return_object:</div>
+<div class="line"><span class="lineno"> 1474</span>            <span class="keywordflow">return</span> self.do_get_call(path)</div>
+<div class="line"><span class="lineno"> 1475</span> </div>
+<div class="line"><span class="lineno"> 1476</span>        <span class="comment"># cluster_health list</span></div>
+<div class="line"><span class="lineno"> 1477</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1478</span>        <span class="keywordflow">if</span> <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
+<div class="line"><span class="lineno"> 1479</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(<a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output)))</div>
+<div class="line"><span class="lineno"> 1480</span> </div>
+<div class="line"><span class="lineno"> 1481</span>        dict_of_health_reports = {}</div>
+<div class="line"><span class="lineno"> 1482</span> </div>
+<div class="line"><span class="lineno"> 1483</span>        <span class="keywordflow">for</span> single_output <span class="keywordflow">in</span> json_output:</div>
+<div class="line"><span class="lineno"> 1484</span>            new_report = APIConnector.ClusterHealth(single_output)</div>
+<div class="line"><span class="lineno"> 1485</span>            dict_of_health_reports[new_report.fqdn] = new_report</div>
+<div class="line"><span class="lineno"> 1486</span> </div>
+<div class="line"><span class="lineno"> 1487</span>        <span class="keywordflow">return</span> dict_of_health_reports</div>
+<div class="line"><span class="lineno"> 1488</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -908,22 +908,22 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 <pre class="fragment">:param filters: should be an instance of ExplorerFilterSetV1 or a json payload built with your own logic
 :return:
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1283</span>    <span class="keyword">def </span>explorer_search(self, filters: Union[Dict, <span class="stringliteral">&#39;pylo.APIConnector.ExplorerFilterSetV1&#39;</span>]):</div>
-<div class="line"><span class="lineno"> 1284</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1285</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno"> 1286</span><span class="stringliteral">        :param filters: should be an instance of ExplorerFilterSetV1 </span><span class="keywordflow">or</span> a json payload built <span class="keyword">with</span> your own logic</div>
-<div class="line"><span class="lineno"> 1287</span>        :<span class="keywordflow">return</span>:</div>
-<div class="line"><span class="lineno"> 1288</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1289</span><span class="stringliteral">        path = &quot;/traffic_flows/traffic_analysis_queries&quot;</span></div>
-<div class="line"><span class="lineno"> 1290</span>        <span class="keywordflow">if</span> isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):</div>
-<div class="line"><span class="lineno"> 1291</span>            data = filters.generate_json_query()</div>
-<div class="line"><span class="lineno"> 1292</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1293</span>            data = filters</div>
-<div class="line"><span class="lineno"> 1294</span>        result = <a class="code hl_class" href="classpylo_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.ExplorerResultSetV1</a>(self.do_post_call(path, json_arguments=data, include_org_id=<span class="keyword">True</span>, json_output_expected=<span class="keyword">True</span>),</div>
-<div class="line"><span class="lineno"> 1295</span>                                                  owner=self, emulated_process_exclusion=filters.exclude_processes_emulate)</div>
-<div class="line"><span class="lineno"> 1296</span> </div>
-<div class="line"><span class="lineno"> 1297</span>        <span class="keywordflow">return</span> result</div>
-<div class="line"><span class="lineno"> 1298</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1321</span>    <span class="keyword">def </span>explorer_search(self, filters: Union[Dict, <span class="stringliteral">&#39;pylo.APIConnector.ExplorerFilterSetV1&#39;</span>]):</div>
+<div class="line"><span class="lineno"> 1322</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1323</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno"> 1324</span><span class="stringliteral">        :param filters: should be an instance of ExplorerFilterSetV1 </span><span class="keywordflow">or</span> a json payload built <span class="keyword">with</span> your own logic</div>
+<div class="line"><span class="lineno"> 1325</span>        :<span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno"> 1326</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1327</span><span class="stringliteral">        path = &quot;/traffic_flows/traffic_analysis_queries&quot;</span></div>
+<div class="line"><span class="lineno"> 1328</span>        <span class="keywordflow">if</span> isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):</div>
+<div class="line"><span class="lineno"> 1329</span>            data = filters.generate_json_query()</div>
+<div class="line"><span class="lineno"> 1330</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1331</span>            data = filters</div>
+<div class="line"><span class="lineno"> 1332</span>        result = <a class="code hl_class" href="classpylo_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.ExplorerResultSetV1</a>(self.do_post_call(path, json_arguments=data, include_org_id=<span class="keyword">True</span>, json_output_expected=<span class="keyword">True</span>),</div>
+<div class="line"><span class="lineno"> 1333</span>                                                  owner=self, emulated_process_exclusion=filters.exclude_processes_emulate)</div>
+<div class="line"><span class="lineno"> 1334</span> </div>
+<div class="line"><span class="lineno"> 1335</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno"> 1336</span> </div>
 <div class="ttc" id="aclasspylo_1_1_explorer_1_1_explorer_result_set_v1_html"><div class="ttname"><a href="classpylo_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.Explorer.ExplorerResultSetV1</a></div><div class="ttdef"><b>Definition:</b> Explorer.py:7</div></div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1310,9 +1310,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1561</span>    <span class="keyword">def </span>new_RuleSearchQuery(self):</div>
-<div class="line"><span class="lineno"> 1562</span>        <span class="keywordflow">return</span> self.RuleSearchQuery(self)</div>
-<div class="line"><span class="lineno"> 1563</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1599</span>    <span class="keyword">def </span>new_RuleSearchQuery(self):</div>
+<div class="line"><span class="lineno"> 1600</span>        <span class="keywordflow">return</span> self.RuleSearchQuery(self)</div>
+<div class="line"><span class="lineno"> 1601</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3333,7 +3333,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 12 2022 11:12:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Thu May 12 2022 12:18:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

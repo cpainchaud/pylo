@@ -82,6 +82,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9ba8da65fba6f5d233458297c0a0a1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad74399fedf214b4d8e699f1472af2813"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_filter_set_v1.html#ad74399fedf214b4d8e699f1472af2813">consumer_exclude_label</a> (self, label_or_href)</td></tr>
 <tr class="separator:ad74399fedf214b4d8e699f1472af2813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5241f568470461478f08942761779688"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_filter_set_v1.html#a5241f568470461478f08942761779688">consumer_include_workload</a> (self, Union[str, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>'] workload_or_href)</td></tr>
+<tr class="separator:a5241f568470461478f08942761779688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6ec61ef0bf1289070ce9b43c1b86980"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_filter_set_v1.html#af6ec61ef0bf1289070ce9b43c1b86980">provider_include_workload</a> (self, Union[str, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>'] workload_or_href)</td></tr>
+<tr class="separator:af6ec61ef0bf1289070ce9b43c1b86980"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf9d35cc91b3906c8f36d594cb4ead8e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_filter_set_v1.html#abf9d35cc91b3906c8f36d594cb4ead8e">consumer_exclude_cidr</a> (self, str ipaddress)</td></tr>
 <tr class="separator:abf9d35cc91b3906c8f36d594cb4ead8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ead80a5856361659e801d7231985d7c"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_filter_set_v1.html#a0ead80a5856361659e801d7231985d7c">consumer_exclude_ip4map</a> (self, '<a class="el" href="classpylo_1_1_i_p_map_1_1_i_p4_map.html">pylo.IP4Map</a>' map)</td></tr>
@@ -173,16 +177,20 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno"> 1065</span>            self._consumer_exclude_labels = {}</div>
 <div class="line"><span class="lineno"> 1066</span>            self._provider_labels = {}</div>
 <div class="line"><span class="lineno"> 1067</span>            self._provider_exclude_labels = {}</div>
-<div class="line"><span class="lineno"> 1068</span>            self.max_results = max_results</div>
-<div class="line"><span class="lineno"> 1069</span>            self._policy_decision_filter = []</div>
-<div class="line"><span class="lineno"> 1070</span>            self._time_from = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno"> 1071</span>            self._time_to = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno"> 1072</span>            self._exclude_broadcast = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1073</span>            self._exclude_multicast = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1074</span>            self._exclude_direct_services = []</div>
-<div class="line"><span class="lineno"> 1075</span>            self.exclude_processes_emulate = {}</div>
-<div class="line"><span class="lineno"> 1076</span>            self._exclude_processes = []</div>
-<div class="line"><span class="lineno"> 1077</span> </div>
+<div class="line"><span class="lineno"> 1068</span> </div>
+<div class="line"><span class="lineno"> 1069</span>            self._consumer_workloads = {}</div>
+<div class="line"><span class="lineno"> 1070</span>            self._provider_workloads = {}</div>
+<div class="line"><span class="lineno"> 1071</span> </div>
+<div class="line"><span class="lineno"> 1072</span>            self.max_results = max_results</div>
+<div class="line"><span class="lineno"> 1073</span>            self._policy_decision_filter = []</div>
+<div class="line"><span class="lineno"> 1074</span>            self._time_from = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno"> 1075</span>            self._time_to = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno"> 1076</span>            self._exclude_broadcast = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno"> 1077</span>            self._exclude_multicast = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno"> 1078</span>            self._exclude_direct_services = []</div>
+<div class="line"><span class="lineno"> 1079</span>            self.exclude_processes_emulate = {}</div>
+<div class="line"><span class="lineno"> 1080</span>            self._exclude_processes = []</div>
+<div class="line"><span class="lineno"> 1081</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -212,9 +220,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1111</span>        <span class="keyword">def </span>consumer_exclude_cidr(self, ipaddress: str):</div>
-<div class="line"><span class="lineno"> 1112</span>            self.__filter_consumer_ip_exclude.append(ipaddress)</div>
-<div class="line"><span class="lineno"> 1113</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1137</span>        <span class="keyword">def </span>consumer_exclude_cidr(self, ipaddress: str):</div>
+<div class="line"><span class="lineno"> 1138</span>            self.__filter_consumer_ip_exclude.append(ipaddress)</div>
+<div class="line"><span class="lineno"> 1139</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -243,10 +251,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1114</span>        <span class="keyword">def </span>consumer_exclude_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1115</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string():</div>
-<div class="line"><span class="lineno"> 1116</span>                self.consumer_exclude_cidr(item)</div>
-<div class="line"><span class="lineno"> 1117</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1140</span>        <span class="keyword">def </span>consumer_exclude_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1141</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string():</div>
+<div class="line"><span class="lineno"> 1142</span>                self.consumer_exclude_cidr(item)</div>
+<div class="line"><span class="lineno"> 1143</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -285,13 +293,13 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">@type label_or_href: str|pylo.Label|pylo.LabelGroup
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1104</span>        <span class="keyword">def </span>consumer_exclude_label(self, label_or_href):</div>
-<div class="line"><span class="lineno"> 1105</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1106</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno"> 1107</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
-<div class="line"><span class="lineno"> 1108</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1109</span><span class="stringliteral">            self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)</span></div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1108</span>        <span class="keyword">def </span>consumer_exclude_label(self, label_or_href):</div>
+<div class="line"><span class="lineno"> 1109</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno"> 1110</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno"> 1111</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
+<div class="line"><span class="lineno"> 1112</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1113</span><span class="stringliteral">            self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)</span></div>
+<div class="line"><span class="lineno"> 1114</span><span class="stringliteral"></span> </div>
 <div class="ttc" id="aclasspylo_1_1_label_1_1_label_html"><div class="ttname"><a href="classpylo_1_1_label_1_1_label.html">pylo.Label.Label</a></div><div class="ttdef"><b>Definition:</b> Label.py:6</div></div>
 <div class="ttc" id="aclasspylo_1_1_label_group_1_1_label_group_html"><div class="ttname"><a href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup.LabelGroup</a></div><div class="ttdef"><b>Definition:</b> LabelGroup.py:8</div></div>
 </div><!-- fragment --><div class="dynheader">
@@ -331,9 +339,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1118</span>        <span class="keyword">def </span>consumer_include_cidr(self, ipaddress: str):</div>
-<div class="line"><span class="lineno"> 1119</span>            self.__filter_consumer_ip_include.append(ipaddress)</div>
-<div class="line"><span class="lineno"> 1120</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1144</span>        <span class="keyword">def </span>consumer_include_cidr(self, ipaddress: str):</div>
+<div class="line"><span class="lineno"> 1145</span>            self.__filter_consumer_ip_include.append(ipaddress)</div>
+<div class="line"><span class="lineno"> 1146</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -362,10 +370,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1121</span>        <span class="keyword">def </span>consumer_include_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1122</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string(skip_netmask_for_32=<span class="keyword">True</span>):</div>
-<div class="line"><span class="lineno"> 1123</span>                self.consumer_include_cidr(item)</div>
-<div class="line"><span class="lineno"> 1124</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1147</span>        <span class="keyword">def </span>consumer_include_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1148</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string(skip_netmask_for_32=<span class="keyword">True</span>):</div>
+<div class="line"><span class="lineno"> 1149</span>                self.consumer_include_cidr(item)</div>
+<div class="line"><span class="lineno"> 1150</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -404,13 +412,13 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">@type label_or_href: str|pylo.Label|pylo.LabelGroup
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1097</span>        <span class="keyword">def </span>consumer_include_label(self, label_or_href):</div>
-<div class="line"><span class="lineno"> 1098</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1099</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno"> 1100</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
-<div class="line"><span class="lineno"> 1101</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1102</span><span class="stringliteral">            self.__filter_prop_add_label(self._consumer_labels, label_or_href)</span></div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1101</span>        <span class="keyword">def </span>consumer_include_label(self, label_or_href):</div>
+<div class="line"><span class="lineno"> 1102</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno"> 1103</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno"> 1104</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
+<div class="line"><span class="lineno"> 1105</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1106</span><span class="stringliteral">            self.__filter_prop_add_label(self._consumer_labels, label_or_href)</span></div>
+<div class="line"><span class="lineno"> 1107</span><span class="stringliteral"></span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -421,6 +429,48 @@ Here is the call graph for this function:</div>
 </map>
 </div>
 
+</div>
+</div>
+<a id="a5241f568470461478f08942761779688" name="a5241f568470461478f08942761779688"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5241f568470461478f08942761779688">&#9670;&nbsp;</a></span>consumer_include_workload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def pylo.APIConnector.APIConnector.ExplorerFilterSetV1.consumer_include_workload </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Union[str, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>']&#160;</td>
+          <td class="paramname"><em>workload_or_href</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno"> 1115</span>        <span class="keyword">def </span>consumer_include_workload(self, workload_or_href:Union[str, <span class="stringliteral">&#39;pylo.Workload&#39;</span>]):</div>
+<div class="line"><span class="lineno"> 1116</span>            <span class="keywordflow">if</span> isinstance(workload_or_href, str):</div>
+<div class="line"><span class="lineno"> 1117</span>                self._consumer_workloads[workload_or_href] = workload_or_href</div>
+<div class="line"><span class="lineno"> 1118</span>                <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno"> 1119</span> </div>
+<div class="line"><span class="lineno"> 1120</span>            <span class="keywordflow">if</span> isinstance(workload_or_href, <a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>):</div>
+<div class="line"><span class="lineno"> 1121</span>                self._consumer_workloads[workload_or_href.href] = workload_or_href.href</div>
+<div class="line"><span class="lineno"> 1122</span>                <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno"> 1123</span> </div>
+<div class="line"><span class="lineno"> 1124</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unsupported object type {}&quot;</span>.format(<a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(workload_or_href)))</div>
+<div class="line"><span class="lineno"> 1125</span> </div>
+<div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
+<div class="ttc" id="aclasspylo_1_1_workload_1_1_workload_html"><div class="ttname"><a href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload.Workload</a></div><div class="ttdef"><b>Definition:</b> Workload.py:40</div></div>
+<div class="ttc" id="anamespacepylo_1_1utilities_1_1explorer__report__exporter_html_a88aa6c5cbed7fe748f7f0f331d135aec"><div class="ttname"><a href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">pylo.utilities.explorer_report_exporter.type</a></div><div class="ttdeci">type</div><div class="ttdef"><b>Definition:</b> explorer_report_exporter.py:13</div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aa11921db771a2f8113253d7af013350a" name="aa11921db771a2f8113253d7af013350a"></a>
@@ -438,10 +488,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1189</span>        <span class="keyword">def </span>filter_on_policy_decision_all_blocked(self):</div>
-<div class="line"><span class="lineno"> 1190</span>            self.filter_on_policy_decision_blocked()</div>
-<div class="line"><span class="lineno"> 1191</span>            self.filter_on_policy_decision_potentially_blocked()</div>
-<div class="line"><span class="lineno"> 1192</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1215</span>        <span class="keyword">def </span>filter_on_policy_decision_all_blocked(self):</div>
+<div class="line"><span class="lineno"> 1216</span>            self.filter_on_policy_decision_blocked()</div>
+<div class="line"><span class="lineno"> 1217</span>            self.filter_on_policy_decision_potentially_blocked()</div>
+<div class="line"><span class="lineno"> 1218</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -470,9 +520,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1193</span>        <span class="keyword">def </span>filter_on_policy_decision_allowed(self):</div>
-<div class="line"><span class="lineno"> 1194</span>            self._policy_decision_filter.append(<span class="stringliteral">&#39;allowed&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1195</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1219</span>        <span class="keyword">def </span>filter_on_policy_decision_allowed(self):</div>
+<div class="line"><span class="lineno"> 1220</span>            self._policy_decision_filter.append(<span class="stringliteral">&#39;allowed&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1221</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -491,9 +541,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1183</span>        <span class="keyword">def </span>filter_on_policy_decision_blocked(self):</div>
-<div class="line"><span class="lineno"> 1184</span>            self._policy_decision_filter.append(<span class="stringliteral">&#39;blocked&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1185</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1209</span>        <span class="keyword">def </span>filter_on_policy_decision_blocked(self):</div>
+<div class="line"><span class="lineno"> 1210</span>            self._policy_decision_filter.append(<span class="stringliteral">&#39;blocked&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1211</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -512,9 +562,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1186</span>        <span class="keyword">def </span>filter_on_policy_decision_potentially_blocked(self):</div>
-<div class="line"><span class="lineno"> 1187</span>            self._policy_decision_filter.append(<span class="stringliteral">&#39;potentially_blocked&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1188</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1212</span>        <span class="keyword">def </span>filter_on_policy_decision_potentially_blocked(self):</div>
+<div class="line"><span class="lineno"> 1213</span>            self._policy_decision_filter.append(<span class="stringliteral">&#39;potentially_blocked&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1214</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -533,94 +583,106 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1196</span>        <span class="keyword">def </span>generate_json_query(self):</div>
-<div class="line"><span class="lineno"> 1197</span>            <span class="comment"># examples:</span></div>
-<div class="line"><span class="lineno"> 1198</span>            <span class="comment"># {&quot;sources&quot;:{&quot;include&quot;:[[]],&quot;exclude&quot;:[]}</span></div>
-<div class="line"><span class="lineno"> 1199</span>            <span class="comment">#  &quot;destinations&quot;:{&quot;include&quot;:[[]],&quot;exclude&quot;:[]},</span></div>
-<div class="line"><span class="lineno"> 1200</span>            <span class="comment">#  &quot;services&quot;:{&quot;include&quot;:[],&quot;exclude&quot;:[]},</span></div>
-<div class="line"><span class="lineno"> 1201</span>            <span class="comment">#  &quot;sources_destinations_query_op&quot;:&quot;and&quot;,</span></div>
-<div class="line"><span class="lineno"> 1202</span>            <span class="comment">#  &quot;start_date&quot;:&quot;2015-02-21T09:18:46.751Z&quot;,&quot;end_date&quot;:&quot;2020-02-21T09:18:46.751Z&quot;,</span></div>
-<div class="line"><span class="lineno"> 1203</span>            <span class="comment">#  &quot;policy_decisions&quot;:[],</span></div>
-<div class="line"><span class="lineno"> 1204</span>            <span class="comment">#  &quot;max_results&quot;:10000}</span></div>
-<div class="line"><span class="lineno"> 1205</span>            <span class="comment">#</span></div>
-<div class="line"><span class="lineno"> 1206</span>            filters = {</div>
-<div class="line"><span class="lineno"> 1207</span>                <span class="stringliteral">&quot;sources&quot;</span>: {<span class="stringliteral">&quot;include&quot;</span>: [], <span class="stringliteral">&quot;exclude&quot;</span>: []},</div>
-<div class="line"><span class="lineno"> 1208</span>                <span class="stringliteral">&quot;destinations&quot;</span>: {<span class="stringliteral">&quot;include&quot;</span>: [], <span class="stringliteral">&quot;exclude&quot;</span>: []},</div>
-<div class="line"><span class="lineno"> 1209</span>                <span class="stringliteral">&quot;services&quot;</span>: {<span class="stringliteral">&quot;include&quot;</span>: [], <span class="stringliteral">&quot;exclude&quot;</span>: []},</div>
-<div class="line"><span class="lineno"> 1210</span>                <span class="stringliteral">&quot;sources_destinations_query_op&quot;</span>: <span class="stringliteral">&quot;and&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1211</span>                <span class="stringliteral">&quot;policy_decisions&quot;</span>: self._policy_decision_filter,</div>
-<div class="line"><span class="lineno"> 1212</span>                <span class="stringliteral">&quot;max_results&quot;</span>: self.max_results</div>
-<div class="line"><span class="lineno"> 1213</span>                }</div>
-<div class="line"><span class="lineno"> 1214</span> </div>
-<div class="line"><span class="lineno"> 1215</span>            <span class="keywordflow">if</span> self._exclude_broadcast:</div>
-<div class="line"><span class="lineno"> 1216</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;transmission&#39;</span>: <span class="stringliteral">&#39;broadcast&#39;</span>})</div>
-<div class="line"><span class="lineno"> 1217</span> </div>
-<div class="line"><span class="lineno"> 1218</span>            <span class="keywordflow">if</span> self._exclude_multicast:</div>
-<div class="line"><span class="lineno"> 1219</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;transmission&#39;</span>: <span class="stringliteral">&#39;multicast&#39;</span>})</div>
-<div class="line"><span class="lineno"> 1220</span> </div>
-<div class="line"><span class="lineno"> 1221</span>            <span class="keywordflow">if</span> self._time_from <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1222</span>                filters[<span class="stringliteral">&quot;start_date&quot;</span>] = self._time_from.strftime(<span class="stringliteral">&#39;%Y-%m-%dT%H:%M:%SZ&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1223</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1224</span>                filters[<span class="stringliteral">&quot;start_date&quot;</span>] = <span class="stringliteral">&quot;2010-10-13T11:27:28.824Z&quot;</span>,</div>
-<div class="line"><span class="lineno"> 1225</span> </div>
-<div class="line"><span class="lineno"> 1226</span>            <span class="keywordflow">if</span> self._time_to <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1227</span>                filters[<span class="stringliteral">&quot;end_date&quot;</span>] = self._time_to.strftime(<span class="stringliteral">&#39;%Y-%m-%dT%H:%M:%SZ&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1228</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1229</span>                filters[<span class="stringliteral">&quot;end_date&quot;</span>] = datetime.utcnow().strftime(<span class="stringliteral">&#39;%Y-%m-%dT%H:%M:%SZ&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1230</span> </div>
-<div class="line"><span class="lineno"> 1231</span>            <span class="keywordflow">if</span> len(self._consumer_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1232</span>                tmp = []</div>
-<div class="line"><span class="lineno"> 1233</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._consumer_labels.keys():</div>
-<div class="line"><span class="lineno"> 1234</span>                    tmp.append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1235</span>                filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
-<div class="line"><span class="lineno"> 1236</span> </div>
-<div class="line"><span class="lineno"> 1237</span>            <span class="keywordflow">if</span> len(self.__filter_consumer_ip_include) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1238</span>                tmp = []</div>
-<div class="line"><span class="lineno"> 1239</span>                <span class="keywordflow">for</span> ip_txt <span class="keywordflow">in</span> self.__filter_consumer_ip_include:</div>
-<div class="line"><span class="lineno"> 1240</span>                    tmp.append({<span class="stringliteral">&#39;ip_address&#39;</span>: ip_txt})</div>
-<div class="line"><span class="lineno"> 1241</span>                filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
-<div class="line"><span class="lineno"> 1242</span> </div>
-<div class="line"><span class="lineno"> 1243</span>            <span class="keywordflow">if</span> len(self._provider_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1244</span>                tmp = []</div>
-<div class="line"><span class="lineno"> 1245</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._provider_labels.keys():</div>
-<div class="line"><span class="lineno"> 1246</span>                    tmp.append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1247</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
-<div class="line"><span class="lineno"> 1248</span> </div>
-<div class="line"><span class="lineno"> 1249</span>            <span class="keywordflow">if</span> len(self.__filter_provider_ip_include) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1250</span>                tmp = []</div>
-<div class="line"><span class="lineno"> 1251</span>                <span class="keywordflow">for</span> ip_txt <span class="keywordflow">in</span> self.__filter_provider_ip_include:</div>
-<div class="line"><span class="lineno"> 1252</span>                    tmp.append({<span class="stringliteral">&#39;ip_address&#39;</span>: ip_txt})</div>
-<div class="line"><span class="lineno"> 1253</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
-<div class="line"><span class="lineno"> 1254</span> </div>
-<div class="line"><span class="lineno"> 1255</span>            consumer_exclude_json = []</div>
-<div class="line"><span class="lineno"> 1256</span>            <span class="keywordflow">if</span> len(self._consumer_exclude_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1257</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._consumer_exclude_labels.keys():</div>
-<div class="line"><span class="lineno"> 1258</span>                    filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1259</span> </div>
-<div class="line"><span class="lineno"> 1260</span>            <span class="keywordflow">if</span> len(self.__filter_consumer_ip_exclude) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1261</span>                <span class="keywordflow">for</span> ipaddress <span class="keywordflow">in</span> self.__filter_consumer_ip_exclude:</div>
-<div class="line"><span class="lineno"> 1262</span>                    filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;ip_address&#39;</span>: ipaddress})</div>
-<div class="line"><span class="lineno"> 1263</span> </div>
-<div class="line"><span class="lineno"> 1264</span>            provider_exclude_json = []</div>
-<div class="line"><span class="lineno"> 1265</span>            <span class="keywordflow">if</span> len(self._provider_exclude_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1266</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._provider_exclude_labels.keys():</div>
-<div class="line"><span class="lineno"> 1267</span>                    filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="fragment"><div class="line"><span class="lineno"> 1222</span>        <span class="keyword">def </span>generate_json_query(self):</div>
+<div class="line"><span class="lineno"> 1223</span>            <span class="comment"># examples:</span></div>
+<div class="line"><span class="lineno"> 1224</span>            <span class="comment"># {&quot;sources&quot;:{&quot;include&quot;:[[]],&quot;exclude&quot;:[]}</span></div>
+<div class="line"><span class="lineno"> 1225</span>            <span class="comment">#  &quot;destinations&quot;:{&quot;include&quot;:[[]],&quot;exclude&quot;:[]},</span></div>
+<div class="line"><span class="lineno"> 1226</span>            <span class="comment">#  &quot;services&quot;:{&quot;include&quot;:[],&quot;exclude&quot;:[]},</span></div>
+<div class="line"><span class="lineno"> 1227</span>            <span class="comment">#  &quot;sources_destinations_query_op&quot;:&quot;and&quot;,</span></div>
+<div class="line"><span class="lineno"> 1228</span>            <span class="comment">#  &quot;start_date&quot;:&quot;2015-02-21T09:18:46.751Z&quot;,&quot;end_date&quot;:&quot;2020-02-21T09:18:46.751Z&quot;,</span></div>
+<div class="line"><span class="lineno"> 1229</span>            <span class="comment">#  &quot;policy_decisions&quot;:[],</span></div>
+<div class="line"><span class="lineno"> 1230</span>            <span class="comment">#  &quot;max_results&quot;:10000}</span></div>
+<div class="line"><span class="lineno"> 1231</span>            <span class="comment">#</span></div>
+<div class="line"><span class="lineno"> 1232</span>            filters = {</div>
+<div class="line"><span class="lineno"> 1233</span>                <span class="stringliteral">&quot;sources&quot;</span>: {<span class="stringliteral">&quot;include&quot;</span>: [], <span class="stringliteral">&quot;exclude&quot;</span>: []},</div>
+<div class="line"><span class="lineno"> 1234</span>                <span class="stringliteral">&quot;destinations&quot;</span>: {<span class="stringliteral">&quot;include&quot;</span>: [], <span class="stringliteral">&quot;exclude&quot;</span>: []},</div>
+<div class="line"><span class="lineno"> 1235</span>                <span class="stringliteral">&quot;services&quot;</span>: {<span class="stringliteral">&quot;include&quot;</span>: [], <span class="stringliteral">&quot;exclude&quot;</span>: []},</div>
+<div class="line"><span class="lineno"> 1236</span>                <span class="stringliteral">&quot;sources_destinations_query_op&quot;</span>: <span class="stringliteral">&quot;and&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1237</span>                <span class="stringliteral">&quot;policy_decisions&quot;</span>: self._policy_decision_filter,</div>
+<div class="line"><span class="lineno"> 1238</span>                <span class="stringliteral">&quot;max_results&quot;</span>: self.max_results</div>
+<div class="line"><span class="lineno"> 1239</span>                }</div>
+<div class="line"><span class="lineno"> 1240</span> </div>
+<div class="line"><span class="lineno"> 1241</span>            <span class="keywordflow">if</span> self._exclude_broadcast:</div>
+<div class="line"><span class="lineno"> 1242</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;transmission&#39;</span>: <span class="stringliteral">&#39;broadcast&#39;</span>})</div>
+<div class="line"><span class="lineno"> 1243</span> </div>
+<div class="line"><span class="lineno"> 1244</span>            <span class="keywordflow">if</span> self._exclude_multicast:</div>
+<div class="line"><span class="lineno"> 1245</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;transmission&#39;</span>: <span class="stringliteral">&#39;multicast&#39;</span>})</div>
+<div class="line"><span class="lineno"> 1246</span> </div>
+<div class="line"><span class="lineno"> 1247</span>            <span class="keywordflow">if</span> self._time_from <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1248</span>                filters[<span class="stringliteral">&quot;start_date&quot;</span>] = self._time_from.strftime(<span class="stringliteral">&#39;%Y-%m-%dT%H:%M:%SZ&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1249</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1250</span>                filters[<span class="stringliteral">&quot;start_date&quot;</span>] = <span class="stringliteral">&quot;2010-10-13T11:27:28.824Z&quot;</span>,</div>
+<div class="line"><span class="lineno"> 1251</span> </div>
+<div class="line"><span class="lineno"> 1252</span>            <span class="keywordflow">if</span> self._time_to <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1253</span>                filters[<span class="stringliteral">&quot;end_date&quot;</span>] = self._time_to.strftime(<span class="stringliteral">&#39;%Y-%m-%dT%H:%M:%SZ&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1254</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1255</span>                filters[<span class="stringliteral">&quot;end_date&quot;</span>] = datetime.utcnow().strftime(<span class="stringliteral">&#39;%Y-%m-%dT%H:%M:%SZ&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1256</span> </div>
+<div class="line"><span class="lineno"> 1257</span>            <span class="keywordflow">if</span> len(self._consumer_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1258</span>                tmp = []</div>
+<div class="line"><span class="lineno"> 1259</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._consumer_labels.keys():</div>
+<div class="line"><span class="lineno"> 1260</span>                    tmp.append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1261</span>                filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
+<div class="line"><span class="lineno"> 1262</span> </div>
+<div class="line"><span class="lineno"> 1263</span>            <span class="keywordflow">if</span> len(self._consumer_workloads) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1264</span>                tmp = []</div>
+<div class="line"><span class="lineno"> 1265</span>                <span class="keywordflow">for</span> workload_href <span class="keywordflow">in</span> self._consumer_workloads.keys():</div>
+<div class="line"><span class="lineno"> 1266</span>                    tmp.append({<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: workload_href}})</div>
+<div class="line"><span class="lineno"> 1267</span>                filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
 <div class="line"><span class="lineno"> 1268</span> </div>
-<div class="line"><span class="lineno"> 1269</span>            <span class="keywordflow">if</span> len(self.__filter_provider_ip_exclude) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1270</span>                <span class="keywordflow">for</span> ipaddress <span class="keywordflow">in</span> self.__filter_provider_ip_exclude:</div>
-<div class="line"><span class="lineno"> 1271</span>                    filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;ip_address&#39;</span>: ipaddress})</div>
-<div class="line"><span class="lineno"> 1272</span> </div>
-<div class="line"><span class="lineno"> 1273</span>            <span class="keywordflow">if</span> len(self._exclude_direct_services) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1274</span>                <span class="keywordflow">for</span> service <span class="keywordflow">in</span> self._exclude_direct_services:</div>
-<div class="line"><span class="lineno"> 1275</span>                    filters[<span class="stringliteral">&#39;services&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append(service.get_api_json())</div>
-<div class="line"><span class="lineno"> 1276</span> </div>
-<div class="line"><span class="lineno"> 1277</span>            <span class="keywordflow">if</span> len(self._exclude_processes) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1278</span>                <span class="keywordflow">for</span> process <span class="keywordflow">in</span> self._exclude_processes:</div>
-<div class="line"><span class="lineno"> 1279</span>                    filters[<span class="stringliteral">&#39;services&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;process_name&#39;</span>: process})</div>
+<div class="line"><span class="lineno"> 1269</span>            <span class="keywordflow">if</span> len(self.__filter_consumer_ip_include) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1270</span>                tmp = []</div>
+<div class="line"><span class="lineno"> 1271</span>                <span class="keywordflow">for</span> ip_txt <span class="keywordflow">in</span> self.__filter_consumer_ip_include:</div>
+<div class="line"><span class="lineno"> 1272</span>                    tmp.append({<span class="stringliteral">&#39;ip_address&#39;</span>: ip_txt})</div>
+<div class="line"><span class="lineno"> 1273</span>                filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
+<div class="line"><span class="lineno"> 1274</span> </div>
+<div class="line"><span class="lineno"> 1275</span>            <span class="keywordflow">if</span> len(self._provider_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1276</span>                tmp = []</div>
+<div class="line"><span class="lineno"> 1277</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._provider_labels.keys():</div>
+<div class="line"><span class="lineno"> 1278</span>                    tmp.append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1279</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
 <div class="line"><span class="lineno"> 1280</span> </div>
-<div class="line"><span class="lineno"> 1281</span>            <span class="keywordflow">return</span> filters</div>
-<div class="line"><span class="lineno"> 1282</span> </div>
-<div class="line"><span class="lineno"> 1283</span>    <span class="keyword">def </span>explorer_search(self, filters: Union[Dict, <span class="stringliteral">&#39;pylo.APIConnector.ExplorerFilterSetV1&#39;</span>]):</div>
+<div class="line"><span class="lineno"> 1281</span>            <span class="keywordflow">if</span> len(self._provider_workloads) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1282</span>                tmp = []</div>
+<div class="line"><span class="lineno"> 1283</span>                <span class="keywordflow">for</span> workload_href <span class="keywordflow">in</span> self._provider_workloads.keys():</div>
+<div class="line"><span class="lineno"> 1284</span>                    tmp.append({<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: workload_href}})</div>
+<div class="line"><span class="lineno"> 1285</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
+<div class="line"><span class="lineno"> 1286</span> </div>
+<div class="line"><span class="lineno"> 1287</span>            <span class="keywordflow">if</span> len(self.__filter_provider_ip_include) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1288</span>                tmp = []</div>
+<div class="line"><span class="lineno"> 1289</span>                <span class="keywordflow">for</span> ip_txt <span class="keywordflow">in</span> self.__filter_provider_ip_include:</div>
+<div class="line"><span class="lineno"> 1290</span>                    tmp.append({<span class="stringliteral">&#39;ip_address&#39;</span>: ip_txt})</div>
+<div class="line"><span class="lineno"> 1291</span>                filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;include&#39;</span>].append(tmp)</div>
+<div class="line"><span class="lineno"> 1292</span> </div>
+<div class="line"><span class="lineno"> 1293</span>            consumer_exclude_json = []</div>
+<div class="line"><span class="lineno"> 1294</span>            <span class="keywordflow">if</span> len(self._consumer_exclude_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1295</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._consumer_exclude_labels.keys():</div>
+<div class="line"><span class="lineno"> 1296</span>                    filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1297</span> </div>
+<div class="line"><span class="lineno"> 1298</span>            <span class="keywordflow">if</span> len(self.__filter_consumer_ip_exclude) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1299</span>                <span class="keywordflow">for</span> ipaddress <span class="keywordflow">in</span> self.__filter_consumer_ip_exclude:</div>
+<div class="line"><span class="lineno"> 1300</span>                    filters[<span class="stringliteral">&#39;sources&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;ip_address&#39;</span>: ipaddress})</div>
+<div class="line"><span class="lineno"> 1301</span> </div>
+<div class="line"><span class="lineno"> 1302</span>            provider_exclude_json = []</div>
+<div class="line"><span class="lineno"> 1303</span>            <span class="keywordflow">if</span> len(self._provider_exclude_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1304</span>                <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._provider_exclude_labels.keys():</div>
+<div class="line"><span class="lineno"> 1305</span>                    filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1306</span> </div>
+<div class="line"><span class="lineno"> 1307</span>            <span class="keywordflow">if</span> len(self.__filter_provider_ip_exclude) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1308</span>                <span class="keywordflow">for</span> ipaddress <span class="keywordflow">in</span> self.__filter_provider_ip_exclude:</div>
+<div class="line"><span class="lineno"> 1309</span>                    filters[<span class="stringliteral">&#39;destinations&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;ip_address&#39;</span>: ipaddress})</div>
+<div class="line"><span class="lineno"> 1310</span> </div>
+<div class="line"><span class="lineno"> 1311</span>            <span class="keywordflow">if</span> len(self._exclude_direct_services) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1312</span>                <span class="keywordflow">for</span> service <span class="keywordflow">in</span> self._exclude_direct_services:</div>
+<div class="line"><span class="lineno"> 1313</span>                    filters[<span class="stringliteral">&#39;services&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append(service.get_api_json())</div>
+<div class="line"><span class="lineno"> 1314</span> </div>
+<div class="line"><span class="lineno"> 1315</span>            <span class="keywordflow">if</span> len(self._exclude_processes) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1316</span>                <span class="keywordflow">for</span> process <span class="keywordflow">in</span> self._exclude_processes:</div>
+<div class="line"><span class="lineno"> 1317</span>                    filters[<span class="stringliteral">&#39;services&#39;</span>][<span class="stringliteral">&#39;exclude&#39;</span>].append({<span class="stringliteral">&#39;process_name&#39;</span>: process})</div>
+<div class="line"><span class="lineno"> 1318</span> </div>
+<div class="line"><span class="lineno"> 1319</span>            <span class="keywordflow">return</span> filters</div>
+<div class="line"><span class="lineno"> 1320</span> </div>
+<div class="line"><span class="lineno"> 1321</span>    <span class="keyword">def </span>explorer_search(self, filters: Union[Dict, <span class="stringliteral">&#39;pylo.APIConnector.ExplorerFilterSetV1&#39;</span>]):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -655,12 +717,12 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1156</span>        <span class="keyword">def </span>process_exclude_add(self, process_name: str, emulate_on_client=<span class="keyword">False</span>):</div>
-<div class="line"><span class="lineno"> 1157</span>            <span class="keywordflow">if</span> emulate_on_client:</div>
-<div class="line"><span class="lineno"> 1158</span>                self.exclude_processes_emulate[process_name] = process_name</div>
-<div class="line"><span class="lineno"> 1159</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1160</span>                self._exclude_processes.append(process_name)</div>
-<div class="line"><span class="lineno"> 1161</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1182</span>        <span class="keyword">def </span>process_exclude_add(self, process_name: str, emulate_on_client=<span class="keyword">False</span>):</div>
+<div class="line"><span class="lineno"> 1183</span>            <span class="keywordflow">if</span> emulate_on_client:</div>
+<div class="line"><span class="lineno"> 1184</span>                self.exclude_processes_emulate[process_name] = process_name</div>
+<div class="line"><span class="lineno"> 1185</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1186</span>                self._exclude_processes.append(process_name)</div>
+<div class="line"><span class="lineno"> 1187</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -689,9 +751,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1139</span>        <span class="keyword">def </span>provider_exclude_cidr(self, ipaddress: str):</div>
-<div class="line"><span class="lineno"> 1140</span>            self.__filter_provider_ip_exclude.append(ipaddress)</div>
-<div class="line"><span class="lineno"> 1141</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1165</span>        <span class="keyword">def </span>provider_exclude_cidr(self, ipaddress: str):</div>
+<div class="line"><span class="lineno"> 1166</span>            self.__filter_provider_ip_exclude.append(ipaddress)</div>
+<div class="line"><span class="lineno"> 1167</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -720,10 +782,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1142</span>        <span class="keyword">def </span>provider_exclude_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1143</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string(skip_netmask_for_32=<span class="keyword">True</span>):</div>
-<div class="line"><span class="lineno"> 1144</span>                self.provider_exclude_cidr(item)</div>
-<div class="line"><span class="lineno"> 1145</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1168</span>        <span class="keyword">def </span>provider_exclude_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1169</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string(skip_netmask_for_32=<span class="keyword">True</span>):</div>
+<div class="line"><span class="lineno"> 1170</span>                self.provider_exclude_cidr(item)</div>
+<div class="line"><span class="lineno"> 1171</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -762,13 +824,13 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">@type label_or_href: str|pylo.Label|pylo.LabelGroup
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1132</span>        <span class="keyword">def </span>provider_exclude_label(self, label_or_href: Union[str, <span class="stringliteral">&#39;pylo.Label&#39;</span>, <span class="stringliteral">&#39;pylo.LabelGroup&#39;</span>]):</div>
-<div class="line"><span class="lineno"> 1133</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1134</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno"> 1135</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
-<div class="line"><span class="lineno"> 1136</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1137</span><span class="stringliteral">            self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)</span></div>
-<div class="line"><span class="lineno"> 1138</span><span class="stringliteral"></span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1158</span>        <span class="keyword">def </span>provider_exclude_label(self, label_or_href: Union[str, <span class="stringliteral">&#39;pylo.Label&#39;</span>, <span class="stringliteral">&#39;pylo.LabelGroup&#39;</span>]):</div>
+<div class="line"><span class="lineno"> 1159</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1160</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno"> 1161</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
+<div class="line"><span class="lineno"> 1162</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1163</span><span class="stringliteral">            self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)</span></div>
+<div class="line"><span class="lineno"> 1164</span><span class="stringliteral"></span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -806,9 +868,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1146</span>        <span class="keyword">def </span>provider_include_cidr(self, ipaddress: str):</div>
-<div class="line"><span class="lineno"> 1147</span>            self.__filter_provider_ip_include.append(ipaddress)</div>
-<div class="line"><span class="lineno"> 1148</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1172</span>        <span class="keyword">def </span>provider_include_cidr(self, ipaddress: str):</div>
+<div class="line"><span class="lineno"> 1173</span>            self.__filter_provider_ip_include.append(ipaddress)</div>
+<div class="line"><span class="lineno"> 1174</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -837,10 +899,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1149</span>        <span class="keyword">def </span>provider_include_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1150</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string():</div>
-<div class="line"><span class="lineno"> 1151</span>                self.provider_include_cidr(item)</div>
-<div class="line"><span class="lineno"> 1152</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1175</span>        <span class="keyword">def </span>provider_include_ip4map(self, map: <span class="stringliteral">&#39;pylo.IP4Map&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1176</span>            <span class="keywordflow">for</span> item <span class="keywordflow">in</span> map.to_list_of_cidr_string():</div>
+<div class="line"><span class="lineno"> 1177</span>                self.provider_include_cidr(item)</div>
+<div class="line"><span class="lineno"> 1178</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -879,13 +941,13 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">@type label_or_href: str|pylo.Label|pylo.LabelGroup
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1125</span>        <span class="keyword">def </span>provider_include_label(self, label_or_href):</div>
-<div class="line"><span class="lineno"> 1126</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1127</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno"> 1128</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
-<div class="line"><span class="lineno"> 1129</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1130</span><span class="stringliteral">            self.__filter_prop_add_label(self._provider_labels, label_or_href)</span></div>
-<div class="line"><span class="lineno"> 1131</span><span class="stringliteral"></span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1151</span>        <span class="keyword">def </span>provider_include_label(self, label_or_href):</div>
+<div class="line"><span class="lineno"> 1152</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1153</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno"> 1154</span><span class="stringliteral">            </span><span class="preprocessor">@type</span> label_or_href: str|<a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>|<a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a></div>
+<div class="line"><span class="lineno"> 1155</span>            <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1156</span><span class="stringliteral">            self.__filter_prop_add_label(self._provider_labels, label_or_href)</span></div>
+<div class="line"><span class="lineno"> 1157</span><span class="stringliteral"></span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -896,6 +958,45 @@ Here is the call graph for this function:</div>
 </map>
 </div>
 
+</div>
+</div>
+<a id="af6ec61ef0bf1289070ce9b43c1b86980" name="af6ec61ef0bf1289070ce9b43c1b86980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6ec61ef0bf1289070ce9b43c1b86980">&#9670;&nbsp;</a></span>provider_include_workload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def pylo.APIConnector.APIConnector.ExplorerFilterSetV1.provider_include_workload </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Union[str, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>']&#160;</td>
+          <td class="paramname"><em>workload_or_href</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno"> 1126</span>        <span class="keyword">def </span>provider_include_workload(self, workload_or_href:Union[str, <span class="stringliteral">&#39;pylo.Workload&#39;</span>]):</div>
+<div class="line"><span class="lineno"> 1127</span>            <span class="keywordflow">if</span> isinstance(workload_or_href, str):</div>
+<div class="line"><span class="lineno"> 1128</span>                self._provider_workloads[workload_or_href] = workload_or_href</div>
+<div class="line"><span class="lineno"> 1129</span>                <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno"> 1130</span> </div>
+<div class="line"><span class="lineno"> 1131</span>            <span class="keywordflow">if</span> isinstance(workload_or_href, <a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>):</div>
+<div class="line"><span class="lineno"> 1132</span>                self._provider_workloads[workload_or_href.href] = workload_or_href.href</div>
+<div class="line"><span class="lineno"> 1133</span>                <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno"> 1134</span> </div>
+<div class="line"><span class="lineno"> 1135</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unsupported object type {}&quot;</span>.format(<a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(workload_or_href)))</div>
+<div class="line"><span class="lineno"> 1136</span> </div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aba8662692579b3db2eb99c1e15cd1ce5" name="aba8662692579b3db2eb99c1e15cd1ce5"></a>
@@ -923,9 +1024,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1153</span>        <span class="keyword">def </span>service_exclude_add(self, service: <span class="stringliteral">&#39;pylo.DirectServiceInRule&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1154</span>            self._exclude_direct_services.append(service)</div>
-<div class="line"><span class="lineno"> 1155</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1179</span>        <span class="keyword">def </span>service_exclude_add(self, service: <span class="stringliteral">&#39;pylo.DirectServiceInRule&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1180</span>            self._exclude_direct_services.append(service)</div>
+<div class="line"><span class="lineno"> 1181</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -954,9 +1055,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1162</span>        <span class="keyword">def </span>set_exclude_broadcast(self, exclude=True):</div>
-<div class="line"><span class="lineno"> 1163</span>            self._exclude_broadcast = exclude</div>
-<div class="line"><span class="lineno"> 1164</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1188</span>        <span class="keyword">def </span>set_exclude_broadcast(self, exclude=True):</div>
+<div class="line"><span class="lineno"> 1189</span>            self._exclude_broadcast = exclude</div>
+<div class="line"><span class="lineno"> 1190</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -985,9 +1086,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1165</span>        <span class="keyword">def </span>set_exclude_multicast(self, exclude=True):</div>
-<div class="line"><span class="lineno"> 1166</span>            self._exclude_multicast = exclude</div>
-<div class="line"><span class="lineno"> 1167</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1191</span>        <span class="keyword">def </span>set_exclude_multicast(self, exclude=True):</div>
+<div class="line"><span class="lineno"> 1192</span>            self._exclude_multicast = exclude</div>
+<div class="line"><span class="lineno"> 1193</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1016,9 +1117,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1177</span>        <span class="keyword">def </span>set_max_results(self, max: int):</div>
-<div class="line"><span class="lineno"> 1178</span>            self.max_results = max</div>
-<div class="line"><span class="lineno"> 1179</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1203</span>        <span class="keyword">def </span>set_max_results(self, max: int):</div>
+<div class="line"><span class="lineno"> 1204</span>            self.max_results = max</div>
+<div class="line"><span class="lineno"> 1205</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1047,9 +1148,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1168</span>        <span class="keyword">def </span>set_time_from(self, time: datetime):</div>
-<div class="line"><span class="lineno"> 1169</span>            self._time_from = time</div>
-<div class="line"><span class="lineno"> 1170</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1194</span>        <span class="keyword">def </span>set_time_from(self, time: datetime):</div>
+<div class="line"><span class="lineno"> 1195</span>            self._time_from = time</div>
+<div class="line"><span class="lineno"> 1196</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1078,9 +1179,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1174</span>        <span class="keyword">def </span>set_time_from_x_days_ago(self, days: int):</div>
-<div class="line"><span class="lineno"> 1175</span>            <span class="keywordflow">return</span> self.set_time_from_x_seconds_ago(days*60*60*24)</div>
-<div class="line"><span class="lineno"> 1176</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1200</span>        <span class="keyword">def </span>set_time_from_x_days_ago(self, days: int):</div>
+<div class="line"><span class="lineno"> 1201</span>            <span class="keywordflow">return</span> self.set_time_from_x_seconds_ago(days*60*60*24)</div>
+<div class="line"><span class="lineno"> 1202</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1118,9 +1219,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1171</span>        <span class="keyword">def </span>set_time_from_x_seconds_ago(self, seconds: int):</div>
-<div class="line"><span class="lineno"> 1172</span>            self._time_from = datetime.utcnow() - timedelta(seconds=seconds)</div>
-<div class="line"><span class="lineno"> 1173</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1197</span>        <span class="keyword">def </span>set_time_from_x_seconds_ago(self, seconds: int):</div>
+<div class="line"><span class="lineno"> 1198</span>            self._time_from = datetime.utcnow() - timedelta(seconds=seconds)</div>
+<div class="line"><span class="lineno"> 1199</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1149,9 +1250,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1180</span>        <span class="keyword">def </span>set_time_to(self, time: datetime):</div>
-<div class="line"><span class="lineno"> 1181</span>            self._time_to = time</div>
-<div class="line"><span class="lineno"> 1182</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1206</span>        <span class="keyword">def </span>set_time_to(self, time: datetime):</div>
+<div class="line"><span class="lineno"> 1207</span>            self._time_to = time</div>
+<div class="line"><span class="lineno"> 1208</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1190,7 +1291,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 12 2022 11:12:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Thu May 12 2022 12:18:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
