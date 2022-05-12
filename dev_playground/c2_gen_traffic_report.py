@@ -427,8 +427,11 @@ for service in c2_shared.excluded_direct_services:
     explorer_inbound_filters.service_exclude_add(service)
 for process in c2_shared.excluded_processes:
     explorer_inbound_filters.process_exclude_add(process, emulate_on_client=True)
+
+pylo.clock_start('inbound_api_request')
 inbound_results = connector.explorer_search(explorer_inbound_filters)
-print("OK!  (received {} rows)".format(inbound_results.count_results()))
+print("OK!  (received {} rows, exec_time:{})".format(inbound_results.count_results(),
+                                                     pylo.clock_elapsed_str('inbound_api_request')))
 
 pylo.clock_start('inbound_log_draft')
 print(" * Requesting 'Inbound' draft mode records... ", end='')
@@ -563,8 +566,11 @@ for service in c2_shared.excluded_direct_services:
     explorer_outbound_filters.service_exclude_add(service)
 for process in c2_shared.excluded_processes:
     explorer_outbound_filters.process_exclude_add(process, emulate_on_client=True)
+
+pylo.clock_start('outbound_api_request')
 outbound_results = connector.explorer_search(explorer_outbound_filters)
-print("OK!  (received {} rows)".format(outbound_results.count_results()))
+print("OK!  (received {} rows, exec_time:{})".format(outbound_results.count_results(),
+                                                     pylo.clock_elapsed_str('outbound_api_request')))
 
 pylo.clock_start('outbound_log_draft')
 print(" * Requesting 'Outbound' draft mode records... ", end='')
