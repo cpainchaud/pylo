@@ -23,8 +23,12 @@ class ExplorerResultSetV1:
             self.policy_decision_string = data['policy_decision']
             self._draft_mode_policy_decision_is_blocked = None
 
+            self.source_ip_fqdn: Optional[str] = None
+            self.destination_ip_fqdn: Optional[str] = None
+
             src = data['src']
             self.source_ip: str = src['ip']
+            self.source_ip_fqdn = src.get('fqdn')
             self._source_iplists = src.get('ip_lists')
             self._source_iplists_href: List[str] = []
             if self._source_iplists is not None:
@@ -46,6 +50,7 @@ class ExplorerResultSetV1:
 
             dst = data['dst']
             self.destination_ip: str = dst['ip']
+            self.destination_ip_fqdn = dst.get('fqdn')
             self._destination_iplists = dst.get('ip_lists')
             self._destination_iplists_href: List[str] = []
             if self._destination_iplists is not None:

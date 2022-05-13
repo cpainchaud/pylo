@@ -247,7 +247,7 @@ else:
         onboarded_labels[label.href] = label
 # </editor-fold desc="Looking for specific Labels and Item in the Database">
 
-# <editor-fold desc="Prepareing report filename">
+# <editor-fold desc="Preparing report filename">
 now = datetime.now()
 output_filename_xls = '{}/report_{}-{}-{}_{}.xlsx'.format(save_location,
                                                           ('All' if app_label is None else app_label.name).replace('|', '_').replace('\\', ' ').replace('/', ' '),
@@ -310,6 +310,7 @@ if loc_label is not None:
 rules_query.use_resolved_matches()
 rules_results = rules_query.execute_and_resolve(organization=org)
 print("OK!  (received {} rules)".format(rules_results.count_results()))
+
 
 def rule_actors_to_str(container: 'pylo.RuleHostContainer') -> str:
     result = ''
@@ -509,7 +510,9 @@ for record in all_records:
 
     else:
         reverse_dns = None
-        if not settings_skip_dns_resolution:
+        if record.source_ip_fqdn is not None:
+            reverse_dns = record.source_ip_fqdn
+        elif not settings_skip_dns_resolution:
             count_dns_resolutions += 1
             reverse_dns = c2_shared.get_dns_resolution(record.source_ip)
 
@@ -645,7 +648,9 @@ for record in all_records:
 
     else:
         reverse_dns = None
-        if not settings_skip_dns_resolution:
+        if record.destination_ip_fqdn is not None:
+            reverse_dns = record.destination_ip_fqdn
+        elif not settings_skip_dns_resolution:
             count_dns_resolutions += 1
             reverse_dns = c2_shared.get_dns_resolution(record.destination_ip)
 
