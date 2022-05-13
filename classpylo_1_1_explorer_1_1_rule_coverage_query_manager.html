@@ -152,18 +152,18 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  814</span>    <span class="keyword">def </span>__init__(self, owner: APIConnector):</div>
-<div class="line"><span class="lineno">  815</span>        self.owner = owner</div>
-<div class="line"><span class="lineno">  816</span>        self.iplist_to_workload_query_manager = RuleCoverageQueryManager.IPListToWorkloadQueryManager()</div>
-<div class="line"><span class="lineno">  817</span>        self.workload_to_iplist_query_manager = RuleCoverageQueryManager.WorkloadToIPListQueryManager()</div>
-<div class="line"><span class="lineno">  818</span>        self.workload_to_workload_query_manager = RuleCoverageQueryManager.WorkloadToWorkloadQueryManager()</div>
-<div class="line"><span class="lineno">  819</span>        self.log_id = 0</div>
-<div class="line"><span class="lineno">  820</span>        self.log_to_id: Dict[ExplorerResultSetV1.ExplorerResult, int] = {}</div>
-<div class="line"><span class="lineno">  821</span>        self.count_invalid_records = 0</div>
-<div class="line"><span class="lineno">  822</span>        self.any_iplist_href = self.owner.objects_iplists_get_default_any()</div>
-<div class="line"><span class="lineno">  823</span>        <span class="keywordflow">if</span> self.any_iplist_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  824</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;No &quot;any&quot; iplist found&#39;</span>)</div>
-<div class="line"><span class="lineno">  825</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  819</span>    <span class="keyword">def </span>__init__(self, owner: APIConnector):</div>
+<div class="line"><span class="lineno">  820</span>        self.owner = owner</div>
+<div class="line"><span class="lineno">  821</span>        self.iplist_to_workload_query_manager = RuleCoverageQueryManager.IPListToWorkloadQueryManager()</div>
+<div class="line"><span class="lineno">  822</span>        self.workload_to_iplist_query_manager = RuleCoverageQueryManager.WorkloadToIPListQueryManager()</div>
+<div class="line"><span class="lineno">  823</span>        self.workload_to_workload_query_manager = RuleCoverageQueryManager.WorkloadToWorkloadQueryManager()</div>
+<div class="line"><span class="lineno">  824</span>        self.log_id = 0</div>
+<div class="line"><span class="lineno">  825</span>        self.log_to_id: Dict[ExplorerResultSetV1.ExplorerResult, int] = {}</div>
+<div class="line"><span class="lineno">  826</span>        self.count_invalid_records = 0</div>
+<div class="line"><span class="lineno">  827</span>        self.any_iplist_href = self.owner.objects_iplists_get_default_any()</div>
+<div class="line"><span class="lineno">  828</span>        <span class="keywordflow">if</span> self.any_iplist_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  829</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;No &quot;any&quot; iplist found&#39;</span>)</div>
+<div class="line"><span class="lineno">  830</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment -->
 </div>
@@ -194,47 +194,47 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  830</span>    <span class="keyword">def </span>add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):</div>
-<div class="line"><span class="lineno">  831</span>        self.log_id += 1</div>
-<div class="line"><span class="lineno">  832</span>        self.log_to_id[log] = self.log_id</div>
-<div class="line"><span class="lineno">  833</span> </div>
-<div class="line"><span class="lineno">  834</span> </div>
-<div class="line"><span class="lineno">  835</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> log.source_is_workload():</div>
-<div class="line"><span class="lineno">  836</span>            <span class="keywordflow">if</span> log.destination_is_workload():</div>
-<div class="line"><span class="lineno">  837</span> </div>
-<div class="line"><span class="lineno">  838</span>                iplist_hrefs = log.get_source_iplists_href()</div>
-<div class="line"><span class="lineno">  839</span>                <span class="keywordflow">if</span> iplist_hrefs <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  840</span>                    iplist_hrefs = [self.any_iplist_href]</div>
-<div class="line"><span class="lineno">  841</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  842</span>                    iplist_hrefs.append(self.any_iplist_href)</div>
-<div class="line"><span class="lineno">  843</span> </div>
-<div class="line"><span class="lineno">  844</span>                <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplist_hrefs:</div>
-<div class="line"><span class="lineno">  845</span>                    self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,</div>
-<div class="line"><span class="lineno">  846</span>                                                                    ip_list_href=iplist_href,</div>
-<div class="line"><span class="lineno">  847</span>                                                                    workload_href=log.get_destination_workload_href(),</div>
-<div class="line"><span class="lineno">  848</span>                                                                    service_record=log.service_json)</div>
-<div class="line"><span class="lineno">  849</span>            <span class="keywordflow">else</span>:  <span class="comment"># IPList to IPList should never happen!</span></div>
-<div class="line"><span class="lineno">  850</span>                self.count_invalid_records += 1</div>
-<div class="line"><span class="lineno">  851</span>                <span class="keywordflow">pass</span></div>
-<div class="line"><span class="lineno">  852</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  853</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> log.destination_is_workload():</div>
-<div class="line"><span class="lineno">  854</span>                iplist_hrefs = log.get_destination_iplists_href()</div>
-<div class="line"><span class="lineno">  855</span>                <span class="keywordflow">if</span> iplist_hrefs <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  856</span>                    iplist_hrefs = [self.any_iplist_href]</div>
-<div class="line"><span class="lineno">  857</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  858</span>                    iplist_hrefs.append(self.any_iplist_href)</div>
-<div class="line"><span class="lineno">  859</span> </div>
-<div class="line"><span class="lineno">  860</span>                <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplist_hrefs:</div>
-<div class="line"><span class="lineno">  861</span>                    self.workload_to_iplist_query_manager.add_query(log_id=self.log_id,</div>
-<div class="line"><span class="lineno">  862</span>                                                                    ip_list_href=iplist_href,</div>
-<div class="line"><span class="lineno">  863</span>                                                                    workload_href=log.get_source_workload_href(),</div>
-<div class="line"><span class="lineno">  864</span>                                                                    service_record=log.service_json)</div>
-<div class="line"><span class="lineno">  865</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  866</span>                self.workload_to_workload_query_manager.add_query(log_id=self.log_id,</div>
-<div class="line"><span class="lineno">  867</span>                                                                  src_workload_href=log.get_source_workload_href(),</div>
-<div class="line"><span class="lineno">  868</span>                                                                  dst_workload_href=log.get_destination_workload_href(),</div>
-<div class="line"><span class="lineno">  869</span>                                                                  service_record=log.service_json)</div>
-<div class="line"><span class="lineno">  870</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  835</span>    <span class="keyword">def </span>add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):</div>
+<div class="line"><span class="lineno">  836</span>        self.log_id += 1</div>
+<div class="line"><span class="lineno">  837</span>        self.log_to_id[log] = self.log_id</div>
+<div class="line"><span class="lineno">  838</span> </div>
+<div class="line"><span class="lineno">  839</span> </div>
+<div class="line"><span class="lineno">  840</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> log.source_is_workload():</div>
+<div class="line"><span class="lineno">  841</span>            <span class="keywordflow">if</span> log.destination_is_workload():</div>
+<div class="line"><span class="lineno">  842</span> </div>
+<div class="line"><span class="lineno">  843</span>                iplist_hrefs = log.get_source_iplists_href()</div>
+<div class="line"><span class="lineno">  844</span>                <span class="keywordflow">if</span> iplist_hrefs <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  845</span>                    iplist_hrefs = [self.any_iplist_href]</div>
+<div class="line"><span class="lineno">  846</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  847</span>                    iplist_hrefs.append(self.any_iplist_href)</div>
+<div class="line"><span class="lineno">  848</span> </div>
+<div class="line"><span class="lineno">  849</span>                <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplist_hrefs:</div>
+<div class="line"><span class="lineno">  850</span>                    self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,</div>
+<div class="line"><span class="lineno">  851</span>                                                                    ip_list_href=iplist_href,</div>
+<div class="line"><span class="lineno">  852</span>                                                                    workload_href=log.get_destination_workload_href(),</div>
+<div class="line"><span class="lineno">  853</span>                                                                    service_record=log.service_json)</div>
+<div class="line"><span class="lineno">  854</span>            <span class="keywordflow">else</span>:  <span class="comment"># IPList to IPList should never happen!</span></div>
+<div class="line"><span class="lineno">  855</span>                self.count_invalid_records += 1</div>
+<div class="line"><span class="lineno">  856</span>                <span class="keywordflow">pass</span></div>
+<div class="line"><span class="lineno">  857</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  858</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> log.destination_is_workload():</div>
+<div class="line"><span class="lineno">  859</span>                iplist_hrefs = log.get_destination_iplists_href()</div>
+<div class="line"><span class="lineno">  860</span>                <span class="keywordflow">if</span> iplist_hrefs <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  861</span>                    iplist_hrefs = [self.any_iplist_href]</div>
+<div class="line"><span class="lineno">  862</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  863</span>                    iplist_hrefs.append(self.any_iplist_href)</div>
+<div class="line"><span class="lineno">  864</span> </div>
+<div class="line"><span class="lineno">  865</span>                <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplist_hrefs:</div>
+<div class="line"><span class="lineno">  866</span>                    self.workload_to_iplist_query_manager.add_query(log_id=self.log_id,</div>
+<div class="line"><span class="lineno">  867</span>                                                                    ip_list_href=iplist_href,</div>
+<div class="line"><span class="lineno">  868</span>                                                                    workload_href=log.get_source_workload_href(),</div>
+<div class="line"><span class="lineno">  869</span>                                                                    service_record=log.service_json)</div>
+<div class="line"><span class="lineno">  870</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  871</span>                self.workload_to_workload_query_manager.add_query(log_id=self.log_id,</div>
+<div class="line"><span class="lineno">  872</span>                                                                  src_workload_href=log.get_source_workload_href(),</div>
+<div class="line"><span class="lineno">  873</span>                                                                  dst_workload_href=log.get_destination_workload_href(),</div>
+<div class="line"><span class="lineno">  874</span>                                                                  service_record=log.service_json)</div>
+<div class="line"><span class="lineno">  875</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -263,10 +263,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  826</span>    <span class="keyword">def </span>add_query_from_explorer_results(self, explorer_results: List[ExplorerResultSetV1.ExplorerResult]) -&gt; <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  827</span>        <span class="keywordflow">for</span> explorer_result <span class="keywordflow">in</span> explorer_results:</div>
-<div class="line"><span class="lineno">  828</span>            self.add_query_from_explorer_result(explorer_result)</div>
-<div class="line"><span class="lineno">  829</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  831</span>    <span class="keyword">def </span>add_query_from_explorer_results(self, explorer_results: List[ExplorerResultSetV1.ExplorerResult]) -&gt; <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  832</span>        <span class="keywordflow">for</span> explorer_result <span class="keywordflow">in</span> explorer_results:</div>
+<div class="line"><span class="lineno">  833</span>            self.add_query_from_explorer_result(explorer_result)</div>
+<div class="line"><span class="lineno">  834</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -294,19 +294,19 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  912</span>    <span class="keyword">def </span>apply_policy_decisions_to_logs(self):</div>
-<div class="line"><span class="lineno">  913</span>        <span class="keywordflow">for</span> log, log_id <span class="keywordflow">in</span> self.log_to_id.items():</div>
-<div class="line"><span class="lineno">  914</span>            decision = self._get_policy_decision_for_log_id(log_id)</div>
-<div class="line"><span class="lineno">  915</span>            <span class="keywordflow">if</span> decision <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  916</span>                <span class="comment"># if len(log.get_source_iplists_href()) == 0 and len(log.get_destination_iplists_href()) == 0 is None:</span></div>
-<div class="line"><span class="lineno">  917</span>                <span class="comment">#     #  happens when source or destination is part of no IPList</span></div>
-<div class="line"><span class="lineno">  918</span>                <span class="comment">#     decision = &#39;blocked&#39;</span></div>
-<div class="line"><span class="lineno">  919</span>                <span class="comment"># else:</span></div>
-<div class="line"><span class="lineno">  920</span>                pylo.get_logger().error(pylo.nice_json(log._raw_json))</div>
-<div class="line"><span class="lineno">  921</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;No decision found for log_id {}&#39;</span>.format(log_id))</div>
-<div class="line"><span class="lineno">  922</span> </div>
-<div class="line"><span class="lineno">  923</span>            log.set_draft_mode_policy_decision_blocked(decision == <span class="stringliteral">&#39;blocked&#39;</span>)</div>
-<div class="line"><span class="lineno">  924</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  917</span>    <span class="keyword">def </span>apply_policy_decisions_to_logs(self):</div>
+<div class="line"><span class="lineno">  918</span>        <span class="keywordflow">for</span> log, log_id <span class="keywordflow">in</span> self.log_to_id.items():</div>
+<div class="line"><span class="lineno">  919</span>            decision = self._get_policy_decision_for_log_id(log_id)</div>
+<div class="line"><span class="lineno">  920</span>            <span class="keywordflow">if</span> decision <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  921</span>                <span class="comment"># if len(log.get_source_iplists_href()) == 0 and len(log.get_destination_iplists_href()) == 0 is None:</span></div>
+<div class="line"><span class="lineno">  922</span>                <span class="comment">#     #  happens when source or destination is part of no IPList</span></div>
+<div class="line"><span class="lineno">  923</span>                <span class="comment">#     decision = &#39;blocked&#39;</span></div>
+<div class="line"><span class="lineno">  924</span>                <span class="comment"># else:</span></div>
+<div class="line"><span class="lineno">  925</span>                pylo.get_logger().error(pylo.nice_json(log._raw_json))</div>
+<div class="line"><span class="lineno">  926</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;No decision found for log_id {}&#39;</span>.format(log_id))</div>
+<div class="line"><span class="lineno">  927</span> </div>
+<div class="line"><span class="lineno">  928</span>            log.set_draft_mode_policy_decision_blocked(decision == <span class="stringliteral">&#39;blocked&#39;</span>)</div>
+<div class="line"><span class="lineno">  929</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -334,11 +334,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  871</span>    <span class="keyword">def </span>count_queries(self):</div>
-<div class="line"><span class="lineno">  872</span>        <span class="keywordflow">return</span> len(self.iplist_to_workload_query_manager.queries)\</div>
-<div class="line"><span class="lineno">  873</span>               + len(self.workload_to_iplist_query_manager.queries)\</div>
-<div class="line"><span class="lineno">  874</span>               + len(self.workload_to_workload_query_manager.queries)</div>
-<div class="line"><span class="lineno">  875</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  876</span>    <span class="keyword">def </span>count_queries(self):</div>
+<div class="line"><span class="lineno">  877</span>        <span class="keywordflow">return</span> len(self.iplist_to_workload_query_manager.queries)\</div>
+<div class="line"><span class="lineno">  878</span>               + len(self.workload_to_iplist_query_manager.queries)\</div>
+<div class="line"><span class="lineno">  879</span>               + len(self.workload_to_workload_query_manager.queries)</div>
+<div class="line"><span class="lineno">  880</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -357,25 +357,25 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  876</span>    <span class="keyword">def </span>count_real_queries(self):</div>
-<div class="line"><span class="lineno">  877</span>        _log_ids = {}</div>
-<div class="line"><span class="lineno">  878</span>        <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.iplist_to_workload_query_manager.queries.values():</div>
-<div class="line"><span class="lineno">  879</span>            <span class="keywordflow">for</span> log_ids <span class="keywordflow">in</span> query.services.service_index_to_log_ids.values():</div>
-<div class="line"><span class="lineno">  880</span>                <span class="keywordflow">for</span> log_id <span class="keywordflow">in</span> log_ids:</div>
-<div class="line"><span class="lineno">  881</span>                    _log_ids[log_id] = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  882</span> </div>
-<div class="line"><span class="lineno">  883</span>        <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.workload_to_iplist_query_manager.queries.values():</div>
+<div class="fragment"><div class="line"><span class="lineno">  881</span>    <span class="keyword">def </span>count_real_queries(self):</div>
+<div class="line"><span class="lineno">  882</span>        _log_ids = {}</div>
+<div class="line"><span class="lineno">  883</span>        <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.iplist_to_workload_query_manager.queries.values():</div>
 <div class="line"><span class="lineno">  884</span>            <span class="keywordflow">for</span> log_ids <span class="keywordflow">in</span> query.services.service_index_to_log_ids.values():</div>
 <div class="line"><span class="lineno">  885</span>                <span class="keywordflow">for</span> log_id <span class="keywordflow">in</span> log_ids:</div>
 <div class="line"><span class="lineno">  886</span>                    _log_ids[log_id] = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  887</span> </div>
-<div class="line"><span class="lineno">  888</span>        <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.workload_to_workload_query_manager.queries.values():</div>
+<div class="line"><span class="lineno">  888</span>        <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.workload_to_iplist_query_manager.queries.values():</div>
 <div class="line"><span class="lineno">  889</span>            <span class="keywordflow">for</span> log_ids <span class="keywordflow">in</span> query.services.service_index_to_log_ids.values():</div>
 <div class="line"><span class="lineno">  890</span>                <span class="keywordflow">for</span> log_id <span class="keywordflow">in</span> log_ids:</div>
 <div class="line"><span class="lineno">  891</span>                    _log_ids[log_id] = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  892</span> </div>
-<div class="line"><span class="lineno">  893</span>        <span class="keywordflow">return</span> len(_log_ids)</div>
-<div class="line"><span class="lineno">  894</span> </div>
+<div class="line"><span class="lineno">  893</span>        <span class="keywordflow">for</span> query <span class="keywordflow">in</span> self.workload_to_workload_query_manager.queries.values():</div>
+<div class="line"><span class="lineno">  894</span>            <span class="keywordflow">for</span> log_ids <span class="keywordflow">in</span> query.services.service_index_to_log_ids.values():</div>
+<div class="line"><span class="lineno">  895</span>                <span class="keywordflow">for</span> log_id <span class="keywordflow">in</span> log_ids:</div>
+<div class="line"><span class="lineno">  896</span>                    _log_ids[log_id] = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  897</span> </div>
+<div class="line"><span class="lineno">  898</span>        <span class="keywordflow">return</span> len(_log_ids)</div>
+<div class="line"><span class="lineno">  899</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -394,17 +394,17 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  925</span>    <span class="keyword">def </span>execute(self):</div>
-<div class="line"><span class="lineno">  926</span>        queries_per_batch = 100</div>
-<div class="line"><span class="lineno">  927</span>        self.iplist_to_workload_query_manager.execute(self.owner, queries_per_batch)</div>
-<div class="line"><span class="lineno">  928</span>        self.workload_to_iplist_query_manager.execute(self.owner, queries_per_batch)</div>
-<div class="line"><span class="lineno">  929</span>        self.workload_to_workload_query_manager.execute(self.owner, queries_per_batch)</div>
-<div class="line"><span class="lineno">  930</span> </div>
-<div class="line"><span class="lineno">  931</span>        self.apply_policy_decisions_to_logs()</div>
-<div class="line"><span class="lineno">  932</span> </div>
-<div class="line"><span class="lineno">  933</span> </div>
-<div class="line"><span class="lineno">  934</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  930</span>    <span class="keyword">def </span>execute(self):</div>
+<div class="line"><span class="lineno">  931</span>        queries_per_batch = 100</div>
+<div class="line"><span class="lineno">  932</span>        self.iplist_to_workload_query_manager.execute(self.owner, queries_per_batch)</div>
+<div class="line"><span class="lineno">  933</span>        self.workload_to_iplist_query_manager.execute(self.owner, queries_per_batch)</div>
+<div class="line"><span class="lineno">  934</span>        self.workload_to_workload_query_manager.execute(self.owner, queries_per_batch)</div>
 <div class="line"><span class="lineno">  935</span> </div>
+<div class="line"><span class="lineno">  936</span>        self.apply_policy_decisions_to_logs()</div>
+<div class="line"><span class="lineno">  937</span> </div>
+<div class="line"><span class="lineno">  938</span> </div>
+<div class="line"><span class="lineno">  939</span> </div>
+<div class="line"><span class="lineno">  940</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -523,7 +523,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 12 2022 12:18:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Fri May 13 2022 11:37:31 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

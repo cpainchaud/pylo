@@ -144,20 +144,20 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  233</span>    <span class="keyword">def </span>__init__(self, data, owner: <span class="stringliteral">&#39;APIConnector&#39;</span>, emulated_process_exclusion={}):</div>
-<div class="line"><span class="lineno">  234</span>        self._raw_results = data</div>
-<div class="line"><span class="lineno">  235</span>        <span class="keywordflow">if</span> len(emulated_process_exclusion) &gt; 0:</div>
-<div class="line"><span class="lineno">  236</span>            new_data = []</div>
-<div class="line"><span class="lineno">  237</span>            <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._raw_results:</div>
-<div class="line"><span class="lineno">  238</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;process_name&#39;</span> <span class="keywordflow">in</span> record[<span class="stringliteral">&#39;service&#39;</span>]:</div>
-<div class="line"><span class="lineno">  239</span>                    <span class="keywordflow">if</span> record[<span class="stringliteral">&#39;service&#39;</span>][<span class="stringliteral">&#39;process_name&#39;</span>] <span class="keywordflow">in</span> emulated_process_exclusion:</div>
-<div class="line"><span class="lineno">  240</span>                        <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">  241</span>                new_data.append(record)</div>
-<div class="line"><span class="lineno">  242</span>            self._raw_results = new_data</div>
-<div class="line"><span class="lineno">  243</span> </div>
-<div class="line"><span class="lineno">  244</span>        self.owner = owner</div>
-<div class="line"><span class="lineno">  245</span>        self.tracker = ExplorerResultSetV1.Tracker(self)</div>
-<div class="line"><span class="lineno">  246</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  238</span>    <span class="keyword">def </span>__init__(self, data, owner: <span class="stringliteral">&#39;APIConnector&#39;</span>, emulated_process_exclusion={}):</div>
+<div class="line"><span class="lineno">  239</span>        self._raw_results = data</div>
+<div class="line"><span class="lineno">  240</span>        <span class="keywordflow">if</span> len(emulated_process_exclusion) &gt; 0:</div>
+<div class="line"><span class="lineno">  241</span>            new_data = []</div>
+<div class="line"><span class="lineno">  242</span>            <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._raw_results:</div>
+<div class="line"><span class="lineno">  243</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;process_name&#39;</span> <span class="keywordflow">in</span> record[<span class="stringliteral">&#39;service&#39;</span>]:</div>
+<div class="line"><span class="lineno">  244</span>                    <span class="keywordflow">if</span> record[<span class="stringliteral">&#39;service&#39;</span>][<span class="stringliteral">&#39;process_name&#39;</span>] <span class="keywordflow">in</span> emulated_process_exclusion:</div>
+<div class="line"><span class="lineno">  245</span>                        <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">  246</span>                new_data.append(record)</div>
+<div class="line"><span class="lineno">  247</span>            self._raw_results = new_data</div>
+<div class="line"><span class="lineno">  248</span> </div>
+<div class="line"><span class="lineno">  249</span>        self.owner = owner</div>
+<div class="line"><span class="lineno">  250</span>        self.tracker = ExplorerResultSetV1.Tracker(self)</div>
+<div class="line"><span class="lineno">  251</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -177,9 +177,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  247</span>    <span class="keyword">def </span>count_results(self):</div>
-<div class="line"><span class="lineno">  248</span>        <span class="keywordflow">return</span> len(self._raw_results)</div>
-<div class="line"><span class="lineno">  249</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  252</span>    <span class="keyword">def </span>count_results(self):</div>
+<div class="line"><span class="lineno">  253</span>        <span class="keywordflow">return</span> len(self._raw_results)</div>
+<div class="line"><span class="lineno">  254</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -220,141 +220,141 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  330</span>                        ) -&gt; List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]:</div>
-<div class="line"><span class="lineno">  331</span>        result = []</div>
-<div class="line"><span class="lineno">  332</span>        <span class="keywordflow">for</span> data <span class="keywordflow">in</span> self._raw_results:</div>
-<div class="line"><span class="lineno">  333</span>            <span class="keywordflow">try</span>:</div>
-<div class="line"><span class="lineno">  334</span>                new_record = ExplorerResultSetV1.ExplorerResult(data)</div>
-<div class="line"><span class="lineno">  335</span>                result.append(new_record)</div>
-<div class="line"><span class="lineno">  336</span> </div>
-<div class="line"><span class="lineno">  337</span>            <span class="keywordflow">except</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html">pylo.PyloApiUnexpectedSyntax</a> <span class="keyword">as</span> error:</div>
-<div class="line"><span class="lineno">  338</span>                pylo.log.warn(error)</div>
-<div class="line"><span class="lineno">  339</span> </div>
-<div class="line"><span class="lineno">  340</span>        <span class="keywordflow">if</span> len(result) &gt; 0 <span class="keywordflow">and</span> draft_mode:</div>
-<div class="line"><span class="lineno">  341</span>            draft_reply_to_record_table: List[ExplorerResultSetV1.ExplorerResult] = []</div>
-<div class="line"><span class="lineno">  342</span> </div>
-<div class="line"><span class="lineno">  343</span>            global_query_data = []</div>
+<div class="fragment"><div class="line"><span class="lineno">  335</span>                        ) -&gt; List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]:</div>
+<div class="line"><span class="lineno">  336</span>        result = []</div>
+<div class="line"><span class="lineno">  337</span>        <span class="keywordflow">for</span> data <span class="keywordflow">in</span> self._raw_results:</div>
+<div class="line"><span class="lineno">  338</span>            <span class="keywordflow">try</span>:</div>
+<div class="line"><span class="lineno">  339</span>                new_record = ExplorerResultSetV1.ExplorerResult(data)</div>
+<div class="line"><span class="lineno">  340</span>                result.append(new_record)</div>
+<div class="line"><span class="lineno">  341</span> </div>
+<div class="line"><span class="lineno">  342</span>            <span class="keywordflow">except</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html">pylo.PyloApiUnexpectedSyntax</a> <span class="keyword">as</span> error:</div>
+<div class="line"><span class="lineno">  343</span>                pylo.log.warn(error)</div>
 <div class="line"><span class="lineno">  344</span> </div>
-<div class="line"><span class="lineno">  345</span>            <span class="keywordflow">for</span> record <span class="keywordflow">in</span> result:</div>
-<div class="line"><span class="lineno">  346</span>                service_json: Dict = record.service_json.copy()</div>
-<div class="line"><span class="lineno">  347</span>                service_json[<span class="stringliteral">&#39;protocol&#39;</span>] = service_json.pop(<span class="stringliteral">&#39;proto&#39;</span>)</div>
-<div class="line"><span class="lineno">  348</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;port&#39;</span> <span class="keywordflow">in</span> service_json <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 17 <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 6:</div>
-<div class="line"><span class="lineno">  349</span>                    service_json.pop(<span class="stringliteral">&#39;port&#39;</span>)</div>
-<div class="line"><span class="lineno">  350</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;user_name&#39;</span> <span class="keywordflow">in</span> service_json:</div>
-<div class="line"><span class="lineno">  351</span>                    service_json.pop(<span class="stringliteral">&#39;user_name&#39;</span>)</div>
-<div class="line"><span class="lineno">  352</span> </div>
-<div class="line"><span class="lineno">  353</span>                local_query_data = {</div>
-<div class="line"><span class="lineno">  354</span>                    <span class="stringliteral">&quot;resolve_labels_as&quot;</span>: {<span class="stringliteral">&quot;source&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>], <span class="stringliteral">&quot;destination&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>]},</div>
-<div class="line"><span class="lineno">  355</span>                    <span class="stringliteral">&quot;services&quot;</span>: [service_json]</div>
-<div class="line"><span class="lineno">  356</span>                }</div>
+<div class="line"><span class="lineno">  345</span>        <span class="keywordflow">if</span> len(result) &gt; 0 <span class="keywordflow">and</span> draft_mode:</div>
+<div class="line"><span class="lineno">  346</span>            draft_reply_to_record_table: List[ExplorerResultSetV1.ExplorerResult] = []</div>
+<div class="line"><span class="lineno">  347</span> </div>
+<div class="line"><span class="lineno">  348</span>            global_query_data = []</div>
+<div class="line"><span class="lineno">  349</span> </div>
+<div class="line"><span class="lineno">  350</span>            <span class="keywordflow">for</span> record <span class="keywordflow">in</span> result:</div>
+<div class="line"><span class="lineno">  351</span>                service_json: Dict = record.service_json.copy()</div>
+<div class="line"><span class="lineno">  352</span>                service_json[<span class="stringliteral">&#39;protocol&#39;</span>] = service_json.pop(<span class="stringliteral">&#39;proto&#39;</span>)</div>
+<div class="line"><span class="lineno">  353</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;port&#39;</span> <span class="keywordflow">in</span> service_json <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 17 <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 6:</div>
+<div class="line"><span class="lineno">  354</span>                    service_json.pop(<span class="stringliteral">&#39;port&#39;</span>)</div>
+<div class="line"><span class="lineno">  355</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;user_name&#39;</span> <span class="keywordflow">in</span> service_json:</div>
+<div class="line"><span class="lineno">  356</span>                    service_json.pop(<span class="stringliteral">&#39;user_name&#39;</span>)</div>
 <div class="line"><span class="lineno">  357</span> </div>
-<div class="line"><span class="lineno">  358</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> record.source_is_workload() <span class="keywordflow">and</span> <span class="keywordflow">not</span> record.destination_is_workload():</div>
-<div class="line"><span class="lineno">  359</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Both Source and Destinations are not workloads, it&#39;s unexpected&quot;</span>)</div>
-<div class="line"><span class="lineno">  360</span> </div>
-<div class="line"><span class="lineno">  361</span>                <span class="keywordflow">if</span> record.source_is_workload():</div>
-<div class="line"><span class="lineno">  362</span>                    <span class="keywordflow">if</span> deep_analysis:</div>
-<div class="line"><span class="lineno">  363</span>                        local_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: record.get_source_workload_href()}}</div>
-<div class="line"><span class="lineno">  364</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  365</span>                        local_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
-<div class="line"><span class="lineno">  366</span>                        <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_source_labels_href():</div>
-<div class="line"><span class="lineno">  367</span>                            local_query_data[<span class="stringliteral">&#39;source&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
-<div class="line"><span class="lineno">  368</span> </div>
-<div class="line"><span class="lineno">  369</span>                    <span class="keywordflow">if</span> record.destination_is_workload():</div>
-<div class="line"><span class="lineno">  370</span>                        <span class="keywordflow">if</span> deep_analysis:</div>
-<div class="line"><span class="lineno">  371</span>                            local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: record.get_destination_workload_href()}}</div>
-<div class="line"><span class="lineno">  372</span>                        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  373</span>                            local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
-<div class="line"><span class="lineno">  374</span>                            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_destination_labels_href():</div>
-<div class="line"><span class="lineno">  375</span>                                local_query_data[<span class="stringliteral">&#39;destination&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
-<div class="line"><span class="lineno">  376</span> </div>
-<div class="line"><span class="lineno">  377</span>                        draft_reply_to_record_table.append(record)</div>
-<div class="line"><span class="lineno">  378</span>                        global_query_data.append(local_query_data)</div>
-<div class="line"><span class="lineno">  379</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  380</span> </div>
-<div class="line"><span class="lineno">  381</span>                        iplists_href = record.get_destination_iplists_href()</div>
-<div class="line"><span class="lineno">  382</span>                        <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplists_href:</div>
-<div class="line"><span class="lineno">  383</span>                            local_unique_query_data = local_query_data.copy()</div>
-<div class="line"><span class="lineno">  384</span>                            local_unique_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: iplist_href}}</div>
+<div class="line"><span class="lineno">  358</span>                local_query_data = {</div>
+<div class="line"><span class="lineno">  359</span>                    <span class="stringliteral">&quot;resolve_labels_as&quot;</span>: {<span class="stringliteral">&quot;source&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>], <span class="stringliteral">&quot;destination&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>]},</div>
+<div class="line"><span class="lineno">  360</span>                    <span class="stringliteral">&quot;services&quot;</span>: [service_json]</div>
+<div class="line"><span class="lineno">  361</span>                }</div>
+<div class="line"><span class="lineno">  362</span> </div>
+<div class="line"><span class="lineno">  363</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> record.source_is_workload() <span class="keywordflow">and</span> <span class="keywordflow">not</span> record.destination_is_workload():</div>
+<div class="line"><span class="lineno">  364</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Both Source and Destinations are not workloads, it&#39;s unexpected&quot;</span>)</div>
+<div class="line"><span class="lineno">  365</span> </div>
+<div class="line"><span class="lineno">  366</span>                <span class="keywordflow">if</span> record.source_is_workload():</div>
+<div class="line"><span class="lineno">  367</span>                    <span class="keywordflow">if</span> deep_analysis:</div>
+<div class="line"><span class="lineno">  368</span>                        local_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: record.get_source_workload_href()}}</div>
+<div class="line"><span class="lineno">  369</span>                    <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  370</span>                        local_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
+<div class="line"><span class="lineno">  371</span>                        <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_source_labels_href():</div>
+<div class="line"><span class="lineno">  372</span>                            local_query_data[<span class="stringliteral">&#39;source&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
+<div class="line"><span class="lineno">  373</span> </div>
+<div class="line"><span class="lineno">  374</span>                    <span class="keywordflow">if</span> record.destination_is_workload():</div>
+<div class="line"><span class="lineno">  375</span>                        <span class="keywordflow">if</span> deep_analysis:</div>
+<div class="line"><span class="lineno">  376</span>                            local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: record.get_destination_workload_href()}}</div>
+<div class="line"><span class="lineno">  377</span>                        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  378</span>                            local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
+<div class="line"><span class="lineno">  379</span>                            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_destination_labels_href():</div>
+<div class="line"><span class="lineno">  380</span>                                local_query_data[<span class="stringliteral">&#39;destination&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
+<div class="line"><span class="lineno">  381</span> </div>
+<div class="line"><span class="lineno">  382</span>                        draft_reply_to_record_table.append(record)</div>
+<div class="line"><span class="lineno">  383</span>                        global_query_data.append(local_query_data)</div>
+<div class="line"><span class="lineno">  384</span>                    <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  385</span> </div>
-<div class="line"><span class="lineno">  386</span>                            draft_reply_to_record_table.append(record)</div>
-<div class="line"><span class="lineno">  387</span>                            global_query_data.append(local_unique_query_data)</div>
-<div class="line"><span class="lineno">  388</span> </div>
-<div class="line"><span class="lineno">  389</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  386</span>                        iplists_href = record.get_destination_iplists_href()</div>
+<div class="line"><span class="lineno">  387</span>                        <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplists_href:</div>
+<div class="line"><span class="lineno">  388</span>                            local_unique_query_data = local_query_data.copy()</div>
+<div class="line"><span class="lineno">  389</span>                            local_unique_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: iplist_href}}</div>
 <div class="line"><span class="lineno">  390</span> </div>
-<div class="line"><span class="lineno">  391</span>                    <span class="keywordflow">if</span> deep_analysis:</div>
-<div class="line"><span class="lineno">  392</span>                        local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: record.get_destination_workload_href()}}</div>
-<div class="line"><span class="lineno">  393</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  394</span>                        local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
-<div class="line"><span class="lineno">  395</span>                        <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_destination_labels_href():</div>
-<div class="line"><span class="lineno">  396</span>                            local_query_data[<span class="stringliteral">&#39;destination&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
-<div class="line"><span class="lineno">  397</span> </div>
-<div class="line"><span class="lineno">  398</span>                    <span class="keywordflow">if</span> record.source_is_workload():</div>
-<div class="line"><span class="lineno">  399</span>                        local_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
-<div class="line"><span class="lineno">  400</span>                        <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_source_labels_href():</div>
-<div class="line"><span class="lineno">  401</span>                            local_query_data[<span class="stringliteral">&#39;source&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
+<div class="line"><span class="lineno">  391</span>                            draft_reply_to_record_table.append(record)</div>
+<div class="line"><span class="lineno">  392</span>                            global_query_data.append(local_unique_query_data)</div>
+<div class="line"><span class="lineno">  393</span> </div>
+<div class="line"><span class="lineno">  394</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  395</span> </div>
+<div class="line"><span class="lineno">  396</span>                    <span class="keywordflow">if</span> deep_analysis:</div>
+<div class="line"><span class="lineno">  397</span>                        local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: record.get_destination_workload_href()}}</div>
+<div class="line"><span class="lineno">  398</span>                    <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  399</span>                        local_query_data[<span class="stringliteral">&#39;destination&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
+<div class="line"><span class="lineno">  400</span>                        <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_destination_labels_href():</div>
+<div class="line"><span class="lineno">  401</span>                            local_query_data[<span class="stringliteral">&#39;destination&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
 <div class="line"><span class="lineno">  402</span> </div>
-<div class="line"><span class="lineno">  403</span>                        draft_reply_to_record_table.append(record)</div>
-<div class="line"><span class="lineno">  404</span>                        global_query_data.append(local_query_data)</div>
-<div class="line"><span class="lineno">  405</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  406</span> </div>
-<div class="line"><span class="lineno">  407</span>                        iplists_href = record.get_source_iplists_href()</div>
-<div class="line"><span class="lineno">  408</span>                        <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplists_href:</div>
-<div class="line"><span class="lineno">  409</span>                            local_unique_query_data = local_query_data.copy()</div>
-<div class="line"><span class="lineno">  410</span>                            local_unique_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: iplist_href}}</div>
+<div class="line"><span class="lineno">  403</span>                    <span class="keywordflow">if</span> record.source_is_workload():</div>
+<div class="line"><span class="lineno">  404</span>                        local_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;labels&#39;</span>: []}</div>
+<div class="line"><span class="lineno">  405</span>                        <span class="keywordflow">for</span> href <span class="keywordflow">in</span> record.get_source_labels_href():</div>
+<div class="line"><span class="lineno">  406</span>                            local_query_data[<span class="stringliteral">&#39;source&#39;</span>][<span class="stringliteral">&#39;labels&#39;</span>].append({<span class="stringliteral">&#39;href&#39;</span>: href})</div>
+<div class="line"><span class="lineno">  407</span> </div>
+<div class="line"><span class="lineno">  408</span>                        draft_reply_to_record_table.append(record)</div>
+<div class="line"><span class="lineno">  409</span>                        global_query_data.append(local_query_data)</div>
+<div class="line"><span class="lineno">  410</span>                    <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  411</span> </div>
-<div class="line"><span class="lineno">  412</span>                            draft_reply_to_record_table.append(record)</div>
-<div class="line"><span class="lineno">  413</span>                            global_query_data.append(local_unique_query_data)</div>
-<div class="line"><span class="lineno">  414</span> </div>
-<div class="line"><span class="lineno">  415</span>            pylo.log.debug(<span class="stringliteral">&quot;{} items in Rule Coverage query queue&quot;</span>.format(len(global_query_data)))</div>
+<div class="line"><span class="lineno">  412</span>                        iplists_href = record.get_source_iplists_href()</div>
+<div class="line"><span class="lineno">  413</span>                        <span class="keywordflow">for</span> iplist_href <span class="keywordflow">in</span> iplists_href:</div>
+<div class="line"><span class="lineno">  414</span>                            local_unique_query_data = local_query_data.copy()</div>
+<div class="line"><span class="lineno">  415</span>                            local_unique_query_data[<span class="stringliteral">&#39;source&#39;</span>] = {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: iplist_href}}</div>
 <div class="line"><span class="lineno">  416</span> </div>
-<div class="line"><span class="lineno">  417</span>            index = 0</div>
-<div class="line"><span class="lineno">  418</span>            <span class="keywordflow">while</span> index &lt; len(global_query_data):</div>
-<div class="line"><span class="lineno">  419</span>                local_index = index</div>
-<div class="line"><span class="lineno">  420</span>                local_last_index = index + draft_mode_request_count_per_batch - 1</div>
-<div class="line"><span class="lineno">  421</span>                <span class="keywordflow">if</span> local_last_index &gt;= len(global_query_data):</div>
-<div class="line"><span class="lineno">  422</span>                    local_last_index = len(global_query_data) - 1</div>
-<div class="line"><span class="lineno">  423</span> </div>
-<div class="line"><span class="lineno">  424</span>                query_data = []</div>
-<div class="line"><span class="lineno">  425</span> </div>
-<div class="line"><span class="lineno">  426</span>                <span class="keywordflow">for</span> query_index <span class="keywordflow">in</span> range(local_index, local_last_index+1):</div>
-<div class="line"><span class="lineno">  427</span>                    query_data.append(global_query_data[query_index])</div>
+<div class="line"><span class="lineno">  417</span>                            draft_reply_to_record_table.append(record)</div>
+<div class="line"><span class="lineno">  418</span>                            global_query_data.append(local_unique_query_data)</div>
+<div class="line"><span class="lineno">  419</span> </div>
+<div class="line"><span class="lineno">  420</span>            pylo.log.debug(<span class="stringliteral">&quot;{} items in Rule Coverage query queue&quot;</span>.format(len(global_query_data)))</div>
+<div class="line"><span class="lineno">  421</span> </div>
+<div class="line"><span class="lineno">  422</span>            index = 0</div>
+<div class="line"><span class="lineno">  423</span>            <span class="keywordflow">while</span> index &lt; len(global_query_data):</div>
+<div class="line"><span class="lineno">  424</span>                local_index = index</div>
+<div class="line"><span class="lineno">  425</span>                local_last_index = index + draft_mode_request_count_per_batch - 1</div>
+<div class="line"><span class="lineno">  426</span>                <span class="keywordflow">if</span> local_last_index &gt;= len(global_query_data):</div>
+<div class="line"><span class="lineno">  427</span>                    local_last_index = len(global_query_data) - 1</div>
 <div class="line"><span class="lineno">  428</span> </div>
-<div class="line"><span class="lineno">  429</span>                <span class="comment"># print(query_data)</span></div>
-<div class="line"><span class="lineno">  430</span>                res = self.owner.rule_coverage_query(query_data)</div>
-<div class="line"><span class="lineno">  431</span>                <span class="comment"># print(res)</span></div>
-<div class="line"><span class="lineno">  432</span> </div>
-<div class="line"><span class="lineno">  433</span>                edges = res.get(<span class="stringliteral">&#39;edges&#39;</span>)</div>
-<div class="line"><span class="lineno">  434</span>                <span class="keywordflow">if</span> edges <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  435</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;edges&quot;&#39;</span>, res)</div>
-<div class="line"><span class="lineno">  436</span> </div>
-<div class="line"><span class="lineno">  437</span>                <span class="keywordflow">if</span> len(edges) != len(query_data):</div>
-<div class="line"><span class="lineno">  438</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;rule_coverage has returned {} records while {} where requested&quot;</span>.format(len(edges), len(query_data)))</div>
-<div class="line"><span class="lineno">  439</span> </div>
-<div class="line"><span class="lineno">  440</span>                <span class="keywordflow">for</span> query_index <span class="keywordflow">in</span> range(local_index, local_last_index+1):</div>
-<div class="line"><span class="lineno">  441</span>                    <span class="comment"># print(local_index)</span></div>
-<div class="line"><span class="lineno">  442</span>                    <span class="comment"># print(query_index)</span></div>
-<div class="line"><span class="lineno">  443</span>                    <span class="comment"># print(len(edges))</span></div>
-<div class="line"><span class="lineno">  444</span>                    response_data = edges[query_index-local_index]</div>
-<div class="line"><span class="lineno">  445</span>                    <span class="comment"># print(response_data)</span></div>
-<div class="line"><span class="lineno">  446</span>                    <span class="keywordflow">if</span> <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(response_data) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list <span class="keywordflow">or</span> len(response_data) != 1:</div>
-<div class="line"><span class="lineno">  447</span>                        <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;rule_coverage has returned invalid data: {}\n against query: {}&quot;</span>.format(pylo.nice_json(response_data),</div>
-<div class="line"><span class="lineno">  448</span>                                                                                                                   pylo.nice_json(query_data[query_index])))</div>
-<div class="line"><span class="lineno">  449</span> </div>
-<div class="line"><span class="lineno">  450</span>                    rule_list = response_data[0]</div>
-<div class="line"><span class="lineno">  451</span>                    <span class="comment"># print(rule_list)</span></div>
-<div class="line"><span class="lineno">  452</span>                    explorer_result = draft_reply_to_record_table[query_index]</div>
-<div class="line"><span class="lineno">  453</span>                    <span class="keywordflow">if</span> explorer_result.draft_mode_policy_decision_is_not_defined():</div>
-<div class="line"><span class="lineno">  454</span>                        explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) &lt; 1)</div>
-<div class="line"><span class="lineno">  455</span> </div>
-<div class="line"><span class="lineno">  456</span>                    <span class="keywordflow">elif</span> explorer_result.draft_mode_policy_decision_is_blocked():</div>
-<div class="line"><span class="lineno">  457</span>                        explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) &lt; 1)</div>
-<div class="line"><span class="lineno">  458</span> </div>
-<div class="line"><span class="lineno">  459</span> </div>
-<div class="line"><span class="lineno">  460</span>                index += draft_mode_request_count_per_batch</div>
-<div class="line"><span class="lineno">  461</span> </div>
-<div class="line"><span class="lineno">  462</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno">  429</span>                query_data = []</div>
+<div class="line"><span class="lineno">  430</span> </div>
+<div class="line"><span class="lineno">  431</span>                <span class="keywordflow">for</span> query_index <span class="keywordflow">in</span> range(local_index, local_last_index+1):</div>
+<div class="line"><span class="lineno">  432</span>                    query_data.append(global_query_data[query_index])</div>
+<div class="line"><span class="lineno">  433</span> </div>
+<div class="line"><span class="lineno">  434</span>                <span class="comment"># print(query_data)</span></div>
+<div class="line"><span class="lineno">  435</span>                res = self.owner.rule_coverage_query(query_data)</div>
+<div class="line"><span class="lineno">  436</span>                <span class="comment"># print(res)</span></div>
+<div class="line"><span class="lineno">  437</span> </div>
+<div class="line"><span class="lineno">  438</span>                edges = res.get(<span class="stringliteral">&#39;edges&#39;</span>)</div>
+<div class="line"><span class="lineno">  439</span>                <span class="keywordflow">if</span> edges <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  440</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;edges&quot;&#39;</span>, res)</div>
+<div class="line"><span class="lineno">  441</span> </div>
+<div class="line"><span class="lineno">  442</span>                <span class="keywordflow">if</span> len(edges) != len(query_data):</div>
+<div class="line"><span class="lineno">  443</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;rule_coverage has returned {} records while {} where requested&quot;</span>.format(len(edges), len(query_data)))</div>
+<div class="line"><span class="lineno">  444</span> </div>
+<div class="line"><span class="lineno">  445</span>                <span class="keywordflow">for</span> query_index <span class="keywordflow">in</span> range(local_index, local_last_index+1):</div>
+<div class="line"><span class="lineno">  446</span>                    <span class="comment"># print(local_index)</span></div>
+<div class="line"><span class="lineno">  447</span>                    <span class="comment"># print(query_index)</span></div>
+<div class="line"><span class="lineno">  448</span>                    <span class="comment"># print(len(edges))</span></div>
+<div class="line"><span class="lineno">  449</span>                    response_data = edges[query_index-local_index]</div>
+<div class="line"><span class="lineno">  450</span>                    <span class="comment"># print(response_data)</span></div>
+<div class="line"><span class="lineno">  451</span>                    <span class="keywordflow">if</span> <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(response_data) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list <span class="keywordflow">or</span> len(response_data) != 1:</div>
+<div class="line"><span class="lineno">  452</span>                        <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;rule_coverage has returned invalid data: {}\n against query: {}&quot;</span>.format(pylo.nice_json(response_data),</div>
+<div class="line"><span class="lineno">  453</span>                                                                                                                   pylo.nice_json(query_data[query_index])))</div>
+<div class="line"><span class="lineno">  454</span> </div>
+<div class="line"><span class="lineno">  455</span>                    rule_list = response_data[0]</div>
+<div class="line"><span class="lineno">  456</span>                    <span class="comment"># print(rule_list)</span></div>
+<div class="line"><span class="lineno">  457</span>                    explorer_result = draft_reply_to_record_table[query_index]</div>
+<div class="line"><span class="lineno">  458</span>                    <span class="keywordflow">if</span> explorer_result.draft_mode_policy_decision_is_not_defined():</div>
+<div class="line"><span class="lineno">  459</span>                        explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) &lt; 1)</div>
+<div class="line"><span class="lineno">  460</span> </div>
+<div class="line"><span class="lineno">  461</span>                    <span class="keywordflow">elif</span> explorer_result.draft_mode_policy_decision_is_blocked():</div>
+<div class="line"><span class="lineno">  462</span>                        explorer_result.set_draft_mode_policy_decision_blocked(blocked=len(rule_list) &lt; 1)</div>
 <div class="line"><span class="lineno">  463</span> </div>
 <div class="line"><span class="lineno">  464</span> </div>
+<div class="line"><span class="lineno">  465</span>                index += draft_mode_request_count_per_batch</div>
+<div class="line"><span class="lineno">  466</span> </div>
+<div class="line"><span class="lineno">  467</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno">  468</span> </div>
+<div class="line"><span class="lineno">  469</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_api_unexpected_syntax_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html">pylo.Exception.PyloApiUnexpectedSyntax</a></div><div class="ttdef"><b>Definition:</b> Exception.py:29</div></div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 <div class="ttc" id="anamespacepylo_1_1utilities_1_1explorer__report__exporter_html_a88aa6c5cbed7fe748f7f0f331d135aec"><div class="ttname"><a href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">pylo.utilities.explorer_report_exporter.type</a></div><div class="ttdeci">type</div><div class="ttdef"><b>Definition:</b> explorer_report_exporter.py:13</div></div>
@@ -386,15 +386,15 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  250</span>    <span class="keyword">def </span>get_record(self, line: int):</div>
-<div class="line"><span class="lineno">  251</span>        <span class="keywordflow">if</span> line &lt; 0:</div>
-<div class="line"><span class="lineno">  252</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Invalid line #: {}&#39;</span>.format(line))</div>
-<div class="line"><span class="lineno">  253</span>        <span class="keywordflow">if</span> line &gt;= len(self._raw_results):</div>
-<div class="line"><span class="lineno">  254</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Line # doesnt exists, requested #{} while this set contains only {} (starts at 0)&#39;</span>.</div>
-<div class="line"><span class="lineno">  255</span>                              format(line, len(self._raw_results)))</div>
-<div class="line"><span class="lineno">  256</span> </div>
-<div class="line"><span class="lineno">  257</span>        <span class="keywordflow">return</span> ExplorerResultSetV1.ExplorerResult(self._raw_results[line])</div>
-<div class="line"><span class="lineno">  258</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>    <span class="keyword">def </span>get_record(self, line: int):</div>
+<div class="line"><span class="lineno">  256</span>        <span class="keywordflow">if</span> line &lt; 0:</div>
+<div class="line"><span class="lineno">  257</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Invalid line #: {}&#39;</span>.format(line))</div>
+<div class="line"><span class="lineno">  258</span>        <span class="keywordflow">if</span> line &gt;= len(self._raw_results):</div>
+<div class="line"><span class="lineno">  259</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Line # doesnt exists, requested #{} while this set contains only {} (starts at 0)&#39;</span>.</div>
+<div class="line"><span class="lineno">  260</span>                              format(line, len(self._raw_results)))</div>
+<div class="line"><span class="lineno">  261</span> </div>
+<div class="line"><span class="lineno">  262</span>        <span class="keywordflow">return</span> ExplorerResultSetV1.ExplorerResult(self._raw_results[line])</div>
+<div class="line"><span class="lineno">  263</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -421,72 +421,72 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  260</span>    <span class="keyword">def </span>mergeRecordsProcessAndUserDiffers(records: List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]) -&gt; List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]:</div>
-<div class="line"><span class="lineno">  261</span>        <span class="keyword">class </span>HashTable:</div>
-<div class="line"><span class="lineno">  262</span>            <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">  263</span>                self.entries: Dict[str, List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]] = {}</div>
-<div class="line"><span class="lineno">  264</span> </div>
-<div class="line"><span class="lineno">  265</span>            <span class="keyword">def </span>load(self, records: List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]):</div>
-<div class="line"><span class="lineno">  266</span> </div>
-<div class="line"><span class="lineno">  267</span>                <span class="keywordflow">for</span> record <span class="keywordflow">in</span> records:</div>
-<div class="line"><span class="lineno">  268</span>                    hash = record.source_ip + record.destination_ip + <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a855675a80c303501cebf61fde43c8dc9">str</a>(record.source_workload_href) + \</div>
-<div class="line"><span class="lineno">  269</span>                           <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a855675a80c303501cebf61fde43c8dc9">str</a>(record.destination_workload_href) + record.service_to_str() + \</div>
-<div class="line"><span class="lineno">  270</span>                           record.policy_decision_string + record.draft_mode_policy_decision_to_str()</div>
-<div class="line"><span class="lineno">  271</span>                    hashEntry = self.entries.get(hash)</div>
-<div class="line"><span class="lineno">  272</span>                    <span class="keywordflow">if</span> hashEntry <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  273</span>                        self.entries[hash] = [record]</div>
-<div class="line"><span class="lineno">  274</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  275</span>                        hashEntry.append(record)</div>
-<div class="line"><span class="lineno">  276</span> </div>
-<div class="line"><span class="lineno">  277</span>            <span class="keyword">def </span>results(self) -&gt; List[&#39;ExplorerResultSetV1.ExplorerResult&#39;]:</div>
-<div class="line"><span class="lineno">  278</span> </div>
-<div class="line"><span class="lineno">  279</span>                results: List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>] = []</div>
-<div class="line"><span class="lineno">  280</span> </div>
-<div class="line"><span class="lineno">  281</span>                <span class="keywordflow">for</span> hashEntry <span class="keywordflow">in</span> self.entries.values():</div>
-<div class="line"><span class="lineno">  282</span>                    <span class="keywordflow">if</span> len(hashEntry) == 1:</div>
-<div class="line"><span class="lineno">  283</span>                        results.append(hashEntry[0])</div>
-<div class="line"><span class="lineno">  284</span>                        <span class="keywordflow">continue</span></div>
+<div class="fragment"><div class="line"><span class="lineno">  265</span>    <span class="keyword">def </span>mergeRecordsProcessAndUserDiffers(records: List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]) -&gt; List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]:</div>
+<div class="line"><span class="lineno">  266</span>        <span class="keyword">class </span>HashTable:</div>
+<div class="line"><span class="lineno">  267</span>            <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">  268</span>                self.entries: Dict[str, List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]] = {}</div>
+<div class="line"><span class="lineno">  269</span> </div>
+<div class="line"><span class="lineno">  270</span>            <span class="keyword">def </span>load(self, records: List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>]):</div>
+<div class="line"><span class="lineno">  271</span> </div>
+<div class="line"><span class="lineno">  272</span>                <span class="keywordflow">for</span> record <span class="keywordflow">in</span> records:</div>
+<div class="line"><span class="lineno">  273</span>                    hash = record.source_ip + record.destination_ip + <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a855675a80c303501cebf61fde43c8dc9">str</a>(record.source_workload_href) + \</div>
+<div class="line"><span class="lineno">  274</span>                           <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a855675a80c303501cebf61fde43c8dc9">str</a>(record.destination_workload_href) + record.service_to_str() + \</div>
+<div class="line"><span class="lineno">  275</span>                           record.policy_decision_string + record.draft_mode_policy_decision_to_str()</div>
+<div class="line"><span class="lineno">  276</span>                    hashEntry = self.entries.get(hash)</div>
+<div class="line"><span class="lineno">  277</span>                    <span class="keywordflow">if</span> hashEntry <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  278</span>                        self.entries[hash] = [record]</div>
+<div class="line"><span class="lineno">  279</span>                    <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  280</span>                        hashEntry.append(record)</div>
+<div class="line"><span class="lineno">  281</span> </div>
+<div class="line"><span class="lineno">  282</span>            <span class="keyword">def </span>results(self) -&gt; List[&#39;ExplorerResultSetV1.ExplorerResult&#39;]:</div>
+<div class="line"><span class="lineno">  283</span> </div>
+<div class="line"><span class="lineno">  284</span>                results: List[<span class="stringliteral">&#39;ExplorerResultSetV1.ExplorerResult&#39;</span>] = []</div>
 <div class="line"><span class="lineno">  285</span> </div>
-<div class="line"><span class="lineno">  286</span>                    ruleToKeep = hashEntry.pop()</div>
-<div class="line"><span class="lineno">  287</span>                    mergedUsers = []</div>
-<div class="line"><span class="lineno">  288</span>                    mergedProcesses = []</div>
-<div class="line"><span class="lineno">  289</span>                    count = 0</div>
-<div class="line"><span class="lineno">  290</span>                    last_detected = ruleToKeep.last_detected</div>
-<div class="line"><span class="lineno">  291</span>                    first_detected = ruleToKeep.first_detected</div>
-<div class="line"><span class="lineno">  292</span> </div>
-<div class="line"><span class="lineno">  293</span>                    <span class="keywordflow">for</span> record <span class="keywordflow">in</span> hashEntry:</div>
-<div class="line"><span class="lineno">  294</span>                        <span class="keywordflow">if</span> record.username <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> len(record.username) &gt; 0:</div>
-<div class="line"><span class="lineno">  295</span>                            mergedUsers.append(record.username)</div>
-<div class="line"><span class="lineno">  296</span>                        <span class="keywordflow">if</span> record.process_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> len(record.process_name) &gt; 0:</div>
-<div class="line"><span class="lineno">  297</span>                            mergedProcesses.append(record.process_name)</div>
-<div class="line"><span class="lineno">  298</span>                        <span class="keywordflow">if</span> last_detected &lt; record.last_detected:</div>
-<div class="line"><span class="lineno">  299</span>                            last_detected = record.last_detected</div>
-<div class="line"><span class="lineno">  300</span>                        <span class="keywordflow">if</span> first_detected &gt; record.first_detected:</div>
-<div class="line"><span class="lineno">  301</span>                            first_detected = record.first_detected</div>
-<div class="line"><span class="lineno">  302</span> </div>
-<div class="line"><span class="lineno">  303</span>                        count = count + record.num_connections</div>
-<div class="line"><span class="lineno">  304</span> </div>
-<div class="line"><span class="lineno">  305</span>                    mergedUsers = list(set(mergedUsers))</div>
-<div class="line"><span class="lineno">  306</span>                    mergedProcesses = list(set(mergedProcesses))</div>
+<div class="line"><span class="lineno">  286</span>                <span class="keywordflow">for</span> hashEntry <span class="keywordflow">in</span> self.entries.values():</div>
+<div class="line"><span class="lineno">  287</span>                    <span class="keywordflow">if</span> len(hashEntry) == 1:</div>
+<div class="line"><span class="lineno">  288</span>                        results.append(hashEntry[0])</div>
+<div class="line"><span class="lineno">  289</span>                        <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">  290</span> </div>
+<div class="line"><span class="lineno">  291</span>                    ruleToKeep = hashEntry.pop()</div>
+<div class="line"><span class="lineno">  292</span>                    mergedUsers = []</div>
+<div class="line"><span class="lineno">  293</span>                    mergedProcesses = []</div>
+<div class="line"><span class="lineno">  294</span>                    count = 0</div>
+<div class="line"><span class="lineno">  295</span>                    last_detected = ruleToKeep.last_detected</div>
+<div class="line"><span class="lineno">  296</span>                    first_detected = ruleToKeep.first_detected</div>
+<div class="line"><span class="lineno">  297</span> </div>
+<div class="line"><span class="lineno">  298</span>                    <span class="keywordflow">for</span> record <span class="keywordflow">in</span> hashEntry:</div>
+<div class="line"><span class="lineno">  299</span>                        <span class="keywordflow">if</span> record.username <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> len(record.username) &gt; 0:</div>
+<div class="line"><span class="lineno">  300</span>                            mergedUsers.append(record.username)</div>
+<div class="line"><span class="lineno">  301</span>                        <span class="keywordflow">if</span> record.process_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> len(record.process_name) &gt; 0:</div>
+<div class="line"><span class="lineno">  302</span>                            mergedProcesses.append(record.process_name)</div>
+<div class="line"><span class="lineno">  303</span>                        <span class="keywordflow">if</span> last_detected &lt; record.last_detected:</div>
+<div class="line"><span class="lineno">  304</span>                            last_detected = record.last_detected</div>
+<div class="line"><span class="lineno">  305</span>                        <span class="keywordflow">if</span> first_detected &gt; record.first_detected:</div>
+<div class="line"><span class="lineno">  306</span>                            first_detected = record.first_detected</div>
 <div class="line"><span class="lineno">  307</span> </div>
-<div class="line"><span class="lineno">  308</span>                    ruleToKeep.process_name = mergedProcesses</div>
-<div class="line"><span class="lineno">  309</span>                    ruleToKeep.username = mergedUsers</div>
-<div class="line"><span class="lineno">  310</span>                    ruleToKeep.num_connections = count</div>
-<div class="line"><span class="lineno">  311</span>                    ruleToKeep.last_detected = last_detected</div>
-<div class="line"><span class="lineno">  312</span>                    ruleToKeep.first_detected = first_detected</div>
-<div class="line"><span class="lineno">  313</span> </div>
-<div class="line"><span class="lineno">  314</span>                    results.append(ruleToKeep)</div>
-<div class="line"><span class="lineno">  315</span> </div>
-<div class="line"><span class="lineno">  316</span>                <span class="keywordflow">return</span> results</div>
-<div class="line"><span class="lineno">  317</span> </div>
-<div class="line"><span class="lineno">  318</span>        hashTable: HashTable = HashTable()</div>
-<div class="line"><span class="lineno">  319</span>        hashTable.load(records)</div>
-<div class="line"><span class="lineno">  320</span>        results = hashTable.results()</div>
-<div class="line"><span class="lineno">  321</span> </div>
+<div class="line"><span class="lineno">  308</span>                        count = count + record.num_connections</div>
+<div class="line"><span class="lineno">  309</span> </div>
+<div class="line"><span class="lineno">  310</span>                    mergedUsers = list(set(mergedUsers))</div>
+<div class="line"><span class="lineno">  311</span>                    mergedProcesses = list(set(mergedProcesses))</div>
+<div class="line"><span class="lineno">  312</span> </div>
+<div class="line"><span class="lineno">  313</span>                    ruleToKeep.process_name = mergedProcesses</div>
+<div class="line"><span class="lineno">  314</span>                    ruleToKeep.username = mergedUsers</div>
+<div class="line"><span class="lineno">  315</span>                    ruleToKeep.num_connections = count</div>
+<div class="line"><span class="lineno">  316</span>                    ruleToKeep.last_detected = last_detected</div>
+<div class="line"><span class="lineno">  317</span>                    ruleToKeep.first_detected = first_detected</div>
+<div class="line"><span class="lineno">  318</span> </div>
+<div class="line"><span class="lineno">  319</span>                    results.append(ruleToKeep)</div>
+<div class="line"><span class="lineno">  320</span> </div>
+<div class="line"><span class="lineno">  321</span>                <span class="keywordflow">return</span> results</div>
 <div class="line"><span class="lineno">  322</span> </div>
-<div class="line"><span class="lineno">  323</span>        <span class="keywordflow">return</span> results</div>
-<div class="line"><span class="lineno">  324</span> </div>
-<div class="line"><span class="lineno">  325</span> </div>
+<div class="line"><span class="lineno">  323</span>        hashTable: HashTable = HashTable()</div>
+<div class="line"><span class="lineno">  324</span>        hashTable.load(records)</div>
+<div class="line"><span class="lineno">  325</span>        results = hashTable.results()</div>
+<div class="line"><span class="lineno">  326</span> </div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>        <span class="keywordflow">return</span> results</div>
+<div class="line"><span class="lineno">  329</span> </div>
+<div class="line"><span class="lineno">  330</span> </div>
 <div class="ttc" id="anamespacepylo_1_1utilities_1_1explorer__report__exporter_html_a855675a80c303501cebf61fde43c8dc9"><div class="ttname"><a href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a855675a80c303501cebf61fde43c8dc9">pylo.utilities.explorer_report_exporter.str</a></div><div class="ttdeci">str</div><div class="ttdef"><b>Definition:</b> explorer_report_exporter.py:13</div></div>
 </div><!-- fragment -->
 </div>
@@ -526,7 +526,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 12 2022 12:18:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Fri May 13 2022 11:37:31 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

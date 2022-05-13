@@ -128,11 +128,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  507</span>        <span class="keyword">def </span>__init__(self, ip_list_href: str, workload_href: str):</div>
-<div class="line"><span class="lineno">  508</span>            self.ip_list_href = ip_list_href</div>
-<div class="line"><span class="lineno">  509</span>            self.workload_href = workload_href</div>
-<div class="line"><span class="lineno">  510</span>            self.services = RuleCoverageQueryManager.QueryServices()</div>
-<div class="line"><span class="lineno">  511</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  512</span>        <span class="keyword">def </span>__init__(self, ip_list_href: str, workload_href: str):</div>
+<div class="line"><span class="lineno">  513</span>            self.ip_list_href = ip_list_href</div>
+<div class="line"><span class="lineno">  514</span>            self.workload_href = workload_href</div>
+<div class="line"><span class="lineno">  515</span>            self.services = RuleCoverageQueryManager.QueryServices()</div>
+<div class="line"><span class="lineno">  516</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -168,9 +168,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  512</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
-<div class="line"><span class="lineno">  513</span>            self.services.add_service(service_record, log_id)</div>
-<div class="line"><span class="lineno">  514</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  517</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
+<div class="line"><span class="lineno">  518</span>            self.services.add_service(service_record, log_id)</div>
+<div class="line"><span class="lineno">  519</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -197,25 +197,25 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  518</span>        <span class="keyword">def </span>generate_api_payload(self) -&gt; Dict:</div>
-<div class="line"><span class="lineno">  519</span>            payload = {<span class="stringliteral">&quot;resolve_labels_as&quot;</span>: {<span class="stringliteral">&quot;source&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>], <span class="stringliteral">&quot;destination&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>]}, <span class="stringliteral">&quot;services&quot;</span>: [],</div>
-<div class="line"><span class="lineno">  520</span>                       <span class="stringliteral">&#39;source&#39;</span>: {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.ip_list_href}},</div>
-<div class="line"><span class="lineno">  521</span>                       <span class="stringliteral">&#39;destination&#39;</span>: {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.workload_href}}</div>
-<div class="line"><span class="lineno">  522</span>                       }</div>
-<div class="line"><span class="lineno">  523</span> </div>
-<div class="line"><span class="lineno">  524</span>            <span class="keywordflow">for</span> service_id <span class="keywordflow">in</span> range(0, len(self.services.services_array)):</div>
-<div class="line"><span class="lineno">  525</span>                service = self.services.services_array[service_id]</div>
-<div class="line"><span class="lineno">  526</span>                <span class="comment"># print(service)</span></div>
-<div class="line"><span class="lineno">  527</span>                service_json: Dict = service.copy()</div>
-<div class="line"><span class="lineno">  528</span>                service_json[<span class="stringliteral">&#39;protocol&#39;</span>] = service_json.pop(<span class="stringliteral">&#39;proto&#39;</span>)</div>
-<div class="line"><span class="lineno">  529</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;port&#39;</span> <span class="keywordflow">in</span> service_json <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 17 <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 6:</div>
-<div class="line"><span class="lineno">  530</span>                    service_json.pop(<span class="stringliteral">&#39;port&#39;</span>)</div>
-<div class="line"><span class="lineno">  531</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;user_name&#39;</span> <span class="keywordflow">in</span> service_json:</div>
-<div class="line"><span class="lineno">  532</span>                    service_json.pop(<span class="stringliteral">&#39;user_name&#39;</span>)</div>
-<div class="line"><span class="lineno">  533</span>                payload[<span class="stringliteral">&#39;services&#39;</span>].append(service_json)</div>
-<div class="line"><span class="lineno">  534</span> </div>
-<div class="line"><span class="lineno">  535</span>            <span class="keywordflow">return</span> payload</div>
-<div class="line"><span class="lineno">  536</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  523</span>        <span class="keyword">def </span>generate_api_payload(self) -&gt; Dict:</div>
+<div class="line"><span class="lineno">  524</span>            payload = {<span class="stringliteral">&quot;resolve_labels_as&quot;</span>: {<span class="stringliteral">&quot;source&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>], <span class="stringliteral">&quot;destination&quot;</span>: [<span class="stringliteral">&quot;workloads&quot;</span>]}, <span class="stringliteral">&quot;services&quot;</span>: [],</div>
+<div class="line"><span class="lineno">  525</span>                       <span class="stringliteral">&#39;source&#39;</span>: {<span class="stringliteral">&#39;ip_list&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.ip_list_href}},</div>
+<div class="line"><span class="lineno">  526</span>                       <span class="stringliteral">&#39;destination&#39;</span>: {<span class="stringliteral">&#39;workload&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.workload_href}}</div>
+<div class="line"><span class="lineno">  527</span>                       }</div>
+<div class="line"><span class="lineno">  528</span> </div>
+<div class="line"><span class="lineno">  529</span>            <span class="keywordflow">for</span> service_id <span class="keywordflow">in</span> range(0, len(self.services.services_array)):</div>
+<div class="line"><span class="lineno">  530</span>                service = self.services.services_array[service_id]</div>
+<div class="line"><span class="lineno">  531</span>                <span class="comment"># print(service)</span></div>
+<div class="line"><span class="lineno">  532</span>                service_json: Dict = service.copy()</div>
+<div class="line"><span class="lineno">  533</span>                service_json[<span class="stringliteral">&#39;protocol&#39;</span>] = service_json.pop(<span class="stringliteral">&#39;proto&#39;</span>)</div>
+<div class="line"><span class="lineno">  534</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;port&#39;</span> <span class="keywordflow">in</span> service_json <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 17 <span class="keywordflow">and</span> service_json[<span class="stringliteral">&#39;protocol&#39;</span>] != 6:</div>
+<div class="line"><span class="lineno">  535</span>                    service_json.pop(<span class="stringliteral">&#39;port&#39;</span>)</div>
+<div class="line"><span class="lineno">  536</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;user_name&#39;</span> <span class="keywordflow">in</span> service_json:</div>
+<div class="line"><span class="lineno">  537</span>                    service_json.pop(<span class="stringliteral">&#39;user_name&#39;</span>)</div>
+<div class="line"><span class="lineno">  538</span>                payload[<span class="stringliteral">&#39;services&#39;</span>].append(service_json)</div>
+<div class="line"><span class="lineno">  539</span> </div>
+<div class="line"><span class="lineno">  540</span>            <span class="keywordflow">return</span> payload</div>
+<div class="line"><span class="lineno">  541</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -244,9 +244,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  515</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
-<div class="line"><span class="lineno">  516</span>            <span class="keywordflow">return</span> self.services.get_policy_decision_for_log_id(log_id)</div>
-<div class="line"><span class="lineno">  517</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  520</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[str]:</div>
+<div class="line"><span class="lineno">  521</span>            <span class="keywordflow">return</span> self.services.get_policy_decision_for_log_id(log_id)</div>
+<div class="line"><span class="lineno">  522</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -289,18 +289,18 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  537</span>        <span class="keyword">def </span>process_response(self, rules: Dict[str, str], response: [[str]]):</div>
-<div class="line"><span class="lineno">  538</span>            <span class="keywordflow">if</span> len(response) != len(self.services.services_array):</div>
-<div class="line"><span class="lineno">  539</span>                <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Unexpected response from rule coverage query with mis-matching services count vs reply&#39;</span>)</div>
-<div class="line"><span class="lineno">  540</span> </div>
-<div class="line"><span class="lineno">  541</span>            <span class="keywordflow">for</span> index, single_response <span class="keywordflow">in</span> enumerate(response):</div>
-<div class="line"><span class="lineno">  542</span>                rules_array: [Dict] = []</div>
-<div class="line"><span class="lineno">  543</span>                <span class="keywordflow">for</span> rule <span class="keywordflow">in</span> single_response:</div>
-<div class="line"><span class="lineno">  544</span>                    rules_array.append(rules[rule])</div>
-<div class="line"><span class="lineno">  545</span>                self.services.service_index_policy_coverage[index] = rules_array</div>
-<div class="line"><span class="lineno">  546</span> </div>
-<div class="line"><span class="lineno">  547</span> </div>
-<div class="line"><span class="lineno">  548</span>    <span class="keyword">class </span>WorkloadToIPListQuery:</div>
+<div class="fragment"><div class="line"><span class="lineno">  542</span>        <span class="keyword">def </span>process_response(self, rules: Dict[str, str], response: [[str]]):</div>
+<div class="line"><span class="lineno">  543</span>            <span class="keywordflow">if</span> len(response) != len(self.services.services_array):</div>
+<div class="line"><span class="lineno">  544</span>                <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Unexpected response from rule coverage query with mis-matching services count vs reply&#39;</span>)</div>
+<div class="line"><span class="lineno">  545</span> </div>
+<div class="line"><span class="lineno">  546</span>            <span class="keywordflow">for</span> index, single_response <span class="keywordflow">in</span> enumerate(response):</div>
+<div class="line"><span class="lineno">  547</span>                rules_array: [Dict] = []</div>
+<div class="line"><span class="lineno">  548</span>                <span class="keywordflow">for</span> rule <span class="keywordflow">in</span> single_response:</div>
+<div class="line"><span class="lineno">  549</span>                    rules_array.append(rules[rule])</div>
+<div class="line"><span class="lineno">  550</span>                self.services.service_index_policy_coverage[index] = rules_array</div>
+<div class="line"><span class="lineno">  551</span> </div>
+<div class="line"><span class="lineno">  552</span> </div>
+<div class="line"><span class="lineno">  553</span>    <span class="keyword">class </span>WorkloadToIPListQuery:</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -353,7 +353,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 12 2022 12:18:56 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Fri May 13 2022 11:37:31 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
