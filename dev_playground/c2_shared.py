@@ -9,11 +9,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import pylo
 
 
-
 core_service_label_group_name: str = ''
 onboarded_apps_label_group: str = ''
 
 excluded_ranges = pylo.IP4Map()
+excluded_iplists_names: List[str] = []
 excluded_broadcast = pylo.IP4Map()
 excluded_direct_services: List['pylo.DirectServiceInRule'] = []
 
@@ -203,6 +203,17 @@ def load_config_file(filename='c2_config.json') -> bool:
             for process in excluded_processes_data:
                 excluded_processes[process] = process
 
+        global excluded_iplists_names
+        tmp = data.get('excluded_iplists_names')
+        if tmp is not None:
+            excluded_iplists_names = tmp
+            if type(excluded_iplists_names) is not list:
+                raise pylo.PyloEx("excluded_iplists_names is not a List:", excluded_iplists_names)
+            # check that is member is a string
+            for iplist_name in excluded_iplists_names:
+                if type(iplist_name) is not str:
+                    raise pylo.PyloEx("excluded_iplists_names is not a List of strings:", excluded_iplists_names)
+
     return True
 
 
@@ -212,6 +223,7 @@ def print_stats():
     print("  - Broadcast IP manual exclusion entries count: {}".format(excluded_broadcast.count_entries()))
     print("  - Service exclusions entries count: {}".format(len(excluded_direct_services)))
     print("  - Process names exclusions entries count: {}".format(len(excluded_processes)))
+    print("  - Excluded IPLists names count: {}".format(len(excluded_iplists_names)))
 
 
 _cached_dns_resolutions: Dict[str, str] = {}

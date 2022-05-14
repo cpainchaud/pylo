@@ -217,6 +217,19 @@ if args['loc'] is not None:
 else:
     print("SKIPPED")
 
+excluded_iplists: List[pylo.IPList] = []
+if len(c2_shared.excluded_iplists_names) > 0:
+    print(" - Looking for Excluded IPLists in PCE database... ")
+    for name in c2_shared.excluded_iplists_names:
+        print("     - ''{}''...".format(name), end='', flush=True)
+        ipListObject = org.IPListStore.find_by_name(name)
+        if ipListObject is not None:
+            excluded_iplists.append(ipListObject)
+            print("OK!")
+        else:
+            pylo.log.error("NOT FOUND!")
+            exit(1)
+
 print(" - Looking for CoreServices label '{}' in PCE database...".format(c2_shared.core_service_label_group_name), end='')
 find_cs_label = org.LabelStore.find_label_by_name_whatever_type(c2_shared.core_service_label_group_name)
 if find_cs_label is None:
@@ -428,6 +441,8 @@ for service in c2_shared.excluded_direct_services:
     explorer_inbound_filters.service_exclude_add(service)
 for process in c2_shared.excluded_processes:
     explorer_inbound_filters.process_exclude_add(process, emulate_on_client=True)
+for excluded_iplist in excluded_iplists:
+    explorer_inbound_filters.consumer_exclude_iplist(excluded_iplist)
 
 pylo.clock_start('inbound_api_request')
 inbound_results = connector.explorer_search(explorer_inbound_filters)
@@ -569,6 +584,8 @@ for service in c2_shared.excluded_direct_services:
     explorer_outbound_filters.service_exclude_add(service)
 for process in c2_shared.excluded_processes:
     explorer_outbound_filters.process_exclude_add(process, emulate_on_client=True)
+for excluded_iplist in excluded_iplists:
+    explorer_outbound_filters.provider_exclude_iplist(excluded_iplist)
 
 pylo.clock_start('outbound_api_request')
 outbound_results = connector.explorer_search(explorer_outbound_filters)
