@@ -1069,6 +1069,12 @@ class APIConnector:
             self._consumer_workloads = {}
             self._provider_workloads = {}
 
+            self._consumer_iplists = {}
+            self._consumer_iplists_exclude = {}
+            self._provider_iplists = {}
+            self._provider_iplists_exclude = {}
+
+
             self.max_results = max_results
             self._policy_decision_filter = []
             self._time_from = None
@@ -1134,8 +1140,30 @@ class APIConnector:
 
             raise pylo.PyloEx("Unsupported object type {}".format(type(workload_or_href)))
 
+        def consumer_include_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
+            if isinstance(iplist_or_href, str):
+                self._consumer_iplists[iplist_or_href] = iplist_or_href
+                return
+
+            if isinstance(iplist_or_href, pylo.IPList):
+                self._consumer_iplists[iplist_or_href.href] = iplist_or_href.href
+                return
+
+            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
+
         def consumer_exclude_cidr(self, ipaddress: str):
             self.__filter_consumer_ip_exclude.append(ipaddress)
+
+        def consumer_exclude_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
+            if isinstance(iplist_or_href, str):
+                self._consumer_iplists_exclude[iplist_or_href] = iplist_or_href
+                return
+
+            if isinstance(iplist_or_href, pylo.IPList):
+                self._consumer_iplists_exclude[iplist_or_href.href] = iplist_or_href.href
+                return
+
+            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
 
         def consumer_exclude_ip4map(self, map: 'pylo.IP4Map'):
             for item in map.to_list_of_cidr_string():
@@ -1155,6 +1183,17 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._provider_labels, label_or_href)
 
+        def provider_include_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
+            if isinstance(iplist_or_href, str):
+                self._provider_iplists[iplist_or_href] = iplist_or_href
+                return
+
+            if isinstance(iplist_or_href, pylo.IPList):
+                self._provider_iplists[iplist_or_href.href] = iplist_or_href.href
+                return
+
+            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
+
         def provider_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
             """
 
@@ -1164,6 +1203,17 @@ class APIConnector:
 
         def provider_exclude_cidr(self, ipaddress: str):
             self.__filter_provider_ip_exclude.append(ipaddress)
+
+        def provider_exclude_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
+            if isinstance(iplist_or_href, str):
+                self._provider_iplists_exclude[iplist_or_href] = iplist_or_href
+                return
+
+            if isinstance(iplist_or_href, pylo.IPList):
+                self._provider_iplists_exclude[iplist_or_href.href] = iplist_or_href.href
+                return
+
+            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
 
         def provider_exclude_ip4map(self, map: 'pylo.IP4Map'):
             for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
@@ -1266,6 +1316,12 @@ class APIConnector:
                     tmp.append({'workload': {'href': workload_href}})
                 filters['sources']['include'].append(tmp)
 
+            if len(self._consumer_iplists) > 0:
+                tmp = []
+                for iplist_href in self._consumer_iplists.keys():
+                    tmp.append({'ip_list': {'href': iplist_href}})
+                filters['sources']['include'].append(tmp)
+
             if len(self.__filter_consumer_ip_include) > 0:
                 tmp = []
                 for ip_txt in self.__filter_consumer_ip_include:
@@ -1284,6 +1340,12 @@ class APIConnector:
                     tmp.append({'workload': {'href': workload_href}})
                 filters['destinations']['include'].append(tmp)
 
+            if len(self._provider_iplists) > 0:
+                tmp = []
+                for iplist_href in self._provider_iplists.keys():
+                    tmp.append({'ip_list': {'href': iplist_href}})
+                filters['destinations']['include'].append(tmp)
+
             if len(self.__filter_provider_ip_include) > 0:
                 tmp = []
                 for ip_txt in self.__filter_provider_ip_include:
@@ -1295,6 +1357,10 @@ class APIConnector:
                 for label_href in self._consumer_exclude_labels.keys():
                     filters['sources']['exclude'].append({'label': {'href': label_href}})
 
+            if len(self._consumer_iplists_exclude) > 0:
+                for iplist_href in self._consumer_iplists_exclude.keys():
+                    filters['sources']['exclude'].append({'ip_list': {'href': iplist_href}})
+
             if len(self.__filter_consumer_ip_exclude) > 0:
                 for ipaddress in self.__filter_consumer_ip_exclude:
                     filters['sources']['exclude'].append({'ip_address': ipaddress})
@@ -1303,6 +1369,10 @@ class APIConnector:
             if len(self._provider_exclude_labels) > 0:
                 for label_href in self._provider_exclude_labels.keys():
                     filters['destinations']['exclude'].append({'label': {'href': label_href}})
+
+            if len(self._provider_iplists_exclude) > 0:
+                for iplist_href in self._provider_iplists_exclude.keys():
+                    filters['destinations']['exclude'].append({'ip_list': {'href': iplist_href}})
 
             if len(self.__filter_provider_ip_exclude) > 0:
                 for ipaddress in self.__filter_provider_ip_exclude:
