@@ -1,14 +1,14 @@
 <map id="pylo.APIConnector.APIConnector.get_pce_objects" name="pylo.APIConnector.APIConnector.get_pce_objects">
-<area shape="rect" id="node1" title=" " alt="" coords="5,267,240,308"/>
-<area shape="rect" id="node2" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a653f16591769985e43fa30ce3fcd0326" title=" " alt="" coords="300,5,535,47"/>
-<area shape="rect" id="node5" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a634f3ccd875625d0adf51e7177d82269" title=" " alt="" coords="288,71,547,112"/>
-<area shape="rect" id="node6" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2069e8254cf0e18f9c94974b2570fb76" title=" " alt="" coords="288,136,547,177"/>
-<area shape="rect" id="node7" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#abf4fbf60f00cc9e664705b96a7f27b2e" title=" " alt="" coords="288,201,547,243"/>
-<area shape="rect" id="node8" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a4a1a6501ab08bcfdfac892308b7aa91c" title=" " alt="" coords="288,267,547,308"/>
-<area shape="rect" id="node9" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#add650fba0bf8d0310a0131b7f56964a6" title=" " alt="" coords="288,332,547,373"/>
-<area shape="rect" id="node10" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ae8eaee244cfdaa2cc1396b461d2104b9" title=" " alt="" coords="288,397,547,439"/>
-<area shape="rect" id="node11" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a35125313166f39f0b613fa262db88a62" title=" " alt="" coords="288,463,547,504"/>
-<area shape="rect" id="node12" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#aed00019c313314696ab66d71ddcf44d5" title=" " alt="" coords="288,528,547,569"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab88b9a08dcaf370efbf96567f4d88e96" title=" " alt="" coords="595,267,825,308"/>
-<area shape="rect" id="node4" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a704b2f682f24aa9d3776be9a1c5ef9c1" title=" " alt="" coords="873,267,1089,308"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,387,240,428"/>
+<area shape="rect" id="node2" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a653f16591769985e43fa30ce3fcd0326" title=" " alt="" coords="300,29,535,71"/>
+<area shape="rect" id="node5" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a634f3ccd875625d0adf51e7177d82269" title=" " alt="" coords="288,119,547,160"/>
+<area shape="rect" id="node6" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2069e8254cf0e18f9c94974b2570fb76" title=" " alt="" coords="288,208,547,249"/>
+<area shape="rect" id="node7" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#abf4fbf60f00cc9e664705b96a7f27b2e" title=" " alt="" coords="288,297,547,339"/>
+<area shape="rect" id="node8" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a4a1a6501ab08bcfdfac892308b7aa91c" title=" " alt="" coords="288,387,547,428"/>
+<area shape="rect" id="node9" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#add650fba0bf8d0310a0131b7f56964a6" title=" " alt="" coords="288,476,547,517"/>
+<area shape="rect" id="node10" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ae8eaee244cfdaa2cc1396b461d2104b9" title=" " alt="" coords="288,565,547,607"/>
+<area shape="rect" id="node11" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a35125313166f39f0b613fa262db88a62" title=" " alt="" coords="288,655,547,696"/>
+<area shape="rect" id="node12" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#aed00019c313314696ab66d71ddcf44d5" title=" " alt="" coords="288,744,547,785"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab88b9a08dcaf370efbf96567f4d88e96" title=" " alt="" coords="595,387,825,428"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a704b2f682f24aa9d3776be9a1c5ef9c1" title=" " alt="" coords="873,387,1089,428"/>
 </map>
