@@ -134,33 +134,33 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><a id="l01433" name="l01433"></a><span class="lineno"> 1433</span>            <span class="keyword">def </span>__init__(self, json_data):</div>
-<div class="line"><a id="l01434" name="l01434"></a><span class="lineno"> 1434</span>                self.name = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;hostname&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
-<div class="line"><a id="l01435" name="l01435"></a><span class="lineno"> 1435</span>                self.type = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;type&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
-<div class="line"><a id="l01436" name="l01436"></a><span class="lineno"> 1436</span>                self.ip_address = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;ip_address&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
-<div class="line"><a id="l01437" name="l01437"></a><span class="lineno"> 1437</span>                self.runlevel = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;runlevel&#39;</span>, json_data)  <span class="comment"># type: int</span></div>
-<div class="line"><a id="l01438" name="l01438"></a><span class="lineno"> 1438</span> </div>
-<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span>                self.services = {}  <span class="comment"># type: dict[str,APIConnector.ClusterHealth.ClusterHealthNode.ServiceStatus]</span></div>
-<div class="line"><a id="l01440" name="l01440"></a><span class="lineno"> 1440</span>                services_statuses = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;services&#39;</span>, json_data)</div>
-<div class="line"><a id="l01441" name="l01441"></a><span class="lineno"> 1441</span> </div>
-<div class="line"><a id="l01442" name="l01442"></a><span class="lineno"> 1442</span>                self.global_service_status = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;status&#39;</span>, services_statuses)</div>
-<div class="line"><a id="l01443" name="l01443"></a><span class="lineno"> 1443</span> </div>
-<div class="line"><a id="l01444" name="l01444"></a><span class="lineno"> 1444</span>                <span class="keyword">def </span>process_services(json_data: dict, status):</div>
-<div class="line"><a id="l01445" name="l01445"></a><span class="lineno"> 1445</span>                    services = json_data.get(status)</div>
-<div class="line"><a id="l01446" name="l01446"></a><span class="lineno"> 1446</span>                    <span class="keywordflow">if</span> services <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a id="l01447" name="l01447"></a><span class="lineno"> 1447</span>                        <span class="keywordflow">return</span></div>
+<div class="fragment"><div class="line"><a id="l01443" name="l01443"></a><span class="lineno"> 1443</span>            <span class="keyword">def </span>__init__(self, json_data):</div>
+<div class="line"><a id="l01444" name="l01444"></a><span class="lineno"> 1444</span>                self.name = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;hostname&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
+<div class="line"><a id="l01445" name="l01445"></a><span class="lineno"> 1445</span>                self.type = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;type&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
+<div class="line"><a id="l01446" name="l01446"></a><span class="lineno"> 1446</span>                self.ip_address = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;ip_address&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
+<div class="line"><a id="l01447" name="l01447"></a><span class="lineno"> 1447</span>                self.runlevel = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;runlevel&#39;</span>, json_data)  <span class="comment"># type: int</span></div>
 <div class="line"><a id="l01448" name="l01448"></a><span class="lineno"> 1448</span> </div>
-<div class="line"><a id="l01449" name="l01449"></a><span class="lineno"> 1449</span>                    <span class="keywordflow">for</span> service <span class="keywordflow">in</span> services:</div>
-<div class="line"><a id="l01450" name="l01450"></a><span class="lineno"> 1450</span>                        new_service = APIConnector.ClusterHealth.ClusterHealthNode.ServiceStatus(service, status)</div>
-<div class="line"><a id="l01451" name="l01451"></a><span class="lineno"> 1451</span>                        <span class="keywordflow">if</span> new_service.name <span class="keywordflow">in</span> self.services:</div>
-<div class="line"><a id="l01452" name="l01452"></a><span class="lineno"> 1452</span>                            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;duplicated service name &#39;{}&#39;&quot;</span>.format(new_service.name))</div>
-<div class="line"><a id="l01453" name="l01453"></a><span class="lineno"> 1453</span>                        self.services[new_service.name] = new_service</div>
-<div class="line"><a id="l01454" name="l01454"></a><span class="lineno"> 1454</span> </div>
-<div class="line"><a id="l01455" name="l01455"></a><span class="lineno"> 1455</span>                process_services(services_statuses, <span class="stringliteral">&#39;running&#39;</span>)</div>
-<div class="line"><a id="l01456" name="l01456"></a><span class="lineno"> 1456</span>                process_services(services_statuses, <span class="stringliteral">&#39;not_running&#39;</span>)</div>
-<div class="line"><a id="l01457" name="l01457"></a><span class="lineno"> 1457</span>                process_services(services_statuses, <span class="stringliteral">&#39;partial&#39;</span>)</div>
-<div class="line"><a id="l01458" name="l01458"></a><span class="lineno"> 1458</span>                process_services(services_statuses, <span class="stringliteral">&#39;optional&#39;</span>)</div>
-<div class="line"><a id="l01459" name="l01459"></a><span class="lineno"> 1459</span> </div>
+<div class="line"><a id="l01449" name="l01449"></a><span class="lineno"> 1449</span>                self.services = {}  <span class="comment"># type: dict[str,APIConnector.ClusterHealth.ClusterHealthNode.ServiceStatus]</span></div>
+<div class="line"><a id="l01450" name="l01450"></a><span class="lineno"> 1450</span>                services_statuses = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;services&#39;</span>, json_data)</div>
+<div class="line"><a id="l01451" name="l01451"></a><span class="lineno"> 1451</span> </div>
+<div class="line"><a id="l01452" name="l01452"></a><span class="lineno"> 1452</span>                self.global_service_status = <a class="code hl_function" href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">get_field_or_die</a>(<span class="stringliteral">&#39;status&#39;</span>, services_statuses)</div>
+<div class="line"><a id="l01453" name="l01453"></a><span class="lineno"> 1453</span> </div>
+<div class="line"><a id="l01454" name="l01454"></a><span class="lineno"> 1454</span>                <span class="keyword">def </span>process_services(json_data: dict, status):</div>
+<div class="line"><a id="l01455" name="l01455"></a><span class="lineno"> 1455</span>                    services = json_data.get(status)</div>
+<div class="line"><a id="l01456" name="l01456"></a><span class="lineno"> 1456</span>                    <span class="keywordflow">if</span> services <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a id="l01457" name="l01457"></a><span class="lineno"> 1457</span>                        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01458" name="l01458"></a><span class="lineno"> 1458</span> </div>
+<div class="line"><a id="l01459" name="l01459"></a><span class="lineno"> 1459</span>                    <span class="keywordflow">for</span> service <span class="keywordflow">in</span> services:</div>
+<div class="line"><a id="l01460" name="l01460"></a><span class="lineno"> 1460</span>                        new_service = APIConnector.ClusterHealth.ClusterHealthNode.ServiceStatus(service, status)</div>
+<div class="line"><a id="l01461" name="l01461"></a><span class="lineno"> 1461</span>                        <span class="keywordflow">if</span> new_service.name <span class="keywordflow">in</span> self.services:</div>
+<div class="line"><a id="l01462" name="l01462"></a><span class="lineno"> 1462</span>                            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;duplicated service name &#39;{}&#39;&quot;</span>.format(new_service.name))</div>
+<div class="line"><a id="l01463" name="l01463"></a><span class="lineno"> 1463</span>                        self.services[new_service.name] = new_service</div>
+<div class="line"><a id="l01464" name="l01464"></a><span class="lineno"> 1464</span> </div>
+<div class="line"><a id="l01465" name="l01465"></a><span class="lineno"> 1465</span>                process_services(services_statuses, <span class="stringliteral">&#39;running&#39;</span>)</div>
+<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span>                process_services(services_statuses, <span class="stringliteral">&#39;not_running&#39;</span>)</div>
+<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span>                process_services(services_statuses, <span class="stringliteral">&#39;partial&#39;</span>)</div>
+<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span>                process_services(services_statuses, <span class="stringliteral">&#39;optional&#39;</span>)</div>
+<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 <div class="ttc" id="anamespacepylo_1_1_a_p_i_connector_html_ae0f65daac93d1189e9c5ffbed3c42659"><div class="ttname"><a href="namespacepylo_1_1_a_p_i_connector.html#ae0f65daac93d1189e9c5ffbed3c42659">pylo.APIConnector.get_field_or_die</a></div><div class="ttdeci">def get_field_or_die(str field_name, data)</div><div class="ttdef"><b>Definition:</b> APIConnector.py:27</div></div>
 </div><!-- fragment --><div class="dynheader">
@@ -190,13 +190,13 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>            <span class="keyword">def </span>get_running_services(self):</div>
-<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>                ret = []</div>
-<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span>                <span class="keywordflow">for</span> service <span class="keywordflow">in</span> self.services.values():</div>
-<div class="line"><a id="l01475" name="l01475"></a><span class="lineno"> 1475</span>                    <span class="keywordflow">if</span> service.is_running():</div>
-<div class="line"><a id="l01476" name="l01476"></a><span class="lineno"> 1476</span>                        ret.append(service)</div>
-<div class="line"><a id="l01477" name="l01477"></a><span class="lineno"> 1477</span>                <span class="keywordflow">return</span> ret</div>
-<div class="line"><a id="l01478" name="l01478"></a><span class="lineno"> 1478</span> </div>
+<div class="fragment"><div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>            <span class="keyword">def </span>get_running_services(self):</div>
+<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>                ret = []</div>
+<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span>                <span class="keywordflow">for</span> service <span class="keywordflow">in</span> self.services.values():</div>
+<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span>                    <span class="keywordflow">if</span> service.is_running():</div>
+<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span>                        ret.append(service)</div>
+<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span>                <span class="keywordflow">return</span> ret</div>
+<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -223,13 +223,13 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><a id="l01465" name="l01465"></a><span class="lineno"> 1465</span>            <span class="keyword">def </span>get_troubled_services(self):</div>
-<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span>                ret = []</div>
-<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span>                <span class="keywordflow">for</span> service <span class="keywordflow">in</span> self.services.values():</div>
-<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span>                    <span class="keywordflow">if</span> <span class="keywordflow">not</span> service.is_running():</div>
-<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span>                        ret.append(service)</div>
-<div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span>                <span class="keywordflow">return</span> ret</div>
-<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span> </div>
+<div class="fragment"><div class="line"><a id="l01475" name="l01475"></a><span class="lineno"> 1475</span>            <span class="keyword">def </span>get_troubled_services(self):</div>
+<div class="line"><a id="l01476" name="l01476"></a><span class="lineno"> 1476</span>                ret = []</div>
+<div class="line"><a id="l01477" name="l01477"></a><span class="lineno"> 1477</span>                <span class="keywordflow">for</span> service <span class="keywordflow">in</span> self.services.values():</div>
+<div class="line"><a id="l01478" name="l01478"></a><span class="lineno"> 1478</span>                    <span class="keywordflow">if</span> <span class="keywordflow">not</span> service.is_running():</div>
+<div class="line"><a id="l01479" name="l01479"></a><span class="lineno"> 1479</span>                        ret.append(service)</div>
+<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"> 1480</span>                <span class="keywordflow">return</span> ret</div>
+<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -256,11 +256,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><a id="l01460" name="l01460"></a><span class="lineno"> 1460</span>            <span class="keyword">def </span>is_offline_or_unreachable(self):</div>
-<div class="line"><a id="l01461" name="l01461"></a><span class="lineno"> 1461</span>                <span class="keywordflow">if</span> self.runlevel <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a id="l01462" name="l01462"></a><span class="lineno"> 1462</span>                    <span class="keywordflow">return</span> <span class="keyword">True</span></div>
-<div class="line"><a id="l01463" name="l01463"></a><span class="lineno"> 1463</span>                <span class="keywordflow">return</span> <span class="keyword">False</span></div>
-<div class="line"><a id="l01464" name="l01464"></a><span class="lineno"> 1464</span> </div>
+<div class="fragment"><div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span>            <span class="keyword">def </span>is_offline_or_unreachable(self):</div>
+<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span>                <span class="keywordflow">if</span> self.runlevel <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>                    <span class="keywordflow">return</span> <span class="keyword">True</span></div>
+<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>                <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -303,31 +303,31 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><a id="l01479" name="l01479"></a><span class="lineno"> 1479</span>            <span class="keyword">def </span>to_string(self, indent=&#39;&#39;, marker=&#39;*&#39;):</div>
-<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"> 1480</span>                <span class="keyword">def </span>val_str(display_name: str, value):</div>
-<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span>                    <span class="keywordflow">return</span> <span class="stringliteral">&quot;{}{}{}: {}\n&quot;</span>.format(indent, marker, display_name, value)</div>
-<div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>                ret = <span class="stringliteral">&#39;&#39;</span></div>
-<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>                ret += val_str(<span class="stringliteral">&#39;fqdn&#39;</span>, self.name)</div>
-<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span>                indent += <span class="stringliteral">&#39; &#39;</span></div>
-<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span>                marker = <span class="stringliteral">&#39;-&#39;</span></div>
-<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span> </div>
-<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span>                ret += val_str(<span class="stringliteral">&#39;ip_address&#39;</span>, self.ip_address)</div>
-<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span>                ret += val_str(<span class="stringliteral">&#39;type&#39;</span>, self.type)</div>
-<div class="line"><a id="l01489" name="l01489"></a><span class="lineno"> 1489</span>                <span class="keywordflow">if</span> self.runlevel <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a id="l01490" name="l01490"></a><span class="lineno"> 1490</span>                    ret += val_str(<span class="stringliteral">&#39;runlevel&#39;</span>, <span class="stringliteral">&#39;not running or not available&#39;</span>)</div>
-<div class="line"><a id="l01491" name="l01491"></a><span class="lineno"> 1491</span>                    <span class="keywordflow">return</span> ret</div>
-<div class="line"><a id="l01492" name="l01492"></a><span class="lineno"> 1492</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><a id="l01493" name="l01493"></a><span class="lineno"> 1493</span>                    ret += val_str(<span class="stringliteral">&#39;runlevel&#39;</span>, self.runlevel)</div>
-<div class="line"><a id="l01494" name="l01494"></a><span class="lineno"> 1494</span> </div>
-<div class="line"><a id="l01495" name="l01495"></a><span class="lineno"> 1495</span>                troubled_services = pylo.string_list_to_text(self.get_troubled_services())</div>
-<div class="line"><a id="l01496" name="l01496"></a><span class="lineno"> 1496</span>                ret += val_str(<span class="stringliteral">&#39;non-functional services&#39;</span>, troubled_services)</div>
-<div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span> </div>
-<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>                running_services = pylo.string_list_to_text(self.get_running_services())</div>
-<div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span>                ret += val_str(<span class="stringliteral">&#39;running services&#39;</span>, running_services)</div>
-<div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span> </div>
-<div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span>                <span class="keywordflow">return</span> ret</div>
-<div class="line"><a id="l01502" name="l01502"></a><span class="lineno"> 1502</span> </div>
-<div class="line"><a id="l01503" name="l01503"></a><span class="lineno"> 1503</span>        <span class="keyword">def </span>__init__(self, json_data):</div>
+<div class="fragment"><div class="line"><a id="l01489" name="l01489"></a><span class="lineno"> 1489</span>            <span class="keyword">def </span>to_string(self, indent=&#39;&#39;, marker=&#39;*&#39;):</div>
+<div class="line"><a id="l01490" name="l01490"></a><span class="lineno"> 1490</span>                <span class="keyword">def </span>val_str(display_name: str, value):</div>
+<div class="line"><a id="l01491" name="l01491"></a><span class="lineno"> 1491</span>                    <span class="keywordflow">return</span> <span class="stringliteral">&quot;{}{}{}: {}\n&quot;</span>.format(indent, marker, display_name, value)</div>
+<div class="line"><a id="l01492" name="l01492"></a><span class="lineno"> 1492</span>                ret = <span class="stringliteral">&#39;&#39;</span></div>
+<div class="line"><a id="l01493" name="l01493"></a><span class="lineno"> 1493</span>                ret += val_str(<span class="stringliteral">&#39;fqdn&#39;</span>, self.name)</div>
+<div class="line"><a id="l01494" name="l01494"></a><span class="lineno"> 1494</span>                indent += <span class="stringliteral">&#39; &#39;</span></div>
+<div class="line"><a id="l01495" name="l01495"></a><span class="lineno"> 1495</span>                marker = <span class="stringliteral">&#39;-&#39;</span></div>
+<div class="line"><a id="l01496" name="l01496"></a><span class="lineno"> 1496</span> </div>
+<div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span>                ret += val_str(<span class="stringliteral">&#39;ip_address&#39;</span>, self.ip_address)</div>
+<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>                ret += val_str(<span class="stringliteral">&#39;type&#39;</span>, self.type)</div>
+<div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span>                <span class="keywordflow">if</span> self.runlevel <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span>                    ret += val_str(<span class="stringliteral">&#39;runlevel&#39;</span>, <span class="stringliteral">&#39;not running or not available&#39;</span>)</div>
+<div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span>                    <span class="keywordflow">return</span> ret</div>
+<div class="line"><a id="l01502" name="l01502"></a><span class="lineno"> 1502</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l01503" name="l01503"></a><span class="lineno"> 1503</span>                    ret += val_str(<span class="stringliteral">&#39;runlevel&#39;</span>, self.runlevel)</div>
+<div class="line"><a id="l01504" name="l01504"></a><span class="lineno"> 1504</span> </div>
+<div class="line"><a id="l01505" name="l01505"></a><span class="lineno"> 1505</span>                troubled_services = pylo.string_list_to_text(self.get_troubled_services())</div>
+<div class="line"><a id="l01506" name="l01506"></a><span class="lineno"> 1506</span>                ret += val_str(<span class="stringliteral">&#39;non-functional services&#39;</span>, troubled_services)</div>
+<div class="line"><a id="l01507" name="l01507"></a><span class="lineno"> 1507</span> </div>
+<div class="line"><a id="l01508" name="l01508"></a><span class="lineno"> 1508</span>                running_services = pylo.string_list_to_text(self.get_running_services())</div>
+<div class="line"><a id="l01509" name="l01509"></a><span class="lineno"> 1509</span>                ret += val_str(<span class="stringliteral">&#39;running services&#39;</span>, running_services)</div>
+<div class="line"><a id="l01510" name="l01510"></a><span class="lineno"> 1510</span> </div>
+<div class="line"><a id="l01511" name="l01511"></a><span class="lineno"> 1511</span>                <span class="keywordflow">return</span> ret</div>
+<div class="line"><a id="l01512" name="l01512"></a><span class="lineno"> 1512</span> </div>
+<div class="line"><a id="l01513" name="l01513"></a><span class="lineno"> 1513</span>        <span class="keyword">def </span>__init__(self, json_data):</div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -433,7 +433,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 16 2022 07:37:29 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2
+Generated on Mon May 16 2022 13:52:25 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2
 </small></address>
 </body>
 </html>
