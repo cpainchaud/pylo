@@ -1079,6 +1079,9 @@ class APIConnector:
             self._policy_decision_filter = []
             self._time_from = None
             self._time_to = None
+
+            self._include_direct_services = []
+
             self._exclude_broadcast = False
             self._exclude_multicast = False
             self._exclude_direct_services = []
@@ -1225,6 +1228,9 @@ class APIConnector:
         def provider_include_ip4map(self, map: 'pylo.IP4Map'):
             for item in map.to_list_of_cidr_string():
                 self.provider_include_cidr(item)
+
+        def service_include_add(self, service: 'pylo.DirectServiceInRule'):
+            self._include_direct_services.append(service)
 
         def service_exclude_add(self, service: 'pylo.DirectServiceInRule'):
             self._exclude_direct_services.append(service)
@@ -1377,6 +1383,10 @@ class APIConnector:
             if len(self.__filter_provider_ip_exclude) > 0:
                 for ipaddress in self.__filter_provider_ip_exclude:
                     filters['destinations']['exclude'].append({'ip_address': ipaddress})
+
+            if len(self._include_direct_services) > 0:
+                for service in self._include_direct_services:
+                    filters['services']['include'] .append(service.get_api_json())
 
             if len(self._exclude_direct_services) > 0:
                 for service in self._exclude_direct_services:

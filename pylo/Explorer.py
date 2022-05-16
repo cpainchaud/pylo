@@ -20,6 +20,7 @@ class ExplorerResultSetV1:
         def __init__(self, data):
             self._raw_json = data
             self.num_connections = data['num_connections']
+
             self.policy_decision_string = data['policy_decision']
             self._draft_mode_policy_decision_is_blocked = None
 
@@ -288,45 +289,44 @@ class ExplorerResultSetV1:
                         results.append(hashEntry[0])
                         continue
 
-                    ruleToKeep = hashEntry.pop()
-                    mergedUsers = []
-                    mergedProcesses = []
-                    count = 0
-                    last_detected = ruleToKeep.last_detected
-                    first_detected = ruleToKeep.first_detected
+                    record_to_keep = hashEntry.pop()
+                    merged_users = []
+                    merged_processes = []
+                    count_connections = 0
+
+                    last_detected = record_to_keep.last_detected
+                    first_detected = record_to_keep.first_detected
 
                     for record in hashEntry:
                         if record.username is not None and len(record.username) > 0:
-                            mergedUsers.append(record.username)
+                            merged_users.append(record.username)
                         if record.process_name is not None and len(record.process_name) > 0:
-                            mergedProcesses.append(record.process_name)
+                            merged_processes.append(record.process_name)
                         if last_detected < record.last_detected:
                             last_detected = record.last_detected
                         if first_detected > record.first_detected:
                             first_detected = record.first_detected
 
-                        count = count + record.num_connections
+                        count_connections = count_connections + record.num_connections
 
-                    mergedUsers = list(set(mergedUsers))
-                    mergedProcesses = list(set(mergedProcesses))
+                    merged_users = list(set(merged_users))
+                    merged_processes = list(set(merged_processes))
 
-                    ruleToKeep.process_name = mergedProcesses
-                    ruleToKeep.username = mergedUsers
-                    ruleToKeep.num_connections = count
-                    ruleToKeep.last_detected = last_detected
-                    ruleToKeep.first_detected = first_detected
+                    record_to_keep.process_name = merged_processes
+                    record_to_keep.username = merged_users
+                    record_to_keep.num_connections = count_connections
+                    record_to_keep.last_detected = last_detected
+                    record_to_keep.first_detected = first_detected
 
-                    results.append(ruleToKeep)
+                    results.append(record_to_keep)
 
                 return results
 
-        hashTable: HashTable = HashTable()
-        hashTable.load(records)
-        results = hashTable.results()
-
+        hash_table: HashTable = HashTable()
+        hash_table.load(records)
+        results = hash_table.results()
 
         return results
-
 
     def get_all_records(self,
                         draft_mode=False,
