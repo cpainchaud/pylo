@@ -1262,6 +1262,9 @@ class APIConnector:
         def set_time_to(self, time: datetime):
             self._time_to = time
 
+        def filter_on_policy_decision_unknown(self):
+            self._policy_decision_filter.append('unknown')
+
         def filter_on_policy_decision_blocked(self):
             self._policy_decision_filter.append('blocked')
 

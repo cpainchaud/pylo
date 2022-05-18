@@ -432,6 +432,7 @@ else:
 
 if not settings_include_reported_allowed_traffic:
     explorer_inbound_filters.filter_on_policy_decision_all_blocked()
+    explorer_inbound_filters.filter_on_policy_decision_unknown()
 explorer_inbound_filters.set_exclude_broadcast(exclude=True)
 explorer_inbound_filters.consumer_exclude_ip4map(c2_shared.excluded_ranges)
 explorer_inbound_filters.provider_exclude_ip4map(c2_shared.excluded_broadcast)
@@ -493,7 +494,6 @@ for record in all_records:
                 break
 
         #   print(record._raw_json)
-
         data = {
                 'src_ip': record.source_ip,
                 'src_hostname': src_workload.get_name(),
@@ -575,6 +575,7 @@ else:
 
 if not settings_include_reported_allowed_traffic:
     explorer_outbound_filters.filter_on_policy_decision_all_blocked()
+    explorer_outbound_filters.filter_on_policy_decision_unknown()
 explorer_outbound_filters.set_exclude_broadcast(exclude=True)
 explorer_outbound_filters.provider_exclude_ip4map(c2_shared.excluded_ranges)
 explorer_outbound_filters.provider_exclude_ip4map(c2_shared.excluded_broadcast)
