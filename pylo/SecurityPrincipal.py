@@ -28,7 +28,6 @@ class SecurityPrincipalStore:
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
         self.itemsByHRef = {}  # type: dict[str,pylo.SecurityPrincipal]
-        self.itemsByName = {}  # type: dict[str,pylo.SecurityPrincipal]
 
     def load_principals_from_json(self, json_list):
         for json_item in json_list:
@@ -51,13 +50,7 @@ class SecurityPrincipalStore:
             if new_item_href in self.itemsByHRef:
                 raise pylo.PyloEx("A SecurityPrincipal with href '%s' already exists in the table", new_item_href)
 
-            if new_item_name in self.itemsByName:
-                raise pylo.PyloEx(
-                    "A SecurityPrincipal with name '%s' already exists in the table. This UID:%s vs other UID:%s" % (
-                        new_item_name, new_item_href, self.itemsByName[new_item_name].href))
-
             self.itemsByHRef[new_item_href] = new_item
-            self.itemsByName[new_item_name] = new_item
 
             log.debug("Found SecurityPrincipal '%s' with href '%s'", new_item_name, new_item_href)
 
