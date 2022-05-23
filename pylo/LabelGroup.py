@@ -45,6 +45,12 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
             data[label.href] = label
         return data
 
+    def has_member_with_href(self, href: str) -> bool:
+        return href in self._members
+
+    def has_member_object(self, label: 'pylo.Label') -> bool:
+        return label in self._members.values()
+
     def is_group(self) -> bool:
         return True
 
