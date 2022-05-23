@@ -106,6 +106,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adc20df18c6059e7e86d9c85f972a858e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80315799de1047c353e4cf0389fdb2e3"><td class="memItemLeft" align="right" valign="top">Dict[str, '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>']&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a80315799de1047c353e4cf0389fdb2e3">get_members</a> (self)</td></tr>
 <tr class="separator:a80315799de1047c353e4cf0389fdb2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d2f7cba8c8eca3a07f4f76ee28a4cda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a2d2f7cba8c8eca3a07f4f76ee28a4cda">has_member_with_href</a> (self, str href)</td></tr>
+<tr class="separator:a2d2f7cba8c8eca3a07f4f76ee28a4cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a206d5c7044b69e521ff26e3e21728448"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a206d5c7044b69e521ff26e3e21728448">has_member_object</a> (self, '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>' label)</td></tr>
+<tr class="separator:a206d5c7044b69e521ff26e3e21728448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6ce4357a0c8e1140c86ba292239ebeb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#ad6ce4357a0c8e1140c86ba292239ebeb">is_group</a> (self)</td></tr>
 <tr class="separator:ad6ce4357a0c8e1140c86ba292239ebeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ba05d5befeba5a110adcf5dd695e5ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a6ba05d5befeba5a110adcf5dd695e5ca">is_label</a> (self)</td></tr>
@@ -315,6 +319,84 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a206d5c7044b69e521ff26e3e21728448" name="a206d5c7044b69e521ff26e3e21728448"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a206d5c7044b69e521ff26e3e21728448">&#9670;&nbsp;</a></span>has_member_object()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> bool pylo.LabelGroup.LabelGroup.has_member_object </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">'<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>'&#160;</td>
+          <td class="paramname"><em>label</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">def </span>has_member_object(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>) -&gt; bool:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> label <span class="keywordflow">in</span> self._members.values()</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classpylo_1_1_label_group_1_1_label_group_a206d5c7044b69e521ff26e3e21728448_cgraph.png" border="0" usemap="#aclasspylo_1_1_label_group_1_1_label_group_a206d5c7044b69e521ff26e3e21728448_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_label_group_1_1_label_group_a206d5c7044b69e521ff26e3e21728448_cgraph" id="aclasspylo_1_1_label_group_1_1_label_group_a206d5c7044b69e521ff26e3e21728448_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,215,71"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a2d2f7cba8c8eca3a07f4f76ee28a4cda" name="a2d2f7cba8c8eca3a07f4f76ee28a4cda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d2f7cba8c8eca3a07f4f76ee28a4cda">&#9670;&nbsp;</a></span>has_member_with_href()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> bool pylo.LabelGroup.LabelGroup.has_member_with_href </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>href</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">def </span>has_member_with_href(self, href: str) -&gt; bool:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> href <span class="keywordflow">in</span> self._members</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classpylo_1_1_label_group_1_1_label_group_a2d2f7cba8c8eca3a07f4f76ee28a4cda_cgraph.png" border="0" usemap="#aclasspylo_1_1_label_group_1_1_label_group_a2d2f7cba8c8eca3a07f4f76ee28a4cda_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_label_group_1_1_label_group_a2d2f7cba8c8eca3a07f4f76ee28a4cda_cgraph" id="aclasspylo_1_1_label_group_1_1_label_group_a2d2f7cba8c8eca3a07f4f76ee28a4cda_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,215,71"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="ad6ce4357a0c8e1140c86ba292239ebeb" name="ad6ce4357a0c8e1140c86ba292239ebeb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad6ce4357a0c8e1140c86ba292239ebeb">&#9670;&nbsp;</a></span>is_group()</h2>
 
@@ -332,9 +414,9 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpylo_1_1_label_common_1_1_label_common.html#ab6c30e1263a5a3a0a8b53f675add8b0d">pylo.LabelCommon.LabelCommon</a>.</p>
-<div class="fragment"><div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">def </span>is_group(self) -&gt; bool:</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> <span class="keyword">True</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="fragment"><div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">def </span>is_group(self) -&gt; bool:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">return</span> <span class="keyword">True</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -363,9 +445,9 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpylo_1_1_label_common_1_1_label_common.html#a01ed822857646a479242d025f820e170">pylo.LabelCommon.LabelCommon</a>.</p>
-<div class="fragment"><div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">def </span>is_label(self) -&gt; bool:</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> <span class="keyword">False</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="fragment"><div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">def </span>is_label(self) -&gt; bool:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -435,7 +517,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 23 2022 15:16:26 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2
+Generated on Mon May 23 2022 15:18:08 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2
 </small></address>
 </body>
 </html>
