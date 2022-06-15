@@ -173,7 +173,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         for wkl in deleteTracker._wkls.values():
             add_workload_to_report(wkl, "DELETE (no confirm option used)")
 
-    if csv_report.lines_count() < 1:
+    if csv_report.lines_count() >= 1:
         print()
         print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
         csv_report.write_to_csv(output_file_csv)
@@ -182,7 +182,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         csv_report.write_to_excel(output_file_excel)
         print("DONE")
 
-    if csv_report.lines_count() < 1:
+    else:
         print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
 
 
