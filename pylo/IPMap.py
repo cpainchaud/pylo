@@ -171,23 +171,28 @@ class IP4Map:
 
         self._entries.sort(key=sort_first)
 
-        cursor = None
+        cursor = None  # current entry being processed
         for entry in self._entries:
-            if cursor is None:
+            if cursor is None:  # usually the first entry
                 cursor = entry
                 continue
 
-
+            # if current entry has no overlap with cursor entry then cursor entry is added to result array and cursor
+            # is set to current entry and loop starts again
             if entry[start] > cursor[end]:
                 new_entries.append(cursor)
                 cursor = entry
                 continue
 
+            # if current entry's end is greater than cursor entry's end then cursor entry's end is set to current
+            # entry's end and loop starts again
             if entry[end] > cursor[end]:
                 cursor[end] = entry[end]
                 continue
 
-            if entry[end] < cursor[end]:
+            # if current entry's end is less or equal to cursor entry's end then there is nothing to do and loop
+            # starts again
+            if entry[end] <= cursor[end]:
                 continue
 
             raise PyloEx("Error while sorting IP4Map, unexpected value found: entry({}-{}) cursor({}-{})".format(
@@ -197,7 +202,7 @@ class IP4Map:
                 ipaddress.IPv4Address(cursor[end])
             ))
 
-
+        # in case there is still a cursor entry left, add it to result array
         if cursor is not None:
             new_entries.append(cursor)
 
