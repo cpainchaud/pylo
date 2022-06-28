@@ -11,13 +11,15 @@ from .IPMap import IP4Map
 
 
 class WorkloadInterface:
-    def __init__(self, owner: 'pylo.Workload', name: str, ip: str, network: str, gateway: str, ignored: bool):
+    def __init__(self, owner: 'pylo.Workload', name: str, ip: Optional[str], network: str, gateway: str, ignored: bool):
         self.owner: Workload = owner
         self.name: str = name
-        self.ip: str = ip
         self.network: str = network
         self.gateway: str = gateway
         self.is_ignored: bool = ignored
+        self.ip: Optional[str] = ip
+        if ip is not None and len(ip) == 0:
+            self.ip = None
 
 
 class WorkloadApiUpdateStack:
@@ -182,9 +184,9 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             if not show_ignored and interface.is_ignored:
                 continue
             if show_interface_name:
-                tmp.append('{}:{}'.format(interface.name, interface.ip))
+                tmp.append('{}:{}'.format(interface.name, interface.ip if interface.ip is not None else 'UnknownIP'))
             else:
-                tmp.append(interface.ip)
+                tmp.append(interface.ip if interface.ip is not None else 'UnknownIP')
 
         return pylo.string_list_to_text(tmp, separator)
 
@@ -195,7 +197,8 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         result = IP4Map()
 
         for interface in self.interfaces:
-            result.add_from_text(interface.ip)
+            if interface.ip is not None:
+                result.add_from_text(interface.ip)
 
         return result
 
