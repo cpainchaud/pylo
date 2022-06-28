@@ -68,6 +68,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classpylo_1_1_workload_1_1_workload_interface-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">pylo.Workload.WorkloadInterface Class Reference</div></div>
 </div><!--header-->
@@ -75,12 +76,17 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a691b252c8414996807d06419fa3b8d1a"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload_interface.html#a691b252c8414996807d06419fa3b8d1a">__init__</a> (self, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>' <a class="el" href="classpylo_1_1_workload_1_1_workload.html#ae6f927eac8061009d1b7918b2595f0a9">owner</a>, str name, str ip, str network, str gateway, bool ignored)</td></tr>
-<tr class="separator:a691b252c8414996807d06419fa3b8d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94af76a2cfe11f9e34fe30076f50b44e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload_interface.html#a94af76a2cfe11f9e34fe30076f50b44e">__init__</a> (self, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>' <a class="el" href="classpylo_1_1_workload_1_1_workload.html#ae6f927eac8061009d1b7918b2595f0a9">owner</a>, str name, Optional[str] <a class="el" href="classpylo_1_1_workload_1_1_workload_interface.html#ac47768d79bab3154788f0fdcf66b3fe5">ip</a>, str network, str gateway, bool ignored)</td></tr>
+<tr class="separator:a94af76a2cfe11f9e34fe30076f50b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ac47768d79bab3154788f0fdcf66b3fe5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload_interface.html#ac47768d79bab3154788f0fdcf66b3fe5">ip</a></td></tr>
+<tr class="separator:ac47768d79bab3154788f0fdcf66b3fe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a691b252c8414996807d06419fa3b8d1a" name="a691b252c8414996807d06419fa3b8d1a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a691b252c8414996807d06419fa3b8d1a">&#9670;&nbsp;</a></span>__init__()</h2>
+<a id="a94af76a2cfe11f9e34fe30076f50b44e" name="a94af76a2cfe11f9e34fe30076f50b44e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94af76a2cfe11f9e34fe30076f50b44e">&#9670;&nbsp;</a></span>__init__()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -106,7 +112,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">str&#160;</td>
+          <td class="paramtype">Optional[str]&#160;</td>
           <td class="paramname"><em>ip</em>, </td>
         </tr>
         <tr>
@@ -134,16 +140,33 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   14</span>    <span class="keyword">def </span>__init__(self, owner: <span class="stringliteral">&#39;pylo.Workload&#39;</span>, name: str, ip: str, network: str, gateway: str, ignored: bool):</div>
+<div class="fragment"><div class="line"><span class="lineno">   14</span>    <span class="keyword">def </span>__init__(self, owner: <span class="stringliteral">&#39;pylo.Workload&#39;</span>, name: str, ip: Optional[str], network: str, gateway: str, ignored: bool):</div>
 <div class="line"><span class="lineno">   15</span>        self.owner: Workload = owner</div>
 <div class="line"><span class="lineno">   16</span>        self.name: str = name</div>
-<div class="line"><span class="lineno">   17</span>        self.ip: str = ip</div>
-<div class="line"><span class="lineno">   18</span>        self.network: str = network</div>
-<div class="line"><span class="lineno">   19</span>        self.gateway: str = gateway</div>
-<div class="line"><span class="lineno">   20</span>        self.is_ignored: bool = ignored</div>
-<div class="line"><span class="lineno">   21</span> </div>
-<div class="line"><span class="lineno">   22</span> </div>
+<div class="line"><span class="lineno">   17</span>        self.network: str = network</div>
+<div class="line"><span class="lineno">   18</span>        self.gateway: str = gateway</div>
+<div class="line"><span class="lineno">   19</span>        self.is_ignored: bool = ignored</div>
+<div class="line"><span class="lineno">   20</span>        self.ip: Optional[str] = ip</div>
+<div class="line"><span class="lineno">   21</span>        <span class="keywordflow">if</span> ip <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> len(ip) == 0:</div>
+<div class="line"><span class="lineno">   22</span>            self.ip = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">   23</span> </div>
+<div class="line"><span class="lineno">   24</span> </div>
 </div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ac47768d79bab3154788f0fdcf66b3fe5" name="ac47768d79bab3154788f0fdcf66b3fe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac47768d79bab3154788f0fdcf66b3fe5">&#9670;&nbsp;</a></span>ip</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pylo.Workload.WorkloadInterface.ip</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -152,7 +175,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 27 2022 11:24:54 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Tue Jun 28 2022 08:03:51 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>
