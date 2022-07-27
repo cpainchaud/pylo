@@ -38,7 +38,12 @@ class VENAgent(pylo.ReferenceTracker):
         if prop_value is None:
             return None
 
-        return datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%S.%fZ")
+        try:
+            time_found = datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            time_found = datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%SZ")
+
+        return time_found
 
     def load_from_json(self, data):
         self.raw_json = data
