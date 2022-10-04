@@ -285,16 +285,22 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno"> 1637</span>            <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno"> 1638</span>                <span class="keywordflow">if</span> len(self._advanced_mode_provider_labels) &gt; 0:</div>
 <div class="line"><span class="lineno"> 1639</span>                    data[<span class="stringliteral">&#39;providers&#39;</span>] = []</div>
-<div class="line"><span class="lineno"> 1640</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._advanced_mode_provider_labels.keys():</div>
-<div class="line"><span class="lineno"> 1641</span>                        data[<span class="stringliteral">&#39;providers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1642</span>                <span class="keywordflow">if</span> len(self._advanced_mode_consumer_labels) &gt; 0:</div>
-<div class="line"><span class="lineno"> 1643</span>                    data[<span class="stringliteral">&#39;consumers&#39;</span>] = []</div>
-<div class="line"><span class="lineno"> 1644</span>                    <span class="keywordflow">for</span> label_href <span class="keywordflow">in</span> self._advanced_mode_consumer_labels.keys():</div>
-<div class="line"><span class="lineno"> 1645</span>                        data[<span class="stringliteral">&#39;consumers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
-<div class="line"><span class="lineno"> 1646</span> </div>
-<div class="line"><span class="lineno"> 1647</span>            <span class="comment"># print(data)</span></div>
-<div class="line"><span class="lineno"> 1648</span>            <span class="keywordflow">return</span> self.connector.do_post_call(uri, data)</div>
-<div class="line"><span class="lineno"> 1649</span> </div>
+<div class="line"><span class="lineno"> 1640</span>                    <span class="keywordflow">for</span> label_href, label <span class="keywordflow">in</span> self._advanced_mode_provider_labels.items():</div>
+<div class="line"><span class="lineno"> 1641</span>                        <span class="keywordflow">if</span> label.is_label():</div>
+<div class="line"><span class="lineno"> 1642</span>                            data[<span class="stringliteral">&#39;providers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1643</span>                        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1644</span>                            data[<span class="stringliteral">&#39;providers&#39;</span>].append({<span class="stringliteral">&#39;label_group&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1645</span>                <span class="keywordflow">if</span> len(self._advanced_mode_consumer_labels) &gt; 0:</div>
+<div class="line"><span class="lineno"> 1646</span>                    data[<span class="stringliteral">&#39;consumers&#39;</span>] = []</div>
+<div class="line"><span class="lineno"> 1647</span>                    <span class="keywordflow">for</span> label_href, label <span class="keywordflow">in</span> self._advanced_mode_consumer_labels.items():</div>
+<div class="line"><span class="lineno"> 1648</span>                        <span class="keywordflow">if</span> label.is_label():</div>
+<div class="line"><span class="lineno"> 1649</span>                            data[<span class="stringliteral">&#39;consumers&#39;</span>].append({<span class="stringliteral">&#39;label&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1650</span>                        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1651</span>                            data[<span class="stringliteral">&#39;consumers&#39;</span>].append({<span class="stringliteral">&#39;label_group&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: label_href}})</div>
+<div class="line"><span class="lineno"> 1652</span> </div>
+<div class="line"><span class="lineno"> 1653</span>            <span class="comment"># print(data)</span></div>
+<div class="line"><span class="lineno"> 1654</span>            <span class="keywordflow">return</span> self.connector.do_post_call(uri, data)</div>
+<div class="line"><span class="lineno"> 1655</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -333,9 +339,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1650</span>        <span class="keyword">def </span>execute_and_resolve(self, organization: <span class="stringliteral">&#39;pylo.Organization&#39;</span>):</div>
-<div class="line"><span class="lineno"> 1651</span>            <span class="keywordflow">return</span> APIConnector.RuleSearchQuery.RuleSearchQueryResolvedResultSet(self.execute(), organization)</div>
-<div class="line"><span class="lineno"> 1652</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1656</span>        <span class="keyword">def </span>execute_and_resolve(self, organization: <span class="stringliteral">&#39;pylo.Organization&#39;</span>):</div>
+<div class="line"><span class="lineno"> 1657</span>            <span class="keywordflow">return</span> APIConnector.RuleSearchQuery.RuleSearchQueryResolvedResultSet(self.execute(), organization)</div>
+<div class="line"><span class="lineno"> 1658</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -525,7 +531,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 27 2022 08:58:42 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Tue Oct 4 2022 09:30:02 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>
