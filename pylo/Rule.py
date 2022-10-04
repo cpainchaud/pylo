@@ -414,6 +414,8 @@ class RuleHostContainer(pylo.Referencer):
                 if find_object is None:
                     # raise Exception("Cannot find VirtualService with HREF {} in Rule {}. JSON:\n {}".format(href, self.owner.href, nice_json(host_data)))
                     find_object = self.owner.owner.owner.owner.VirtualServiceStore.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
+            elif 'virtual_server' in host_data:
+                pylo.log.warn('VirtualServer found in Rule {}. This is not supported yet by this library, beware of unexpected behaviors'.format(self.owner.href))
             elif 'actors' in host_data:
                 actor_value = host_data['actors']
                 if actor_value is not None and actor_value == 'ams':

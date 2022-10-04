@@ -1570,8 +1570,8 @@ class APIConnector:
         return dict_of_health_reports
 
     class RuleSearchQuery:
-        _advanced_mode_consumer_labels: Dict[str, 'pylo.Label']
-        _advanced_mode_provider_labels: Dict[str, 'pylo.Label']
+        _advanced_mode_consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
+        _advanced_mode_provider_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
         _basic_mode_labels: Dict[str, 'pylo.Label']
         connector: 'pylo.APIConnector'
 
@@ -1637,12 +1637,18 @@ class APIConnector:
             else:
                 if len(self._advanced_mode_provider_labels) > 0:
                     data['providers'] = []
-                    for label_href in self._advanced_mode_provider_labels.keys():
-                        data['providers'].append({'label': {'href': label_href}})
+                    for label_href, label in self._advanced_mode_provider_labels.items():
+                        if label.is_label():
+                            data['providers'].append({'label': {'href': label_href}})
+                        else:
+                            data['providers'].append({'label_group': {'href': label_href}})
                 if len(self._advanced_mode_consumer_labels) > 0:
                     data['consumers'] = []
-                    for label_href in self._advanced_mode_consumer_labels.keys():
-                        data['consumers'].append({'label': {'href': label_href}})
+                    for label_href, label in self._advanced_mode_consumer_labels.items():
+                        if label.is_label():
+                            data['consumers'].append({'label': {'href': label_href}})
+                        else:
+                            data['consumers'].append({'label_group': {'href': label_href}})
 
             # print(data)
             return self.connector.do_post_call(uri, data)
