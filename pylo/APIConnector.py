@@ -990,7 +990,8 @@ class APIConnector:
 
             return results
 
-    def agent_get_compatibility_report(self, agent_href: str = None, agent_id: str = None, return_raw_json=True) -> 'pylo.APIConnector.ApiAgentCompatibilityReport':
+    def agent_get_compatibility_report(self, agent_href: str = None, agent_id: str = None, return_raw_json=True) \
+            -> Union['pylo.APIConnector.ApiAgentCompatibilityReport', Dict[str, Any]]:
         if agent_href is None and agent_id is None:
             raise pylo.PyloEx('you need to provide a HREF or an ID')
         if agent_href is not None and agent_id is not None:
@@ -1007,17 +1008,17 @@ class APIConnector:
         if return_raw_json:
             return self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)
 
-        retryCount = 5
+        retry_count = 5
         api_result = None
 
-        while retryCount >= 0:
-            retryCount -= 1
+        while retry_count >= 0:
+            retry_count -= 1
             try:
                 api_result = self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)
                 break
 
             except pylo.PyloApiTooManyRequestsEx as ex:
-                if retryCount <= 0:
+                if retry_count <= 0:
                     raise ex
                 time.sleep(6)
 
