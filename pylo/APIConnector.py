@@ -219,7 +219,7 @@ class APIConnector:
             # log.info("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
 
             if async_call:
-                if method == 'GET' and req.status_code != 202:
+                if (method == 'GET' or method == 'POST') and req.status_code != 202:
                     orig_request = req.request  # type: requests.PreparedRequest
                     raise Exception("Status code for Async call should be 202 but " + str(req.status_code)
                                     + " " + req.reason + " was returned with the following body: " + req.text +
@@ -269,7 +269,7 @@ class APIConnector:
 
             if method == 'GET' and req.status_code != 200 \
                     or\
-                    method == 'POST' and req.status_code != 201 and req.status_code != 204 and req.status_code != 200 \
+                    method == 'POST' and req.status_code != 201 and req.status_code != 204 and req.status_code != 200  and req.status_code != 202\
                     or\
                     method == 'DELETE' and req.status_code != 204 \
                     or \
@@ -1061,10 +1061,10 @@ class APIConnector:
             self.__filter_provider_ip_exclude = []
             self.__filter_consumer_ip_include = []
             self.__filter_provider_ip_include = []
-            self._consumer_labels = {}
-            self._consumer_exclude_labels = {}
-            self._provider_labels = {}
-            self._provider_exclude_labels = {}
+            self._consumer_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+            self._consumer_exclude_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+            self._provider_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+            self._provider_exclude_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
 
             self._consumer_workloads = {}
             self._provider_workloads = {}
@@ -1102,8 +1102,11 @@ class APIConnector:
                 prop_dict[label_or_href.href] = label_or_href
                 return
             elif isinstance(label_or_href, pylo.LabelGroup):
-                for nested_label in label_or_href.expand_nested_to_array():
-                    prop_dict[nested_label.href] = nested_label
+                # since 21.5 labelgroups can be included directly
+                # for nested_label in label_or_href.expand_nested_to_array():
+                #    prop_dict[nested_label.href] = nested_label
+                prop_dict[label_or_href.href] = label_or_href
+                return
             else:
                 raise pylo.PyloEx("Unsupported object type {}".format(type(label_or_href)))
 
@@ -1294,7 +1297,8 @@ class APIConnector:
                 "services": {"include": [], "exclude": []},
                 "sources_destinations_query_op": "and",
                 "policy_decisions": self._policy_decision_filter,
-                "max_results": self.max_results
+                "max_results": self.max_results,
+                "query_name": "api call"
                 }
 
             if self._exclude_broadcast:
@@ -1315,8 +1319,11 @@ class APIConnector:
 
             if len(self._consumer_labels) > 0:
                 tmp = []
-                for label_href in self._consumer_labels.keys():
-                    tmp.append({'label': {'href': label_href}})
+                for label in self._consumer_labels.values():
+                    if label.is_label():
+                        tmp.append({'label': {'href': label.href}})
+                    else:
+                        tmp.append({'label_group': {'href': label.href}})
                 filters['sources']['include'].append(tmp)
 
             if len(self._consumer_workloads) > 0:
@@ -1339,8 +1346,12 @@ class APIConnector:
 
             if len(self._provider_labels) > 0:
                 tmp = []
-                for label_href in self._provider_labels.keys():
-                    tmp.append({'label': {'href': label_href}})
+                for label in self._provider_labels.values():
+                    if label.is_label():
+                        tmp.append({'label': {'href': label.href}})
+                    else:
+                        pass
+                        tmp.append({'label_group': {'href': label.href}})
                 filters['destinations']['include'].append(tmp)
 
             if len(self._provider_workloads) > 0:
@@ -1399,21 +1410,80 @@ class APIConnector:
                 for process in self._exclude_processes:
                     filters['services']['exclude'].append({'process_name': process})
 
+            # print(filters)
             return filters
 
-    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1']):
+    def explorer_async_queries_all_status_get(self):
+        """
+        Get the status of all async queries
+        """
+        return self.do_get_call('/traffic_flows/async_queries', json_output_expected=True, include_org_id=True)
+
+    def explorer_async_query_get_specific_request_status(self, request_href: str):
+        all_statuses = self.explorer_async_queries_all_status_get()
+        for status in all_statuses:
+            if status['href'] == request_href:
+                return status
+
+        raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
+
+
+    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800):
         """
 
         :param filters: should be an instance of ExplorerFilterSetV1 or a json payload built with your own logic
         :return:
         """
-        path = "/traffic_flows/traffic_analysis_queries"
+        path = "/traffic_flows/async_queries"
         if isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):
             data = filters.generate_json_query()
         else:
             data = filters
-        result = pylo.ExplorerResultSetV1(self.do_post_call(path, json_arguments=data, include_org_id=True, json_output_expected=True),
-                                                  owner=self, emulated_process_exclusion=filters.exclude_processes_emulate)
+
+        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=True, json_output_expected=True)
+
+        if 'status' not in query_queued_json_response:
+            raise pylo.PyloApiEx("Invalid response from API, missing 'status' property", query_queued_json_response)
+
+        if query_queued_json_response['status'] != "queued":
+            raise pylo.PyloApiEx("Invalid response from API, 'status' property is not 'QUEUED'", query_queued_json_response)
+
+        if 'href' not in query_queued_json_response:
+            raise pylo.PyloApiEx("Invalid response from API, missing 'href' property", query_queued_json_response)
+
+        query_href = query_queued_json_response['href']
+        #check that query_href is a string
+        if not isinstance(query_href, str):
+            raise pylo.PyloApiEx("Invalid response from API, 'href' property is not a string", query_queued_json_response)
+
+        #get current timestamp to ensure we don't wait too long
+        start_time = time.time()
+
+        query_status = None # Json response from API for specific query
+
+        while True:
+            #check that we don't wait too long
+            if time.time() - start_time > max_running_time_seconds:
+                raise pylo.PyloApiEx("Timeout while waiting for query to complete", query_queued_json_response)
+
+            queries_status_json_response = self.explorer_async_query_get_specific_request_status(query_href)
+            if(queries_status_json_response['status'] == "completed"):
+                query_status = queries_status_json_response
+                break
+
+            if queries_status_json_response['status'] not in ["queued", "working"]:
+                raise pylo.PyloApiEx("Query failed with status {}".format(queries_status_json_response['status']),
+                                     queries_status_json_response)
+
+        if query_status is None:
+            raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
+
+        query_json_response = self.do_get_call(query_href + "/download", json_output_expected=True, include_org_id=False)
+
+
+        result = pylo.ExplorerResultSetV1(query_json_response,
+                                          owner=self,
+                                          emulated_process_exclusion=filters.exclude_processes_emulate)
 
         return result
 
@@ -1632,8 +1702,11 @@ class APIConnector:
             if self.mode_is_basic:
                 if len(self._basic_mode_labels) > 0:
                     data['providers_or_consumers'] = []
-                    for label_href in self._basic_mode_labels.keys():
-                        data['providers_or_consumers'].append({'label': {'href': label_href}})
+                    for label_href, label in self._basic_mode_labels.items():
+                        if label.is_label():
+                            data['providers_or_consumers'].append({'label': {'href': label_href}})
+                        else:
+                            data['providers_or_consumers'].append({'label_group': {'href': label_href}})
             else:
                 if len(self._advanced_mode_provider_labels) > 0:
                     data['providers'] = []
@@ -1650,7 +1723,6 @@ class APIConnector:
                         else:
                             data['consumers'].append({'label_group': {'href': label_href}})
 
-            # print(data)
             return self.connector.do_post_call(uri, data)
 
         def execute_and_resolve(self, organization: 'pylo.Organization'):
