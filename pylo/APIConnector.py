@@ -996,13 +996,16 @@ class APIConnector:
         if agent_href is not None and agent_id is not None:
             raise pylo.PyloEx('you need to provide a HREF or an ID but not BOTH')
 
+        include_org_id_in_api_query = False
+
         if agent_href is None:
             path = '/agents/{}/compatibility_report'.format(agent_id)
+            include_org_id_in_api_query = True
         else:
             path = '{}/compatibility_report'.format(agent_href)
 
         if return_raw_json:
-            return self.do_get_call(path=path)
+            return self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)
 
         retryCount = 5
         api_result = None
@@ -1010,7 +1013,7 @@ class APIConnector:
         while retryCount >= 0:
             retryCount -= 1
             try:
-                api_result = self.do_get_call(path=path, include_org_id=False)
+                api_result = self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)
                 break
 
             except pylo.PyloApiTooManyRequestsEx as ex:
