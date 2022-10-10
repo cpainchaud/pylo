@@ -885,7 +885,7 @@ class APIConnector:
             elif type(item) is pylo.DirectServiceInRule:
                 services_json.append(item.get_api_json())
             else:
-                providers_json.append(item.get_api_reference_json())
+                services_json.append(item.get_api_reference_json())
 
         data = {
             'unscoped_consumers': not intra_scope,
