@@ -7,6 +7,6 @@ var searchData=
   ['expand_5fnested_5fto_5farray_4',['expand_nested_to_array',['../classpylo_1_1_label_group_1_1_label_group.html#a8d61e77bc9e341db7b2a2eb98f9dba08',1,'pylo::LabelGroup::LabelGroup']]],
   ['explorer_5fasync_5fqueries_5fall_5fstatus_5fget_5',['explorer_async_queries_all_status_get',['../classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a6e91e8b003fc0395cf3a705693bf12b0',1,'pylo::APIConnector::APIConnector']]],
   ['explorer_5fasync_5fquery_5fget_5fspecific_5frequest_5fstatus_6',['explorer_async_query_get_specific_request_status',['../classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a54ef407ae99b6af7e8807216bf89d1a3',1,'pylo::APIConnector::APIConnector']]],
-  ['explorer_5fsearch_7',['explorer_search',['../classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a161f3fe6fb2bc2ee6a32d9ecb8d93aa8',1,'pylo::APIConnector::APIConnector']]],
+  ['explorer_5fsearch_7',['explorer_search',['../classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2056d1998b43d786497c56c087c24bdb',1,'pylo::APIConnector::APIConnector']]],
   ['extract_5fid_5ffrom_5fhref_8',['extract_id_from_href',['../classpylo_1_1_ruleset_1_1_ruleset.html#a28d56a9a46cbc9594f691dc58380399c',1,'pylo::Ruleset::Ruleset']]]
 ];

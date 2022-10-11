@@ -185,8 +185,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6e91e8b003fc0395cf3a705693bf12b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ef407ae99b6af7e8807216bf89d1a3"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a54ef407ae99b6af7e8807216bf89d1a3">explorer_async_query_get_specific_request_status</a> (self, str request_href)</td></tr>
 <tr class="separator:a54ef407ae99b6af7e8807216bf89d1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a161f3fe6fb2bc2ee6a32d9ecb8d93aa8"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a161f3fe6fb2bc2ee6a32d9ecb8d93aa8">explorer_search</a> (self, Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'] filters, max_running_time_seconds=1800)</td></tr>
-<tr class="separator:a161f3fe6fb2bc2ee6a32d9ecb8d93aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2056d1998b43d786497c56c087c24bdb"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2056d1998b43d786497c56c087c24bdb">explorer_search</a> (self, Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'] filters, max_running_time_seconds=1800, check_for_update_interntval_seconds=10)</td></tr>
+<tr class="separator:a2056d1998b43d786497c56c087c24bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac406359b08a18251301f6aa2d55a7a70"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ac406359b08a18251301f6aa2d55a7a70">cluster_health_get</a> (self, return_object=False)</td></tr>
 <tr class="separator:ac406359b08a18251301f6aa2d55a7a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9000fdca005efaf2691f3c9d4b06548"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#af9000fdca005efaf2691f3c9d4b06548">new_RuleSearchQuery</a> (self)</td></tr>
@@ -394,25 +394,25 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1627</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
-<div class="line"><span class="lineno"> 1628</span>        path = <span class="stringliteral">&#39;/health&#39;</span></div>
-<div class="line"><span class="lineno"> 1629</span> </div>
-<div class="line"><span class="lineno"> 1630</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> return_object:</div>
-<div class="line"><span class="lineno"> 1631</span>            <span class="keywordflow">return</span> self.do_get_call(path)</div>
-<div class="line"><span class="lineno"> 1632</span> </div>
-<div class="line"><span class="lineno"> 1633</span>        <span class="comment"># cluster_health list</span></div>
-<div class="line"><span class="lineno"> 1634</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1635</span>        <span class="keywordflow">if</span> <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
-<div class="line"><span class="lineno"> 1636</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(<a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output)))</div>
-<div class="line"><span class="lineno"> 1637</span> </div>
-<div class="line"><span class="lineno"> 1638</span>        dict_of_health_reports = {}</div>
+<div class="fragment"><div class="line"><span class="lineno"> 1629</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
+<div class="line"><span class="lineno"> 1630</span>        path = <span class="stringliteral">&#39;/health&#39;</span></div>
+<div class="line"><span class="lineno"> 1631</span> </div>
+<div class="line"><span class="lineno"> 1632</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> return_object:</div>
+<div class="line"><span class="lineno"> 1633</span>            <span class="keywordflow">return</span> self.do_get_call(path)</div>
+<div class="line"><span class="lineno"> 1634</span> </div>
+<div class="line"><span class="lineno"> 1635</span>        <span class="comment"># cluster_health list</span></div>
+<div class="line"><span class="lineno"> 1636</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1637</span>        <span class="keywordflow">if</span> <a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
+<div class="line"><span class="lineno"> 1638</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(<a class="code hl_variable" href="namespacepylo_1_1utilities_1_1explorer__report__exporter.html#a88aa6c5cbed7fe748f7f0f331d135aec">type</a>(json_output)))</div>
 <div class="line"><span class="lineno"> 1639</span> </div>
-<div class="line"><span class="lineno"> 1640</span>        <span class="keywordflow">for</span> single_output <span class="keywordflow">in</span> json_output:</div>
-<div class="line"><span class="lineno"> 1641</span>            new_report = APIConnector.ClusterHealth(single_output)</div>
-<div class="line"><span class="lineno"> 1642</span>            dict_of_health_reports[new_report.fqdn] = new_report</div>
-<div class="line"><span class="lineno"> 1643</span> </div>
-<div class="line"><span class="lineno"> 1644</span>        <span class="keywordflow">return</span> dict_of_health_reports</div>
+<div class="line"><span class="lineno"> 1640</span>        dict_of_health_reports = {}</div>
+<div class="line"><span class="lineno"> 1641</span> </div>
+<div class="line"><span class="lineno"> 1642</span>        <span class="keywordflow">for</span> single_output <span class="keywordflow">in</span> json_output:</div>
+<div class="line"><span class="lineno"> 1643</span>            new_report = APIConnector.ClusterHealth(single_output)</div>
+<div class="line"><span class="lineno"> 1644</span>            dict_of_health_reports[new_report.fqdn] = new_report</div>
 <div class="line"><span class="lineno"> 1645</span> </div>
+<div class="line"><span class="lineno"> 1646</span>        <span class="keywordflow">return</span> dict_of_health_reports</div>
+<div class="line"><span class="lineno"> 1647</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -972,8 +972,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a161f3fe6fb2bc2ee6a32d9ecb8d93aa8" name="a161f3fe6fb2bc2ee6a32d9ecb8d93aa8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a161f3fe6fb2bc2ee6a32d9ecb8d93aa8">&#9670;&nbsp;</a></span>explorer_search()</h2>
+<a id="a2056d1998b43d786497c56c087c24bdb" name="a2056d1998b43d786497c56c087c24bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2056d1998b43d786497c56c087c24bdb">&#9670;&nbsp;</a></span>explorer_search()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -994,7 +994,13 @@ Here is the call graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>max_running_time_seconds</em> = <code>1800</code>&#160;</td>
+          <td class="paramname"><em>max_running_time_seconds</em> = <code>1800</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>check_for_update_interntval_seconds</em> = <code>10</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1005,7 +1011,7 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 <pre class="fragment">:param filters: should be an instance of ExplorerFilterSetV1 or a json payload built with your own logic
 :return:
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1435</span>    <span class="keyword">def </span>explorer_search(self, filters: Union[Dict, <span class="stringliteral">&#39;pylo.APIConnector.ExplorerFilterSetV1&#39;</span>], max_running_time_seconds = 1800):</div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1435</span>    <span class="keyword">def </span>explorer_search(self, filters: Union[Dict, <span class="stringliteral">&#39;pylo.APIConnector.ExplorerFilterSetV1&#39;</span>], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10):</div>
 <div class="line"><span class="lineno"> 1436</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno"> 1437</span><span class="stringliteral"></span> </div>
 <div class="line"><span class="lineno"> 1438</span><span class="stringliteral">        :param filters: should be an instance of ExplorerFilterSetV1 </span><span class="keywordflow">or</span> a json payload built <span class="keyword">with</span> your own logic</div>
@@ -1052,25 +1058,27 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1479</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Query failed with status {}&quot;</span>.format(queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>]),</div>
 <div class="line"><span class="lineno"> 1480</span>                                     queries_status_json_response)</div>
 <div class="line"><span class="lineno"> 1481</span> </div>
-<div class="line"><span class="lineno"> 1482</span>        <span class="keywordflow">if</span> query_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1483</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unexpected logic where query_status is None&quot;</span>, query_queued_json_response)</div>
-<div class="line"><span class="lineno"> 1484</span> </div>
-<div class="line"><span class="lineno"> 1485</span>        query_json_response = self.do_get_call(query_href + <span class="stringliteral">&quot;/download&quot;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1482</span>            time.sleep(check_for_update_interntval_seconds)</div>
+<div class="line"><span class="lineno"> 1483</span> </div>
+<div class="line"><span class="lineno"> 1484</span>        <span class="keywordflow">if</span> query_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1485</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unexpected logic where query_status is None&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1486</span> </div>
-<div class="line"><span class="lineno"> 1487</span> </div>
-<div class="line"><span class="lineno"> 1488</span>        result = <a class="code hl_class" href="classpylo_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.ExplorerResultSetV1</a>(query_json_response,</div>
-<div class="line"><span class="lineno"> 1489</span>                                          owner=self,</div>
-<div class="line"><span class="lineno"> 1490</span>                                          emulated_process_exclusion=filters.exclude_processes_emulate)</div>
-<div class="line"><span class="lineno"> 1491</span> </div>
-<div class="line"><span class="lineno"> 1492</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno"> 1487</span>        query_json_response = self.do_get_call(query_href + <span class="stringliteral">&quot;/download&quot;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1488</span> </div>
+<div class="line"><span class="lineno"> 1489</span> </div>
+<div class="line"><span class="lineno"> 1490</span>        result = <a class="code hl_class" href="classpylo_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.ExplorerResultSetV1</a>(query_json_response,</div>
+<div class="line"><span class="lineno"> 1491</span>                                          owner=self,</div>
+<div class="line"><span class="lineno"> 1492</span>                                          emulated_process_exclusion=filters.exclude_processes_emulate)</div>
 <div class="line"><span class="lineno"> 1493</span> </div>
+<div class="line"><span class="lineno"> 1494</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno"> 1495</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_api_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.Exception.PyloApiEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:19</div></div>
 <div class="ttc" id="aclasspylo_1_1_explorer_1_1_explorer_result_set_v1_html"><div class="ttname"><a href="classpylo_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.Explorer.ExplorerResultSetV1</a></div><div class="ttdef"><b>Definition:</b> Explorer.py:7</div></div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a161f3fe6fb2bc2ee6a32d9ecb8d93aa8_cgraph.png" border="0" usemap="#aclasspylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a161f3fe6fb2bc2ee6a32d9ecb8d93aa8_cgraph" alt=""/></div>
-<map name="aclasspylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a161f3fe6fb2bc2ee6a32d9ecb8d93aa8_cgraph" id="aclasspylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a161f3fe6fb2bc2ee6a32d9ecb8d93aa8_cgraph">
+<div class="center"><img src="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a2056d1998b43d786497c56c087c24bdb_cgraph.png" border="0" usemap="#aclasspylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a2056d1998b43d786497c56c087c24bdb_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a2056d1998b43d786497c56c087c24bdb_cgraph" id="aclasspylo_1_1_a_p_i_connector_1_1_a_p_i_connector_a2056d1998b43d786497c56c087c24bdb_cgraph">
 <area shape="rect" title=" " alt="" coords="5,64,267,105"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab88b9a08dcaf370efbf96567f4d88e96" title=" " alt="" coords="943,64,1173,105"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a58cff8729aafdd339e9aef8c769c7af5" title=" " alt="" coords="649,123,879,164"/>
@@ -1453,9 +1461,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1764</span>    <span class="keyword">def </span>new_RuleSearchQuery(self):</div>
-<div class="line"><span class="lineno"> 1765</span>        <span class="keywordflow">return</span> self.RuleSearchQuery(self)</div>
-<div class="line"><span class="lineno"> 1766</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1766</span>    <span class="keyword">def </span>new_RuleSearchQuery(self):</div>
+<div class="line"><span class="lineno"> 1767</span>        <span class="keywordflow">return</span> self.RuleSearchQuery(self)</div>
+<div class="line"><span class="lineno"> 1768</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3476,7 +3484,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 10 2022 09:35:50 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Tue Oct 11 2022 11:13:19 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>
