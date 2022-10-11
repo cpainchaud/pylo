@@ -1432,7 +1432,7 @@ class APIConnector:
         raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
 
 
-    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800):
+    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10):
         """
 
         :param filters: should be an instance of ExplorerFilterSetV1 or a json payload built with your own logic
@@ -1478,6 +1478,8 @@ class APIConnector:
             if queries_status_json_response['status'] not in ["queued", "working"]:
                 raise pylo.PyloApiEx("Query failed with status {}".format(queries_status_json_response['status']),
                                      queries_status_json_response)
+
+            time.sleep(check_for_update_interntval_seconds)
 
         if query_status is None:
             raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
