@@ -1650,6 +1650,7 @@ class APIConnector:
         _advanced_mode_provider_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
         _basic_mode_labels: Dict[str, 'pylo.Label']
         connector: 'pylo.APIConnector'
+        max_results: int = 10000
 
         def __init__(self, connector: 'pylo.APIConnector'):
             self.connector = connector
@@ -1675,6 +1676,11 @@ class APIConnector:
         def set_active_mode(self):
             self._mode_is_draft = False
 
+        def set_max_results(self, max_results: int):
+            if max_results < 1:
+                raise pylo.PyloEx("max_results must be greater than 0")
+            self.max_results = max_results
+
         def add_label(self, label: 'pylo.Label'):
             if not self.mode_is_basic:
                 raise pylo.PyloEx('You can add labels to RuleSearchQuery only in Basic mode. Use consumer/provider counterparts with Advanced mode')
@@ -1697,7 +1703,7 @@ class APIConnector:
             self._exact_matches = False
 
         def execute(self):
-            data = {}
+            data = { 'max_results': self.max_results }
             if not self._exact_matches:
                 data['resolve_actors'] = True
 
