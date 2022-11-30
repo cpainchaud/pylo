@@ -108,14 +108,14 @@ class WorkloadStore:
 
     def find_workload_matching_forced_name(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[Workload]:
         """
-        Find a Workload based on its name (case sensitive). Beware that if several are matching, only the first one will be returned
+        Find a Workload based on its name (case-sensitive). Beware that if several are matching, only the first one will be returned
 
         :param name: the name string you are looking for
-        :param case_sensitive: make it a case sensitive search or not
+        :param case_sensitive: make it a case-sensitive search or not
         :param strip_fqdn: remove the fqdn part of the hostname
         :return: the Workload it found, None otherwise
         """
-        if case_sensitive:
+        if not case_sensitive:
             name = name.lower()
 
         for workload in self.itemsByHRef.values():
@@ -136,11 +136,11 @@ class WorkloadStore:
         Find a workload based on its hostname.Beware that if several are matching, only the first one will be returned
 
         :param name: the name string you are looking for
-        :param case_sensitive: make it a case sensitive search or not
+        :param case_sensitive: make it a case-sensitive search or not
         :param strip_fqdn: remove the fqdn part of the hostname
         :return: the Workload it found, None otherwise
         """
-        if case_sensitive:
+        if not case_sensitive:
             name = name.lower()
 
         for workload in self.itemsByHRef.values():
@@ -160,13 +160,13 @@ class WorkloadStore:
         """
         Find all workloads based on their hostnames.
         :param name: the name string you are looking for
-        :param case_sensitive: make it a case sensitive search or not
+        :param case_sensitive: make it a case-sensitive search or not
         :param strip_fqdn: remove the fqdn part of the hostname
         :return: list of matching Workloads
         """
         result = []
 
-        if case_sensitive:
+        if not case_sensitive:
             name = name.lower()
 
         for workload in self.itemsByHRef.values():
