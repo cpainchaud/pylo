@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 import pylo
 from pylo import log
@@ -202,15 +202,22 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
 
         return result
 
-    def is_using_label(self, label: 'pylo.Label') -> bool:
+    def is_using_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']) -> bool:
         """
         Check if a label is used by this Workload
-        :param label: label to check for usage
+        :param label: label to check for usage. If it's a label group then it will check that at least one label of the group is used
         :return: true if label is used by this workload
         """
-        if self.loc_label is label or self.env_label is label \
+
+        # check for label class
+        if isinstance(label, pylo.Label):
+            if self.loc_label is label or self.env_label is label \
                 or self.app_label is label or self.app_label is label:
-            return True
+                return True
+        else:
+            for member_label in label.get_members().values():
+                if self.is_using_label(member_label):
+                    return True
         return False
 
     def api_update_description(self, new_description: str):
