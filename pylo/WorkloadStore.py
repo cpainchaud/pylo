@@ -131,13 +131,14 @@ class WorkloadStore:
 
         return None
 
-    def find_workload_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[Workload]:
+    def find_workload_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False, fall_back_to_name: bool = False) -> Optional[Workload]:
         """
         Find a workload based on its hostname.Beware that if several are matching, only the first one will be returned
 
         :param name: the name string you are looking for
         :param case_sensitive: make it a case-sensitive search or not
         :param strip_fqdn: remove the fqdn part of the hostname
+        :param fall_back_to_name: if True, will fall back to the forced name if no hostname is found
         :return: the Workload it found, None otherwise
         """
         if not case_sensitive:
@@ -145,6 +146,13 @@ class WorkloadStore:
 
         for workload in self.itemsByHRef.values():
             wkl_name = workload.hostname
+            if wkl_name is None:
+                if fall_back_to_name:
+                    wkl_name = workload.forced_name
+                    if wkl_name is None:
+                        continue
+                else:
+                    continue
             if strip_fqdn:
                 wkl_name = Workload.static_name_stripped_fqdn(wkl_name)
             if case_sensitive:
@@ -156,12 +164,13 @@ class WorkloadStore:
 
         return None
 
-    def find_all_workloads_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> List[Workload]:
+    def find_all_workloads_matching_hostname(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False, fall_back_to_name: bool = False) -> List[Workload]:
         """
         Find all workloads based on their hostnames.
         :param name: the name string you are looking for
         :param case_sensitive: make it a case-sensitive search or not
         :param strip_fqdn: remove the fqdn part of the hostname
+        :param fall_back_to_name: if True, will fall back to the forced name if no hostname is found
         :return: list of matching Workloads
         """
         result = []
@@ -171,6 +180,13 @@ class WorkloadStore:
 
         for workload in self.itemsByHRef.values():
             wkl_name = workload.hostname
+            if wkl_name is None:
+                if fall_back_to_name:
+                    wkl_name = workload.forced_name
+                    if wkl_name is None:
+                        continue
+                else:
+                    continue
             if strip_fqdn:
                 wkl_name = Workload.static_name_stripped_fqdn(wkl_name)
             if case_sensitive:
