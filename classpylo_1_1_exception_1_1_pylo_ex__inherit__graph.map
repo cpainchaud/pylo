@@ -1,8 +1,8 @@
 <map id="pylo.Exception.PyloEx" name="pylo.Exception.PyloEx">
-<area shape="rect" id="node1" title=" " alt="" coords="225,80,372,107"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_exception_1_1_pylo_api_ex.html" title=" " alt="" coords="120,162,285,189"/>
-<area shape="rect" id="node6" href="$classpylo_1_1_exception_1_1_pylo_object_not_found.html" title=" " alt="" coords="309,155,480,196"/>
-<area shape="rect" id="node2" title=" " alt="" coords="259,5,338,32"/>
-<area shape="rect" id="node4" href="$classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html" title=" " alt="" coords="5,244,179,285"/>
-<area shape="rect" id="node5" href="$classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html" title=" " alt="" coords="203,244,423,285"/>
+<area shape="rect" id="node1" title=" " alt="" coords="225,79,372,104"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_exception_1_1_pylo_api_ex.html" title=" " alt="" coords="120,159,285,185"/>
+<area shape="rect" id="node6" href="$classpylo_1_1_exception_1_1_pylo_object_not_found.html" title=" " alt="" coords="309,152,480,192"/>
+<area shape="rect" id="node2" title=" " alt="" coords="259,5,338,31"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html" title=" " alt="" coords="5,240,179,280"/>
+<area shape="rect" id="node5" href="$classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html" title=" " alt="" coords="203,240,423,280"/>
 </map>
