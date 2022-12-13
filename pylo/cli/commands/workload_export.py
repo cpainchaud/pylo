@@ -45,7 +45,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='CSV or Excel input filename')
     parser.add_argument('--filter-file-delimiter', type=str, required=False, default=',',
                         help='CSV field delimiter')
-    parser.add_argument('--filter-fields', type=str, required=False, default=None, choices=['hostname'], nargs="+",
+    parser.add_argument('--filter-fields', type=str, required=False, default=None, choices=['hostname', 'app'], nargs="+",
                         help='Fields on which you want to filter on')
     parser.add_argument('--keep-filters-in-report', action='store_true',
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
@@ -176,6 +176,13 @@ def __main(args, org: pylo.Organization, **kwargs):
                         if hostname_in_csv != workload_hostname:
                             filter_all_columns_matched = False
                             break
+                    elif filter_field_from_csv == 'app':
+                        if current_filter is None or current_filter == '':
+                            continue
+                        else:
+                            if workload.app_label is None or workload.app_label.name.lower() != current_filter.lower():
+                                filter_all_columns_matched = False
+                                break
 
                 if filter_all_columns_matched:
                     add_workload_to_report(workload, filter_data_row)
