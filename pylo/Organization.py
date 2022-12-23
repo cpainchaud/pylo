@@ -120,12 +120,12 @@ class Organization:
         if 'labels' in object_to_load:
             if 'labels' not in data:
                 raise Exception("'labels' was not found in json data")
-            self.LabelStore.loadLabelsFromJson(data['labels'])
+            self.LabelStore.load_labels_from_json(data['labels'])
 
         if 'labelgroups' in object_to_load:
             if 'labelgroups' not in data:
                 raise Exception("'labelgroups' was not found in json data")
-            self.LabelStore.loadLabelGroupsFromJson(data['labelgroups'])
+            self.LabelStore.load_label_groups_from_json(data['labelgroups'])
 
         if 'iplists' in object_to_load:
             if 'iplists' not in data:

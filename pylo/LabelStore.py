@@ -5,10 +5,10 @@ from .Helpers import *
 import random
 from hashlib import md5
 
-label_type_loc = 3
-label_type_env = 2
-label_type_app = 1
-label_type_role = 0
+label_type_loc = 'loc'
+label_type_env = 'env'
+label_type_app = 'app'
+label_type_role = 'role'
 
 
 class LabelStore:
@@ -16,27 +16,60 @@ class LabelStore:
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: "pylo.Organization" = owner
         self.itemsByHRef: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        self.locationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        self.environmentLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        self.roleLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        self.applicationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        #self.locationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        #self.environmentLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        #self.roleLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        #self.applicationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+
+        self.label_types = [label_type_role, label_type_loc, label_type_env, label_type_app]
 
         self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
 
-    @staticmethod
-    def label_type_str_to_int(label_type: str):
-        if label_type == 'role':
-            return label_type_role
-        if label_type == 'app':
-            return label_type_app
-        if label_type == 'env':
-            return label_type_env
-        if label_type == 'loc':
-            return label_type_loc
+    @property
+    def roleLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+        """Returns a dict of all role labels, including groups. Href is the key.
+        This function is there only for retro-compatibility @deprecated"""
+        results = {}
+        for label in self.itemsByHRef.values():
+            if label.type_is_role():
+                results[label.href] = label
 
-        raise pylo.PyloEx("Unsupported Label/LabelGroup type '{}'".format(label_type))
+        return results
 
-    def loadLabelsFromJson(self, json_list):
+    @property
+    def applicationLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+        """Returns a dict of all application labels, including groups. Href is the key.
+        This function is there only for retro-compatibility @deprecated"""
+        results = {}
+        for label in self.itemsByHRef.values():
+            if label.type_is_application():
+                results[label.href] = label
+
+        return results
+
+    @property
+    def environmentLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+        """Returns a dict of all environment labels, including groups. Href is the key.
+        This function is there only for retro-compatibility @deprecated"""
+        results = {}
+        for label in self.itemsByHRef.values():
+            if label.type_is_environment():
+                results[label.href] = label
+
+        return results
+
+    @property
+    def locationLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+        """Returns a dict of all location labels, including groups. Href is the key.
+        This function is there only for retro-compatibility @deprecated"""
+        results = {}
+        for label in self.itemsByHRef.values():
+            if label.type_is_location():
+                results[label.href] = label
+
+        return results
+
+    def load_labels_from_json(self, json_list):
         for json_label in json_list:
             if 'value' not in json_label or 'href' not in json_label or 'key' not in json_label:
                 raise Exception("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))
@@ -50,52 +83,30 @@ class LabelStore:
                 raise Exception("A Label with href '%s' already exists in the table", new_label_href)
 
             self.itemsByHRef[new_label_href] = new_label
-
-            if new_label.type_is_location():
-                self.locationLabels[new_label_name] = new_label
-            elif new_label.type_is_environment():
-                self.environmentLabels[new_label_name] = new_label
-            elif new_label.type_is_application():
-                self.applicationLabels[new_label_name] = new_label
-            elif new_label.type_is_role():
-                self.roleLabels[new_label_name] = new_label
             
             log.debug("Found Label '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
 
-    def loadLabelGroupsFromJson(self, json_list):
-
+    def load_label_groups_from_json(self, json_list):
         created_groups = []
 
         for json_label in json_list:
             if 'name' not in json_label or 'href' not in json_label or 'key' not in json_label:
                 raise Exception("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))
             new_label_name = json_label['name']
-            newLabelHref = json_label['href']
-            newLabelType_str = json_label['key']
-            newLabelType = pylo.LabelStore.label_type_str_to_int(newLabelType_str)
+            new_label_href = json_label['href']
+            new_label_type = json_label['key']
 
-            new_label = pylo.LabelGroup(new_label_name, newLabelHref, newLabelType, self)
+            new_label = pylo.LabelGroup(new_label_name, new_label_href, new_label_type, self)
             created_groups.append(new_label)
 
-            if newLabelHref in self.itemsByHRef:
-                raise Exception("A Label with href '%s' already exists in the table", newLabelHref)
+            if new_label_href in self.itemsByHRef:
+                raise Exception("A Label with href '%s' already exists in the table", new_label_href)
 
-            self.itemsByHRef[newLabelHref] = new_label
-
-            if newLabelType == label_type_loc:
-                self.locationLabels[new_label_name] = new_label
-            elif newLabelType == label_type_env:
-                self.environmentLabels[new_label_name] = new_label
-            elif newLabelType == label_type_app:
-                self.applicationLabels[new_label_name] = new_label
-            elif newLabelType == label_type_role:
-                self.roleLabels[new_label_name] = new_label
-            else:
-                raise pylo.PyloEx("Unsupported LabelGroup type '{}' from json data".format(newLabelType), json_label)
+            self.itemsByHRef[new_label_href] = new_label
 
             new_label.raw_json = json_label
 
-            log.info("Found LabelGroup '%s' with href '%s' and type '%s'", new_label_name, newLabelHref, newLabelType)
+            log.info("Found LabelGroup '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
 
         for group in created_groups:
             group.load_from_json()
@@ -303,24 +314,9 @@ class LabelStore:
 
         self.itemsByHRef[new_label_href] = new_label
 
-        if new_label.type_is_location():
-            self.locationLabels[new_label_name] = new_label
-        elif new_label.type_is_environment():
-            self.environmentLabels[new_label_name] = new_label
-        elif new_label.type_is_application():
-            self.applicationLabels[new_label_name] = new_label
-        elif new_label.type_is_role():
-            self.roleLabels[new_label_name] = new_label
-
         return new_label
 
-
-
-    def find_label_by_name_lowercase_and_type(self, name: str, type: int):
-        """
-
-        :rtype: None|pylo.LabelCommon
-        """
+    def find_label_by_name_lowercase_and_type(self, name: str, type: str) -> Union['pylo.Label', 'pylo.LabelGroup', None]:
         ref = None
         name = name.lower()
 
@@ -341,7 +337,7 @@ class LabelStore:
 
         return None
 
-    def find_label_multi_by_name_lowercase_and_type(self, name: str, type: int):
+    def find_label_multi_by_name_lowercase_and_type(self, name: str, type: str) -> Union['pylo.Label', 'pylo.LabelGroup', None]:
         """
 
         :rtype: list[pylo.LabelCommon]

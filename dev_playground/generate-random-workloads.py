@@ -37,7 +37,7 @@ baseNumber = random.randint(0, 1000000)
 
 print("Downloading labels infos from PCE...")
 workloads_json = connector.objects_label_get()
-target.LabelStore.loadLabelsFromJson(workloads_json)
+target.LabelStore.load_labels_from_json(workloads_json)
 print("done!")
 
 print("Downloading workloads infos from PCE...")
