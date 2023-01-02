@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
 
 import pylo
-from .APIConnector import APIConnector
+from pylo.API.APIConnector import APIConnector
 
 
 class ExplorerResultSetV1:

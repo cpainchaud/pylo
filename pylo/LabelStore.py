@@ -26,7 +26,7 @@ class LabelStore:
         self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
 
     @property
-    def roleLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+    def roleLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
         """Returns a dict of all role labels, including groups. Href is the key.
         This function is there only for retro-compatibility @deprecated"""
         results = {}
@@ -37,7 +37,7 @@ class LabelStore:
         return results
 
     @property
-    def applicationLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+    def applicationLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
         """Returns a dict of all application labels, including groups. Href is the key.
         This function is there only for retro-compatibility @deprecated"""
         results = {}
@@ -48,7 +48,7 @@ class LabelStore:
         return results
 
     @property
-    def environmentLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+    def environmentLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
         """Returns a dict of all environment labels, including groups. Href is the key.
         This function is there only for retro-compatibility @deprecated"""
         results = {}
@@ -59,7 +59,7 @@ class LabelStore:
         return results
 
     @property
-    def locationLabels(self) -> Dict[str, Union[pylo.Label, pylo.LabelGroup]]:
+    def locationLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
         """Returns a dict of all location labels, including groups. Href is the key.
         This function is there only for retro-compatibility @deprecated"""
         results = {}

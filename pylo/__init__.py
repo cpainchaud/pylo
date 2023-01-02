@@ -12,7 +12,8 @@ from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexp
 from .SoftwareVersion import SoftwareVersion
 from .IPMap import IP4Map
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
-from .APIConnector import APIConnector
+from .API.APIConnector import APIConnector
+from .API.ClusterHealth import ClusterHealth
 from .Explorer import ExplorerResultSetV1, RuleCoverageQueryManager
 from .LabelCommon import LabelCommon
 from .Label import Label
