@@ -148,44 +148,44 @@ class APIConnector:
                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
                     return_headers: bool = False):
 
-        return self._doCall('GET', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                            json_output_expected=json_output_expected, async_call=async_call, skip_product_version_check=skip_product_version_check, params=params,
-                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
-                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached,
-                            return_headers=return_headers)
+        return self._do_call('GET', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                             json_output_expected=json_output_expected, async_call=async_call, skip_product_version_check=skip_product_version_check, params=params,
+                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached,
+                             return_headers=return_headers)
 
     def do_post_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
                      retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                      retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
-        return self._doCall('POST', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                            json_output_expected=json_output_expected, async_call=async_call,
-                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
-                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
+        return self._do_call('POST', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                             json_output_expected=json_output_expected, async_call=async_call,
+                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
     def do_put_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
-        return self._doCall('PUT', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                            json_output_expected=json_output_expected, async_call=async_call,
-                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
-                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
+        return self._do_call('PUT', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                             json_output_expected=json_output_expected, async_call=async_call,
+                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def do_delete_call(self, path, json_arguments = None, include_org_id=True, json_output_expected=True, async_call=False,
+    def do_delete_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
                        retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                        retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
-        return self._doCall('DELETE', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                            json_output_expected=json_output_expected, async_call=async_call,
-                            retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
-                            retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
+        return self._do_call('DELETE', path, json_arguments=json_arguments, include_org_id=include_org_id,
+                             json_output_expected=json_output_expected, async_call=async_call,
+                             retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
+                             retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def _doCall(self, method, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
-                skip_product_version_check=False, params=None,
-                retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
-                retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
-                return_headers: bool = False):
+    def _do_call(self, method, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
+                 skip_product_version_check=False, params=None,
+                 retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
+                 retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
+                 return_headers: bool = False):
 
         if self.version is None and not skip_product_version_check:
             self.collect_pce_infos()
@@ -206,10 +206,10 @@ class APIConnector:
 
             try:
                 req = self._cached_session.request(method, url, headers=headers, auth=(self.api_user, self.api_key),
-                                       verify=(not self.skipSSLCertCheck), json=json_arguments, params=params)
+                                                   verify=(not self.skipSSLCertCheck), json=json_arguments,
+                                                   params=params)
             except Exception as e:
                 raise pylo.PyloApiEx("PCE connectivity or low level issue: {}".format(e))
-
 
             answerSize = len(req.content) / 1024
             log.info("URL downloaded (size "+str( int(answerSize) )+"KB) Reply headers:\n" +
@@ -231,39 +231,39 @@ class APIConnector:
                 if 'Retry-After' not in req.headers:
                     raise Exception('Header "Retry-After" was not found in API answer!')
 
-                jobLocation = req.headers['Location']
-                retryInterval = int(req.headers['Retry-After'])
+                job_location = req.headers['Location']
+                retry_interval = int(req.headers['Retry-After'])
 
-                retryLoopTimes = 0
+                retry_loop_times = 0
 
                 while True:
-                    log.info("Sleeping " + str(retryInterval) + " seconds before polling for job status, elapsed " + str(retryInterval*retryLoopTimes) + " seconds so far" )
-                    retryLoopTimes += 1
-                    time.sleep(retryInterval)
-                    jobPoll = self.do_get_call(jobLocation, include_org_id=False)
-                    if 'status' not in jobPoll:
+                    log.info("Sleeping " + str(retry_interval) + " seconds before polling for job status, elapsed " + str(retry_interval*retry_loop_times) + " seconds so far" )
+                    retry_loop_times += 1
+                    time.sleep(retry_interval)
+                    job_poll = self.do_get_call(job_location, include_org_id=False)
+                    if 'status' not in job_poll:
                         raise Exception('Job polling request did not return a "status" field')
-                    jobPollStatus = jobPoll['status']
+                    job_poll_status = job_poll['status']
 
-                    if jobPollStatus == 'failed':
-                        if 'result' in jobPoll and 'message' in jobPoll['result']:
-                            raise Exception('Job polling return with status "Failed": ' + jobPoll['result']['message'])
+                    if job_poll_status == 'failed':
+                        if 'result' in job_poll and 'message' in job_poll['result']:
+                            raise Exception('Job polling return with status "Failed": ' + job_poll['result']['message'])
                         else:
-                            raise Exception('Job polling return with status "Failed": ' + jobPoll)
+                            raise Exception('Job polling return with status "Failed": ' + job_poll)
 
-                    if jobPollStatus == 'done':
-                        if 'result' not in jobPoll:
+                    if job_poll_status == 'done':
+                        if 'result' not in job_poll:
                             raise Exception('Job is marked as done but has no "result"')
-                        if 'href' not in jobPoll['result']:
+                        if 'href' not in job_poll['result']:
                             raise Exception("Job is marked as done but did not return a href to download resulting Dataset")
 
-                        resultHref = jobPoll['result']['href']
+                        result_href = job_poll['result']['href']
                         break
 
-                    log.info("Job status is " + jobPollStatus)
+                    log.info("Job status is " + job_poll_status)
 
                 log.info("Job is done, we will now download the resulting dataset")
-                dataset = self.do_get_call(resultHref, include_org_id=False)
+                dataset = self.do_get_call(result_href, include_org_id=False)
 
                 return dataset
 
@@ -288,7 +288,6 @@ class APIConnector:
                                                                                                                                                    retry_count_if_api_call_limit_reached))
                                 time.sleep(retry_wait_time_if_api_call_limit_reached)
                                 continue
-
 
                 raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
                                 + '" and error message: ' + req.text)
@@ -1456,22 +1455,22 @@ class APIConnector:
             raise pylo.PyloApiEx("Invalid response from API, missing 'href' property", query_queued_json_response)
 
         query_href = query_queued_json_response['href']
-        #check that query_href is a string
+        # check that query_href is a string
         if not isinstance(query_href, str):
             raise pylo.PyloApiEx("Invalid response from API, 'href' property is not a string", query_queued_json_response)
 
-        #get current timestamp to ensure we don't wait too long
+        # get current timestamp to ensure we don't wait too long
         start_time = time.time()
 
         query_status = None # Json response from API for specific query
 
         while True:
-            #check that we don't wait too long
+            # check that we don't wait too long
             if time.time() - start_time > max_running_time_seconds:
                 raise pylo.PyloApiEx("Timeout while waiting for query to complete", query_queued_json_response)
 
             queries_status_json_response = self.explorer_async_query_get_specific_request_status(query_href)
-            if(queries_status_json_response['status'] == "completed"):
+            if queries_status_json_response['status'] == "completed":
                 query_status = queries_status_json_response
                 break
 
@@ -1485,7 +1484,6 @@ class APIConnector:
             raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
 
         query_json_response = self.do_get_call(query_href + "/download", json_output_expected=True, include_org_id=False)
-
 
         result = pylo.ExplorerResultSetV1(query_json_response,
                                           owner=self,
@@ -1512,130 +1510,6 @@ class APIConnector:
 
         return dict_of_health_reports
 
-    class RuleSearchQuery:
-        _advanced_mode_consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
-        _advanced_mode_provider_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
-        _basic_mode_labels: Dict[str, 'pylo.Label']
-        connector: 'pylo.APIConnector'
-        max_results: int = 10000
-
-        def __init__(self, connector: 'pylo.APIConnector'):
-            self.connector = connector
-            self.mode_is_basic = True
-            self._basic_mode_labels = {}
-            self._advanced_mode_provider_labels = {}
-            self._advanced_mode_consumer_labels = {}
-            self._exact_matches = True
-            self._mode_is_draft = True
-
-        def set_basic_mode(self):
-            self.mode_is_basic = True
-            self._advanced_mode_provider_labels = {}
-            self._advanced_mode_consumer_labels = {}
-
-        def set_advanced_mode(self):
-            self.mode_is_basic = False
-            self._basic_mode_labels = {}
-
-        def set_draft_mode(self):
-            self._mode_is_draft = True
-
-        def set_active_mode(self):
-            self._mode_is_draft = False
-
-        def set_max_results(self, max_results: int):
-            if max_results < 1:
-                raise pylo.PyloEx("max_results must be greater than 0")
-            self.max_results = max_results
-
-        def add_label(self, label: 'pylo.Label'):
-            if not self.mode_is_basic:
-                raise pylo.PyloEx('You can add labels to RuleSearchQuery only in Basic mode. Use consumer/provider counterparts with Advanced mode')
-            self._basic_mode_labels[label.href] = label
-
-        def add_consumer_label(self, label: 'pylo.Label'):
-            if self.mode_is_basic:
-                raise pylo.PyloEx('You can add labels to RuleSearchQuery consumers only in Advanced mode')
-            self._advanced_mode_consumer_labels[label.href] = label
-
-        def add_provider_label(self, label: 'pylo.Label'):
-            if self.mode_is_basic:
-                raise pylo.PyloEx('You can add labels to RuleSearchQuery providers only in Advanced mode')
-            self._advanced_mode_provider_labels[label.href] = label
-
-        def use_exact_matches(self):
-            self._exact_matches = True
-
-        def use_resolved_matches(self):
-            self._exact_matches = False
-
-        def execute(self):
-            data = { 'max_results': self.max_results }
-            if not self._exact_matches:
-                data['resolve_actors'] = True
-
-            uri = '/sec_policy/draft/rule_search'
-            if not self._mode_is_draft:
-                uri = '/sec_policy/active/rule_search'
-
-            if self.mode_is_basic:
-                if len(self._basic_mode_labels) > 0:
-                    data['providers_or_consumers'] = []
-                    for label_href, label in self._basic_mode_labels.items():
-                        if label.is_label():
-                            data['providers_or_consumers'].append({'label': {'href': label_href}})
-                        else:
-                            data['providers_or_consumers'].append({'label_group': {'href': label_href}})
-            else:
-                if len(self._advanced_mode_provider_labels) > 0:
-                    data['providers'] = []
-                    for label_href, label in self._advanced_mode_provider_labels.items():
-                        if label.is_label():
-                            data['providers'].append({'label': {'href': label_href}})
-                        else:
-                            data['providers'].append({'label_group': {'href': label_href}})
-                if len(self._advanced_mode_consumer_labels) > 0:
-                    data['consumers'] = []
-                    for label_href, label in self._advanced_mode_consumer_labels.items():
-                        if label.is_label():
-                            data['consumers'].append({'label': {'href': label_href}})
-                        else:
-                            data['consumers'].append({'label_group': {'href': label_href}})
-
-            return self.connector.do_post_call(uri, data)
-
-        def execute_and_resolve(self, organization: 'pylo.Organization'):
-            return APIConnector.RuleSearchQuery.RuleSearchQueryResolvedResultSet(self.execute(), organization)
-
-        class RuleSearchQueryResolvedResultSet:
-            rules: Dict[str, 'pylo.Rule']
-            rules_per_ruleset: Dict['pylo.Ruleset', Dict[str, 'pylo.Rule']]
-
-            def count_results(self):
-                return len(self.rules)
-
-            def __init__(self, raw_json_data, organization: 'pylo.Organization'):
-                self._raw_json = raw_json_data
-                self.rules = {}
-                self.rules_per_ruleset = {}
-
-                for rule_data in raw_json_data:
-                    rule_href = rule_data.get('href')
-                    if rule_href is None:
-                        raise pylo.PyloEx('Cannot find rule HREF in RuleSearchQuery response', rule_data)
-                    rule_found = organization.RulesetStore.find_rule_by_href(rule_href)
-                    if rule_found is None:
-                        raise pylo.PyloEx("Cannot find rule with HREF '{}' in Organization".format(rule_href), rule_data)
-
-                    self.rules[rule_found.href] = rule_found
-                    ruleset_found = self.rules_per_ruleset.get(rule_found.owner)
-                    if ruleset_found is None:
-                        # print("new ruleset")
-                        self.rules_per_ruleset[rule_found.owner] = {rule_found.href: rule_found}
-                    else:
-                        # print("existing rs")
-                        self.rules_per_ruleset[rule_found.owner][rule_found.href] = rule_found
-
-    def new_RuleSearchQuery(self):
-        return self.RuleSearchQuery(self)
+    def new_RuleSearchQuery(self) -> 'pylo.RuleSearchQuery':
+        return pylo.RuleSearchQuery(self)
 
