@@ -50,14 +50,14 @@ _all_object_types: Dict[str, str] = {
 class APIConnector:
     """docstring for APIConnector."""
 
-    def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, orgID=1):
+    def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, org_id=1):
         self.hostname: str = hostname
         if type(port) is int:
             port = str(port)
         self.port: int = port
         self.api_key: str = apikey
         self.api_user: str = apiuser
-        self.orgID: int = orgID
+        self.orgID: int = org_id
         self.skipSSLCertCheck: bool = skip_ssl_cert_check
         self.version: Optional['pylo.SoftwareVersion'] = None
         self.version_string: str = "Not Defined"
@@ -103,7 +103,7 @@ class APIConnector:
         filename = Path(filename)
 
         if not os.path.isfile(filename):
-            filename ='ilo.json'
+            filename = 'ilo.json'
 
         if os.path.isfile(filename):
             with open(filename) as json_file:
@@ -123,7 +123,7 @@ class APIConnector:
                             org_id = org_id_value
                         else:
                             raise pylo.PyloEx("org_id must be an integer", cur)
-                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], orgID=org_id, skip_ssl_cert_check=ignore_ssl)
+                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], org_id=org_id, skip_ssl_cert_check=ignore_ssl)
 
         if not request_if_missing:
             return None
@@ -508,7 +508,7 @@ class APIConnector:
         path = href
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
-    def objects_label_delete(self, href: str):
+    def objects_label_delete(self, href: Union[str, 'pylo.Label']):
         """
 
         :type href: str|pylo.Label
@@ -1047,7 +1047,7 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)
 
     class ExplorerFilterSetV1:
-        exclude_processes_emulate: Dict[str,str]
+        exclude_processes_emulate: Dict[str, str]
         _exclude_processes: List[str]
         _exclude_direct_services: List['pylo.DirectServiceInRule']
         _time_from: Optional[datetime]
@@ -1429,7 +1429,6 @@ class APIConnector:
                 return status
 
         raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
-
 
     def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10):
         """

@@ -98,7 +98,7 @@ class Organization:
             user = input()
             password = getpass.getpass()
 
-            connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True, orgID=self.id)
+            connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True, org_id=self.id)
 
         self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads, list_of_objects_to_load=list_of_objects_to_load)
 
