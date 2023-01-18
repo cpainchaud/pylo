@@ -45,7 +45,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='CSV or Excel input filename')
     parser.add_argument('--filter-file-delimiter', type=str, required=False, default=',',
                         help='CSV field delimiter')
-    parser.add_argument('--filter-fields', type=str, required=False, default=None, choices=['hostname', 'app'], nargs="+",
+    parser.add_argument('--filter-fields', type=str, required=False, default=None, choices=['hostname', 'app', 'ip'], nargs="+",
                         help='Fields on which you want to filter on')
     parser.add_argument('--keep-filters-in-report', action='store_true',
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
@@ -164,6 +164,10 @@ def __main(args, org: pylo.Organization, **kwargs):
 
                     # print(" field filter={} will be evaluated".format(filter_field_from_csv))
 
+                    if filter_field_from_csv not in filter_data_row:
+                        pylo.log.error("Filter field '{}' not found in CSV file".format(filter_field_from_csv))
+                        sys.exit(1)
+
                     current_filter = filter_data_row[filter_field_from_csv]
                     if current_filter is None:
                         # print('    it was empty!')
@@ -183,10 +187,22 @@ def __main(args, org: pylo.Organization, **kwargs):
                             if workload.app_label is None or workload.app_label.name.lower() != current_filter.lower():
                                 filter_all_columns_matched = False
                                 break
+                    elif filter_field_from_csv == 'ip':
+                        found_ip = False
+                        for interface in workload.interfaces:
+                            if current_filter == interface.ip:
+                                found_ip = True
+                                break
+                        if not found_ip:
+                            filter_all_columns_matched = False
+                            break
+                    else:
+                        # we don't support this filter type so we exit with an error
+                        pylo.log.error("Filter field '{}' is not supported".format(filter_field_from_csv))
+                        sys.exit(1)
 
                 if filter_all_columns_matched:
                     add_workload_to_report(workload, filter_data_row)
-                    print("test\n")
                     matched_filters += 1
 
             if matched_filters > 0:
