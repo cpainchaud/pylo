@@ -1,4 +1,4 @@
-import pylo
+from .Helpers import nice_json
 
 
 class PyloEx(Exception):
@@ -7,7 +7,7 @@ class PyloEx(Exception):
             Exception.__init__(self, arg)
             return
 
-        text = "{}\nJSON output:\n{}".format(arg, pylo.nice_json(json_object))
+        text = "{}\nJSON output:\n{}".format(arg, nice_json(json_object))
         super().__init__(self, text)
 
 
