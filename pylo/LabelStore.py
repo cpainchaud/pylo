@@ -146,34 +146,24 @@ class LabelStore:
 
     def find_label_by_name_whatever_type(self, name: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
 
-        find = self.locationLabels.get(name)
-        if find is not None:
-            return find
-
-        find = self.environmentLabels.get(name)
-        if find is not None:
-            return find
-
-        find = self.applicationLabels.get(name)
-        if find is not None:
-            return find
-
-        find = self.roleLabels.get(name)
-        if find is not None:
-            return find
+        for label in self.itemsByHRef.values():
+            if label.name == name:
+                return label
 
         return None
 
     def find_label_by_name_and_type(self, name: str, type: int):
-        if type == label_type_loc:
-            return self.locationLabels.get(name)
-        if type == label_type_env:
-            return self.environmentLabels.get(name)
-        if type == label_type_app:
-            return self.applicationLabels.get(name)
-        if type == label_type_role:
-            return self.roleLabels.get(name)
-        raise Exception("Unsupported")
+        if type not in self.label_types:
+            raise Exception("Unsupported label type '%s'", type)
+
+        label = self.find_label_by_name_whatever_type(name)
+        if label is None:
+            return None
+
+        if label.type == type:
+            return label
+
+        return None
 
     cache_label_all_string = '-All-'
     cache_label_all_separator = '|'
