@@ -1,4 +1,5 @@
-from typing import Optional, List, Dict
+import sys
+from typing import Optional, List, Dict, Literal
 
 import pylo
 from pylo.API.APIConnector import APIConnector
@@ -13,7 +14,7 @@ class ExplorerResultSetV1:
             self.owner = owner
 
     class ExplorerResult:
-        _draft_mode_policy_decision_is_blocked: Optional[bool]
+        _draft_mode_policy_decision: Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]
         destination_workload_labels_href: List[str]
         source_workload_labels_href: List[str]
 
@@ -22,7 +23,7 @@ class ExplorerResultSetV1:
             self.num_connections = data['num_connections']
 
             self.policy_decision_string = data['policy_decision']
-            self._draft_mode_policy_decision_is_blocked = None
+            self._draft_mode_policy_decision = None
 
             self.source_ip_fqdn: Optional[str] = None
             self.destination_ip_fqdn: Optional[str] = None
@@ -211,30 +212,29 @@ class ExplorerResultSetV1:
         def cast_is_unicast(self):
             return self._cast_type is not None
 
-        def set_draft_mode_policy_decision_blocked(self, blocked: bool=True):
-            self._draft_mode_policy_decision_is_blocked = blocked
+        def set_draft_mode_policy_decision(self, decision: Literal['allowed', 'blocked', 'blocked_by_boundary']):
+            self._draft_mode_policy_decision = decision
 
         def draft_mode_policy_decision_is_blocked(self) -> Optional[bool]:
             """
             @return: None if draft_mode was not enabled
             """
-            return self._draft_mode_policy_decision_is_blocked is not None and self._draft_mode_policy_decision_is_blocked
+            return self._draft_mode_policy_decision is not None and \
+            (self._draft_mode_policy_decision == 'blocked' or self._draft_mode_policy_decision == 'blocked_by_boundary')
 
         def draft_mode_policy_decision_is_allowed(self) -> Optional[bool]:
             """
             @return: None if draft_mode was not enabled
             """
-            return self._draft_mode_policy_decision_is_blocked is not None and not self._draft_mode_policy_decision_is_blocked
+            return self._draft_mode_policy_decision is not None and not self._draft_mode_policy_decision == "allowed"
 
         def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
-            return self._draft_mode_policy_decision_is_blocked is None
+            return self._draft_mode_policy_decision is None
 
         def draft_mode_policy_decision_to_str(self) -> str:
-            if self._draft_mode_policy_decision_is_blocked is None:
+            if self._draft_mode_policy_decision is None:
                 return 'not_available'
-            if self._draft_mode_policy_decision_is_blocked:
-                return 'blocked'
-            return 'allow'
+            return self._draft_mode_policy_decision
 
     def __init__(self, data, owner: 'APIConnector', emulated_process_exclusion={}):
         self._raw_results = data
@@ -474,7 +474,8 @@ class RuleCoverageQueryManager:
             self.service_hash_to_index: Dict[str, int] = {}
             self.services_array: List[Dict] = []
             self.service_index_to_log_ids: Dict[int, List[int]] = {}
-            self.service_index_policy_coverage: Dict[int, List[str]] = {}
+            self.service_index_policy_coverage: Dict[int, List[str]] = {} # for a service ID (used as key) returns a list of matching rules HREF
+            self.service_index_to_boundary_policy_coverage: Dict[int, List[str]] = {} # for a service ID (used as key) returns a list of matching boundary rules HREF
 
         def add_service(self, service_record: Dict, log_id: int):
             service_hash = '' + str(service_record.get('proto', 'no_proto')) + '/' + str(service_record.get('port', 'no_port')) + '/' \
@@ -495,16 +496,23 @@ class RuleCoverageQueryManager:
             if log_id not in self.service_index_to_log_ids[service_index]:
                 self.service_index_to_log_ids[service_index].append(log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             policy_decision = None
+            found_boundary_block = False
 
             for service_id, list_of_log_ids in self.service_index_to_log_ids.items():
                 if log_id in list_of_log_ids:
                     policy_decision = 'blocked'
                     policy_coverage = self.service_index_policy_coverage[service_id]
                     if len(policy_coverage) > 0:
-                        policy_decision = 'allowed'
-                        return policy_decision
+                        return 'allowed'
+
+                    boundary_policy_coverage = self.service_index_to_boundary_policy_coverage[service_id]
+                    if len(boundary_policy_coverage) > 0:
+                        found_boundary_block = True
+
+            if found_boundary_block:
+                return 'blocked_by_boundary'
 
             return policy_decision
 
@@ -517,7 +525,7 @@ class RuleCoverageQueryManager:
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             return self.services.get_policy_decision_for_log_id(log_id)
 
         def generate_api_payload(self) -> Dict:
@@ -549,6 +557,15 @@ class RuleCoverageQueryManager:
                     rules_array.append(rules[rule])
                 self.services.service_index_policy_coverage[index] = rules_array
 
+        def process_response_boundary_deny(self, rules: Dict[str, str], response: [[str]]):
+            if len(response) != len(self.services.services_array):
+                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
+
+            for index, single_response in enumerate(response):
+                rules_array: [Dict] = []
+                for rule in single_response:
+                    rules_array.append(rules[rule])
+                self.services.service_index_to_boundary_policy_coverage[index] = rules_array
 
     class WorkloadToIPListQuery:
         def __init__(self, workload_href: str, ip_list_href: str):
@@ -559,7 +576,7 @@ class RuleCoverageQueryManager:
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             return self.services.get_policy_decision_for_log_id(log_id)
 
         def generate_api_payload(self) -> Dict:
@@ -591,6 +608,16 @@ class RuleCoverageQueryManager:
                     rules_array.append(rules[rule])
                 self.services.service_index_policy_coverage[index] = rules_array
 
+        def process_response_boundary_deny(self, rules: Dict[str, str], response: [[str]]):
+            if len(response) != len(self.services.services_array):
+                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
+
+            for index, single_response in enumerate(response):
+                rules_array: [Dict] = []
+                for rule in single_response:
+                    rules_array.append(rules[rule])
+                self.services.service_index_to_boundary_policy_coverage[index] = rules_array
+
     class WorkloadToWorkloadQuery:
         def __init__(self, src_workload_href: str, dst_workload_href: str):
             self.src_workload_href = src_workload_href
@@ -600,7 +627,7 @@ class RuleCoverageQueryManager:
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             return self.services.get_policy_decision_for_log_id(log_id)
 
         def generate_api_payload(self) -> Dict:
@@ -632,9 +659,20 @@ class RuleCoverageQueryManager:
                     rules_array.append(rules[rule])
                 self.services.service_index_policy_coverage[index] = rules_array
 
+        def process_response_boundary_deny(self, rules: Dict[str, str], response: [[str]]):
+            if len(response) != len(self.services.services_array):
+                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
+
+            for index, single_response in enumerate(response):
+                rules_array: [Dict] = []
+                for rule in single_response:
+                    rules_array.append(rules[rule])
+                self.services.service_index_to_boundary_policy_coverage[index] = rules_array
+
     class IPListToWorkloadQueryManager:
-        def __init__(self):
+        def __init__(self, include_boundary_rules: bool = True):
             self.queries: Dict[str, 'RuleCoverageQueryManager.IPListToWorkloadQuery'] = {}
+            self.include_boundary_rules = include_boundary_rules
 
         def add_query(self, log_id: int, ip_list_href: str, workload_href: str, service_record):
             hash_key = ip_list_href + workload_href
@@ -643,13 +681,19 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
-            policy_decision = None
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
+            policy_decision: Optional[Literal["allowed", "blocked", "blocked_by_boundary"]] = None
+            found_blocked_by_boundary = False
+
             for query in self.queries.values():
                 policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
-                # print('policy decision: ' + str(policy_decision) + ' for log id: ' + str(log_id))
                 if policy_decision == 'allowed':
                     return policy_decision
+                if query.get_policy_decision_for_log_id(log_id) == 'blocked_by_boundary':
+                    found_blocked_by_boundary = True
+
+            if found_blocked_by_boundary:
+                return 'blocked_by_boundary'
 
             return policy_decision
 
@@ -673,7 +717,7 @@ class RuleCoverageQueryManager:
                 for query in query_batch:
                     payload.append(query.generate_api_payload())
 
-                api_response = connector.rule_coverage_query(payload)
+                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
                 # print(api_response)
                 # print('-------------------------------------------------------')
 
@@ -693,11 +737,26 @@ class RuleCoverageQueryManager:
                     # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
                     query.process_response(rules, edge)
 
+                if self.include_boundary_rules:
+                    deny_edges = api_response.get('deny_edges')
+                    if deny_edges is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
+                    if len(deny_edges) != len(query_batch):
+                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
 
+                    deny_rules = api_response.get('deny_rules')
+                    if deny_rules is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
+
+                    for response_index, edge in enumerate(deny_edges):
+                        query = query_batch[response_index]
+                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
+                        query.process_response_boundary_deny(deny_rules, edge)
 
     class WorkloadToIPListQueryManager:
-        def __init__(self):
+        def __init__(self, include_boundary_rules: bool = True):
             self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToIPListQuery'] = {}
+            self.include_boundary_rules = include_boundary_rules
 
         def add_query(self, log_id: int, workload_href: str, ip_list_href: str, service_record):
             hash_key = workload_href + ip_list_href
@@ -706,12 +765,19 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
             policy_decision = None
+            found_blocked_by_boundary = False
+
             for query in self.queries.values():
                 policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
                 if policy_decision == 'allowed':
                     return policy_decision
+                if query.get_policy_decision_for_log_id(log_id) == 'blocked_by_boundary':
+                    found_blocked_by_boundary = True
+
+            if found_blocked_by_boundary:
+                return 'blocked_by_boundary'
 
             return policy_decision
 
@@ -735,7 +801,7 @@ class RuleCoverageQueryManager:
                 for query in query_batch:
                     payload.append(query.generate_api_payload())
 
-                api_response = connector.rule_coverage_query(payload)
+                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
                 # print(api_response)
                 # print('-------------------------------------------------------')
 
@@ -755,10 +821,26 @@ class RuleCoverageQueryManager:
                     # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
                     query.process_response(rules, edge)
 
+                if self.include_boundary_rules:
+                    deny_edges = api_response.get('deny_edges')
+                    if deny_edges is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
+                    if len(deny_edges) != len(query_batch):
+                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
+
+                    deny_rules = api_response.get('deny_rules')
+                    if deny_rules is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
+
+                    for response_index, edge in enumerate(deny_edges):
+                        query = query_batch[response_index]
+                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
+                        query.process_response_boundary_deny(deny_rules, edge)
 
     class WorkloadToWorkloadQueryManager:
-        def __init__(self):
+        def __init__(self, include_boundary_rules: bool = True):
             self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToWorkloadQuery'] = {}
+            self.include_boundary_rules = include_boundary_rules
 
         def add_query(self, log_id: int, src_workload_href: str, dst_workload_href: str, service_record):
             hash_key = src_workload_href + dst_workload_href
@@ -767,7 +849,7 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
             policy_decision = None
             for query in self.queries.values():
                 policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
@@ -796,7 +878,7 @@ class RuleCoverageQueryManager:
                 for query in query_batch:
                     payload.append(query.generate_api_payload())
 
-                api_response = connector.rule_coverage_query(payload)
+                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
                 # print(api_response)
                 # print('-------------------------------------------------------')
 
@@ -815,6 +897,22 @@ class RuleCoverageQueryManager:
                     query = query_batch[response_index]
                     # print(f'Processing edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
                     query.process_response(rules, edge)
+
+                if self.include_boundary_rules:
+                    deny_edges = api_response.get('deny_edges')
+                    if deny_edges is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
+                    if len(deny_edges) != len(query_batch):
+                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
+
+                    deny_rules = api_response.get('deny_rules')
+                    if deny_rules is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
+
+                    for response_index, edge in enumerate(deny_edges):
+                        query = query_batch[response_index]
+                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
+                        query.process_response_boundary_deny(deny_rules, edge)
 
     def __init__(self, owner: APIConnector):
         self.owner = owner
@@ -897,7 +995,7 @@ class RuleCoverageQueryManager:
 
         return len(_log_ids)
 
-    def _get_policy_decision_for_log_id(self, log_id: int) -> Optional[str]:
+    def _get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
         decision = self.iplist_to_workload_query_manager.get_policy_decision_for_log_id(log_id)
         if decision == 'allowed':
             return decision
@@ -925,7 +1023,7 @@ class RuleCoverageQueryManager:
                 pylo.get_logger().error(pylo.nice_json(log._raw_json))
                 raise pylo.PyloEx('No decision found for log_id {}'.format(log_id))
 
-            log.set_draft_mode_policy_decision_blocked(decision == 'blocked')
+            log.set_draft_mode_policy_decision(decision)
 
     def execute(self):
         queries_per_batch = 100

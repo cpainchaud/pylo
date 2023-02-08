@@ -154,30 +154,30 @@ class APIConnector:
                              retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached,
                              return_headers=return_headers)
 
-    def do_post_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
+    def do_post_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False, params=None,
                      retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                      retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
         return self._do_call('POST', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                             json_output_expected=json_output_expected, async_call=async_call,
+                             json_output_expected=json_output_expected, async_call=async_call, params=params,
                              retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                              retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def do_put_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
+    def do_put_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False, params=None,
                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
         return self._do_call('PUT', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                             json_output_expected=json_output_expected, async_call=async_call,
+                             json_output_expected=json_output_expected, async_call=async_call, params=params,
                              retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                              retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def do_delete_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False,
+    def do_delete_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False, params=None,
                        retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                        retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached):
 
         return self._do_call('DELETE', path, json_arguments=json_arguments, include_org_id=include_org_id,
-                             json_output_expected=json_output_expected, async_call=async_call,
+                             json_output_expected=json_output_expected, async_call=async_call, params=params,
                              retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                              retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
@@ -492,8 +492,11 @@ class APIConnector:
                                 retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                                 retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def rule_coverage_query(self, data):
-        return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False)
+    def rule_coverage_query(self, data, include_boundary_rules=True):
+        params = None
+        if include_boundary_rules is not None:
+            params = {'include_deny_rules': include_boundary_rules}
+        return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False, params=params)
 
     def objects_label_get(self, max_results: int = None, async_mode=True):
         path = '/labels'
