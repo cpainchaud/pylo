@@ -1123,12 +1123,12 @@ class APIConnector:
             """
             self.__filter_prop_add_label(self._consumer_labels, label_or_href)
 
-        def consumer_exclude_label(self, label_or_href):
-            """
-
-            @type label_or_href: str|pylo.Label|pylo.LabelGroup
-            """
+        def consumer_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
             self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)
+
+        def consumer_exclude_labels(self, labels: List[Union[str, 'pylo.Label', 'pylo.LabelGroup']]):
+            for label in labels:
+                self.consumer_exclude_label(label)
 
         def consumer_include_workload(self, workload_or_href:Union[str, 'pylo.Workload']):
             if isinstance(workload_or_href, str):
@@ -1207,11 +1207,11 @@ class APIConnector:
             raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
 
         def provider_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
-            """
-
-            @type label_or_href: str|pylo.Label|pylo.LabelGroup
-            """
             self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
+
+        def provider_exclude_labels(self, labels_or_hrefs: List[Union[str, 'pylo.Label', 'pylo.LabelGroup']]):
+            for label in labels_or_hrefs:
+                self.provider_exclude_label(label)
 
         def provider_exclude_cidr(self, ipaddress: str):
             self.__filter_provider_ip_exclude.append(ipaddress)
