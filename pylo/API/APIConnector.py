@@ -1433,12 +1433,7 @@ class APIConnector:
 
         raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
 
-    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10):
-        """
-
-        :param filters: should be an instance of ExplorerFilterSetV1 or a json payload built with your own logic
-        :return:
-        """
+    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10) -> 'pylo.ExplorerResultSetV1':
         path = "/traffic_flows/async_queries"
         if isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):
             data = filters.generate_json_query()

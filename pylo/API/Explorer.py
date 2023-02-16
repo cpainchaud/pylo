@@ -263,7 +263,7 @@ class ExplorerResultSetV1:
         return ExplorerResultSetV1.ExplorerResult(self._raw_results[line])
 
     @staticmethod
-    def mergeRecordsProcessAndUserDiffers(records: List['ExplorerResultSetV1.ExplorerResult']) -> List['ExplorerResultSetV1.ExplorerResult']:
+    def merge_similar_records_only_process_and_user_differs(records: List['ExplorerResultSetV1.ExplorerResult']) -> List['ExplorerResultSetV1.ExplorerResult']:
         class HashTable:
             def __init__(self):
                 self.entries: Dict[str, List['ExplorerResultSetV1.ExplorerResult']] = {}
