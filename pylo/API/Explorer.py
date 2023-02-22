@@ -30,7 +30,6 @@ class ExplorerResultSetV1:
 
             src = data['src']
             self.source_ip: str = src['ip']
-            self.source_ip_fqdn = src.get('fqdn')
             self._source_iplists = src.get('ip_lists')
             self._source_iplists_href: List[str] = []
             if self._source_iplists is not None:
