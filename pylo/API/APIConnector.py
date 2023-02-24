@@ -7,7 +7,7 @@ from pathlib import Path
 try:
     import requests as requests
 except ImportError:
-    import pylo.vendors.requests as requests
+    import requests
 
 from threading import Thread
 from queue import Queue

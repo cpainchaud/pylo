@@ -19,12 +19,13 @@ setup(
     author_email='shellescape@gmail.com',
     url='',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs', 'pylo/vendors')),
+    packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
         'requests~=2.25.1',
         'openpyxl~=3.0.6',
         'xlsxwriter~=1.3.7',
         'colorama~=0.4.4',
+        'psutil~=5.8.0'
     ],
     entry_points={
         'console_scripts': ['pylo-cli=pylo.cli:run'],

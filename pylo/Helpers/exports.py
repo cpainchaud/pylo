@@ -3,12 +3,12 @@ from typing import Dict, Any, List, Optional
 try:
     import xlsxwriter
 except ImportError:
-    import pylo.vendors.xlsxwriter as xlsxwriter
+    import xlsxwriter
 
 try:
     import openpyxl
 except ImportError:
-    import pylo.vendors.openpyxl as openpyxl
+    import openpyxl
 
 import csv
 import pylo

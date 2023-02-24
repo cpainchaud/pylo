@@ -19,7 +19,7 @@ jobs:
         with:
           path: ./
           spec: pylo/utilities/
-          extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo\\vendors;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
+          extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
 
 
       - name: Publish executables for Master branch

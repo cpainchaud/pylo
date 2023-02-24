@@ -13,7 +13,7 @@ import re
 
 import time
 import os
-import pylo.vendors.psutil as psutil
+import psutil
 
 
 def elapsed_since(start):
