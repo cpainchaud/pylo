@@ -25,7 +25,6 @@ setup(
         'openpyxl~=3.0.6',
         'xlsxwriter~=1.3.7',
         'colorama~=0.4.4',
-        'psutil~=5.8.0'
     ],
     entry_points={
         'console_scripts': ['pylo-cli=pylo.cli:run'],
