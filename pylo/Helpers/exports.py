@@ -131,6 +131,35 @@ class ArraysToExcel:
 
                 index += 1
 
+        def write_to_csv(self, filename: str,
+        ):
+            headers: List[str] = []
+            for header in self._headers:
+                if type(header) is str:
+                    headers.append(header)
+                    continue
+                if 'nice_name' in header:
+                    headers.append(header['nice_name'])
+                    continue
+                headers.append(header['name'])
+
+            headers_id: List[str] = []
+            for header in self._headers:
+                if type(header) is str:
+                    headers_id.append(header)
+                    continue
+                headers_id.append(header['name'])
+
+
+            exporter = ArrayToExport(headers)
+
+            for line in self._lines:
+                row = []
+                for header in headers_id:
+                    row.append(line[self._headers_name_to_index[header]])
+                exporter.add_line_from_list(row)
+
+            exporter.write_to_csv(filename)
 
         def columns_count(self):
             return len(self._headers)
@@ -257,13 +286,14 @@ class ArraysToExcel:
         self._sheets = {}
 
     def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None,
-                     order_by: Optional[List[str]] = None, multivalues_cell_delimiter: str = ' '):
+                     order_by: Optional[List[str]] = None, multivalues_cell_delimiter: str = ' ') -> Sheet:
         if name in self._sheets:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))
 
         self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text,
                                                  sheet_color=sheet_color, order_by=order_by,
                                                  multivalues_cell_delimiter=multivalues_cell_delimiter)
+        return self._sheets[name]
 
     def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)
@@ -281,6 +311,7 @@ class ArraysToExcel:
 
     def add_line_from_list(self, line: list, sheet_name: str):
         self._sheets[sheet_name].add_line_from_list(line)
+
 
 
 class CsvExcelToObject:

@@ -51,10 +51,13 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
     parser.add_argument('--save-location', type=str, required=False, default='./',
                         help='The folder where this script will save generated Excel report')
+    parser.add_argument('--csv-output-only', action='store_true',
+                        help='Generate only the CSV output file, no Excel file')
+    parser.add_argument('--excel-output-only', action='store_true',
+                        help='Generate only the Excel output file, no CSV file')
 
     for extra_column in extra_columns:
         extra_column.apply_cli_args(parser)
-
 
 def __main(args, org: pylo.Organization, **kwargs):
 
@@ -64,6 +67,8 @@ def __main(args, org: pylo.Organization, **kwargs):
     filter_keep_in_report = args['keep_filters_in_report']
     save_location = args['save_location']
     verbose = args['verbose']
+    csv_output_only = args['csv_output_only']
+    excel_output_only = args['excel_output_only']
     # print(args['filter_fields'])
 
     output_file_prefix = make_filename_with_timestamp('workload_export_')
@@ -99,7 +104,9 @@ def __main(args, org: pylo.Organization, **kwargs):
     if filter_keep_in_report:
         for field in filter_data._detected_headers:
             csv_report_headers.append('_' + field)
-    csv_report = pylo.ArrayToExport(csv_report_headers)
+
+    csv_report = pylo.ArraysToExcel()
+    csv_sheet = csv_report.create_sheet('workloads', csv_report_headers, force_all_wrap_text=True)
 
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
     used_filters = {}
@@ -141,7 +148,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             for field in filter:
                 new_row[filter_append_prefix + field] = filter[field]
 
-        csv_report.add_line_from_object(new_row)
+        csv_sheet.add_line_from_object(new_row)
 
     print(" * Listing and Filtering ({}) workloads now".format(len(all_workloads)))
 
@@ -212,7 +219,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         else:
             add_workload_to_report(workload)
 
-    print("  ** All workloads have been processed, {} were added in the report".format(csv_report.lines_count()))
+    print("  ** All workloads have been processed, {} were added in the report".format(csv_sheet.lines_count()))
 
     if filter_keep_in_report:
         print(" * Adding unmatched filters back into the report as request...", flush=True, end='')
@@ -225,13 +232,19 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print()
     print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
-    csv_report.write_to_csv(output_file_csv)
-    print("DONE")
+    if not excel_output_only:
+        csv_sheet.write_to_csv(output_file_csv)
+        print("DONE")
+    else:
+        print("SKIPPED (use --csv-output-only to write CSV file or no option for both)")
     print(" * Writing report file '{}' ... ".format(output_file_excel), end='', flush=True)
-    csv_report.write_to_excel(output_file_excel)
-    print("DONE")
+    if not csv_output_only:
+        csv_report.write_to_excel(output_file_excel)
+        print("DONE")
+    else:
+        print("SKIPPED (use --excel-output-only to write Excel file or no option for both)")
 
-    if csv_report.lines_count() < 1:
+    if csv_sheet.lines_count() < 1:
         print("\n** WARNING: no entry matched your filters so reports are empty !\n")
 
 
