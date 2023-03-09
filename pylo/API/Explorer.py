@@ -225,7 +225,13 @@ class ExplorerResultSetV1:
             """
             @return: None if draft_mode was not enabled
             """
-            return self._draft_mode_policy_decision is not None and not self._draft_mode_policy_decision == "allowed"
+            return self._draft_mode_policy_decision is not None and self._draft_mode_policy_decision == "allowed"
+
+        def draft_mode_policy_decision_is_unavailable(self) -> Optional[bool]:
+            """
+            @return: None if draft_mode was not enabled
+            """
+            return self._draft_mode_policy_decision is None
 
         def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
             return self._draft_mode_policy_decision is None
