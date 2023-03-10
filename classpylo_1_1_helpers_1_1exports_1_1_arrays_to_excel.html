@@ -90,8 +90,8 @@ Classes</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a740ff7d16d1676258d52d92a785fc762"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel.html#a740ff7d16d1676258d52d92a785fc762">__init__</a> (self)</td></tr>
 <tr class="separator:a740ff7d16d1676258d52d92a785fc762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7752ace70ae5da7000663ff83aa0ad0c"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel.html#a7752ace70ae5da7000663ff83aa0ad0c">create_sheet</a> (self, str name, headers, bool force_all_wrap_text=True, Optional[str] sheet_color=None, Optional[List[str]] order_by=None, str multivalues_cell_delimiter=' ')</td></tr>
-<tr class="separator:a7752ace70ae5da7000663ff83aa0ad0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ca5a6872ecb48e69ec711392248ef96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel_1_1_sheet.html">Sheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel.html#a8ca5a6872ecb48e69ec711392248ef96">create_sheet</a> (self, str name, headers, bool force_all_wrap_text=True, Optional[str] sheet_color=None, Optional[List[str]] order_by=None, str multivalues_cell_delimiter=' ')</td></tr>
+<tr class="separator:a8ca5a6872ecb48e69ec711392248ef96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77e637905985a78461bb4040dfdddb25"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel.html#a77e637905985a78461bb4040dfdddb25">write_to_excel</a> (self, filename, multivalues_cell_delimiter=' ')</td></tr>
 <tr class="separator:a77e637905985a78461bb4040dfdddb25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7fe4ec2b95b33585e53c0a12b108643"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel.html#ae7fe4ec2b95b33585e53c0a12b108643">add_line_from_object</a> (self, record, str sheet_name)</td></tr>
@@ -117,9 +117,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  256</span>    <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">  257</span>        self._sheets = {}</div>
-<div class="line"><span class="lineno">  258</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  285</span>    <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">  286</span>        self._sheets = {}</div>
+<div class="line"><span class="lineno">  287</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -155,10 +155,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  282</span>    <span class="keyword">def </span>add_line_from_list(self, line: list, sheet_name: str):</div>
-<div class="line"><span class="lineno">  283</span>        self._sheets[sheet_name].add_line_from_list(line)</div>
-<div class="line"><span class="lineno">  284</span> </div>
-<div class="line"><span class="lineno">  285</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  312</span>    <span class="keyword">def </span>add_line_from_list(self, line: list, sheet_name: str):</div>
+<div class="line"><span class="lineno">  313</span>        self._sheets[sheet_name].add_line_from_list(line)</div>
+<div class="line"><span class="lineno">  314</span> </div>
+<div class="line"><span class="lineno">  315</span> </div>
+<div class="line"><span class="lineno">  316</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -201,9 +202,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  279</span>    <span class="keyword">def </span>add_line_from_list_of_objects(self, list_of_objects, sheet_name: str):</div>
-<div class="line"><span class="lineno">  280</span>        self._sheets[sheet_name].add_line_from_list_of_objects(list_of_objects)</div>
-<div class="line"><span class="lineno">  281</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  309</span>    <span class="keyword">def </span>add_line_from_list_of_objects(self, list_of_objects, sheet_name: str):</div>
+<div class="line"><span class="lineno">  310</span>        self._sheets[sheet_name].add_line_from_list_of_objects(list_of_objects)</div>
+<div class="line"><span class="lineno">  311</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -246,9 +247,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  276</span>    <span class="keyword">def </span>add_line_from_object(self, record, sheet_name: str):</div>
-<div class="line"><span class="lineno">  277</span>        self._sheets[sheet_name].add_line_from_object(record)</div>
-<div class="line"><span class="lineno">  278</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  306</span>    <span class="keyword">def </span>add_line_from_object(self, record, sheet_name: str):</div>
+<div class="line"><span class="lineno">  307</span>        self._sheets[sheet_name].add_line_from_object(record)</div>
+<div class="line"><span class="lineno">  308</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -260,14 +261,14 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a7752ace70ae5da7000663ff83aa0ad0c" name="a7752ace70ae5da7000663ff83aa0ad0c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7752ace70ae5da7000663ff83aa0ad0c">&#9670;&#160;</a></span>create_sheet()</h2>
+<a id="a8ca5a6872ecb48e69ec711392248ef96" name="a8ca5a6872ecb48e69ec711392248ef96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ca5a6872ecb48e69ec711392248ef96">&#9670;&#160;</a></span>create_sheet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def pylo.Helpers.exports.ArraysToExcel.create_sheet </td>
+          <td class="memname"> <a class="el" href="classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel_1_1_sheet.html">Sheet</a> pylo.Helpers.exports.ArraysToExcel.create_sheet </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -315,14 +316,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  260</span>                     order_by: Optional[List[str]] = <span class="keywordtype">None</span>, multivalues_cell_delimiter: str = <span class="stringliteral">&#39; &#39;</span>):</div>
-<div class="line"><span class="lineno">  261</span>        <span class="keywordflow">if</span> name <span class="keywordflow">in</span> self._sheets:</div>
-<div class="line"><span class="lineno">  262</span>            <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A sheet named &#39;{}&#39; already exists&quot;</span>.format(name))</div>
-<div class="line"><span class="lineno">  263</span> </div>
-<div class="line"><span class="lineno">  264</span>        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text,</div>
-<div class="line"><span class="lineno">  265</span>                                                 sheet_color=sheet_color, order_by=order_by,</div>
-<div class="line"><span class="lineno">  266</span>                                                 multivalues_cell_delimiter=multivalues_cell_delimiter)</div>
-<div class="line"><span class="lineno">  267</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  289</span>                     order_by: Optional[List[str]] = <span class="keywordtype">None</span>, multivalues_cell_delimiter: str = <span class="stringliteral">&#39; &#39;</span>) -&gt; Sheet:</div>
+<div class="line"><span class="lineno">  290</span>        <span class="keywordflow">if</span> name <span class="keywordflow">in</span> self._sheets:</div>
+<div class="line"><span class="lineno">  291</span>            <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A sheet named &#39;{}&#39; already exists&quot;</span>.format(name))</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>        self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text,</div>
+<div class="line"><span class="lineno">  294</span>                                                 sheet_color=sheet_color, order_by=order_by,</div>
+<div class="line"><span class="lineno">  295</span>                                                 multivalues_cell_delimiter=multivalues_cell_delimiter)</div>
+<div class="line"><span class="lineno">  296</span>        <span class="keywordflow">return</span> self._sheets[name]</div>
+<div class="line"><span class="lineno">  297</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment -->
 </div>
@@ -358,14 +360,14 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  268</span>    <span class="keyword">def </span>write_to_excel(self, filename, multivalues_cell_delimiter=&#39; &#39;):</div>
-<div class="line"><span class="lineno">  269</span>        xls_workbook = xlsxwriter.Workbook(filename)</div>
-<div class="line"><span class="lineno">  270</span> </div>
-<div class="line"><span class="lineno">  271</span>        <span class="keywordflow">for</span> sheet_name, sheet_object <span class="keywordflow">in</span> self._sheets.items():</div>
-<div class="line"><span class="lineno">  272</span>            sheet_object.add_to_document(xls_workbook, sheet_name)</div>
-<div class="line"><span class="lineno">  273</span> </div>
-<div class="line"><span class="lineno">  274</span>        xls_workbook.close()</div>
-<div class="line"><span class="lineno">  275</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  298</span>    <span class="keyword">def </span>write_to_excel(self, filename, multivalues_cell_delimiter=&#39; &#39;):</div>
+<div class="line"><span class="lineno">  299</span>        xls_workbook = xlsxwriter.Workbook(filename)</div>
+<div class="line"><span class="lineno">  300</span> </div>
+<div class="line"><span class="lineno">  301</span>        <span class="keywordflow">for</span> sheet_name, sheet_object <span class="keywordflow">in</span> self._sheets.items():</div>
+<div class="line"><span class="lineno">  302</span>            sheet_object.add_to_document(xls_workbook, sheet_name)</div>
+<div class="line"><span class="lineno">  303</span> </div>
+<div class="line"><span class="lineno">  304</span>        xls_workbook.close()</div>
+<div class="line"><span class="lineno">  305</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -375,7 +377,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 18 2023 13:40:29 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Mar 10 2023 14:34:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
