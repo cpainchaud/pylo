@@ -7,11 +7,12 @@ import argparse
 # in case user wants to run this utility while having a version of pylo already installed
 if __name__ == "__main__":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+
 import pylo
 from pylo.cli import commands
 
 
-def run():
+def run(forced_command_name: Optional[str] = None):
     parser = argparse.ArgumentParser(description='TODO LATER')
     parser.add_argument('--pce', type=str, required=True,
                         help='hostname of the PCE')
@@ -23,6 +24,8 @@ def run():
     sub_parsers = parser.add_subparsers(dest='command', required=True)
 
     for command in commands.available_commands.values():
+        if(forced_command_name is not None and command.name != forced_command_name):
+            continue
         command.fill_parser(sub_parsers.add_parser(command.name, help=''))
 
     args = vars(parser.parse_args())

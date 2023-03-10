@@ -7,9 +7,9 @@ from pylo import Label
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
-    def __init__(self, name: str, href: str, ltype: int, owner):
+    def __init__(self, name: str, href: str, label_type: str, owner):
         pylo.ReferenceTracker.__init__(self)
-        pylo.LabelCommon.__init__(self, name, href, ltype, owner)
+        pylo.LabelCommon.__init__(self, name, href, label_type, owner)
         self._members: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
         self.raw_json = None
 

@@ -98,7 +98,7 @@ class Organization:
             user = input()
             password = getpass.getpass()
 
-            connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True, orgID=self.id)
+            connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True, org_id=self.id)
 
         self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads, list_of_objects_to_load=list_of_objects_to_load)
 
@@ -120,12 +120,12 @@ class Organization:
         if 'labels' in object_to_load:
             if 'labels' not in data:
                 raise Exception("'labels' was not found in json data")
-            self.LabelStore.loadLabelsFromJson(data['labels'])
+            self.LabelStore.load_labels_from_json(data['labels'])
 
         if 'labelgroups' in object_to_load:
             if 'labelgroups' not in data:
                 raise Exception("'labelgroups' was not found in json data")
-            self.LabelStore.loadLabelGroupsFromJson(data['labelgroups'])
+            self.LabelStore.load_label_groups_from_json(data['labelgroups'])
 
         if 'iplists' in object_to_load:
             if 'iplists' not in data:

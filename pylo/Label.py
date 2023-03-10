@@ -4,9 +4,9 @@ from .LabelStore import LabelStore
 
 
 class Label(ReferenceTracker, LabelCommon):
-    def __init__(self, name, href, ltype, owner: 'LabelStore'):
+    def __init__(self, name, href, label_type: str, owner: 'LabelStore'):
         ReferenceTracker.__init__(self)
-        LabelCommon.__init__(self, name, href, ltype, owner)
+        LabelCommon.__init__(self, name, href, label_type, owner)
 
     def is_group(self) -> bool:
         return False
@@ -17,7 +17,7 @@ class Label(ReferenceTracker, LabelCommon):
     def reference_obj(self):
         return {"href": self.href,
                 "value": self.name,
-                "key": self.type_to_short_string()}
+                "key": self.type}
 
     def get_api_reference_json(self):
         return {'label': {'href': self.href}}

@@ -38,9 +38,9 @@ class VENAgent(pylo.ReferenceTracker):
         if prop_value is None:
             return None
 
-        try:
+        if '.' in prop_value:
             time_found = datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%S.%fZ")
-        except ValueError:
+        else:
             time_found = datetime.datetime.strptime(prop_value, "%Y-%m-%dT%H:%M:%SZ")
 
         return time_found

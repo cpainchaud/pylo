@@ -5,24 +5,11 @@ from .LabelStore import label_type_role, label_type_env, label_type_loc, label_t
 
 class LabelCommon:
 
-    def __init__(self, name: str, href: str, label_type: Union[int, str], owner: LabelStore):
+    def __init__(self, name: str, href: str, label_type: str, owner: LabelStore):
         self.owner: LabelStore = owner
         self.name: str = name
         self.href: str = href
-
-        if type(label_type) is str:
-            if label_type == 'loc':
-                label_type = label_type_loc
-            elif label_type == 'env':
-                label_type = label_type_env
-            elif label_type == 'app':
-                label_type = label_type_app
-            elif label_type == 'role':
-                label_type = label_type_role
-            else:
-                raise PyloEx("Tried to initialize a Label object with unsupported type '%s'" % (ltype))
-
-        self._type = label_type
+        self.type = label_type
 
     def is_label(self) -> bool:
         raise PyloEx("not implemented")
@@ -30,43 +17,23 @@ class LabelCommon:
     def is_group(self) -> bool:
         raise PyloEx("not implemented")
 
-    def type_to_short_string(self):
-        if self.type_is_location():
-            return "loc"
-        elif self.type_is_environment():
-            return "env"
-        elif self.type_is_application():
-            return "app"
-        elif self.type_is_role():
-            return "role"
-
-        raise PyloEx("unsupported yet")
+    def type_to_short_string(self) -> str:
+        return self.type
 
     def type_is_location(self) -> bool:
-        return self._type == label_type_loc
+        return self.type == 'loc'
 
     def type_is_environment(self) -> bool:
-        return self._type == label_type_env
+        return self.type == 'env'
 
     def type_is_application(self) -> bool:
-        return self._type == label_type_app
+        return self.type == 'app'
 
     def type_is_role(self) -> bool:
-        return self._type == label_type_role
-
-    def type(self):
-        return self._type
+        return self.type == 'role'
 
     def type_string(self) -> str:
-        if self._type == label_type_loc:
-            return 'loc'
-        if self._type == label_type_env:
-            return 'env'
-        if self._type == label_type_app:
-            return 'app'
-        if self._type == label_type_role:
-            return 'role'
-        raise PyloEx("unsupported Label type #{} for label href={}".format(self._type, self.href))
+        return self.type
 
     def api_set_name(self, new_name: str):
         find_collision = self.owner.find_label_by_name_and_type(new_name, self.type())

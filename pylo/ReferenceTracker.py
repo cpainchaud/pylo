@@ -30,7 +30,6 @@ class ReferenceTracker:
         return matches
 
 
-
 class Referencer:
     def reference_name_changed(self):
         raise Exception('not implemented')

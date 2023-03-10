@@ -7,7 +7,7 @@ import argparse
 import time
 import json
 import csv
-import pylo.vendors.xlsxwriter as xlsxwriter
+import xlsxwriter
 
 output_dir = 'output'
 rules_json_file = output_dir + '/rules.json'

@@ -2,8 +2,6 @@ import os
 import sys
 
 parent_dir = os.path.abspath(os.path.dirname(__file__))
-vendor_dir = os.path.join(parent_dir, 'vendors')
-sys.path.append(vendor_dir)
 
 from .tmp import *
 from .Helpers import *
@@ -12,8 +10,10 @@ from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexp
 from .SoftwareVersion import SoftwareVersion
 from .IPMap import IP4Map
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
-from .APIConnector import APIConnector
-from .Explorer import ExplorerResultSetV1, RuleCoverageQueryManager
+from .API.APIConnector import APIConnector
+from .API.RuleSearchQuery import RuleSearchQuery, RuleSearchQueryResolvedResultSet
+from .API.ClusterHealth import ClusterHealth
+from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager
 from .LabelCommon import LabelCommon
 from .Label import Label
 from .LabelGroup import LabelGroup

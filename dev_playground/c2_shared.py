@@ -161,7 +161,7 @@ def load_config_file(filename='c2_config.json') -> bool:
                     org_id = 1
                 connector = pylo.APIConnector(hostname=pce_data['fqdn'], port=pce_data['port'],
                                               apiuser=pce_data['api_user'], apikey=pce_data['api_key'],
-                                              orgID=org_id, skip_ssl_cert_check=True)
+                                              org_id=org_id, skip_ssl_cert_check=True)
                 pce_listing[pce_data['name'].lower()] = connector
 
         global core_service_label_group_name

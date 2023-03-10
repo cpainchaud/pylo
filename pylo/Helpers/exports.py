@@ -3,12 +3,12 @@ from typing import Dict, Any, List, Optional
 try:
     import xlsxwriter
 except ImportError:
-    import pylo.vendors.xlsxwriter as xlsxwriter
+    import xlsxwriter
 
 try:
     import openpyxl
 except ImportError:
-    import pylo.vendors.openpyxl as openpyxl
+    import openpyxl
 
 import csv
 import pylo
@@ -103,7 +103,6 @@ class ArraysToExcel:
             self._headers = headers
             self._columns_count = len(headers)
             self._lines = []
-            self._width = []
             self._columns_wrap = []
             self._color = sheet_color
 
@@ -114,25 +113,17 @@ class ArraysToExcel:
             self._headers_name_to_index = {}
             self._headers_index_to_name = []
             index = 0
+
             for header_name in headers:
                 self._columns_wrap.append(force_all_wrap_text)
 
                 if type(header_name) is str:
                     self._headers_index_to_name.append(header_name)
                     self._headers_name_to_index[header_name] = index
-                    self._width.append(0)
                 else:
                     header_name['nice_name'] = header_name.get('nice_name', header_name['name'])
                     self._headers_index_to_name.append(header_name['name'])
                     self._headers_name_to_index[header_name['name']] = index
-                    desired_width = header_name.get('width')
-                    if desired_width is None:
-                        self._width.append(0)
-                    else:
-                        if desired_width == 'auto':
-                            self._width.append(0)
-                        else:
-                            self._width.append(-1)
 
                     wrap = header_name.get('wrap_text')
                     if wrap is not None and not wrap:
@@ -140,6 +131,35 @@ class ArraysToExcel:
 
                 index += 1
 
+        def write_to_csv(self, filename: str,
+        ):
+            headers: List[str] = []
+            for header in self._headers:
+                if type(header) is str:
+                    headers.append(header)
+                    continue
+                if 'nice_name' in header:
+                    headers.append(header['nice_name'])
+                    continue
+                headers.append(header['name'])
+
+            headers_id: List[str] = []
+            for header in self._headers:
+                if type(header) is str:
+                    headers_id.append(header)
+                    continue
+                headers_id.append(header['name'])
+
+
+            exporter = ArrayToExport(headers)
+
+            for line in self._lines:
+                row = []
+                for header in headers_id:
+                    row.append(line[self._headers_name_to_index[header]])
+                exporter.add_line_from_list(row)
+
+            exporter.write_to_csv(filename)
 
         def columns_count(self):
             return len(self._headers)
@@ -194,6 +214,10 @@ class ArraysToExcel:
             xls_headers = []
             xls_data = []
 
+            columns_max_width = []
+            for header in self._headers:
+                columns_max_width.append(0)
+
             for line in self._lines:
                 new_line = []
                 item_index = 0
@@ -203,10 +227,9 @@ class ArraysToExcel:
                     else:
                         new_line.append(item)
 
-                    if self._width[item_index] >= 0:
-                        length = find_length(new_line[item_index])
-                        if length > self._width[item_index]:
-                            self._width[item_index] = length
+                    length = find_length(new_line[item_index])
+                    if length > columns_max_width[item_index]:
+                        columns_max_width[item_index] = length
                     item_index += 1
 
                 xls_data.append(new_line)
@@ -217,7 +240,8 @@ class ArraysToExcel:
                 cell_format.set_text_wrap(self._columns_wrap[header_index])
                 cell_format.set_valign('vcenter')
 
-                desired_max_width = self._width[header_index]+1
+
+                header_max_width_setting = None
 
                 if type(header) is str:
                     xls_headers.append({'header': header, 'format': cell_format})
@@ -225,17 +249,22 @@ class ArraysToExcel:
                 else:
                     xls_headers.append({'header': header.get('nice_name') or header.get('name'), 'format': cell_format})
                     column_name_length = len(header['nice_name'])
-                    desired_max_width = header.get('max_width')
+                    header_max_width_setting = header.get('max_width')
 
-                if(desired_max_width is not None):
-                    if self._width[header_index] > desired_max_width:
-                        self._width[header_index] = desired_max_width
+                # calculating columns width from content length
+                column_width = columns_max_width[header_index]+1
 
-                if self._width[header_index] > 0:
-                    if column_name_length > self._width[header_index]:
-                        self._width[header_index] = column_name_length
+                if header_max_width_setting is not None:
+                    if header_max_width_setting == 'auto':
+                        column_width = columns_max_width[header_index]+1
+                    elif columns_max_width[header_index] > header_max_width_setting:
+                        column_width = header_max_width_setting
+                    else:
+                        column_width = columns_max_width[header_index]+1
 
-                    xls_worksheet.set_column(header_index, header_index, width=desired_max_width)
+                #print("column '{}' width={} vs setting={} vs calculated={}".format(header_index, column_width, header_max_width_setting, columns_max_width[header_index]))
+
+                xls_worksheet.set_column(header_index, header_index, width=column_width*1.1)
 
                 header_index += 1
 
@@ -257,13 +286,14 @@ class ArraysToExcel:
         self._sheets = {}
 
     def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None,
-                     order_by: Optional[List[str]] = None, multivalues_cell_delimiter: str = ' '):
+                     order_by: Optional[List[str]] = None, multivalues_cell_delimiter: str = ' ') -> Sheet:
         if name in self._sheets:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))
 
         self._sheets[name] = ArraysToExcel.Sheet(headers, force_all_wrap_text=force_all_wrap_text,
                                                  sheet_color=sheet_color, order_by=order_by,
                                                  multivalues_cell_delimiter=multivalues_cell_delimiter)
+        return self._sheets[name]
 
     def write_to_excel(self, filename, multivalues_cell_delimiter=' '):
         xls_workbook = xlsxwriter.Workbook(filename)
@@ -281,6 +311,7 @@ class ArraysToExcel:
 
     def add_line_from_list(self, line: list, sheet_name: str):
         self._sheets[sheet_name].add_line_from_list(line)
+
 
 
 class CsvExcelToObject:
