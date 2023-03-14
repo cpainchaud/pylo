@@ -7,18 +7,18 @@ from setuptools import setup, find_packages
 # with open('LICENSE') as f:
 #     license = f.read()
 
-readme = "TODO"
-licence = "TODO"
+setup_readme = "TODO"
+setup_license = "TODO"
 
 setup(
     name='pylo',
     version='0.2.4',
     description='API Framework and Utilities for Illumio ASP platform',
-    long_description=readme,
+    long_description=setup_readme,
     author='Christophe Painchaud',
     author_email='shellescape@gmail.com',
     url='',
-    license=license,
+    license=setup_license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
         'requests~=2.25.1',
