@@ -21,7 +21,7 @@ setup(
     license=setup_license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
-        'requests~=2.25.1',
+        'requests<=2.28.1',
         'openpyxl~=3.0.6',
         'xlsxwriter~=1.3.7',
         'colorama~=0.4.4',
