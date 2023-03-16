@@ -152,7 +152,7 @@ class LabelStore:
 
         return None
 
-    def find_label_by_name_and_type(self, name: str, type: int):
+    def find_label_by_name_and_type(self, name: str, type: str):
         if type not in self.label_types:
             raise Exception("Unsupported label type '%s'", type)
 
