@@ -1,10 +1,11 @@
-from typing import Optional, List, Union, Dict, Any
+from typing import Optional, List, Union, Dict, Any, NewType
 
 import pylo
 from pylo import log, Organization, Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList
 import re
 
+RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
 
 class RuleApiUpdateStack:
     def __init__(self):
@@ -357,7 +358,7 @@ class RuleHostContainer(pylo.Referencer):
     def __init__(self, owner: 'pylo.Rule', name: str):
         Referencer.__init__(self)
         self.owner = owner
-        self._items: Dict[Union[Label, LabelGroup, Workload, VirtualService], Union[Label, LabelGroup, Workload, VirtualService]] = {}
+        self._items: Dict[RuleActorsAcceptableTypes, RuleActorsAcceptableTypes] = {}
         self.name = name
         self._hasAllWorkloads = False
 

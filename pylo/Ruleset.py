@@ -157,8 +157,8 @@ class Ruleset:
         del self.rules_by_href[href]
 
     def api_create_rule(self, intra_scope: bool,
-                        consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                        providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
+                        consumers: List['pylo.RuleActorsAcceptableTypes'],
+                        providers: List['pylo.RuleActorsAcceptableTypes'],
                         services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
                         description='', machine_auth=False, secure_connect=False, enabled=True,
                         stateless=False, consuming_security_principals=[],
