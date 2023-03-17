@@ -11,7 +11,8 @@ var searchData=
   ['rulesecurityprincipalcontainer_8',['RuleSecurityPrincipalContainer',['../classpylo_1_1_rule_1_1_rule_security_principal_container.html',1,'pylo::Rule']]],
   ['ruleservicecontainer_9',['RuleServiceContainer',['../classpylo_1_1_rule_1_1_rule_service_container.html',1,'pylo::Rule']]],
   ['ruleset_10',['Ruleset',['../classpylo_1_1_ruleset_1_1_ruleset.html',1,'pylo::Ruleset']]],
-  ['rulesetscope_11',['RulesetScope',['../classpylo_1_1_ruleset_1_1_ruleset_scope.html',1,'pylo::Ruleset']]],
-  ['rulesetscopeentry_12',['RulesetScopeEntry',['../classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html',1,'pylo::Ruleset']]],
-  ['rulesetstore_13',['RulesetStore',['../classpylo_1_1_ruleset_store_1_1_ruleset_store.html',1,'pylo::RulesetStore']]]
+  ['rulesetobjectjsonstructure_11',['RulesetObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_ruleset_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['rulesetscope_12',['RulesetScope',['../classpylo_1_1_ruleset_1_1_ruleset_scope.html',1,'pylo::Ruleset']]],
+  ['rulesetscopeentry_13',['RulesetScopeEntry',['../classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html',1,'pylo::Ruleset']]],
+  ['rulesetstore_14',['RulesetStore',['../classpylo_1_1_ruleset_store_1_1_ruleset_store.html',1,'pylo::RulesetStore']]]
 ];

@@ -127,42 +127,42 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  951</span>        <span class="keyword">def </span>__init__(self, raw_json):</div>
-<div class="line"><span class="lineno">  952</span>            self._items = {}</div>
-<div class="line"><span class="lineno">  953</span>            self.empty = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  954</span> </div>
-<div class="line"><span class="lineno">  955</span>            <span class="keywordflow">if</span> len(raw_json) == 0:</div>
-<div class="line"><span class="lineno">  956</span>                self.empty = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  957</span>                <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">  958</span> </div>
-<div class="line"><span class="lineno">  959</span>            self.global_status = raw_json.get(<span class="stringliteral">&#39;qualify_status&#39;</span>)</div>
-<div class="line"><span class="lineno">  960</span>            <span class="keywordflow">if</span> self.global_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  961</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Cannot find Compatibility Report status in JSON&#39;</span>, json_object=raw_json)</div>
+<div class="fragment"><div class="line"><span class="lineno">  959</span>        <span class="keyword">def </span>__init__(self, raw_json):</div>
+<div class="line"><span class="lineno">  960</span>            self._items = {}</div>
+<div class="line"><span class="lineno">  961</span>            self.empty = <span class="keyword">False</span></div>
 <div class="line"><span class="lineno">  962</span> </div>
-<div class="line"><span class="lineno">  963</span>            results = raw_json.get(<span class="stringliteral">&#39;results&#39;</span>)</div>
-<div class="line"><span class="lineno">  964</span>            <span class="keywordflow">if</span> results <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  965</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Cannot find Compatibility Report results in JSON&#39;</span>, json_object=raw_json)</div>
+<div class="line"><span class="lineno">  963</span>            <span class="keywordflow">if</span> len(raw_json) == 0:</div>
+<div class="line"><span class="lineno">  964</span>                self.empty = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  965</span>                <span class="keywordflow">return</span></div>
 <div class="line"><span class="lineno">  966</span> </div>
-<div class="line"><span class="lineno">  967</span>            results = results.get(<span class="stringliteral">&#39;qualify_tests&#39;</span>)</div>
-<div class="line"><span class="lineno">  968</span>            <span class="keywordflow">if</span> results <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  969</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Cannot find Compatibility Report results in JSON&#39;</span>, json_object=raw_json)</div>
+<div class="line"><span class="lineno">  967</span>            self.global_status = raw_json.get(<span class="stringliteral">&#39;qualify_status&#39;</span>)</div>
+<div class="line"><span class="lineno">  968</span>            <span class="keywordflow">if</span> self.global_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  969</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Cannot find Compatibility Report status in JSON&#39;</span>, json_object=raw_json)</div>
 <div class="line"><span class="lineno">  970</span> </div>
-<div class="line"><span class="lineno">  971</span>            <span class="keywordflow">for</span> result <span class="keywordflow">in</span> results:</div>
-<div class="line"><span class="lineno">  972</span>                status = result.get(<span class="stringliteral">&#39;status&#39;</span>)</div>
-<div class="line"><span class="lineno">  973</span>                <span class="keywordflow">if</span> status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  974</span>                    <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">  975</span> </div>
-<div class="line"><span class="lineno">  976</span>                <span class="keywordflow">for</span> result_name <span class="keywordflow">in</span> result.keys():</div>
-<div class="line"><span class="lineno">  977</span>                    <span class="keywordflow">if</span> result_name == <span class="stringliteral">&#39;status&#39;</span>:</div>
-<div class="line"><span class="lineno">  978</span>                        <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">  979</span>                    self._items[result_name] = APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem(result_name, result[result_name], status)</div>
-<div class="line"><span class="lineno">  980</span>                    <span class="keywordflow">if</span> result_name == <span class="stringliteral">&quot;required_packages_installed&quot;</span> <span class="keywordflow">and</span> status != <span class="stringliteral">&quot;green&quot;</span>:</div>
-<div class="line"><span class="lineno">  981</span>                        <span class="keywordflow">for</span> tmp <span class="keywordflow">in</span> results:</div>
-<div class="line"><span class="lineno">  982</span>                            <span class="keywordflow">if</span> <span class="stringliteral">&quot;required_packages_missing&quot;</span> <span class="keywordflow">in</span> tmp:</div>
-<div class="line"><span class="lineno">  983</span>                                extra_infos = <span class="stringliteral">&#39;missing packages:{}&#39;</span>.format(pylo.string_list_to_text(tmp[<span class="stringliteral">&quot;required_packages_missing&quot;</span>]))</div>
-<div class="line"><span class="lineno">  984</span>                                self._items[result_name].extra_debug_message = extra_infos</div>
-<div class="line"><span class="lineno">  985</span>                                <span class="keywordflow">break</span></div>
-<div class="line"><span class="lineno">  986</span> </div>
+<div class="line"><span class="lineno">  971</span>            results = raw_json.get(<span class="stringliteral">&#39;results&#39;</span>)</div>
+<div class="line"><span class="lineno">  972</span>            <span class="keywordflow">if</span> results <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  973</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Cannot find Compatibility Report results in JSON&#39;</span>, json_object=raw_json)</div>
+<div class="line"><span class="lineno">  974</span> </div>
+<div class="line"><span class="lineno">  975</span>            results = results.get(<span class="stringliteral">&#39;qualify_tests&#39;</span>)</div>
+<div class="line"><span class="lineno">  976</span>            <span class="keywordflow">if</span> results <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  977</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;Cannot find Compatibility Report results in JSON&#39;</span>, json_object=raw_json)</div>
+<div class="line"><span class="lineno">  978</span> </div>
+<div class="line"><span class="lineno">  979</span>            <span class="keywordflow">for</span> result <span class="keywordflow">in</span> results:</div>
+<div class="line"><span class="lineno">  980</span>                status = result.get(<span class="stringliteral">&#39;status&#39;</span>)</div>
+<div class="line"><span class="lineno">  981</span>                <span class="keywordflow">if</span> status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  982</span>                    <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">  983</span> </div>
+<div class="line"><span class="lineno">  984</span>                <span class="keywordflow">for</span> result_name <span class="keywordflow">in</span> result.keys():</div>
+<div class="line"><span class="lineno">  985</span>                    <span class="keywordflow">if</span> result_name == <span class="stringliteral">&#39;status&#39;</span>:</div>
+<div class="line"><span class="lineno">  986</span>                        <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">  987</span>                    self._items[result_name] = APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem(result_name, result[result_name], status)</div>
+<div class="line"><span class="lineno">  988</span>                    <span class="keywordflow">if</span> result_name == <span class="stringliteral">&quot;required_packages_installed&quot;</span> <span class="keywordflow">and</span> status != <span class="stringliteral">&quot;green&quot;</span>:</div>
+<div class="line"><span class="lineno">  989</span>                        <span class="keywordflow">for</span> tmp <span class="keywordflow">in</span> results:</div>
+<div class="line"><span class="lineno">  990</span>                            <span class="keywordflow">if</span> <span class="stringliteral">&quot;required_packages_missing&quot;</span> <span class="keywordflow">in</span> tmp:</div>
+<div class="line"><span class="lineno">  991</span>                                extra_infos = <span class="stringliteral">&#39;missing packages:{}&#39;</span>.format(pylo.string_list_to_text(tmp[<span class="stringliteral">&quot;required_packages_missing&quot;</span>]))</div>
+<div class="line"><span class="lineno">  992</span>                                self._items[result_name].extra_debug_message = extra_infos</div>
+<div class="line"><span class="lineno">  993</span>                                <span class="keywordflow">break</span></div>
+<div class="line"><span class="lineno">  994</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment -->
 </div>
@@ -183,15 +183,15 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  987</span>        <span class="keyword">def </span>get_failed_items(self) -&gt; Dict[str, &#39;pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem&#39;]:</div>
-<div class="line"><span class="lineno">  988</span>            results: Dict[str, <span class="stringliteral">&#39;pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem&#39;</span>] = {}</div>
-<div class="line"><span class="lineno">  989</span>            <span class="keywordflow">for</span> infos <span class="keywordflow">in</span> self._items.values():</div>
-<div class="line"><span class="lineno">  990</span>                <span class="keywordflow">if</span> infos.status != <span class="stringliteral">&#39;green&#39;</span>:</div>
-<div class="line"><span class="lineno">  991</span>                    results[infos.name] = infos</div>
-<div class="line"><span class="lineno">  992</span> </div>
-<div class="line"><span class="lineno">  993</span>            <span class="keywordflow">return</span> results</div>
-<div class="line"><span class="lineno">  994</span> </div>
-<div class="line"><span class="lineno">  995</span>    <span class="keyword">def </span>agent_get_compatibility_report(self, agent_href: str = <span class="keywordtype">None</span>, agent_id: str = <span class="keywordtype">None</span>, return_raw_json=<span class="keyword">True</span>) \</div>
+<div class="fragment"><div class="line"><span class="lineno">  995</span>        <span class="keyword">def </span>get_failed_items(self) -&gt; Dict[str, &#39;pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem&#39;]:</div>
+<div class="line"><span class="lineno">  996</span>            results: Dict[str, <span class="stringliteral">&#39;pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem&#39;</span>] = {}</div>
+<div class="line"><span class="lineno">  997</span>            <span class="keywordflow">for</span> infos <span class="keywordflow">in</span> self._items.values():</div>
+<div class="line"><span class="lineno">  998</span>                <span class="keywordflow">if</span> infos.status != <span class="stringliteral">&#39;green&#39;</span>:</div>
+<div class="line"><span class="lineno">  999</span>                    results[infos.name] = infos</div>
+<div class="line"><span class="lineno"> 1000</span> </div>
+<div class="line"><span class="lineno"> 1001</span>            <span class="keywordflow">return</span> results</div>
+<div class="line"><span class="lineno"> 1002</span> </div>
+<div class="line"><span class="lineno"> 1003</span>    <span class="keyword">def </span>agent_get_compatibility_report(self, agent_href: str = <span class="keywordtype">None</span>, agent_id: str = <span class="keywordtype">None</span>, return_raw_json=<span class="keyword">True</span>) \</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -230,7 +230,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 14 2023 12:40:07 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Mar 17 2023 15:19:40 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

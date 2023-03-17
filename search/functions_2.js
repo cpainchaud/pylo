@@ -47,7 +47,7 @@ var searchData=
   ['count_5frulesets_44',['count_rulesets',['../classpylo_1_1_ruleset_store_1_1_ruleset_store.html#aad73ee8a00748f0f7fb37ac8f672d1fc',1,'pylo::RulesetStore::RulesetStore']]],
   ['count_5funmanaged_5fworkloads_45',['count_unmanaged_workloads',['../classpylo_1_1_workload_store_1_1_workload_store.html#af203840b0eef8a556f26a73bc49a30dc',1,'pylo::WorkloadStore::WorkloadStore']]],
   ['count_5fworkloads_46',['count_workloads',['../classpylo_1_1_workload_store_1_1_workload_store.html#a8a62f1764af011d057544e9fa44bf4da',1,'pylo::WorkloadStore::WorkloadStore']]],
-  ['create_5ffake_5fempty_5fconfig_47',['create_fake_empty_config',['../classpylo_1_1_organization_1_1_organization.html#a358308a00b71d6d4b3333c93f6b8942b',1,'pylo::Organization::Organization']]],
+  ['create_5ffake_5fempty_5fconfig_47',['create_fake_empty_config',['../classpylo_1_1_organization_1_1_organization.html#a7e48a42e48ccc43065a421e97386f92c',1,'pylo::Organization::Organization']]],
   ['create_5ffrom_5fcredentials_5fin_5ffile_48',['create_from_credentials_in_file',['../classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab07bb55fb4bc8579058b3ff5aa20095c',1,'pylo::API::APIConnector::APIConnector']]],
   ['create_5ffrom_5fjson_49',['create_from_json',['../classpylo_1_1_service_1_1_service_entry.html#a84131990914b12b6eff65ff2c11f63a3',1,'pylo::Service::ServiceEntry']]],
   ['create_5ffrom_5ftext_50',['create_from_text',['../classpylo_1_1_rule_1_1_direct_service_in_rule.html#a9ef464d029dc1574e109642ed06f5d42',1,'pylo::Rule::DirectServiceInRule']]],

@@ -26,7 +26,7 @@ var searchData=
   ['add_5fworkload_5fto_5freport_23',['add_workload_to_report',['../namespacepylo_1_1utilities_1_1ven__idle__to__illumination.html#a33ba37f89c05e4ae2ea5605e245e8a06',1,'pylo::utilities::ven_idle_to_illumination']]],
   ['agent_5fget_5fcompatibility_5freport_24',['agent_get_compatibility_report',['../classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a1ceaedc0cdea69b88101551146eecef6',1,'pylo::API::APIConnector::APIConnector']]],
   ['api_5fcreate_5flabel_25',['api_create_label',['../classpylo_1_1_label_store_1_1_label_store.html#aa2e74aa617530f65a037002725ee7e76',1,'pylo::LabelStore::LabelStore']]],
-  ['api_5fcreate_5frule_26',['api_create_rule',['../classpylo_1_1_ruleset_1_1_ruleset.html#a268c1d0f9dcde8a1c39f1b22040a4fc9',1,'pylo::Ruleset::Ruleset']]],
+  ['api_5fcreate_5frule_26',['api_create_rule',['../classpylo_1_1_ruleset_1_1_ruleset.html#ac82408720ae54be06f453ea661a99d37',1,'pylo::Ruleset::Ruleset']]],
   ['api_5fcreate_5fruleset_27',['api_create_ruleset',['../classpylo_1_1_ruleset_store_1_1_ruleset_store.html#a4c453ac2d08c937d4346dcc29e90862a',1,'pylo::RulesetStore::RulesetStore']]],
   ['api_5fdelete_5frule_28',['api_delete_rule',['../classpylo_1_1_ruleset_1_1_ruleset.html#a302e14a4a061a8b67f5914dc022d9740',1,'pylo::Ruleset::Ruleset']]],
   ['api_5fdelete_5fruleset_29',['api_delete_ruleset',['../classpylo_1_1_ruleset_store_1_1_ruleset_store.html#ab95bfa69455a1c1670a37c7cc2540686',1,'pylo::RulesetStore::RulesetStore']]],

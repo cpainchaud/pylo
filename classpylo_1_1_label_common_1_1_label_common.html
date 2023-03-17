@@ -203,13 +203,28 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="fragment"><div class="line"><span class="lineno">   38</span>    <span class="keyword">def </span>api_set_name(self, new_name: str):</div>
-<div class="line"><span class="lineno">   39</span>        find_collision = self.owner.find_label_by_name_and_type(new_name, self.type())</div>
+<div class="line"><span class="lineno">   39</span>        find_collision = self.owner.find_label_by_name_and_type(new_name, self.type)</div>
 <div class="line"><span class="lineno">   40</span>        <span class="keywordflow">if</span> find_collision <span class="keywordflow">is</span> <span class="keywordflow">not</span> self:</div>
 <div class="line"><span class="lineno">   41</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;A Label/LabelGroup with name &#39;{}&#39; already exists&quot;</span>.format(new_name))</div>
 <div class="line"><span class="lineno">   42</span> </div>
-<div class="line"><span class="lineno">   43</span>        self.owner.owner.connector.objects_label_update(self.href, data={<span class="stringliteral">&#39;name&#39;</span>: new_name})</div>
-<div class="line"><span class="lineno">   44</span>        self.name = new_name</div>
-</div><!-- fragment -->
+<div class="line"><span class="lineno">   43</span>        <span class="keywordflow">if</span> self.is_group():</div>
+<div class="line"><span class="lineno">   44</span>            self.owner.owner.connector.objects_labelgroup_update(self.href, data={<span class="stringliteral">&#39;name&#39;</span>: new_name})</div>
+<div class="line"><span class="lineno">   45</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">   46</span>            self.owner.owner.connector.objects_label_update(self.href, data={<span class="stringliteral">&#39;value&#39;</span>: new_name})</div>
+<div class="line"><span class="lineno">   47</span> </div>
+<div class="line"><span class="lineno">   48</span>        self.name = new_name</div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classpylo_1_1_label_common_1_1_label_common_aeecf3939f454625c516054e3f083d6dc_cgraph.png" border="0" usemap="#aclasspylo_1_1_label_common_1_1_label_common_aeecf3939f454625c516054e3f083d6dc_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_label_common_1_1_label_common_aeecf3939f454625c516054e3f083d6dc_cgraph" id="aclasspylo_1_1_label_common_1_1_label_common_aeecf3939f454625c516054e3f083d6dc_cgraph">
+<area shape="rect" title=" " alt="" coords="5,69,244,109"/>
+<area shape="rect" href="classpylo_1_1_label_1_1_label.html#a8a42816908ea68d399d5ae43b24d7a92" title=" " alt="" coords="344,5,472,45"/>
+<area shape="rect" href="classpylo_1_1_label_common_1_1_label_common.html#ab6c30e1263a5a3a0a8b53f675add8b0d" title=" " alt="" coords="292,69,524,109"/>
+<area shape="rect" href="classpylo_1_1_label_group_1_1_label_group.html#ad6ce4357a0c8e1140c86ba292239ebeb" title=" " alt="" coords="309,133,507,173"/>
+</map>
+</div>
+
 </div>
 </div>
 <a id="ab6c30e1263a5a3a0a8b53f675add8b0d" name="ab6c30e1263a5a3a0a8b53f675add8b0d"></a>
@@ -419,7 +434,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 14 2023 12:40:07 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Mar 17 2023 15:19:40 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
