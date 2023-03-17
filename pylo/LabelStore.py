@@ -1,7 +1,7 @@
 from typing import Optional, Union, Dict
 import pylo
 from pylo import log
-from .API.JsonPayloadTypes import LabelObjectJsonStructure
+from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure
 from .Helpers import *
 import random
 from hashlib import md5
@@ -87,7 +87,7 @@ class LabelStore:
             
             log.debug("Found Label '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
 
-    def load_label_groups_from_json(self, json_list):
+    def load_label_groups_from_json(self, json_list: List[LabelGroupObjectJsonStructure]):
         created_groups = []
 
         for json_label in json_list:
@@ -328,7 +328,7 @@ class LabelStore:
 
         return None
 
-    def find_label_multi_by_name_lowercase_and_type(self, name: str, type: str) -> Union['pylo.Label', 'pylo.LabelGroup', None]:
+    def find_label_multi_by_name_lowercase_and_type(self, name: str, type: str) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
         """
 
         :rtype: list[pylo.LabelCommon]

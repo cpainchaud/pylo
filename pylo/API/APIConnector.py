@@ -5,7 +5,8 @@ import getpass
 from pathlib import Path
 
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
-    LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure
+    LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
+    LabelGroupObjectUpdateJsonStructure
 
 try:
     import requests as requests
@@ -540,6 +541,10 @@ class APIConnector:
             data['max_results'] = max_results
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
+
+    def objects_labelgroup_update(self, href: str, data: LabelGroupObjectUpdateJsonStructure):
+        path = href
+        return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
     def objects_virtual_service_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/virtual_services'

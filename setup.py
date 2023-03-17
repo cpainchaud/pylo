@@ -12,7 +12,7 @@ setup_license = "TODO"
 
 setup(
     name='pylo',
-    version='0.2.4',
+    version='0.2.5',
     description='API Framework and Utilities for Illumio ASP platform',
     long_description=setup_readme,
     author='Christophe Painchaud',
@@ -32,4 +32,5 @@ setup(
     package_data={
         "": ["*.pem"],
     },
+    python_requires='>=3.11',
 )

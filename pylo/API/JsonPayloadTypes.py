@@ -1,4 +1,4 @@
-from typing import NewType, Union, List, Dict, Any, Optional, TypedDict
+from typing import List, Optional, TypedDict, NotRequired
 
 
 class LabelObjectJsonStructure(TypedDict):
@@ -9,15 +9,18 @@ class LabelObjectJsonStructure(TypedDict):
     created_at: str
     updated_at: str
 
+
 class LabelObjectCreationJsonStructure(TypedDict):
     value: str
     key: str
 
+
 class LabelObjectUpdateJsonStructure(TypedDict):
     value: str
 
+
 class LabelGroupObjectJsonStructure(TypedDict):
-    value: str
+    name: str
     href: str
     key: str
     deleted: bool
@@ -25,11 +28,18 @@ class LabelGroupObjectJsonStructure(TypedDict):
     updated_at: str
     labels: List[TypedDict('record', {'href': str})]
 
+
+class LabelGroupObjectUpdateJsonStructure(TypedDict):
+    name: NotRequired[str]
+    labels: NotRequired[List[TypedDict('record', {'href': str})]]
+
+
 class IPListObjectJsonStructure(TypedDict):
     href: str
     name: str
     created_at: str
     updated_at: str
+
 
 class WorkloadObjectJsonStructure(TypedDict):
     href: str
@@ -38,11 +48,13 @@ class WorkloadObjectJsonStructure(TypedDict):
     created_at: str
     updated_at: str
 
+
 class RulesetObjectJsonStructure(TypedDict):
     href: str
     name: str
     created_at: str
     updated_at: str
+
 
 class ServiceObjectJsonStructure(TypedDict):
     href: str
@@ -50,17 +62,20 @@ class ServiceObjectJsonStructure(TypedDict):
     created_at: str
     updated_at: str
 
+
 class VirtualServiceObjectJsonStructure(TypedDict):
     href: str
     name: str
     created_at: str
     updated_at: str
 
+
 class SecurityPrincipalObjectJsonStructure(TypedDict):
     href: str
     name: str
     created_at: str
     updated_at: str
+
 
 class PCEObjectsJsonStructure(TypedDict):
     labels: List[LabelObjectJsonStructure]
