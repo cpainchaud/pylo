@@ -1,6 +1,7 @@
 from typing import Optional, Union, Dict
 import pylo
 from pylo import log
+from .API.JsonPayloadTypes import LabelObjectJsonStructure
 from .Helpers import *
 import random
 from hashlib import md5
@@ -69,7 +70,7 @@ class LabelStore:
 
         return results
 
-    def load_labels_from_json(self, json_list):
+    def load_labels_from_json(self, json_list: List[LabelObjectJsonStructure]):
         for json_label in json_list:
             if 'value' not in json_label or 'href' not in json_label or 'key' not in json_label:
                 raise Exception("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))

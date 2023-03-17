@@ -4,6 +4,9 @@ import os
 import getpass
 from pathlib import Path
 
+from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
+    LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure
+
 try:
     import requests as requests
 except ImportError:
@@ -359,7 +362,7 @@ class APIConnector:
             object_to_load = pylo.APIConnector.get_all_object_types()
 
         threads_count = 4
-        data = pylo.Organization.create_fake_empty_config()
+        data: PCEObjectsJsonStructure = pylo.Organization.create_fake_empty_config()
         errors = []
         thread_queue = Queue()
 
@@ -498,7 +501,7 @@ class APIConnector:
             params = {'include_deny_rules': include_boundary_rules}
         return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False, params=params)
 
-    def objects_label_get(self, max_results: int = None, async_mode=True):
+    def objects_label_get(self, max_results: int = None, async_mode=True) -> List[LabelObjectJsonStructure]:
         path = '/labels'
         data = {}
 
@@ -507,7 +510,7 @@ class APIConnector:
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
 
-    def objects_label_update(self, href: str, data: Dict[str, Any]):
+    def objects_label_update(self, href: str, data: LabelObjectUpdateJsonStructure):
         path = href
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
@@ -526,10 +529,10 @@ class APIConnector:
         path = '/labels'
         if label_type != 'app' and label_type != 'env' and label_type != 'role' and label_type != 'loc':
             raise Exception("Requested to create a Label '%s' with wrong type '%s'" % (label_name, label_type))
-        data = {'key': label_type, 'value': label_name}
+        data: LabelObjectCreationJsonStructure = {'key': label_type, 'value': label_name}
         return self.do_post_call(path=path, json_arguments=data)
 
-    def objects_labelgroup_get(self, max_results: int = None, async_mode=True):
+    def objects_labelgroup_get(self, max_results: int = None, async_mode=True) -> List[LabelGroupObjectJsonStructure]:
         path = '/sec_policy/draft/label_groups'
         data = {}
 

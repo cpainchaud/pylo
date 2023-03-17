@@ -3,6 +3,7 @@ import pylo
 from typing import *
 
 from pylo import Label
+from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure
 
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
@@ -11,7 +12,7 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
         pylo.ReferenceTracker.__init__(self)
         pylo.LabelCommon.__init__(self, name, href, label_type, owner)
         self._members: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
-        self.raw_json = None
+        self.raw_json: Optional[LabelGroupObjectJsonStructure] = None
 
     def load_from_json(self):
         # print(self.raw_json)
@@ -20,7 +21,7 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
                 if 'href' in href_record:
                     find_label = self.owner.find_by_href_or_die(href_record['href'])
                     find_label.add_reference(self)
-                    self._members[find_label.name] = find_label
+                    self._members[find_label.href] = find_label
                 else:
                     raise pylo.PyloEx('LabelGroup member has no HREF')
 

@@ -4,6 +4,7 @@ import os
 import datetime
 import getpass
 import pylo
+from pylo.API.JsonPayloadTypes import PCEObjectsJsonStructure
 
 
 class Organization:
@@ -163,7 +164,7 @@ class Organization:
                                                             list_of_objects_to_load=list_of_objects_to_load))
 
     @staticmethod
-    def create_fake_empty_config():
+    def create_fake_empty_config() -> PCEObjectsJsonStructure:
         data = {}
         for object_type in pylo.APIConnector.get_all_object_types().values():
             data[object_type] = []
