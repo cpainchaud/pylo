@@ -2,34 +2,49 @@ name: Package exe with PyInstaller - Windows
 
 on:
   push:
-    branches: [ master, mt4l ]
+    branches: [ master, mt4l, upgrade-windows-build ]
   pull_request:
     branches: [ master ]
 
 jobs:
-  build:
+  build-windows-binaries:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Make executables
-        uses: cpainchaud/pyinstaller-action-windows@main
+      - uses: actions/setup-python@v4
         with:
-          path: ./
-          spec: pylo/utilities/
-          extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
+          python-version: '3.11'
+          architecture: 'x64'
+
+      - name: Prepare Python Environment
+        run: |
+          echo "This is Windows/powershell context"
+          python -c "import sys; print(sys.version)"
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install pyinstaller
+          python -m pip install -r requirements.txt 
+          echo "Powershell command to list all files like 'find' command in Linux"
+            Get-ChildItem -Path . -Recurse -File | Select-Object -Property FullName
+
+
+      - name: Make Executables
+        run: |
+          echo "Current directory is: $pwd"
+          python -m PyInstaller -y -F "../pylo/pylo/utilities/cli.py" --paths="C:/Users/christophe.painchaud/OneDrive - Illumio/Synced/dev/pylo" --paths "C:\Windows\System32\downlevel"
+          Get-ChildItem -Path . -Recurse -File | Select-Object -Property FullName
 
 
       - name: Publish executables for Master branch
-        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/upgrade-windows-build' && github.event_name == 'push'
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          automatic_release_tag: "ignore-testing-only"
           prerelease: true
-          title: "Latest Binaries"
+          title: "*IGNORE* Testing Only"
           files: |
-            dist/windows/*
+            dist/*
+          
 
