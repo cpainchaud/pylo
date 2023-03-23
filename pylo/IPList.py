@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 import pylo
+from API.JsonPayloadTypes import IPListObjectJsonStructure
 from pylo import log
 from .Helpers import *
 
@@ -29,10 +30,10 @@ class IPList(pylo.ReferenceTracker):
         self.raw_json = None
         self.raw_entries = {}
 
-    def count_entries(self):
+    def count_entries(self) -> int:
         return len(self.raw_entries)
 
-    def load_from_json(self, json_input):
+    def load_from_json(self, json_input: IPListObjectJsonStructure):
         self.raw_json = json_input
 
         ip_ranges_array = json_input.get("ip_ranges")
@@ -91,11 +92,10 @@ class IPListStore:
         self.itemsByHRef = {}
         self.itemsByName = {}
 
-
-    def count(self):
+    def count(self) -> int:
         return len(self.itemsByHRef)
 
-    def load_iplists_from_json(self, json_list):
+    def load_iplists_from_json(self, json_list: list[IPListObjectJsonStructure]):
         for json_item in json_list:
             if 'name' not in json_item or 'href' not in json_item:
                 raise Exception("Cannot find 'value'/name or href for iplist in JSON:\n" + nice_json(json_item))

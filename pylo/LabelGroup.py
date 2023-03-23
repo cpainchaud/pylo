@@ -25,7 +25,7 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
                 else:
                     raise pylo.PyloEx('LabelGroup member has no HREF')
 
-    def expand_nested_to_array(self):
+    def expand_nested_to_array(self) -> List['pylo.Label']:
         results = {}
         for label in self._members.values():
             if isinstance(label, pylo.Label):
@@ -45,6 +45,9 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
         for label in self._members.values():
             data[label.href] = label
         return data
+
+    def get_members_count(self) -> int:
+        return len(self._members)
 
     def has_member_with_href(self, href: str) -> bool:
         return href in self._members

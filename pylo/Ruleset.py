@@ -1,6 +1,7 @@
 from typing import Optional, List, Union, Dict
 
 import pylo
+from API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, RulesetScopeEntryLineJsonStructure
 from pylo import log, Organization
 import re
 
@@ -13,7 +14,7 @@ class RulesetScope:
         self.owner: 'pylo.Ruleset' = owner
         self.scope_entries: Dict['pylo.RulesetScopeEntry', 'pylo.RulesetScopeEntry'] = {}
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: List[List[RulesetScopeEntryLineJsonStructure]]):
         for scope_json in data:
             scope_entry = pylo.RulesetScopeEntry(self)
             scope_entry.load_from_json(scope_json)
@@ -39,7 +40,7 @@ class RulesetScopeEntry:
         self.env_label: Optional['pylo.Label'] = None
         self.app_label: Optional['pylo.Label'] = None
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: List[RulesetScopeEntryLineJsonStructure]):
         self.loc_label = None
         #log.error(pylo.nice_json(data))
         l_store = self.owner.owner.owner.owner.LabelStore
@@ -112,7 +113,7 @@ class Ruleset:
         self.scopes: 'pylo.RulesetScope' = pylo.RulesetScope(self)
         self.rules_by_href: Dict[str, 'pylo.Rule'] = {}
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: RulesetObjectJsonStructure):
         if 'name' not in data:
             raise pylo.PyloEx("Cannot find Ruleset name in JSON data: \n" + pylo.Helpers.nice_json(data))
         self.name = data['name']
@@ -121,20 +122,21 @@ class Ruleset:
             raise pylo.PyloEx("Cannot find Ruleset href in JSON data: \n" + pylo.Helpers.nice_json(data))
         self.href = data['href']
 
-        if 'scopes' not in data:
+        scopes_json = data.get('scopes')
+        if scopes_json is None:
             raise pylo.PyloEx("Cannot find Ruleset scope in JSON data: \n" + pylo.Helpers.nice_json(data))
 
         self.description = data.get('description')
         if self.description is None:
             self.description = ''
 
-        self.scopes.load_from_json(data['scopes'])
+        self.scopes.load_from_json(scopes_json)
 
         if 'rules' in data:
             for rule_data in data['rules']:
                 self.load_single_rule_from_json(rule_data)
 
-    def load_single_rule_from_json(self, rule_data) -> 'pylo.Rule':
+    def load_single_rule_from_json(self, rule_data: RuleObjectJsonStructure) -> 'pylo.Rule':
         new_rule = pylo.Rule(self)
         new_rule.load_from_json(rule_data)
         self.rules_by_href[new_rule.href] = new_rule
@@ -188,7 +190,7 @@ class Ruleset:
 
         return match.group("id")
 
-    def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None):
+    def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None) -> str:
         if pce_hostname is None or pce_port is None:
             connector = pylo.find_connector_or_die(self)
             if pce_hostname is None:

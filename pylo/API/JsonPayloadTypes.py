@@ -1,6 +1,6 @@
 """This module contains the JSON payload types for the PCE API."""
 
-from typing import List, Optional, TypedDict, NotRequired
+from typing import List, Optional, TypedDict, NotRequired, Union
 
 
 class LabelObjectJsonStructure(TypedDict):
@@ -41,6 +41,8 @@ class IPListObjectJsonStructure(TypedDict):
     name: str
     created_at: str
     updated_at: str
+    description: str
+    ip_ranges: List[TypedDict('record', {'from_ip': str, 'to_ip': str, 'exclusion': bool})]
 
 
 class WorkloadObjectJsonStructure(TypedDict):
@@ -51,11 +53,25 @@ class WorkloadObjectJsonStructure(TypedDict):
     updated_at: str
 
 
+class RuleObjectJsonStructure(TypedDict):
+    href: str
+    created_at: str
+    updated_at: str
+
+
+class RulesetScopeEntryLineJsonStructure(TypedDict):
+    label: NotRequired[TypedDict('record', {'href': str})]
+    label_group: NotRequired[TypedDict('record', {'href': str})]
+
+
 class RulesetObjectJsonStructure(TypedDict):
     href: str
     name: str
     created_at: str
     updated_at: str
+    description: str
+    rules: List[RuleObjectJsonStructure]
+    scopes: List[List[RulesetScopeEntryLineJsonStructure]]
 
 
 class ServiceObjectJsonStructure(TypedDict):
