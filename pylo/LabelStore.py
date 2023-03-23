@@ -112,19 +112,19 @@ class LabelStore:
         for group in created_groups:
             group.load_from_json()
 
-    def count_labels(self):
+    def count_labels(self) -> int:
         return len(self.itemsByHRef)
 
-    def count_location_labels(self):
+    def count_location_labels(self) -> int:
         return len(self.locationLabels)
 
-    def count_environment_labels(self):
+    def count_environment_labels(self) -> int:
         return len(self.environmentLabels)
 
-    def count_application_labels(self):
+    def count_application_labels(self) -> int:
         return len(self.applicationLabels)
 
-    def count_role_labels(self):
+    def count_role_labels(self) -> int:
         return len(self.roleLabels)
 
     def get_location_labels_as_list(self):
@@ -153,7 +153,7 @@ class LabelStore:
 
         return None
 
-    def find_label_by_name_and_type(self, name: str, type: str):
+    def find_label_by_name_and_type(self, name: str, type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         if type not in self.label_types:
             raise Exception("Unsupported label type '%s'", type)
 
@@ -263,7 +263,7 @@ class LabelStore:
 
         return self.label_resolution_cache[group_name]
 
-    def create_label(self, name: str, label_type: str):
+    def create_label(self, name: str, label_type: str) -> 'pylo.Label':
 
         new_label_name = name
         new_label_type = label_type
@@ -287,7 +287,7 @@ class LabelStore:
 
         return new_label
 
-    def api_create_label(self, name: str, type: str):
+    def api_create_label(self, name: str, type: str) -> 'pylo.Label':
 
         connector = pylo.find_connector_or_die(self.owner)
         json_label = connector.objects_label_create(name, type)
@@ -307,7 +307,7 @@ class LabelStore:
 
         return new_label
 
-    def find_label_by_name_lowercase_and_type(self, name: str, type: str) -> Union['pylo.Label', 'pylo.LabelGroup', None]:
+    def find_label_by_name_lowercase_and_type(self, name: str, type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         ref = None
         name = name.lower()
 
@@ -352,10 +352,10 @@ class LabelStore:
 
         return result
 
-    def find_by_href(self, href: str):
+    def find_by_href(self, href: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         return self.itemsByHRef.get(href)
 
-    def find_by_href_or_die(self, href: str):
+    def find_by_href_or_die(self, href: str) -> Union['pylo.Label', 'pylo.LabelGroup']:
 
         obj = self.itemsByHRef.get(href)
 

@@ -1,3 +1,5 @@
+"""This module contains the JSON payload types for the PCE API."""
+
 from typing import List, Optional, TypedDict, NotRequired
 
 
