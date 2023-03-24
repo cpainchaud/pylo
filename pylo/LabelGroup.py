@@ -3,7 +3,7 @@ import pylo
 from typing import *
 
 from pylo import Label
-from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure
+from .API.JsonPayloadTypes import LabelGroupObjectJsonStructure
 
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):

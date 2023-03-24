@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 import pylo
-from API.JsonPayloadTypes import IPListObjectJsonStructure
+from .API.JsonPayloadTypes import IPListObjectJsonStructure
 from pylo import log
 from .Helpers import *
 

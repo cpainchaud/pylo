@@ -1,7 +1,7 @@
 from typing import Optional, List, Union, Dict
 
 import pylo
-from API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, RulesetScopeEntryLineJsonStructure
+from .API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, RulesetScopeEntryLineJsonStructure
 from pylo import log, Organization
 import re
 
