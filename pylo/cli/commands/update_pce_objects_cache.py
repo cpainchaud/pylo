@@ -26,7 +26,7 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
     timestamp = datetime.datetime.now(datetime.timezone.utc)
 
     json_content = {'generation_date': timestamp.isoformat(),
-                    'pce_version': connector.getSoftwareVersionString(),
+                    'pce_version': connector.get_software_version_string(),
                     'data': config_data,
                     }
 

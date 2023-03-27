@@ -310,7 +310,7 @@ print("OK!")
 # <editor-fold desc="Rulesets Export">
 print(" * Requesting matching Rules&Rulesets from PCE... ", end='')
 
-rules_query = connector.new_RuleSearchQuery()
+rules_query = connector.new_rule_search_query()
 if role_label is not None:
     rules_query.add_label(role_label)
 if app_label is not None:

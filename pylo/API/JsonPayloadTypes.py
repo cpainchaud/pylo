@@ -53,10 +53,22 @@ class WorkloadObjectJsonStructure(TypedDict):
     updated_at: str
 
 
+class RuleServiceReferenceObjectJsonStructure(TypedDict):
+    href: str
+    name: str
+
+
+class RuleDirectServiceReferenceObjectJsonStructure(TypedDict):
+    port: int
+    proto: int
+    to_port: NotRequired[int]
+
+
 class RuleObjectJsonStructure(TypedDict):
     href: str
     created_at: str
     updated_at: str
+    ingress_services: List[RuleServiceReferenceObjectJsonStructure|RuleDirectServiceReferenceObjectJsonStructure]
 
 
 class RulesetScopeEntryLineJsonStructure(TypedDict):
@@ -105,3 +117,8 @@ class PCEObjectsJsonStructure(TypedDict):
     virtual_services: List[VirtualServiceObjectJsonStructure]
     security_principals: List[SecurityPrincipalObjectJsonStructure]
 
+
+class PCECacheFileJsonStructure(TypedDict):
+    data: PCEObjectsJsonStructure
+    pce_version: str
+    generation_date: str

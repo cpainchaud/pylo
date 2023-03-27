@@ -1,11 +1,14 @@
+import typing
 from typing import Optional, List, Union, Dict, Any, NewType
 
 import pylo
+from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
 from pylo import log, Organization, Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList
 import re
 
 RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
+
 
 class RuleApiUpdateStack:
     def __init__(self):
@@ -247,25 +250,14 @@ class RuleServiceContainer(pylo.Referencer):
         self._items: Dict[Service, Service] = {}
         self._direct_services: List[DirectServiceInRule] = []
 
-    def load_from_json_legacy_single(self, data):
-        href = data.get('href')
-        if href is None:
-            raise Exception('Cannot find service HREF')
-
-        find_service = self.owner.owner.owner.owner.ServiceStore.itemsByHRef.get(href)
-        if find_service is None:
-            raise Exception('Cannot find Service with HREF %s in Rule %s'.format(href, self.owner.href))
-
-        self._items[find_service] = find_service
-        find_service.add_reference(self)
-
-    def load_from_json(self, data_list):
+    def load_from_json(self, data_list: List[RuleServiceReferenceObjectJsonStructure|RuleDirectServiceReferenceObjectJsonStructure]):
         ss_store = self.owner.owner.owner.owner.ServiceStore  # make it a local variable for fast lookups
 
         for data in data_list:
             # print(data)
             href = data.get('href')
             if href is None:
+                data = typing.cast(RuleDirectServiceReferenceObjectJsonStructure, data)
                 port = data.get('port')
                 if port is None:
                     raise PyloEx("unsupported service type in rule: {}".format(nice_json(data)))
@@ -279,6 +271,7 @@ class RuleServiceContainer(pylo.Referencer):
 
                 continue
 
+            data = typing.cast(RuleServiceReferenceObjectJsonStructure, data)
             find_service = ss_store.itemsByHRef.get(href)
             if find_service is None:
                 raise Exception('Cannot find Service with HREF %s in Rule %s'.format(href, self.owner.href))
@@ -296,6 +289,11 @@ class RuleServiceContainer(pylo.Referencer):
         return list(self._items.values())
 
     def remove_direct_service(self, service: DirectServiceInRule) -> bool:
+        """
+        Removes a direct service from the rule
+        :param service:
+        :return: True if the service was removed, False if it was not found
+        """
         for i in range(0, len(self._direct_services)):
             if self._direct_services[i] is service:
                 del(self._direct_services[i])
@@ -611,7 +609,7 @@ class RuleHostContainer(pylo.Referencer):
 
     def contains_all_workloads(self) -> bool:
         """
-
+        Check if this container references "All Workloads"
         :return: True if "All Workloads" is referenced by this container
         """
         return self._hasAllWorkloads

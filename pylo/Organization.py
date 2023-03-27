@@ -4,7 +4,7 @@ import os
 import datetime
 import getpass
 import pylo
-from pylo.API.JsonPayloadTypes import PCEObjectsJsonStructure
+from pylo.API.JsonPayloadTypes import PCEObjectsJsonStructure, PCECacheFileJsonStructure
 
 
 class Organization:
@@ -29,7 +29,7 @@ class Organization:
         if os.path.isfile(filename):
             # now we try to open that JSON file
             with open(filename) as json_file:
-                data = json.load(json_file)
+                data: PCECacheFileJsonStructure = json.load(json_file)
                 if 'pce_version' not in data:
                     raise pylo.PyloEx("Cannot find PCE version in cache file")
                 self.pce_version = pylo.SoftwareVersion(data['pce_version'])
@@ -44,21 +44,14 @@ class Organization:
         raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
 
     def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
-        # filename should be like 'cache_xxx.yyy.zzz.json'
-        filename = 'cache_' + hostname + '.json'
-
-        if os.path.isfile(filename):
-            # now we try to open that JSON file
-            with open(filename) as json_file:
-                data = json.load(json_file)
-                if 'pce_version' not in data:
-                    raise pylo.PyloEx("Cannot find PCE version in cache file")
-                self.pce_version = pylo.SoftwareVersion(data['pce_version'])
-                if 'data' not in data:
-                    raise pylo.PyloEx("Cache file '%s' was found and successfully loaded but no 'data' object could be found" % filename)
-                self.load_from_json(data['data'])
-            self.connector = pylo.APIConnector.create_from_credentials_in_file(hostname)
-        else:
+        """
+        Load the organization from a cache file on disk or default to the API
+        :param hostname: the hostname of the PCE
+        :param include_deleted_workloads: if True, deleted workloads will be loaded from the API
+        :param prompt_for_api_key_if_missing: if True, the user will be prompted for an API key if it's unknown
+        :return:
+        """
+        if not self.load_from_cached_file(hostname, no_exception_if_file_does_not_exist=True):
             self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
 
     def make_cache_file_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
@@ -72,7 +65,7 @@ class Organization:
 
         json_content = {'generation_date': timestamp.isoformat(),
                         'pce_version': self.pce_version.generate_str_from_numbers(),
-                       'data': data
+                        'data': data
                         }
 
         with open(filename, 'w') as outfile:
@@ -98,13 +91,15 @@ class Organization:
             print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname), end='')
             user = input()
             password = getpass.getpass()
-
             connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True, org_id=self.id)
 
-        self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads, list_of_objects_to_load=list_of_objects_to_load)
+        self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads,
+                           list_of_objects_to_load=list_of_objects_to_load)
 
-    def load_from_json(self, data,  list_of_objects_to_load: Optional[List[str]] = None):
-
+    def load_from_json(self, data: PCEObjectsJsonStructure,  list_of_objects_to_load: Optional[List[str]] = None) -> None:
+        """
+        Load the organization from a JSON structure, mostly for developers use only
+        """
         object_to_load = {}
         if list_of_objects_to_load is not None:
             all_types = pylo.APIConnector.get_all_object_types()
@@ -159,25 +154,39 @@ class Organization:
             self.RulesetStore.load_rulesets_from_json(data['rulesets'])
 
     def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
-        self.pce_version = con.getSoftwareVersion()
+        self.pce_version = con.get_software_version()
         return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads,
                                                             list_of_objects_to_load=list_of_objects_to_load))
 
     @staticmethod
     def create_fake_empty_config() -> PCEObjectsJsonStructure:
+        """
+        Create a fake empty config, mostly for developers use only
+        :return:
+        """
         data = {}
         for object_type in pylo.APIConnector.get_all_object_types().values():
             data[object_type] = []
         return data
 
-    def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
+    def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False,
+                            list_of_objects_to_load: Optional[List[str]] = None) -> PCEObjectsJsonStructure:
         self.connector = con
+        return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads,
+                                   list_of_objects_to_load=list_of_objects_to_load)
 
-        return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads, list_of_objects_to_load=list_of_objects_to_load)
-
-    def stats_to_str(self, padding=''):
+    def stats_to_str(self, padding='') -> str:
+        """ Dumps basic stats about the organization
+        :param padding: String to be added at the beginning of each line
+        Example:
+        - Version 21.5.33-3
+        - 539 Labels in total. Loc: 35 / Env: 13 / App: 368 / Role: 123
+        - Workloads: Managed: 5822 / Unmanaged: 1483 / Deleted: 0
+        - 0 IPlists in total.
+        - 0 RuleSets and 0 Rules.
+        """
         stats = ""
-        stats += "{}- Version {}\n".format(padding, self.pce_version.generate_str_from_numbers())
+        stats += "{}- Version {}".format(padding, self.pce_version.generate_str_from_numbers()) + os.linesep
         stats += "{}- {} Labels in total. Loc: {} / Env: {} / App: {} / Role: {}".\
             format(padding,
                    self.LabelStore.count_labels(),
@@ -186,17 +195,17 @@ class Organization:
                    self.LabelStore.count_application_labels(),
                    self.LabelStore.count_role_labels())
 
-        stats += "\n{}- Workloads: Managed: {} / Unmanaged: {} / Deleted: {}". \
+        stats += os.linesep + "{}- Workloads: Managed: {} / Unmanaged: {} / Deleted: {}". \
             format(padding,
                    self.WorkloadStore.count_managed_workloads(),
                    self.WorkloadStore.count_unmanaged_workloads(True),
                    self.WorkloadStore.count_deleted_workloads())
 
-        stats += "\n{}- {} IPlists in total.". \
+        stats += os.linesep + "{}- {} IPlists in total.". \
             format(padding,
                    self.IPListStore.count())
 
-        stats += "\n{}- {} RuleSets and {} Rules.". \
+        stats += os.linesep + "{}- {} RuleSets and {} Rules.". \
             format(padding, self.RulesetStore.count_rulesets(), self.RulesetStore.count_rules())
 
         return stats

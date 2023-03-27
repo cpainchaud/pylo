@@ -11,7 +11,7 @@ con = pylo.APIConnector(hostname="192.168.253.10", port=8443, skip_ssl_cert_chec
 
 con.collect_pce_infos()
 
-print('*** Successful connection to PCE ' + con.hostname + ' running ASP version ' + con.getSoftwareVersionString())
+print('*** Successful connection to PCE ' + con.hostname + ' running ASP version ' + con.get_software_version_string())
 
 print("\n")
 print("** Now loading Organization from API...")

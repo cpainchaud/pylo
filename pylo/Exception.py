@@ -2,6 +2,9 @@ from .Helpers import nice_json
 
 
 class PyloEx(Exception):
+    """
+    Base class for all Pylo exceptions
+    """
     def __init__(self, arg, json_object=None):
         if json_object is None:
             Exception.__init__(self, arg)
@@ -17,6 +20,9 @@ class PyloObjectNotFound(PyloEx):
 
 
 class PyloApiEx(PyloEx):
+    """
+    Base class for all Pylo API exceptions
+    """
     def __init__(self, arg, json_object=None):
         PyloEx(arg, json_object)
 

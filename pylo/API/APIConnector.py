@@ -18,7 +18,7 @@ from queue import Queue
 from datetime import datetime, timedelta
 import pylo
 from pylo import log
-from typing import Union, Dict, Any, List, Optional, Tuple
+from typing import Union, Dict, Any, List, Optional
 
 
 requests.packages.urllib3.disable_warnings()
@@ -124,7 +124,8 @@ class APIConnector:
                             org_id = org_id_value
                         else:
                             raise pylo.PyloEx("org_id must be an integer", cur)
-                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], org_id=org_id, skip_ssl_cert_check=ignore_ssl)
+                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], org_id=org_id,
+                                        skip_ssl_cert_check=ignore_ssl)
 
         if not request_if_missing:
             return None
@@ -137,7 +138,7 @@ class APIConnector:
         return connector
 
     def _make_url(self, path: str, include_org_id):
-        url = "https://" + self.hostname + ":" + self.port + "/api/v2"
+        url = "https://{0}:{1}/api/v2".format(self.hostname, self.port)
         if include_org_id:
             url += '/orgs/' + str(self.orgID)
         url += path
@@ -276,17 +277,21 @@ class APIConnector:
                     or \
                     method == 'PUT' and req.status_code != 204 and req.status_code != 200:
 
-                if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
+                if req.status_code == 429:
+                    # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
                     jout = req.json()
                     if len(jout) > 0:
                         if "token" in jout[0]:
                             if jout[0]['token'] == 'too_many_requests_error':
                                 if retry_count_if_api_call_limit_reached < 1:
-                                    raise pylo.PyloApiTooManyRequestsEx('API has hit DOS protection limit (X calls per minute)', jout)
+                                    raise pylo.PyloApiTooManyRequestsEx(
+                                        'API has hit DOS protection limit (X calls per minute)', jout)
 
                                 retry_count_if_api_call_limit_reached = retry_count_if_api_call_limit_reached - 1
-                                log.info("API has returned 'too_many_requests_error', we will sleep for {} seconds and retry {} more times".format(retry_wait_time_if_api_call_limit_reached,
-                                                                                                                                                   retry_count_if_api_call_limit_reached))
+                                log.info(
+                                    "API has returned 'too_many_requests_error', we will sleep for {} seconds and retry {} more times".format(
+                                        retry_wait_time_if_api_call_limit_reached,
+                                        retry_count_if_api_call_limit_reached))
                                 time.sleep(retry_wait_time_if_api_call_limit_reached)
                                 continue
 
@@ -311,11 +316,11 @@ class APIConnector:
 
         raise pylo.PyloApiEx("Unexpected API output or race condition")
 
-    def getSoftwareVersion(self) -> Optional['pylo.SoftwareVersion']:
+    def get_software_version(self) -> Optional['pylo.SoftwareVersion']:
         self.collect_pce_infos()
         return self.version
 
-    def getSoftwareVersionString(self) -> str:
+    def get_software_version_string(self) -> str:
         self.collect_pce_infos()
         return self.version_string
 
@@ -577,7 +582,8 @@ class APIConnector:
 
         return None
 
-    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None, async_mode=True):
+    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None,
+                             async_mode=True):
         path = '/workloads'
         data = {}
 
@@ -857,7 +863,8 @@ class APIConnector:
                             description='', machine_auth=False, secure_connect=False, enabled=True,
                             stateless=False, consuming_security_principals=[],
                             resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
-                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> Dict[str, Any]:
+                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) \
+            -> Dict[str, Any]:
 
         resolve_consumers = []
         if resolve_consumers_as_virtual_services:
@@ -989,7 +996,7 @@ class APIConnector:
                                 self._items[result_name].extra_debug_message = extra_infos
                                 break
 
-        def get_failed_items(self) -> Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem']:
+        def get_failed_items(self) -> Dict[str, 'APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem']:
             results: Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem'] = {}
             for infos in self._items.values():
                 if infos.status != 'green':
@@ -1438,14 +1445,17 @@ class APIConnector:
 
         raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
 
-    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10) -> 'pylo.ExplorerResultSetV1':
+    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'],
+                        max_running_time_seconds=1800,
+                        check_for_update_interval_seconds=10) -> 'pylo.ExplorerResultSetV1':
         path = "/traffic_flows/async_queries"
         if isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):
             data = filters.generate_json_query()
         else:
             data = filters
 
-        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=True, json_output_expected=True)
+        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=True,
+                                                       json_output_expected=True)
 
         if 'status' not in query_queued_json_response:
             raise pylo.PyloApiEx("Invalid response from API, missing 'status' property", query_queued_json_response)
@@ -1480,7 +1490,7 @@ class APIConnector:
                 raise pylo.PyloApiEx("Query failed with status {}".format(queries_status_json_response['status']),
                                      queries_status_json_response)
 
-            time.sleep(check_for_update_interntval_seconds)
+            time.sleep(check_for_update_interval_seconds)
 
         if query_status is None:
             raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
@@ -1512,6 +1522,6 @@ class APIConnector:
 
         return dict_of_health_reports
 
-    def new_RuleSearchQuery(self) -> 'pylo.RuleSearchQuery':
+    def new_rule_search_query(self) -> 'pylo.RuleSearchQuery':
         return pylo.RuleSearchQuery(self)
 

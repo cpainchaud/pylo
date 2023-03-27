@@ -61,7 +61,7 @@ def run(forced_command_name: Optional[str] = None):
 
         if not selected_command.skip_pce_config_loading:
             print(" * Loading objects from PCE '{}' via API... ".format(hostname), end="", flush=True)
-            org.pce_version = connector.getSoftwareVersion()
+            org.pce_version = connector.get_software_version()
             org.load_from_json(config_data, list_of_objects_to_load=selected_command.load_specific_objects_only)
             print("OK!")
 

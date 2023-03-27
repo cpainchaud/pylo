@@ -353,7 +353,7 @@ print("OK!")
 print(" * Requesting matching Rules&Rulesets from PCE... ", end='')
 
 
-rules_query = connector.new_RuleSearchQuery()
+rules_query = connector.new_rule_search_query()
 
 rules_results = rules_query.execute_and_resolve(organization=org)
 print("OK!  (received {} rules)".format(rules_results.count_results()))
