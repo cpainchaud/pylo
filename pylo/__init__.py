@@ -10,7 +10,7 @@ from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexp
 from .SoftwareVersion import SoftwareVersion
 from .IPMap import IP4Map
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
-from .API.APIConnector import APIConnector
+from .API.APIConnector import APIConnector, ObjectTypes
 from .API.RuleSearchQuery import RuleSearchQuery, RuleSearchQueryResolvedResultSet
 from .API.ClusterHealth import ClusterHealth
 from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager

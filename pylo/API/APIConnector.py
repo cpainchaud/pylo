@@ -2,6 +2,7 @@ import json
 import time
 import os
 import getpass
+from enum import Enum
 from pathlib import Path
 
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
@@ -18,8 +19,7 @@ from queue import Queue
 from datetime import datetime, timedelta
 import pylo
 from pylo import log
-from typing import Union, Dict, Any, List, Optional
-
+from typing import Union, Dict, Any, List, Optional, Type, Literal
 
 requests.packages.urllib3.disable_warnings()
 
@@ -39,7 +39,10 @@ def get_field_or_die(field_name: str, data):
     return field
 
 
-_all_object_types: Dict[str, str] = {
+ObjectTypes = Literal['iplists', 'workloads', 'virtual_services', 'labels', 'labelgroups', 'services', 'rulesets',
+                     'security_principals']
+
+all_object_types: Dict[ObjectTypes, ObjectTypes] = {
         'iplists': 'iplists',
         'workloads': 'workloads',
         'virtual_services': 'virtual_services',
@@ -68,25 +71,25 @@ class APIConnector:
         self._cached_session = requests.session()
 
     @staticmethod
-    def get_all_object_types_names_except(exception_list: List[str]):
+    def get_all_object_types_names_except(exception_list: List[ObjectTypes]):
 
         if len(exception_list) == 0:
-            return _all_object_types.values()
+            return all_object_types.values()
 
         # first let's check that all names in exception_list are valid (case mismatches and typos...)
         for name in exception_list:
-            if name not in _all_object_types:
+            if name not in all_object_types:
                 raise pylo.PyloEx("object type named '{}' doesn't exist. The list of supported objects names is: {}".
-                                  format(name, pylo.string_list_to_text(_all_object_types.values())))
+                                  format(name, pylo.string_list_to_text(all_object_types.values())))
 
         object_names_list: List[str] = []
-        for name in _all_object_types.values():
+        for name in all_object_types.values():
             if name not in exception_list:
                 object_names_list.append(name)
 
     @staticmethod
     def get_all_object_types():
-        return _all_object_types.copy()
+        return all_object_types.copy()
 
     @staticmethod
     def create_from_credentials_in_file(hostname: str, request_if_missing = False):

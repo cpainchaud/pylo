@@ -72,7 +72,7 @@ class IP4Map:
             new_entry = [int(start_ip_object), int(end_ip_object)]
             if new_entry[start] > new_entry[end]:
                 raise PyloEx("Invalid IP Ranged entered with start address > end address: {}".format(entry))
-            
+
         elif entry.find('/') > 0:
             # This is a network entry
             network_str = entry[0:(entry.find('/'))]

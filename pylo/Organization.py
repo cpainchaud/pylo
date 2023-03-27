@@ -96,7 +96,9 @@ class Organization:
         self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads,
                            list_of_objects_to_load=list_of_objects_to_load)
 
-    def load_from_json(self, data: PCEObjectsJsonStructure,  list_of_objects_to_load: Optional[List[str]] = None) -> None:
+    def load_from_json(self, data: PCEObjectsJsonStructure,
+                       list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None)\
+            -> None:
         """
         Load the organization from a JSON structure, mostly for developers use only
         """
@@ -153,7 +155,8 @@ class Organization:
                 raise Exception("'rulesets' was not found in json data")
             self.RulesetStore.load_rulesets_from_json(data['rulesets'])
 
-    def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
+    def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False,
+                      list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None):
         self.pce_version = con.get_software_version()
         return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads,
                                                             list_of_objects_to_load=list_of_objects_to_load))
