@@ -73,7 +73,7 @@ class APIConnector:
         if len(exception_list) == 0:
             return _all_object_types.values()
 
-        # first let's check that all names in exception_list are valid
+        # first let's check that all names in exception_list are valid (case mismatches and typos...)
         for name in exception_list:
             if name not in _all_object_types:
                 raise pylo.PyloEx("object type named '{}' doesn't exist. The list of supported objects names is: {}".
@@ -81,13 +81,8 @@ class APIConnector:
 
         object_names_list: List[str] = []
         for name in _all_object_types.values():
-            for lookup_name in exception_list:
-                if name == lookup_name:
-                    break
-            if lookup_name == name:
-                continue
-
-            object_names_list.append(name)
+            if name not in exception_list:
+                object_names_list.append(name)
 
     @staticmethod
     def get_all_object_types():
