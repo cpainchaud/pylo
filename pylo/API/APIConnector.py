@@ -103,13 +103,15 @@ class APIConnector:
             port = hostname[separator_pos+1:]
             hostname = hostname[0:separator_pos]
 
-        filename = str(Path.home()) + '/pylo/credentials.json'
-        filename = Path(filename)
+        # try $HOME/pylo/credentials.json first
+        filename = str(Path.home()) + os.sep + 'pylo' + os.sep + 'credentials.json'
 
+        # if not found, try current directory's ilo.json file
         if not os.path.isfile(filename):
             filename = 'ilo.json'
 
         if os.path.isfile(filename):
+            pylo.log.info("Loading credentials from file '{}'".format(filename))
             with open(filename) as json_file:
                 data = json.load(json_file)
                 if hostname in data:
