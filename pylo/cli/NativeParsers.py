@@ -10,7 +10,7 @@ class BaseParser:
     def fill_parser(self, parser: argparse.ArgumentParser):
         raise NotImplementedError
 
-    def execute(self, args: str | int, org: 'pylo.Organization') -> Optional[List['pylo.Label']]:
+    def execute(self, args: str | int, org: 'pylo.Organization', padding: str = '') -> Optional[List['pylo.Label']]:
         raise NotImplementedError
 
     def get_arg_name(self) -> str:
@@ -45,8 +45,10 @@ class LabelParser(BaseParser):
         self._action = parser.add_argument(self.filter_name, type=str, required=self.is_required,
                                            help=help_text)
 
-    def execute(self, args: str, org: 'pylo.Organization'):
+    def execute(self, args: str, org: 'pylo.Organization', padding: str = ''):
+        print(f"{padding}{self.filter_name}:", end="")
         if args is None:
+            print(" None")
             return
 
         if self.is_multiple:
@@ -67,3 +69,4 @@ class LabelParser(BaseParser):
         # just in case make sure it's a list of unique labels
         self.results = list(set(label_objects))
         self.results_as_dict_by_href = {label.href: label for label in self.results}
+        print(f" {pylo.string_list_to_text(self.results)}")

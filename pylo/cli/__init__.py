@@ -23,10 +23,15 @@ def run(forced_command_name: Optional[str] = None):
                 attr.fill_parser(parser)
 
     def execute_native_parsers(args: Dict, org: pylo.Organization, native_parsers: object):
+        first_native_parser_found = False
+
         for attr_name in dir(native_parsers):
             attr = getattr(native_parsers, attr_name)
             if isinstance(attr, BaseParser):
-                attr.execute(args[attr.get_arg_name()], org)
+                if first_native_parser_found is False:
+                    first_native_parser_found = True
+                    print(" * Native CLI arguments parsing...")
+                attr.execute(args[attr.get_arg_name()], org, padding='    ')
 
     parser = argparse.ArgumentParser(description='TODO LATER')
     parser.add_argument('--pce', type=str, required=True,
