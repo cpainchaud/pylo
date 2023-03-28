@@ -21,12 +21,18 @@ def run(forced_command_name: Optional[str] = None):
     parser.add_argument('--use-cache', action='store_true',
                         help='For developers only')
 
-    sub_parsers = parser.add_subparsers(dest='command', required=True)
+    selected_command = None
 
-    for command in commands.available_commands.values():
-        if(forced_command_name is not None and command.name != forced_command_name):
-            continue
-        command.fill_parser(sub_parsers.add_parser(command.name, help=''))
+    if forced_command_name is None:
+        sub_parsers = parser.add_subparsers(dest='command', required=True)
+        for command in commands.available_commands.values():
+            command.fill_parser(sub_parsers.add_parser(command.name, help=''))
+    else:
+        for command in commands.available_commands.values():
+            if forced_command_name is not None and command.name != forced_command_name:
+                continue
+            command.fill_parser(parser)
+            selected_command = command
 
     args = vars(parser.parse_args())
 
@@ -36,10 +42,11 @@ def run(forced_command_name: Optional[str] = None):
     hostname = args['pce']
     settings_use_cache = args['use_cache']
 
-    # We are getting the command object associated to the command name
-    selected_command = commands.available_commands[args['command']]
+    # We are getting the command object associated to the command name if it was not already set (via forced_command_name)
     if selected_command is None:
-        raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
+        selected_command = commands.available_commands[args['command']]
+        if selected_command is None:
+            raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
 
     org = pylo.Organization(1)
     connector: Optional[pylo.APIConnector] = None
@@ -73,7 +80,7 @@ def run(forced_command_name: Optional[str] = None):
         print(flush=True)
 
     print("**** {} UTILITY ****".format(selected_command.name.upper()), flush=True)
-    commands.available_commands[args['command']].main(args, org, config_data=config_data, connector=connector)
+    commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector)
     print("**** END OF {} UTILITY ****".format(selected_command.name.upper()))
     print()
 
