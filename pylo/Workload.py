@@ -139,7 +139,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
                             "Workload '%s'/'%s' is referencing label href '%s' which does not exist" % (
                             self.name, self.href, href))
 
-                if label_object.type_is_location():
+                elif label_object.type_is_location():
                     if self.loc_label is not None:
                         raise PyloEx(
                             "Workload '%s' found 2 location labels while parsing JSON, labels are '%s' and '%s':\n" % (
