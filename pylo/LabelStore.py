@@ -145,19 +145,25 @@ class LabelStore:
                 data[label.href] = label
         return data
 
-    def find_label_by_name_whatever_type(self, name: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
-
-        for label in self.itemsByHRef.values():
-            if label.name == name:
-                return label
+    def find_label_by_name_whatever_type(self, name: str, case_sensitive: bool = True) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
+        if case_sensitive:
+            for label in self.itemsByHRef.values():
+                if label.name == name:
+                    return label
+        else:
+            lower = name.lower()
+            for label in self.itemsByHRef.values():
+                if label.name.lower() == lower:
+                    return label
 
         return None
 
-    def find_label_by_name_and_type(self, name: str, type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
+    def find_label_by_name_and_type(self, name: str, type: str, case_sensitive: bool = True) \
+            -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         if type not in self.label_types:
             raise Exception("Unsupported label type '%s'", type)
 
-        label = self.find_label_by_name_whatever_type(name)
+        label = self.find_label_by_name_whatever_type(name, case_sensitive=case_sensitive)
         if label is None:
             return None
 
