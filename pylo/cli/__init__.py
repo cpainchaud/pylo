@@ -1,8 +1,9 @@
 import os
-from typing import Optional
+from typing import Optional, Dict
 
 import sys
 import argparse
+from .NativeParsers import BaseParser
 
 # in case user wants to run this utility while having a version of pylo already installed
 if __name__ == "__main__":
@@ -13,6 +14,20 @@ from pylo.cli import commands
 
 
 def run(forced_command_name: Optional[str] = None):
+
+    def add_native_parser_to_argparse(parser: argparse.ArgumentParser, native_parsers: object):
+        # each property of the native parser is an extension of BaseParser, we need to iterate over them and add them to the argparse parser
+        for attr_name in dir(native_parsers):
+            attr = getattr(native_parsers, attr_name)
+            if isinstance(attr, BaseParser):
+                attr.fill_parser(parser)
+
+    def execute_native_parsers(args: Dict, org: pylo.Organization, native_parsers: object):
+        for attr_name in dir(native_parsers):
+            attr = getattr(native_parsers, attr_name)
+            if isinstance(attr, BaseParser):
+                attr.execute(args[attr.get_arg_name()], org)
+
     parser = argparse.ArgumentParser(description='TODO LATER')
     parser.add_argument('--pce', type=str, required=True,
                         help='hostname of the PCE')
@@ -26,12 +41,17 @@ def run(forced_command_name: Optional[str] = None):
     if forced_command_name is None:
         sub_parsers = parser.add_subparsers(dest='command', required=True)
         for command in commands.available_commands.values():
-            command.fill_parser(sub_parsers.add_parser(command.name, help=''))
+            sub_parser = sub_parsers.add_parser(command.name, help='')
+            command.fill_parser(sub_parser)
+            if command.native_parsers is not None:
+                add_native_parser_to_argparse(sub_parser, command.native_parsers)
     else:
         for command in commands.available_commands.values():
             if forced_command_name is not None and command.name != forced_command_name:
                 continue
             command.fill_parser(parser)
+            if command.native_parsers is not None:
+                add_native_parser_to_argparse(parser, command.native_parsers)
             selected_command = command
 
     args = vars(parser.parse_args())
@@ -80,7 +100,13 @@ def run(forced_command_name: Optional[str] = None):
         print(flush=True)
 
     print("**** {} UTILITY ****".format(selected_command.name.upper()), flush=True)
-    commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector)
+    if selected_command.native_parsers is None:
+        native_parsers = None
+    else:
+        native_parsers = selected_command.native_parsers
+        execute_native_parsers(args, org, native_parsers)
+
+    commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector, native_parsers=native_parsers)
     print("**** END OF {} UTILITY ****".format(selected_command.name.upper()))
     print()
 
