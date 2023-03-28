@@ -92,52 +92,27 @@ class APIConnector:
         return all_object_types.copy()
 
     @staticmethod
-    def create_from_credentials_in_file(hostname: str, request_if_missing = False):
+    def create_from_credentials_in_file(hostname_or_profile_name: str, request_if_missing: bool = False,
+                                        credential_file: Optional[str] = None) -> Optional['APIConnector']:
 
-        separator_pos = hostname.find(':')
-        port = 8443
+        credentials = pylo.get_credentials_from_file(hostname_or_profile_name, credential_file)
 
-        if separator_pos > 0:
-            port = hostname[separator_pos+1:]
-            hostname = hostname[0:separator_pos]
-
-        # try $HOME/pylo/credentials.json first
-        filename = str(Path.home()) + os.sep + 'pylo' + os.sep + 'credentials.json'
-
-        # if not found, try current directory's ilo.json file
-        if not os.path.isfile(filename):
-            filename = 'ilo.json'
-
-        if os.path.isfile(filename):
-            pylo.log.info("Loading credentials from file '{}'".format(filename))
-            with open(filename) as json_file:
-                data = json.load(json_file)
-                if hostname in data:
-                    cur = data[hostname]
-                    ignore_ssl = False
-                    org_id = 1
-                    if 'ignore-ssl' in cur:
-                        ssl_value = cur['ignore-ssl']
-                        if type(ssl_value) is str:
-                            if ssl_value.lower() == 'yes':
-                                ignore_ssl = True
-                    if 'org_id' in cur:
-                        org_id_value = cur['org_id']
-                        if type(org_id_value) is int:
-                            org_id = org_id_value
-                        else:
-                            raise pylo.PyloEx("org_id must be an integer", cur)
-                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], org_id=org_id,
-                                        skip_ssl_cert_check=ignore_ssl)
+        if credentials is not None:
+            return APIConnector(credentials['hostname'], credentials['port'], credentials['api_user'],
+                                credentials['api_key'], skip_ssl_cert_check=not credentials['verify_ssl'],
+                                org_id=credentials['org_id'])
 
         if not request_if_missing:
             return None
 
-        print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname), end='')
+        print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname_or_profile_name), end='')
         user = input()
+        print('API password:', end='')
         password = getpass.getpass()
+        print('Server port:', end='')
+        port = int(input())
 
-        connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True)
+        connector = pylo.APIConnector(hostname_or_profile_name, port, user, password, skip_ssl_cert_check=True)
         return connector
 
     def _make_url(self, path: str, include_org_id):
