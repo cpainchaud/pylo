@@ -145,32 +145,57 @@ class LabelStore:
                 data[label.href] = label
         return data
 
-    def find_label_by_name_whatever_type(self, name: str, case_sensitive: bool = True) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
-        if case_sensitive:
-            for label in self.itemsByHRef.values():
-                if label.name == name:
-                    return label
-        else:
-            lower = name.lower()
-            for label in self.itemsByHRef.values():
-                if label.name.lower() == lower:
-                    return label
 
-        return None
+    def find_label_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
+                           missing_labels_names: Optional[List[str]] = None,
+                           raise_exception_if_not_found: bool = False) -> Optional['pylo.Label'|List['pylo.Label']]:
+        """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
+        If missing_labels_names is not None, it will be filled with the names of the labels not found.
+        If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
+        If name is a list, a list of labels will be returned, in the same order as the list of names.
+        If a label is not found, None will be returned in the list.
+        """
+        if not isinstance(name, list):
+            for label in self.itemsByHRef.values():
+                if label_type is not None and label.type != label_type:
+                    continue
+                if label.is_label(): # ignore groups
+                    if case_sensitive:
+                        if label.name == name:
+                            return label
+                    else:
+                        if label.name.lower() == name.lower():
+                            return label
+            if raise_exception_if_not_found:
+                raise pylo.PyloEx("Label '%s' not found", name)
+            if missing_labels_names is not None:
+                missing_labels_names.append(name)
+            return None
+        else:
+            results = []
+            local_notfound_labels = []
+            for name_to_find in name:
+                result = self.find_label_by_name(name_to_find, label_type=label_type ,case_sensitive=case_sensitive)
+                if result is None:
+                        local_notfound_labels.append(name_to_find)
+                else:
+                    results.append(result)
+            if raise_exception_if_not_found and len(local_notfound_labels) > 0:
+                raise pylo.PyloEx("Some labels not found: {}".format(local_notfound_labels))
+            if missing_labels_names is not None:
+                missing_labels_names.extend(local_notfound_labels)
+            return results
+
+
+    def find_label_by_name_whatever_type(self, name: str, case_sensitive: bool = True) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
+        pylo.log.warn("find_label_by_name_whatever_type is deprecated, use find_label_by_name instead")
+        return self.find_label_by_name(name, case_sensitive=case_sensitive)
+
 
     def find_label_by_name_and_type(self, name: str, type: str, case_sensitive: bool = True) \
             -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
-        if type not in self.label_types:
-            raise Exception("Unsupported label type '%s'", type)
-
-        label = self.find_label_by_name_whatever_type(name, case_sensitive=case_sensitive)
-        if label is None:
-            return None
-
-        if label.type == type:
-            return label
-
-        return None
+        pylo.log.warn("find_label_by_name_and_type is deprecated, use find_label_by_name instead")
+        return self.find_label_by_name(name, label_type=type, case_sensitive=case_sensitive)
 
     cache_label_all_string = '-All-'
     cache_label_all_separator = '|'
