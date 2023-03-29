@@ -1,7 +1,10 @@
 import argparse
 import os
 import sys
+from dataclasses import dataclass
 from typing import Union, Optional, Dict, List, Any, Set
+
+from pylo.cli.NativeParsers import LabelParser
 
 # this line is only needed for dev_playground examples as the developer may not have install the library, remove it in your own code
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -10,42 +13,46 @@ import pylo
 import pylo.cli as cli
 import pylo.cli.commands as commands
 
-
 command_name = 'my-first-command-show-workloads'
 
 objects_load_filter = ['workloads', 'labels']  # optional, if you want to load only a subset of objects to speedup API calls
 # objects_load_filter = None  # optional, if you want to load all objects
 
+@dataclass
+class MyBuiltInParser:  # optional, if you want to use built-in parsers
+    filter_env_label = LabelParser('--filter-env-label', 'env', is_required=False, is_multiple=True)
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--filter-env-label', type=str, required=False, default=None,
+    """ This function will be called by the CLI to fill the parser with the arguments of your command """
+    parser.add_argument('--sort-by-name', '-s', action='store_true',
                         help='Filter workloads by environment labels (separated by commas)')
 
 
-def __main(args, org: pylo.Organization, **kwargs):
+def __main(args, org: pylo.Organization,
+           native_parsers: MyBuiltInParser, # optional, if you want to use built-in parsers
+           **kwargs):
     """ This is the main function of the command, it will be called by the CLI when the command is executed
     :param args: the arguments passed to the command, as returned by the argparse parser
     :param org: the Organization object from pylo library, ready to consume
     """
 
+    sort_by_name = args['sort_by_name']
+
     # let's check if user has input any environment label filter
-    env_labels: Optional[List[pylo.Label]] = None
-    if args['filter_env_label'] is not None:
-        env_labels_strings = args['filter_env_label'].split(',')
-        print(f" * Environment label filter specified, will display workloads with environment labels: {env_labels_strings}")
-        env_labels = []
-        # check if labels exist and put them in a list or exit with raise an error
-        for label_name in env_labels_strings:
-            label = org.LabelStore.find_label_by_name_and_type(label_name, 'env')
-            if label is None:
-                raise Exception(f"Label '{label_name}' does not exist")
-            env_labels.append(label)
+    env_labels = native_parsers.filter_env_label.results
+    if len(env_labels) > 0:
+        print(f" * Environment label filter specified, will display workloads with environment labels: {pylo.string_list_to_text(env_labels)}")
     else:
         print(" * No environment label filter specified, will display all workloads")
 
-    print(f"Workloads found in PCE '{org.connector.hostname}' and matching filters (if any):")
-    for workload in org.WorkloadStore.itemsByHRef.values():
-        if env_labels is not None and workload.env_label in env_labels:
+    print(f"* Now listing Workloads found in PCE '{org.connector.hostname}' and matching filters (if any):")
+
+    workloads = org.WorkloadStore.itemsByHRef.values()
+    if sort_by_name:
+        workloads = sorted(workloads, key=lambda x: x.name)
+
+    for workload in workloads:
+        if len(env_labels) == 0 or workload.env_label in env_labels:
             print(f" - {workload.name} ({workload.href})")
 
 
@@ -53,6 +60,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 command_object = commands.Command(name=command_name, main_func=__main, parser_func=fill_parser,
                                   load_specific_objects_only=objects_load_filter,
                                   skip_pce_config_loading=False,  # if you want to skip the PCE config loading, set this to True and do your own thing!
+                                  native_parsers_as_class=MyBuiltInParser()  # optional, if you want to use your own built-in parsers
                                   )
 
 # and now you can run it!
