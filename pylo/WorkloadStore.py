@@ -268,4 +268,12 @@ class WorkloadStore:
 
         return count
 
+    @property
+    def workloads(self) -> List['Workload']:
+        """
+        Get a list of all workloads
+        :return:
+        """
+        return list(self.itemsByHRef.values())
+
 

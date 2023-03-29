@@ -44,7 +44,7 @@ def __main(args, org: pylo.Organization,
 
     # let's check if user has input any environment label filter
     env_labels = native_parsers.filter_env_label.results
-    if len(env_labels) > 0:
+    if env_labels is not None:
         print(f" * Environment label filter specified, will display workloads with environment labels: {pylo.string_list_to_text(env_labels)}")
     else:
         print(" * No environment label filter specified, will display all workloads")

@@ -93,7 +93,7 @@ def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwar
     print(" * Parsing filters")
 
     env_label_list = native_parsers.filter_env_label.results
-    if len(env_label_list) == 0:
+    if env_label_list is None:
         print("   * No Environment Labels specified")
     else:
         print("   * Environment Labels specified")
@@ -101,7 +101,7 @@ def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwar
             print("     - label named '{}'".format(label.name))
 
     loc_label_list = native_parsers.filter_loc_label.results
-    if len(loc_label_list) == 0:
+    if loc_label_list is None:
         print("   * No Location Labels specified")
     else:
         print("   * Location Labels specified")
@@ -109,7 +109,7 @@ def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwar
             print("     - label named '{}'".format(label.name))
 
     app_label_list = native_parsers.filter_app_label.results
-    if len(app_label_list) == 0:
+    if app_label_list is None:
         print("   * No Application Labels specified")
     else:
         print("   * Application Labels specified")
@@ -117,7 +117,7 @@ def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwar
             print("     - label named '{}'".format(label.name))
 
     role_label_list = native_parsers.filter_role_label.results
-    if len(role_label_list) == 0:
+    if role_label_list is None:
         print("   * No Role Labels specified")
     else:
         print("   * Role Labels specified")
@@ -132,16 +132,16 @@ def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwar
         agent = agents[agent_href]
         workload = agent.workload
 
-        if len(env_label_list) > 0 and (workload.env_label is None or workload.env_label not in env_label_list):
+        if env_label_list is not None and (workload.env_label is None or workload.env_label not in env_label_list):
             del agents[agent_href]
             continue
-        if len(loc_label_list) > 0 and (workload.loc_label is None or workload.loc_label not in loc_label_list):
+        if loc_label_list is not None and (workload.loc_label is None or workload.loc_label not in loc_label_list):
             del agents[agent_href]
             continue
-        if len(app_label_list) > 0 and (workload.app_label is None or workload.app_label not in app_label_list):
+        if app_label_list is not None and (workload.app_label is None or workload.app_label not in app_label_list):
             del agents[agent_href]
             continue
-        if len(role_label_list) > 0 and (workload.role_label is None or workload.role_label not in role_label_list):
+        if role_label_list is not None and (workload.role_label is None or workload.role_label not in role_label_list):
             del agents[agent_href]
             continue
 
