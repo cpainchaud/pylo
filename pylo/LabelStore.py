@@ -146,8 +146,10 @@ class LabelStore:
         return data
 
 
-    def find_label_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
+    def find_object_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
                            missing_labels_names: Optional[List[str]] = None,
+                           allow_label_group: bool = True,
+                           allow_label: bool = True,
                            raise_exception_if_not_found: bool = False) -> Optional['pylo.Label'|List['pylo.Label']]:
         """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
@@ -159,15 +161,15 @@ class LabelStore:
             for label in self.itemsByHRef.values():
                 if label_type is not None and label.type != label_type:
                     continue
-                if label.is_label(): # ignore groups
+                if label.is_label() and allow_label: # ignore groups
                     if case_sensitive:
                         if label.name == name:
                             return label
-                    else:
+                elif allow_label_group:
                         if label.name.lower() == name.lower():
                             return label
             if raise_exception_if_not_found:
-                raise pylo.PyloEx("Label '%s' not found", name)
+                raise pylo.PyloEx("Label/group '%s' not found", name)
             if missing_labels_names is not None:
                 missing_labels_names.append(name)
             return None
@@ -175,7 +177,8 @@ class LabelStore:
             results = []
             local_notfound_labels = []
             for name_to_find in name:
-                result = self.find_label_by_name(name_to_find, label_type=label_type ,case_sensitive=case_sensitive)
+                result = self.find_label_by_name(name_to_find, label_type=label_type ,case_sensitive=case_sensitive,
+                                                 allow_label_group=allow_label_group, allow_label=allow_label)
                 if result is None:
                         local_notfound_labels.append(name_to_find)
                 else:
@@ -185,6 +188,20 @@ class LabelStore:
             if missing_labels_names is not None:
                 missing_labels_names.extend(local_notfound_labels)
             return results
+
+    def find_label_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
+                            missing_labels_names: Optional[List[str]] = None,
+                            raise_exception_if_not_found: bool = False) -> Optional['pylo.Label'|List['pylo.Label']]:
+        """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
+        If missing_labels_names is not None, it will be filled with the names of the labels not found.
+        If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
+        If name is a list, a list of labels will be returned, in the same order as the list of names.
+        If a label is not found, None will be returned in the list.
+        """
+        return self.find_object_by_name(name, label_type=label_type, case_sensitive=case_sensitive,
+                                        missing_labels_names=missing_labels_names,
+                                        allow_label_group=False, allow_label=True,
+                                        raise_exception_if_not_found=raise_exception_if_not_found)
 
 
     def find_label_by_name_whatever_type(self, name: str, case_sensitive: bool = True) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
