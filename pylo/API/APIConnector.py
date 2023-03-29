@@ -1231,8 +1231,26 @@ class APIConnector:
         def service_include_add(self, service: 'pylo.DirectServiceInRule'):
             self._include_direct_services.append(service)
 
+        def service_include_add_protocol(self, protocol: int):
+            self._include_direct_services.append(pylo.DirectServiceInRule(proto=protocol))
+
+        def service_include_add_protocol_tcp(self):
+            self._include_direct_services.append(pylo.DirectServiceInRule(proto=6))
+
+        def service_include_add_protocol_udp(self):
+            self._include_direct_services.append(pylo.DirectServiceInRule(proto=17))
+
         def service_exclude_add(self, service: 'pylo.DirectServiceInRule'):
             self._exclude_direct_services.append(service)
+
+        def service_exclude_add_protocol(self, protocol: int):
+            self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=protocol))
+            
+        def service_exclude_add_protocol_tcp(self):
+            self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=6))
+
+        def service_exclude_add_protocol_udp(self):
+            self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=17))
 
         def process_exclude_add(self, process_name: str, emulate_on_client=False):
             if emulate_on_client:
