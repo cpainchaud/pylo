@@ -4,6 +4,234 @@ from typing import Optional, List, Dict, Literal
 import pylo
 from pylo.API.APIConnector import APIConnector
 
+class ExplorerResult:
+    _draft_mode_policy_decision: Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]
+    destination_workload_labels_href: List[str]
+    source_workload_labels_href: List[str]
+
+    def __init__(self, data):
+        self._raw_json = data
+        self.num_connections = data['num_connections']
+
+        self.policy_decision_string = data['policy_decision']
+        self._draft_mode_policy_decision = None
+
+        self.source_ip_fqdn: Optional[str] = None
+        self.destination_ip_fqdn: Optional[str] = None
+
+        src = data['src']
+        self.source_ip: str = src['ip']
+        self._source_iplists = src.get('ip_lists')
+        self._source_iplists_href: List[str] = []
+        if self._source_iplists is not None:
+            for href in self._source_iplists:
+                self._source_iplists_href.append(href['href'])
+
+        self.source_workload_href: Optional[str] = None
+        workload_data = src.get('workload')
+        if workload_data is not None:
+            self.source_workload_href: Optional[str] = workload_data.get('href')
+            if self.source_workload_href is None:
+                raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
+
+            self.source_workload_labels_href: Optional[List[str]] = []
+            workload_labels_data = workload_data.get('labels')
+            if workload_labels_data is not None:
+                for label_data in workload_labels_data:
+                    self.source_workload_labels_href.append(label_data.get('href'))
+
+        dst = data['dst']
+        self.destination_ip: str = dst['ip']
+        self.destination_ip_fqdn = dst.get('fqdn')
+        self._destination_iplists = dst.get('ip_lists')
+        self._destination_iplists_href: List[str] = []
+        if self._destination_iplists is not None:
+            for href in self._destination_iplists:
+                self._destination_iplists_href.append(href['href'])
+
+        self.destination_workload_href: Optional[str] = None
+        workload_data = dst.get('workload')
+        if workload_data is not None:
+            self.destination_workload_href = workload_data.get('href')
+            if self.destination_workload_href is None:
+                raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
+
+            self.destination_workload_labels_href: Optional[List[str]] = []
+            workload_labels_data = workload_data.get('labels')
+            if workload_labels_data is not None:
+                for label_data in workload_labels_data:
+                    self.destination_workload_labels_href.append(label_data.get('href'))
+
+        service_json = data['service']
+        self.service_json = service_json
+
+        self.service_protocol: int = service_json['proto']
+        self.service_port: Optional[int] = service_json.get('port')
+        self.process_name: Optional[str] = service_json.get('process_name')
+        self.username: Optional[str] = service_json.get('user_name')
+
+        self.first_detected: str = data['timestamp_range']['first_detected']
+        self.last_detected: str = data['timestamp_range']['last_detected']
+
+        self._cast_type: Optional[str] = data.get('transmission')
+
+    def service_to_str(self, protocol_first=True):
+        if protocol_first:
+            if self.service_port is None or self.service_port == 0:
+                return 'proto/{}'.format(self.service_protocol)
+
+            if self.service_protocol == 17:
+                return 'udp/{}'.format(self.service_port)
+
+            if self.service_protocol == 6:
+                return 'tcp/{}'.format(self.service_port)
+        else:
+            if self.service_port is None or self.service_port == 0:
+                return '{}/proto'.format(self.service_protocol)
+
+            if self.service_protocol == 17:
+                return '{}/udp'.format(self.service_port)
+
+            if self.service_protocol == 6:
+                return '{}/tcp'.format(self.service_port)
+
+    def service_to_str_array(self):
+        if self.service_port is None or self.service_port == 0:
+            return [self.service_protocol, 'proto']
+
+        if self.service_protocol == 17:
+            return [self.service_port, 'udp']
+
+        if self.service_protocol == 6:
+            return [self.service_port, 'tcp']
+
+        return ['n/a', 'n/a']
+
+    def source_is_workload(self):
+        return self.source_workload_href is not None
+
+    def destination_is_workload(self):
+        return self.destination_workload_href is not None
+
+    def get_source_workload_href(self):
+        return self.source_workload_href
+
+    def get_destination_workload_href(self):
+        return self.destination_workload_href
+
+    def get_source_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
+        if self.source_workload_href is None:
+            return None
+        return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.source_workload_href, '*DELETED*')
+
+    def get_destination_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
+        if self.destination_workload_href is None:
+            return None
+        return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.destination_workload_href, '*DELETED*')
+
+    def get_source_labels_href(self) -> Optional[List[str]]:
+        if not self.source_is_workload():
+            return None
+        return self.source_workload_labels_href
+
+    def get_destination_labels_href(self) -> Optional[List[str]]:
+        if not self.destination_is_workload():
+            return None
+        return self.destination_workload_labels_href
+
+    def get_source_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
+        if self._source_iplists is None:
+            return {}
+
+        result = {}
+
+        for record in self._source_iplists:
+            href = record.get('href')
+            if href is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+            iplist = org_for_resolution.IPListStore.find_by_href(href)
+            if iplist is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+
+            result[href] = iplist
+
+        return result
+
+    def get_source_iplists_href(self) -> Optional[List[str]]:
+        if self.source_is_workload():
+            return None
+        if self._source_iplists_href is None:
+            return []
+        return self._source_iplists_href.copy()
+
+    def get_destination_iplists_href(self) -> Optional[List[str]]:
+        if self.destination_is_workload():
+            return None
+
+        if self._destination_iplists_href is None:
+            return []
+        return self._destination_iplists_href.copy()
+
+    def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
+        if self._destination_iplists is None:
+            return {}
+
+        result = {}
+
+        for record in self._destination_iplists:
+            href = record.get('href')
+            if href is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+            iplist = org_for_resolution.IPListStore.find_by_href(href)
+            if iplist is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+
+            result[href] = iplist
+
+        return result
+
+    def pd_is_potentially_blocked(self):
+        return self.policy_decision_string == 'potentially_blocked'
+
+    def cast_is_broadcast(self):
+        return self._cast_type == 'broadcast'
+
+    def cast_is_multicast(self):
+        return self._cast_type == 'multicast'
+
+    def cast_is_unicast(self):
+        return self._cast_type is not None
+
+    def set_draft_mode_policy_decision(self, decision: Literal['allowed', 'blocked', 'blocked_by_boundary']):
+        self._draft_mode_policy_decision = decision
+
+    def draft_mode_policy_decision_is_blocked(self) -> Optional[bool]:
+        """
+        @return: None if draft_mode was not enabled
+        """
+        return self._draft_mode_policy_decision is not None and \
+            (self._draft_mode_policy_decision == 'blocked' or self._draft_mode_policy_decision == 'blocked_by_boundary')
+
+    def draft_mode_policy_decision_is_allowed(self) -> Optional[bool]:
+        """
+        @return: None if draft_mode was not enabled
+        """
+        return self._draft_mode_policy_decision is not None and self._draft_mode_policy_decision == "allowed"
+
+    def draft_mode_policy_decision_is_unavailable(self) -> Optional[bool]:
+        """
+        @return: None if draft_mode was not enabled
+        """
+        return self._draft_mode_policy_decision is None
+
+    def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
+        return self._draft_mode_policy_decision is None
+
+    def draft_mode_policy_decision_to_str(self) -> str:
+        if self._draft_mode_policy_decision is None:
+            return 'not_available'
+        return self._draft_mode_policy_decision
+
 
 class ExplorerResultSetV1:
 
@@ -12,234 +240,6 @@ class ExplorerResultSetV1:
     class Tracker:
         def __init__(self, owner):
             self.owner = owner
-
-    class ExplorerResult:
-        _draft_mode_policy_decision: Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]
-        destination_workload_labels_href: List[str]
-        source_workload_labels_href: List[str]
-
-        def __init__(self, data):
-            self._raw_json = data
-            self.num_connections = data['num_connections']
-
-            self.policy_decision_string = data['policy_decision']
-            self._draft_mode_policy_decision = None
-
-            self.source_ip_fqdn: Optional[str] = None
-            self.destination_ip_fqdn: Optional[str] = None
-
-            src = data['src']
-            self.source_ip: str = src['ip']
-            self._source_iplists = src.get('ip_lists')
-            self._source_iplists_href: List[str] = []
-            if self._source_iplists is not None:
-                for href in self._source_iplists:
-                    self._source_iplists_href.append(href['href'])
-
-            self.source_workload_href: Optional[str] = None
-            workload_data = src.get('workload')
-            if workload_data is not None:
-                self.source_workload_href: Optional[str] = workload_data.get('href')
-                if self.source_workload_href is None:
-                    raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
-
-                self.source_workload_labels_href: Optional[List[str]] = []
-                workload_labels_data = workload_data.get('labels')
-                if workload_labels_data is not None:
-                    for label_data in workload_labels_data:
-                        self.source_workload_labels_href.append(label_data.get('href'))
-
-            dst = data['dst']
-            self.destination_ip: str = dst['ip']
-            self.destination_ip_fqdn = dst.get('fqdn')
-            self._destination_iplists = dst.get('ip_lists')
-            self._destination_iplists_href: List[str] = []
-            if self._destination_iplists is not None:
-                for href in self._destination_iplists:
-                    self._destination_iplists_href.append(href['href'])
-
-            self.destination_workload_href: Optional[str] = None
-            workload_data = dst.get('workload')
-            if workload_data is not None:
-                self.destination_workload_href = workload_data.get('href')
-                if self.destination_workload_href is None:
-                    raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
-
-                self.destination_workload_labels_href: Optional[List[str]] = []
-                workload_labels_data = workload_data.get('labels')
-                if workload_labels_data is not None:
-                    for label_data in workload_labels_data:
-                        self.destination_workload_labels_href.append(label_data.get('href'))
-
-            service_json = data['service']
-            self.service_json = service_json
-
-            self.service_protocol: int = service_json['proto']
-            self.service_port: Optional[int] = service_json.get('port')
-            self.process_name: Optional[str] = service_json.get('process_name')
-            self.username: Optional[str] = service_json.get('user_name')
-
-            self.first_detected: str = data['timestamp_range']['first_detected']
-            self.last_detected: str = data['timestamp_range']['last_detected']
-
-            self._cast_type: Optional[str] = data.get('transmission')
-
-        def service_to_str(self, protocol_first=True):
-            if protocol_first:
-                if self.service_port is None or self.service_port == 0:
-                    return 'proto/{}'.format(self.service_protocol)
-
-                if self.service_protocol == 17:
-                    return 'udp/{}'.format(self.service_port)
-
-                if self.service_protocol == 6:
-                    return 'tcp/{}'.format(self.service_port)
-            else:
-                if self.service_port is None or self.service_port == 0:
-                    return '{}/proto'.format(self.service_protocol)
-
-                if self.service_protocol == 17:
-                    return '{}/udp'.format(self.service_port)
-
-                if self.service_protocol == 6:
-                    return '{}/tcp'.format(self.service_port)
-
-        def service_to_str_array(self):
-            if self.service_port is None or self.service_port == 0:
-                return [self.service_protocol, 'proto']
-
-            if self.service_protocol == 17:
-                return [self.service_port, 'udp']
-
-            if self.service_protocol == 6:
-                return [self.service_port, 'tcp']
-
-            return ['n/a', 'n/a']
-
-        def source_is_workload(self):
-            return self.source_workload_href is not None
-
-        def destination_is_workload(self):
-            return self.destination_workload_href is not None
-
-        def get_source_workload_href(self):
-            return self.source_workload_href
-
-        def get_destination_workload_href(self):
-            return self.destination_workload_href
-
-        def get_source_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
-            if self.source_workload_href is None:
-                return None
-            return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.source_workload_href, '*DELETED*')
-
-        def get_destination_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
-            if self.destination_workload_href is None:
-                return None
-            return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.destination_workload_href, '*DELETED*')
-
-        def get_source_labels_href(self) -> Optional[List[str]]:
-            if not self.source_is_workload():
-                return None
-            return self.source_workload_labels_href
-
-        def get_destination_labels_href(self) -> Optional[List[str]]:
-            if not self.destination_is_workload():
-                return None
-            return self.destination_workload_labels_href
-
-        def get_source_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
-            if self._source_iplists is None:
-                return {}
-
-            result = {}
-
-            for record in self._source_iplists:
-                href = record.get('href')
-                if href is None:
-                    raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
-                iplist = org_for_resolution.IPListStore.find_by_href(href)
-                if iplist is None:
-                    raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
-
-                result[href] = iplist
-
-            return result
-
-        def get_source_iplists_href(self) -> Optional[List[str]]:
-            if self.source_is_workload():
-                return None
-            if self._source_iplists_href is None:
-                return []
-            return self._source_iplists_href.copy()
-
-        def get_destination_iplists_href(self) -> Optional[List[str]]:
-            if self.destination_is_workload():
-                return None
-
-            if self._destination_iplists_href is None:
-                return []
-            return self._destination_iplists_href.copy()
-
-        def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
-            if self._destination_iplists is None:
-                return {}
-
-            result = {}
-
-            for record in self._destination_iplists:
-                href = record.get('href')
-                if href is None:
-                    raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
-                iplist = org_for_resolution.IPListStore.find_by_href(href)
-                if iplist is None:
-                    raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
-
-                result[href] = iplist
-
-            return result
-
-        def pd_is_potentially_blocked(self):
-            return self.policy_decision_string == 'potentially_blocked'
-
-        def cast_is_broadcast(self):
-            return self._cast_type == 'broadcast'
-
-        def cast_is_multicast(self):
-            return self._cast_type == 'multicast'
-
-        def cast_is_unicast(self):
-            return self._cast_type is not None
-
-        def set_draft_mode_policy_decision(self, decision: Literal['allowed', 'blocked', 'blocked_by_boundary']):
-            self._draft_mode_policy_decision = decision
-
-        def draft_mode_policy_decision_is_blocked(self) -> Optional[bool]:
-            """
-            @return: None if draft_mode was not enabled
-            """
-            return self._draft_mode_policy_decision is not None and \
-            (self._draft_mode_policy_decision == 'blocked' or self._draft_mode_policy_decision == 'blocked_by_boundary')
-
-        def draft_mode_policy_decision_is_allowed(self) -> Optional[bool]:
-            """
-            @return: None if draft_mode was not enabled
-            """
-            return self._draft_mode_policy_decision is not None and self._draft_mode_policy_decision == "allowed"
-
-        def draft_mode_policy_decision_is_unavailable(self) -> Optional[bool]:
-            """
-            @return: None if draft_mode was not enabled
-            """
-            return self._draft_mode_policy_decision is None
-
-        def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
-            return self._draft_mode_policy_decision is None
-
-        def draft_mode_policy_decision_to_str(self) -> str:
-            if self._draft_mode_policy_decision is None:
-                return 'not_available'
-            return self._draft_mode_policy_decision
 
     def __init__(self, data, owner: 'APIConnector', emulated_process_exclusion={}):
         self._raw_results = data
@@ -265,15 +265,15 @@ class ExplorerResultSetV1:
             raise pylo.PyloEx('Line # doesnt exists, requested #{} while this set contains only {} (starts at 0)'.
                               format(line, len(self._raw_results)))
 
-        return ExplorerResultSetV1.ExplorerResult(self._raw_results[line])
+        return ExplorerResult(self._raw_results[line])
 
     @staticmethod
-    def merge_similar_records_only_process_and_user_differs(records: List['ExplorerResultSetV1.ExplorerResult']) -> List['ExplorerResultSetV1.ExplorerResult']:
+    def merge_similar_records_only_process_and_user_differs(records: List[ExplorerResult]) -> List[ExplorerResult]:
         class HashTable:
             def __init__(self):
-                self.entries: Dict[str, List['ExplorerResultSetV1.ExplorerResult']] = {}
+                self.entries: Dict[str, List[ExplorerResult]] = {}
 
-            def load(self, records: List['ExplorerResultSetV1.ExplorerResult']):
+            def load(self, records: List[ExplorerResult]):
 
                 for record in records:
                     hash = record.source_ip + record.destination_ip + str(record.source_workload_href) + \
@@ -285,9 +285,9 @@ class ExplorerResultSetV1:
                     else:
                         hashEntry.append(record)
 
-            def results(self) -> List['ExplorerResultSetV1.ExplorerResult']:
+            def results(self) -> List[ExplorerResult]:
 
-                results: List['ExplorerResultSetV1.ExplorerResult'] = []
+                results: List[ExplorerResult] = []
 
                 for hashEntry in self.entries.values():
                     if len(hashEntry) == 1:
@@ -337,18 +337,18 @@ class ExplorerResultSetV1:
                         draft_mode=False,
                         deep_analysis=True,
                         draft_mode_request_count_per_batch=50
-                        ) -> List['ExplorerResultSetV1.ExplorerResult']:
+                        ) -> List[ExplorerResult]:
         result = []
         for data in self._raw_results:
             try:
-                new_record = ExplorerResultSetV1.ExplorerResult(data)
+                new_record = ExplorerResult(data)
                 result.append(new_record)
 
             except pylo.PyloApiUnexpectedSyntax as error:
                 pylo.log.warn(error)
 
         if len(result) > 0 and draft_mode:
-            draft_reply_to_record_table: List[ExplorerResultSetV1.ExplorerResult] = []
+            draft_reply_to_record_table: List[ExplorerResult] = []
 
             global_query_data = []
 
@@ -925,17 +925,17 @@ class RuleCoverageQueryManager:
         self.workload_to_iplist_query_manager = RuleCoverageQueryManager.WorkloadToIPListQueryManager()
         self.workload_to_workload_query_manager = RuleCoverageQueryManager.WorkloadToWorkloadQueryManager()
         self.log_id = 0
-        self.log_to_id: Dict[ExplorerResultSetV1.ExplorerResult, int] = {}
+        self.log_to_id: Dict[ExplorerResult, int] = {}
         self.count_invalid_records = 0
         self.any_iplist_href = self.owner.objects_iplists_get_default_any()
         if self.any_iplist_href is None:
             raise pylo.PyloEx('No "any" iplist found')
 
-    def add_query_from_explorer_results(self, explorer_results: List[ExplorerResultSetV1.ExplorerResult]) -> None:
+    def add_query_from_explorer_results(self, explorer_results: List[ExplorerResult]) -> None:
         for explorer_result in explorer_results:
             self.add_query_from_explorer_result(explorer_result)
 
-    def add_query_from_explorer_result(self, log: ExplorerResultSetV1.ExplorerResult):
+    def add_query_from_explorer_result(self, log: ExplorerResult):
         self.log_id += 1
         self.log_to_id[log] = self.log_id
 
