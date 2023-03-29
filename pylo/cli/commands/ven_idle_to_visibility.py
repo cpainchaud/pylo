@@ -31,10 +31,10 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 @dataclass
 class MyBuiltInParser:
-    filter_env_label = LabelParser('--filter-env-label', '-env', 'env', is_required=False, is_multiple=False)
-    filter_app_label = LabelParser('--filter-app-label', '-app', 'app', is_required=False, is_multiple=False)
-    filter_role_label = LabelParser('--filter-role-label', '-role', 'role', is_required=False, is_multiple=False)
-    filter_loc_label = LabelParser('--filter-loc-label', '-loc', 'loc', is_required=False, is_multiple=False)
+    filter_env_label = LabelParser('--filter-env-label', '-env', 'env', is_required=False, allow_multiple=True)
+    filter_app_label = LabelParser('--filter-app-label', '-app', 'app', is_required=False, allow_multiple=True)
+    filter_role_label = LabelParser('--filter-role-label', '-role', 'role', is_required=False, allow_multiple=True)
+    filter_loc_label = LabelParser('--filter-loc-label', '-loc', 'loc', is_required=False, allow_multiple=True)
 
 
 def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwargs):

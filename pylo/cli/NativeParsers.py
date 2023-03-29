@@ -18,12 +18,12 @@ class BaseParser:
 
 
 class LabelParser(BaseParser):
-    def __init__(self, action_name: str, action_short_name: Optional[str], label_type: Optional[str] = None, is_required: bool = True, is_multiple: bool = False, help_text: Optional[str] = None):
+    def __init__(self, action_name: str, action_short_name: Optional[str], label_type: Optional[str] = None, is_required: bool = True, allow_multiple: bool = False, help_text: Optional[str] = None):
         self.action_name = action_name
         self.action_short_name = action_short_name
         self.label_type = label_type
         self.is_required = is_required
-        self.is_multiple = is_multiple
+        self.allow_multiple = allow_multiple
         self.results: List['pylo.Label'] = []
         self.results_as_dict_by_href: Dict[str, 'pylo.Label'] = {}
         self.help_text = help_text
@@ -32,7 +32,7 @@ class LabelParser(BaseParser):
 
         help_text = self.help_text
         if help_text is None:
-            if self.is_multiple:
+            if self.allow_multiple:
                 if self.label_type is None:
                     help_text = f"Filter by label name. Multiple labels can be specified by separating them with a comma."
                 else:
@@ -56,19 +56,21 @@ class LabelParser(BaseParser):
             print(" None")
             return
 
-        if self.is_multiple:
+        if self.allow_multiple:
             label_names = args.split(",")
         else:
             label_names = [args]
 
         label_objects = []
         for label in label_names:
-            if self.label_type is None:
-                label_object = org.LabelStore.find_label_by_name_whatever_type(label)
-            else:
-                label_object = org.LabelStore.find_label_by_name_and_type(label, self.label_type)
+            label_object = org.LabelStore.find_label_by_name_whatever_type(label)
             if label_object is None:
-                raise Exception(f"Label '{label}' does not exist, make sure there is no typo and check case sensitivity.")
+                raise Exception(f"Label '{label}' does not exist, make sure there is no typo and check its case.")
+
+            if self.label_type is not None:  # check if the label is of the correct type
+                if label_object.type != self.label_type:
+                    raise Exception(f"Label '{label}' is of type '{label_object.type}' but should be of type '{self.label_type}'.")
+
             label_objects.append(label_object)
 
         # just in case make sure it's a list of unique labels
