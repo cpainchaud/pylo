@@ -61,17 +61,11 @@ class LabelParser(BaseParser):
         else:
             label_names = [args]
 
-        label_objects = []
-        for label in label_names:
-            label_object = org.LabelStore.find_label_by_name_whatever_type(label)
-            if label_object is None:
-                raise Exception(f"Label '{label}' does not exist, make sure there is no typo and check its case.")
+        missing_labels: List[str] = []
 
-            if self.label_type is not None:  # check if the label is of the correct type
-                if label_object.type != self.label_type:
-                    raise Exception(f"Label '{label}' is of type '{label_object.type}' but should be of type '{self.label_type}'.")
-
-            label_objects.append(label_object)
+        label_objects = org.LabelStore.find_label_by_name(label_names, label_type=self.label_type, missing_labels_names=missing_labels)
+        if len(missing_labels) > 0:
+            raise pylo.PyloEx(f"Could not find labels: {pylo.string_list_to_text(missing_labels)}, please check their spelling, case and type.")
 
         # just in case make sure it's a list of unique labels
         self.results = list(set(label_objects))
