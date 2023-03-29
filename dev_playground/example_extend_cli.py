@@ -4,14 +4,13 @@ import sys
 from dataclasses import dataclass
 from typing import Union, Optional, Dict, List, Any, Set
 
-from pylo.cli.NativeParsers import LabelParser
-
 # this line is only needed for dev_playground examples as the developer may not have installed the library, remove it in your own code
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import pylo
 import pylo.cli as cli
 import pylo.cli.commands as commands
+from pylo.cli.NativeParsers import LabelParser
 
 command_name = 'my-first-command-show-workloads'
 
@@ -20,11 +19,9 @@ objects_load_filter = ['workloads', 'labels']  # optional, if you want to load o
 
 @dataclass
 class MyBuiltInParser:  # optional, if you want to use built-in parsers
-    filter_env_label = LabelParser('--filter-env-label',
-                                   action_short_name='-env',
+    filter_env_label = LabelParser('--filter-env-label', action_short_name='-env',
                                    label_type='env',  # optional, it will ensure that selected labels are of a specified type
-                                   is_required=False,
-                                   allow_multiple=True)
+                                   is_required=False, allow_multiple=True)
 
 def fill_parser(parser: argparse.ArgumentParser):
     """ This function will be called by the CLI to fill the parser with the arguments of your command """
@@ -40,13 +37,11 @@ def __main(args, org: pylo.Organization,
     :param org: the Organization object from pylo library, ready to consume
     :param native_parsers: the native parsers object, if you used them
     """
-    sort_by_name = args['sort_by_name']
 
     workloads = native_parsers.filter_env_label.filter_workloads_matching_labels(org.WorkloadStore.workloads)
-
     print(f" * Now listing the {len(workloads)} Workload(s) found in PCE '{org.connector.hostname}' which are matching the filters:")
 
-    if sort_by_name:
+    if args['sort_by_name']:
         workloads = sorted(workloads, key=lambda x: x.name)
 
     for workload in workloads:
