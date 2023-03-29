@@ -84,9 +84,12 @@ class LabelParser(BaseParser):
             return workloads
 
         # we must group Labels by their type first
-        labels_dict_by_type: Dict[str, pylo.Label] = {}
+        labels_dict_by_type: Dict[str, List[pylo.Label]] = {}
         for label in self.results:
-            labels_dict_by_type[label.type] = label
+            if labels_dict_by_type.get(label.type) is None:
+                labels_dict_by_type[label.type] = [label]
+            else:
+                labels_dict_by_type[label.type].append(label)
 
         # now we can filter the workloads, they must match at least one Label per type
         filtered_workloads = []
