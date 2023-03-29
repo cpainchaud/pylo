@@ -8,6 +8,12 @@
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 
-.idea
 __pycache__/
 *.iml
+
+# IntelliJ project files
+.idea
+
+# VSCode project files
+.vscode
+
