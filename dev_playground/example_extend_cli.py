@@ -6,7 +6,7 @@ from typing import Union, Optional, Dict, List, Any, Set
 
 from pylo.cli.NativeParsers import LabelParser
 
-# this line is only needed for dev_playground examples as the developer may not have install the library, remove it in your own code
+# this line is only needed for dev_playground examples as the developer may not have installed the library, remove it in your own code
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import pylo
