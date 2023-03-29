@@ -18,8 +18,9 @@ class BaseParser:
 
 
 class LabelParser(BaseParser):
-    def __init__(self, filter_name: str, label_type: Optional[str] = None, is_required: bool = True, is_multiple: bool = False, help_text: Optional[str] = None):
-        self.filter_name = filter_name
+    def __init__(self, action_name: str, action_short_name: Optional[str], label_type: Optional[str] = None, is_required: bool = True, is_multiple: bool = False, help_text: Optional[str] = None):
+        self.action_name = action_name
+        self.action_short_name = action_short_name
         self.label_type = label_type
         self.is_required = is_required
         self.is_multiple = is_multiple
@@ -42,11 +43,15 @@ class LabelParser(BaseParser):
                 else:
                     help_text = f"Filter by label name of type '{self.label_type}'."
 
-        self._action = parser.add_argument(self.filter_name, type=str, required=self.is_required,
-                                           help=help_text)
+        if self.action_short_name is None:
+            self._action = parser.add_argument(self.action_name, type=str,
+                                               required=self.is_required, help=help_text)
+        else:
+            self._action = parser.add_argument(self.action_short_name, self.action_name, type=str,
+                                               required=self.is_required, help=help_text)
 
     def execute(self, args: str, org: 'pylo.Organization', padding: str = ''):
-        print(f"{padding}{self.filter_name}:", end="")
+        print(f"{padding}{self.action_name}:", end="")
         if args is None:
             print(" None")
             return

@@ -20,7 +20,11 @@ objects_load_filter = ['workloads', 'labels']  # optional, if you want to load o
 
 @dataclass
 class MyBuiltInParser:  # optional, if you want to use built-in parsers
-    filter_env_label = LabelParser('--filter-env-label', 'env', is_required=False, is_multiple=True)
+    filter_env_label = LabelParser('--filter-env-label',
+                                   action_short_name='-env',
+                                   label_type='env',
+                                   is_required=False,
+                                   is_multiple=True)
 
 def fill_parser(parser: argparse.ArgumentParser):
     """ This function will be called by the CLI to fill the parser with the arguments of your command """

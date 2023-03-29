@@ -22,19 +22,19 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--ignore-all-incompatibilities', action='store_true',
                         help="Don't check compatibility report and just do the change!")
 
-    parser.add_argument('--confirm', action='store_true',
+    parser.add_argument('-c', '--confirm', action='store_true',
                         help='Request upgrade of the Agents')
 
-    parser.add_argument('--mode', type=str.lower, required=True, choices=['build', 'test'],
+    parser.add_argument('-m', '--mode', type=str.lower, required=True, choices=['build', 'test'],
                         help='Select if you want to switch from IDLE to BUILD or TEST')
 
 
 @dataclass
 class MyBuiltInParser:
-    filter_env_label = LabelParser('--filter-env-label', 'env', is_required=False, is_multiple=False)
-    filter_app_label = LabelParser('--filter-app-label', 'app', is_required=False, is_multiple=False)
-    filter_role_label = LabelParser('--filter-role-label', 'role', is_required=False, is_multiple=False)
-    filter_loc_label = LabelParser('--filter-loc-label', 'loc', is_required=False, is_multiple=False)
+    filter_env_label = LabelParser('--filter-env-label', '-env', 'env', is_required=False, is_multiple=False)
+    filter_app_label = LabelParser('--filter-app-label', '-app', 'app', is_required=False, is_multiple=False)
+    filter_role_label = LabelParser('--filter-role-label', '-role', 'role', is_required=False, is_multiple=False)
+    filter_loc_label = LabelParser('--filter-loc-label', '-loc', 'loc', is_required=False, is_multiple=False)
 
 
 def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwargs):
