@@ -1228,7 +1228,7 @@ class APIConnector:
             for item in map.to_list_of_cidr_string():
                 self.provider_include_cidr(item)
 
-        def service_include_add(self, service: 'pylo.DirectServiceInRule'|str):
+        def service_include_add(self, service: Union['pylo.DirectServiceInRule',str]):
             if isinstance(service, str):
                 self._include_direct_services.append(pylo.DirectServiceInRule.create_from_text(service))
                 return
