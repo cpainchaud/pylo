@@ -1228,7 +1228,10 @@ class APIConnector:
             for item in map.to_list_of_cidr_string():
                 self.provider_include_cidr(item)
 
-        def service_include_add(self, service: 'pylo.DirectServiceInRule'):
+        def service_include_add(self, service: 'pylo.DirectServiceInRule'|str):
+            if isinstance(service, str):
+                self._include_direct_services.append(pylo.DirectServiceInRule.create_from_text(service))
+                return
             self._include_direct_services.append(service)
 
         def service_include_add_protocol(self, protocol: int):
@@ -1245,7 +1248,7 @@ class APIConnector:
 
         def service_exclude_add_protocol(self, protocol: int):
             self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=protocol))
-            
+
         def service_exclude_add_protocol_tcp(self):
             self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=6))
 
@@ -1278,6 +1281,12 @@ class APIConnector:
 
         def set_time_to(self, time: datetime):
             self._time_to = time
+
+        def set_time_to_x_seconds_ago(self, seconds: int):
+            self._time_to = datetime.utcnow() - timedelta(seconds=seconds)
+
+        def set_time_to_x_days_ago(self, days: int):
+            return self.set_time_to_x_seconds_ago(days*60*60*24)
 
         def filter_on_policy_decision_unknown(self):
             self._policy_decision_filter.append('unknown')
