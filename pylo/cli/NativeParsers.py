@@ -77,3 +77,20 @@ class LabelParser(BaseParser):
         self.results = list(set(label_objects))
         self.results_as_dict_by_href = {label.href: label for label in self.results}
         print(f" {pylo.string_list_to_text(self.results)}")
+
+
+    def filter_workloads_matching_labels(self, workloads: List['pylo.Workload']) -> List['pylo.Workload']:
+        # we must group Labels by their type first
+        labels_dict_by_type: Dict[str, pylo.Label] = {}
+        for label in self.results:
+            labels_dict_by_type[label.type] = label
+
+        # now we can filter the workloads, they must match at least one Label per type
+        filtered_workloads = []
+        for workload in workloads:
+            for label_type in labels_dict_by_type:
+                if workload.get_label_by_type_str(label_type) in labels_dict_by_type[label_type]:
+                    filtered_workloads.append(workload)
+
+        return filtered_workloads
+
