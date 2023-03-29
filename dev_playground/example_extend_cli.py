@@ -51,7 +51,7 @@ def __main(args, org: pylo.Organization,
 
     print(f"* Now listing Workloads found in PCE '{org.connector.hostname}' and matching filters (if any):")
 
-    workloads = org.WorkloadStore.itemsByHRef.values()
+    workloads = org.WorkloadStore.workloads
     if sort_by_name:
         workloads = sorted(workloads, key=lambda x: x.name)
 
