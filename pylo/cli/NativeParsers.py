@@ -24,7 +24,7 @@ class LabelParser(BaseParser):
         self.label_type = label_type
         self.is_required = is_required
         self.allow_multiple = allow_multiple
-        self.results: List['pylo.Label'] = []
+        self.results: Optional[List['pylo.Label']] = None
         self.results_as_dict_by_href: Dict[str, 'pylo.Label'] = {}
         self.help_text = help_text
 
@@ -80,6 +80,9 @@ class LabelParser(BaseParser):
 
 
     def filter_workloads_matching_labels(self, workloads: List['pylo.Workload']) -> List['pylo.Workload']:
+        if self.results is None:
+            return workloads
+
         # we must group Labels by their type first
         labels_dict_by_type: Dict[str, pylo.Label] = {}
         for label in self.results:
