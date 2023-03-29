@@ -38,26 +38,19 @@ def __main(args, org: pylo.Organization,
     """ This is the main function of the command, it will be called by the CLI when the command is executed
     :param args: the arguments passed to the command, as returned by the argparse parser
     :param org: the Organization object from pylo library, ready to consume
+    :param native_parsers: the native parsers object, if you used them
     """
-
     sort_by_name = args['sort_by_name']
 
-    # let's check if user has input any environment label filter
-    env_labels = native_parsers.filter_env_label.results
-    if env_labels is not None:
-        print(f" * Environment label filter specified, will display workloads with environment labels: {pylo.string_list_to_text(env_labels)}")
-    else:
-        print(" * No environment label filter specified, will display all workloads")
+    workloads = native_parsers.filter_env_label.filter_workloads_matching_labels(org.WorkloadStore.workloads)
 
-    print(f"* Now listing Workloads found in PCE '{org.connector.hostname}' and matching filters (if any):")
+    print(f" * Now listing the {len(workloads)} Workload(s) found in PCE '{org.connector.hostname}' which are matching the filters:")
 
-    workloads = org.WorkloadStore.workloads
     if sort_by_name:
         workloads = sorted(workloads, key=lambda x: x.name)
 
     for workload in workloads:
-        if len(env_labels) == 0 or workload.env_label in env_labels:
-            print(f" - {workload.name} ({workload.href})")
+        print(f"  - {workload.name} ({workload.href})")
 
 
 # it's time to inject the properties of your first cli extension to PYLO!
