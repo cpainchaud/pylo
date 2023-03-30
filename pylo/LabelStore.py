@@ -150,7 +150,7 @@ class LabelStore:
                            missing_labels_names: Optional[List[str]] = None,
                            allow_label_group: bool = True,
                            allow_label: bool = True,
-                           raise_exception_if_not_found: bool = False) -> Optional['pylo.Label'|List['pylo.Label']]:
+                           raise_exception_if_not_found: bool = False) -> Optional[Union['pylo.Label','pylo.LabelGroup',List[Union['pylo.Label','pylo.LabelGroup']]]]:
         """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
         If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
