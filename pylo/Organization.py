@@ -43,6 +43,12 @@ class Organization:
 
         raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
 
+    @staticmethod
+    def create_from_cached_file(hostname: str) -> 'pylo.Organization':
+        org = pylo.Organization(1)
+        org.load_from_cached_file(hostname)
+        return org
+
     def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
         """
         Load the organization from a cache file on disk or default to the API

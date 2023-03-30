@@ -73,23 +73,24 @@ def run(forced_command_name: Optional[str] = None):
         if selected_command is None:
             raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
 
-    org = pylo.Organization(1)
     connector: Optional[pylo.APIConnector] = None
     config_data = None
 
     if settings_use_cache:
         print(" * Loading objects from cached PCE '{}' data... ".format(hostname), end="", flush=True)
-        org.load_from_cached_file(hostname)
+        org = pylo.Organization.create_from_cached_file(hostname)
         print("OK!")
     else:
         print(" * Looking for PCE '{}' credentials... ".format(hostname), end="", flush=True)
         connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
-        org.connector = connector
         print("OK!")
 
         print(" * Downloading PCE objects from API... ".format(hostname), end="", flush=True)
         config_data = connector.get_pce_objects(list_of_objects_to_load=selected_command.load_specific_objects_only)
         print("OK!")
+
+        org = pylo.Organization(1)
+        org.connector = connector
 
         if not selected_command.skip_pce_config_loading:
             print(" * Loading objects from PCE '{}' via API... ".format(hostname), end="", flush=True)

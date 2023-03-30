@@ -15,15 +15,12 @@ originHostname='10.107.3.2'
 targetHostname='10.256.3.2'
 
 
-origin = pylo.Organization(1)
-target = pylo.Organization(1)
-
 print("Loading Origin PCE configuration from " + originHostname + " or cached file... ", end="", flush=True)
-origin.load_from_cache_or_saved_credentials(originHostname)
+origin = pylo.load_organization_using_credential_file(originHostname)
 print("OK!")
 
 print("Loading Target PCE configuration from " + targetHostname + " or cached file ... ", end="", flush=True)
-target.load_from_cache_or_saved_credentials(targetHostname)
+target = pylo.load_organization_using_credential_file(targetHostname)
 print("OK!")
 
 
