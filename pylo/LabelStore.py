@@ -1,4 +1,4 @@
-from typing import Optional, Union, Dict
+from typing import Optional, Union, Dict, Set
 import pylo
 from pylo import log
 from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure
@@ -17,14 +17,21 @@ class LabelStore:
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: "pylo.Organization" = owner
         self.itemsByHRef: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        #self.locationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        #self.environmentLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        #self.roleLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        #self.applicationLabels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self.label_types: List[str] = []
+        self.label_types_as_set: Set[str] = set()
 
-        self.label_types = [label_type_role, label_type_loc, label_type_env, label_type_app]
+        self._add_dimension(label_type_role)
+        self._add_dimension(label_type_app)
+        self._add_dimension(label_type_env)
+        self._add_dimension(label_type_loc)
+        
 
         self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
+        
+    def _add_dimension(self, dimension: str):
+        if dimension not in self.label_types_as_set:
+            self.label_types_as_set.add(dimension)
+            self.label_types.append(dimension)
 
     @property
     def roleLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
@@ -129,20 +136,39 @@ class LabelStore:
 
     def get_location_labels_as_list(self):
         return self.locationLabels.values()
-
-    def get_labels_no_groups(self) -> Dict[str, 'pylo.Label']:
-        data = {}
+    
+    def get_labels(self, label_type: Optional[str] = None) -> List['pylo.Label']:
+        if label_type is not None:  # label_type must be a valid type
+            if label_type not in self.label_types_as_set:
+                raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
+        data = []
         for label in self.itemsByHRef.values():
-            if label.is_label():
-                data[label.href] = label
+            if label.is_label() and (label_type is None or label.type == label_type):
+                data.append(label)
+        return data
+    
+    def get_labels_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, 'pylo.Label']:
+        data = {}
+        label_list = self.get_labels(label_type)
+        for label in label_list.values():
+            data[label.href] = label
         return data
 
-    def get_label_groups(self) -> Dict[str, 'pylo.LabelGroup']:
-        data = {}
-
+    def get_label_groups(self, label_type: Optional[str] = None) -> List['pylo.LabelGroup']:
+        if label_type is not None:  # label_type must be a valid type
+            if label_type not in self.label_types_as_set:
+                raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
+        data = []
         for label in self.itemsByHRef.values():
-            if label.is_group():
-                data[label.href] = label
+            if label.is_label_group() and (label_type is None or label.type == label_type):
+                data.append(label)
+        return data
+    
+    def get_label_groups_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, 'pylo.LabelGroup']:
+        data = {}
+        label_list = self.get_label_groups(label_type)
+        for label in label_list.values():
+            data[label.href] = label
         return data
 
 

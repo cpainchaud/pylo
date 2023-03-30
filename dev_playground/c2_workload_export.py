@@ -28,7 +28,7 @@ class LabelGroupOwnershipColumn (ExtraColumn):
     def get_value(self, workload: pylo.Workload, org: Organization) -> str:
         return_string_list = []
 
-        groups = org.LabelStore.get_label_groups().values()
+        groups = org.LabelStore.get_label_groups()
         label_group: pylo.LabelGroup
         for label_group in groups:
             for label in label_group.get_members().values():
