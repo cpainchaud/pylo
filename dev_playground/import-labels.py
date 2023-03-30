@@ -1,4 +1,5 @@
 import sys
+from typing import List
 
 from pylo import log
 import logging
@@ -34,8 +35,8 @@ print("Statistics for Origin PCE %s:\n%s" % (originHostname, origin.stats_to_str
 print("Statistics for Target PCE %s:\n%s" % (targetHostname, target.stats_to_str()))
 
 
-labelsToImport = []  # type: List[pylo.Label]
-labelsInConflict = []  # type: List[pylo.Label]
+labelsToImport: List[pylo.Label] = []
+labelsInConflict: List[pylo.Label] = []
 
 for label in origin.LabelStore.itemsByHRef.values():
     labelName = label.name
