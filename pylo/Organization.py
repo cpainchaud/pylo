@@ -201,7 +201,15 @@ class Organization:
 
     def load_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False,
                       list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None):
+        """
+        Load the organization from the API with the API Connector provided. Mostly intended for developers use only
+        :param con:
+        :param include_deleted_workloads: 
+        :param list_of_objects_to_load:
+        :return:
+        """
         self.pce_version = con.get_software_version()
+        self.connector = con
         return self.load_from_json(self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads,
                                                             list_of_objects_to_load=list_of_objects_to_load))
 
@@ -218,6 +226,13 @@ class Organization:
 
     def get_config_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False,
                             list_of_objects_to_load: Optional[List[str]] = None) -> PCEObjectsJsonStructure:
+        """
+        Get the config/objects from the API using the API connector provided
+        :param con:
+        :param include_deleted_workloads:
+        :param list_of_objects_to_load:
+        :return:
+        """
         self.connector = con
         return con.get_pce_objects(include_deleted_workloads=include_deleted_workloads,
                                    list_of_objects_to_load=list_of_objects_to_load)
