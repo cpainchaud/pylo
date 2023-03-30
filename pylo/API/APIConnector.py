@@ -7,7 +7,8 @@ from pathlib import Path
 
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
-    LabelGroupObjectUpdateJsonStructure
+    LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
+    VirtualServiceObjectJsonStructure
 
 try:
     import requests as requests
@@ -526,16 +527,20 @@ class APIConnector:
         path = href
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
-    def objects_virtual_service_get(self, max_results: int = None, async_mode=True):
+    def objects_virtual_service_get(self, max_results: int = None, async_mode=True) -> List[VirtualServiceObjectJsonStructure]:
         path = '/sec_policy/draft/virtual_services'
         data = {}
 
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        results = self.do_get_call(path=path, async_call=async_mode, params=data)
+        # check type
+        if type(results) is list:
+            return results
+        raise pylo.PyloEx("Unexpected result type '{}' while expecting an array of Virtual Service objects".format(type(results)), results)
 
-    def objects_iplist_get(self, max_results: int = None, async_mode=True, search_name: str = None):
+    def objects_iplist_get(self, max_results: int = None, async_mode=True, search_name: str = None) -> List[IPListObjectJsonStructure]:
         path = '/sec_policy/draft/ip_lists'
         data = {}
 
@@ -545,13 +550,22 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        results: List[IPListObjectJsonStructure] = self.do_get_call(path=path, async_call=async_mode, params=data)
+        # check type
+        if type(results) is list:
+            return results
 
-    def objects_iplist_create(self, json_blob):
+        raise pylo.PyloEx("Unexpected result type '{}' while expecting an array of IP List objects".format(type(results)), results)
+
+    def objects_iplist_create(self, json_blob: IPListObjectCreationJsonStructure):
         path = '/sec_policy/draft/ip_lists'
         return self.do_post_call(path=path, json_arguments=json_blob)
 
     def objects_iplists_get_default_any(self) -> Optional[str]:
+        """
+           Returns the href of the default 'ANY' IP List or None (which is a bad sign!)
+        :return:
+        """
         response = self.objects_iplist_get(max_results=10, async_mode=False, search_name='0.0.0.0')
 
         for item in response:
@@ -693,12 +707,7 @@ class APIConnector:
     def new_tracker_workload_multi_delete(self):
         return APIConnector.WorkloadMultiDeleteTracker(self)
 
-    def objects_workload_delete_multi(self, href_or_workload_array):
-        """
-
-        :type href_or_workload_array: list[str]|list[pylo.Workload]
-        """
-
+    def objects_workload_delete_multi(self, href_or_workload_array: Union[List['pylo.Workload'],List[str]]):
         if len(href_or_workload_array) < 1:
             return
 
@@ -1035,6 +1044,12 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)
 
     def objects_agent_reassign_pce(self, agent_href: str, target_pce: str):
+        """
+        Reassign an agent to a different PCE
+        :param agent_href:
+        :param target_pce:
+        :return:
+        """
         path = agent_href + '/update'
         data = {"target_pce_fqdn": target_pce}
         return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)

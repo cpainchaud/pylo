@@ -45,6 +45,12 @@ class IPListObjectJsonStructure(TypedDict):
     ip_ranges: List[TypedDict('record', {'from_ip': str, 'to_ip': str, 'exclusion': bool})]
 
 
+class IPListObjectCreationJsonStructure(TypedDict):
+    name: str
+    description: str
+    ip_ranges: List[TypedDict('record', {'from_ip': str, 'to_ip': str, 'exclusion': bool})]
+
+
 class WorkloadObjectJsonStructure(TypedDict):
     href: str
     name: Optional[str]
