@@ -1,10 +1,11 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Callable
 import json
 import os
 import datetime
 import getpass
 import pylo
-from pylo.API.JsonPayloadTypes import PCEObjectsJsonStructure, PCECacheFileJsonStructure
+from .API.JsonPayloadTypes import PCEObjectsJsonStructure, PCECacheFileJsonStructure
+from .API.CredentialsManager import get_credentials_from_file
 
 
 class Organization:
@@ -44,9 +45,46 @@ class Organization:
         raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
 
     @staticmethod
-    def create_from_cached_file(hostname: str) -> 'pylo.Organization':
+    def get_from_cache_file(hostname: str) -> 'pylo.Organization':
         org = pylo.Organization(1)
         org.load_from_cached_file(hostname)
+        return org
+
+    @staticmethod
+    def get_from_api_using_credential_file(hostname_or_profile_name: str = None,
+                                           credential_file: str = None,
+                                           list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
+                                           include_deleted_workloads: bool = False,
+                                           callback_api_objects_downloaded: Callable = None) -> 'Organization':
+        """
+        Credentials files will be looked for in the following order:
+        1. The path provided in the credential_file argument
+        2. The path provided in the PYLO_CREDENTIAL_FILE environment variable
+        3. The path ~/.pylo/credentials.json
+        4. Current working directory credentials.json
+        :param hostname_or_profile_name:
+        :param credential_file:
+        :param list_of_objects_to_load:
+        :param include_deleted_workloads:
+        :param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects
+        :return:
+        """
+        credentials = get_credentials_from_file(hostname_or_profile_name, credential_file)
+
+        connector = pylo.APIConnector(hostname=credentials['hostname'], port=credentials['port'],
+                                      apiuser=credentials['api_user'], apikey=credentials['api_key'],
+                                      org_id=credentials['org_id'],
+                                      skip_ssl_cert_check=not credentials['verify_ssl'])
+
+        objects = connector.get_pce_objects(list_of_objects_to_load=list_of_objects_to_load,
+                                            include_deleted_workloads=include_deleted_workloads)
+
+        if callback_api_objects_downloaded is not None:
+            callback_api_objects_downloaded()
+
+        org = Organization(1)
+        org.load_from_json(objects,list_of_objects_to_load=list_of_objects_to_load)
+
         return org
 
     def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):

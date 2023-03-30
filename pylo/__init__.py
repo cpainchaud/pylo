@@ -67,27 +67,12 @@ def load_organization_using_credential_file(hostname_or_profile_name: str = None
     :param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects
     :return:
     """
-    credentials = get_credentials_from_file(hostname_or_profile_name, credential_file)
+    return Organization.get_from_api_using_credential_file(hostname_or_profile_name=hostname_or_profile_name,
+                                                           credential_file=credential_file,
+                                                           list_of_objects_to_load=list_of_objects_to_load,
+                                                           include_deleted_workloads=include_deleted_workloads,
+                                                           callback_api_objects_downloaded=callback_api_objects_downloaded)
 
-    api = APIConnector(hostname=credentials['hostname'], port=credentials['port'],
-                       apiuser=credentials['api_user'], apikey=credentials['api_key'],
-                       org_id=credentials['org_id'],
-                       skip_ssl_cert_check=not credentials['verify_ssl'])
-    connector = pylo.APIConnector(hostname=credentials['hostname'], port=credentials['port'],
-                                  apiuser=credentials['api_user'], apikey=credentials['api_key'],
-                                  org_id=credentials['org_id'],
-                                  skip_ssl_cert_check=not credentials['verify_ssl'])
-
-    objects = connector.get_pce_objects(list_of_objects_to_load=list_of_objects_to_load,
-                                        include_deleted_workloads=include_deleted_workloads)
-
-    if callback_api_objects_downloaded is not None:
-        callback_api_objects_downloaded(connector)
-
-    org = Organization(1)
-    org.load_from_json(objects,list_of_objects_to_load=list_of_objects_to_load)
-
-    return org
 
 
 ignoreWorkloadsWithSameName = True
