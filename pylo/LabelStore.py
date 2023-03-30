@@ -119,20 +119,35 @@ class LabelStore:
         for group in created_groups:
             group.load_from_json()
 
-    def count_labels(self) -> int:
-        return len(self.itemsByHRef)
+    def count_labels(self, label_type: Optional[str] = None) -> int:
+        return len(self.get_labels(label_type=label_type))
 
     def count_location_labels(self) -> int:
-        return len(self.locationLabels)
+        return len(self.get_labels(label_type=label_type_loc))
 
     def count_environment_labels(self) -> int:
-        return len(self.environmentLabels)
+        return len(self.get_labels(label_type=label_type_env))
 
     def count_application_labels(self) -> int:
-        return len(self.applicationLabels)
+        return len(self.get_labels(label_type=label_type_app))
 
     def count_role_labels(self) -> int:
-        return len(self.roleLabels)
+        return len(self.get_labels(label_type=label_type_role))
+    
+    def count_label_groups(self, label_type: Optional[str] = None) -> int:
+        return len(self.get_label_groups(label_type))
+    
+    def count_location_label_groups(self) -> int:
+        return len(self.get_label_groups(label_type=label_type_loc))
+    
+    def count_environment_label_groups(self) -> int:
+        return len(self.get_label_groups(label_type=label_type_env))
+    
+    def count_application_label_groups(self) -> int:
+        return len(self.get_label_groups(label_type=label_type_app))
+    
+    def count_role_label_groups(self) -> int:
+        return len(self.get_label_groups(label_type=label_type_role))
 
     def get_location_labels_as_list(self):
         return self.locationLabels.values()
