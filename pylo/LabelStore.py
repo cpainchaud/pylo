@@ -218,6 +218,9 @@ class LabelStore:
     cache_label_all_separator = '|'
 
     def generate_label_resolution_cache(self):
+        """
+        Mostly for internal use. This method will generate a cache of all possible combinations of labels.
+        """
         self.label_resolution_cache = {}
 
         roles = list(self.roleLabels.keys())
@@ -312,6 +315,8 @@ class LabelStore:
         return self.label_resolution_cache[group_name]
 
     def create_label(self, name: str, label_type: str) -> 'pylo.Label':
+        """Create a label *locally* (not on the server). Mostly for internal use.
+        """
 
         new_label_name = name
         new_label_type = label_type
@@ -356,25 +361,8 @@ class LabelStore:
         return new_label
 
     def find_label_by_name_lowercase_and_type(self, name: str, type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
-        ref = None
-        name = name.lower()
-
-        if type == label_type_loc:
-            ref = self.locationLabels
-        elif type == label_type_env:
-            ref = self.environmentLabels
-        elif type == label_type_app:
-            ref = self.applicationLabels
-        elif type == label_type_role:
-            ref = self.roleLabels
-        else:
-            raise pylo.PyloEx("Unsupported type '{}'".format(type))
-
-        for labelName in ref.keys():
-            if name == labelName.lower():
-                return ref[labelName]
-
-        return None
+        pylo.log.warn("find_label_by_name_lowercase_and_type is deprecated, use find_object_by_name instead")
+        return self.find_object_by_name(name, type)
 
     def find_label_multi_by_name_lowercase_and_type(self, name: str, type: str) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
         """
