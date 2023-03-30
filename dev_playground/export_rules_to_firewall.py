@@ -254,15 +254,13 @@ def label_tuple_to_group_name(role: pylo.Label, app: pylo.Label, env: pylo.Label
     return string
 
 
-org = pylo.Organization(1)
-
 if args['use_cache']:
     print("Loading Origin PCE configuration from '{}' or cached file... ".format(hostname), end="", flush=True)
-    org.load_from_cache_or_saved_credentials(hostname)
+    org = pylo.Organization.get_from_cache_file(hostname)
     print("OK!\n")
 else:
     print("Loading Origin PCE configuration from '{}'... ".format(hostname), end="", flush=True)
-    org.load_from_saved_credentials(hostname, prompt_for_api_key=True)
+    org = pylo.Organization.get_from_api_using_credential_file(hostname, prompt_for_api_key=True)
     print("OK!\n")
 
 print(org.stats_to_str())
