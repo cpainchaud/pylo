@@ -23,7 +23,7 @@ pce_org_id = 1
 pce_verify_ssl = True
 
 print("Loading organization from PCE '{}'... ".format(pce_hostname), end='', flush=True)
-organization = pylo.load_organization(pce_hostname, pce_port, pce_api_user, pce_api_key, pce_org_id, pce_verify_ssl)
+organization = pylo.get_organization(pce_hostname, pce_port, pce_api_user, pce_api_key, pce_org_id, pce_verify_ssl)
 print("OK!")
 
 explorer_query_filters = organization.connector.ExplorerFilterSetV1()

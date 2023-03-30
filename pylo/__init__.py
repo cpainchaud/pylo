@@ -33,10 +33,10 @@ from .Organization import Organization
 from .Query import Query
 
 
-def load_organization(hostname: str, port: int,  api_user: str, api_key: str,
-                      organization_id: int, verify_ssl: bool = True,
-                      list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
-                      include_deleted_workloads: bool = False) -> Organization:
+def get_organization(hostname: str, port: int, api_user: str, api_key: str,
+                     organization_id: int, verify_ssl: bool = True,
+                     list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
+                     include_deleted_workloads: bool = False) -> Organization:
     """
     Load an organization from the API with parameters provided as arguments.
     """
