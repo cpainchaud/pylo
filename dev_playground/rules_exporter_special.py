@@ -55,15 +55,13 @@ file_clean(rules_csv_file)
 file_clean(rules_xls_file)
 
 
-org = pylo.Organization(1)
-
 if args['use_cache']:
-    print("Loading PCE configuration from '{}' or cached file... ".format(hostname), end="", flush=True)
-    org.load_from_cache_or_saved_credentials(hostname)
+    print("Loading PCE cached file... ", end="", flush=True)
+    org = pylo.Organization.get_from_cache_file(hostname)
     print("OK!\n")
 else:
     print("Loading PCE configuration from '{}'... ".format(hostname), end="", flush=True)
-    org.load_from_saved_credentials(hostname, prompt_for_api_key=True)
+    org = pylo.load_organization_using_credential_file(hostname)
     print("OK!\n")
 
 print(org.stats_to_str())

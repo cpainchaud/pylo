@@ -22,9 +22,8 @@ if args['debug']:
 targetHostname = args['pce']
 numberOfWorkloadsPerBatch = 100
 
-target = pylo.Organization(1)
 print("Loading Organization's data from API... ", flush=True, end='')
-target.load_from_saved_credentials(targetHostname)
+target = pylo.Organization.get_from_api_using_credential_file(targetHostname)
 print("done!")
 
 print("Organisation Statistics:\n", target.stats_to_str())
