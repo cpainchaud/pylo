@@ -46,11 +46,11 @@ def check_conflicts_between_two_pce(origin: pylo.Organization, target: pylo.Orga
 
 
 print("Loading Origin PCE configuration from " + originHostname + " or cached file... ", end="", flush=True)
-origin = pylo.load_organization_using_credential_file(originHostname)
+origin = pylo.get_organization_using_credential_file(originHostname)
 print("OK!")
 
 print("Loading Target PCE configuration from " + targetHostname + " or cached file ... ", end="", flush=True)
-target = pylo.load_organization_using_credential_file(targetHostname)
+target = pylo.get_organization_using_credential_file(targetHostname)
 print("OK!")
 
 conflicting_name_at_origin = check_unique_within_single_pce(origin)

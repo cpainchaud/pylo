@@ -4,7 +4,7 @@ import sys
 hostname='10.107.3.2'
 
 print("Loading Origin PCE configuration from " + hostname + " or cached file... ", end="", flush=True)
-org = pylo.load_organization_using_credential_file(hostname)
+org = pylo.get_organization_using_credential_file(hostname)
 print("OK!\n")
 
 

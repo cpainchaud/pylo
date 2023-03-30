@@ -11,7 +11,7 @@ print("Loading Origin PCE configuration from " + originHostname + " or cached fi
 origin = pylo.Organization.get_from_api_using_credential_file(originHostname)
 print("OK!")
 print("Loading Target PCE configuration from " + targetHostname + " or cached file ... ", end="", flush=True)
-target = pylo.load_organization_using_credential_file(targetHostname)
+target = pylo.get_organization_using_credential_file(targetHostname)
 print("OK!")
 print()
 

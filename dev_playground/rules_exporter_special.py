@@ -61,7 +61,7 @@ if args['use_cache']:
     print("OK!\n")
 else:
     print("Loading PCE configuration from '{}'... ".format(hostname), end="", flush=True)
-    org = pylo.load_organization_using_credential_file(hostname)
+    org = pylo.get_organization_using_credential_file(hostname)
     print("OK!\n")
 
 print(org.stats_to_str())

@@ -49,11 +49,11 @@ def get_organization(hostname: str, port: int, api_user: str, api_key: str,
     return org
 
 
-def load_organization_using_credential_file(hostname_or_profile_name: str = None,
-                                            credential_file: str = None,
-                                            list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
-                                            include_deleted_workloads: bool = False,
-                                            callback_api_objects_downloaded: Callable = None) -> Organization:
+def get_organization_using_credential_file(hostname_or_profile_name: str = None,
+                                           credential_file: str = None,
+                                           list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
+                                           include_deleted_workloads: bool = False,
+                                           callback_api_objects_downloaded: Callable = None) -> Organization:
     """
     Credentials files will be looked for in the following order:
     1. The path provided in the credential_file argument
