@@ -8,7 +8,6 @@ We will make a query for all traffic logs matching the following conditions:
 - log was last seen between now and 5 days ago
 """
 
-
 import os
 import sys
 
@@ -22,7 +21,6 @@ pce_api_user = 'api_xxxxxxxxx'
 pce_api_key = 'xxxxxxxxxxxxxxxxxxxx'
 pce_org_id = 1
 pce_verify_ssl = True
-
 
 print("Loading organization from PCE '{}'... ".format(pce_hostname), end='', flush=True)
 organization = pylo.load_organization(pce_hostname, pce_port, pce_api_user, pce_api_key, pce_org_id, pce_verify_ssl)

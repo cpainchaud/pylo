@@ -11,12 +11,8 @@ import argparse
 import pylo
 
 
-
-
-#originHostname='ilo-amer-poc.xmp.net.intra'
 originHostname='10.107.3.2'
-targetHostname='ilo-emea-poc.xmp.net.intra'
-
+targetHostname='10.256.3.2'
 
 
 origin = pylo.Organization(1)
@@ -90,9 +86,5 @@ for label in labelsToImport:
     print("    + CREATED!")
 
 print("\n*****  IMPORT DONE!  *****\n")
-
-
-
-
 
 
