@@ -60,7 +60,7 @@ class Organization:
         if not self.load_from_cached_file(hostname, no_exception_if_file_does_not_exist=True):
             self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
 
-    def make_cache_file_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False):
+    def make_cache_file_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False) -> (str, int):
         # filename should be like 'cache_xxx.yyy.zzz.json'
         filename = 'cache_' + con.hostname + '.json'
 
