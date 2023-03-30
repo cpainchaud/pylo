@@ -177,7 +177,7 @@ class LabelStore:
             results = []
             local_notfound_labels = []
             for name_to_find in name:
-                result = self.find_label_by_name(name_to_find, label_type=label_type ,case_sensitive=case_sensitive,
+                result = self.find_object_by_name(name_to_find, label_type=label_type ,case_sensitive=case_sensitive,
                                                  allow_label_group=allow_label_group, allow_label=allow_label)
                 if result is None:
                         local_notfound_labels.append(name_to_find)
