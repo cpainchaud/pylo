@@ -47,6 +47,11 @@ print("done!")
 
 print("Organisation Statistics:\n", target.stats_to_str())
 
+loc_labels = target.LabelStore.get_labels('loc')
+env_labels = target.LabelStore.get_labels('env')
+app_labels = target.LabelStore.get_labels('app')
+role_labels = target.LabelStore.get_labels('role')
+
 
 for i in range(0, workloadsToCreateQuantity):
     wkl_hostname = 'rand-' + str(i + baseNumber)
@@ -54,10 +59,10 @@ for i in range(0, workloadsToCreateQuantity):
     workloadObject['name'] = wkl_hostname
     workloadObject['hostname'] = wkl_hostname
 
-    loc_label = list(target.LabelStore.locationLabels.values())[random.randint(0, target.LabelStore.count_location_labels()-1)]
-    env_label = list(target.LabelStore.environmentLabels.values())[random.randint(0, target.LabelStore.count_environment_labels()-1)]
-    app_label = list(target.LabelStore.applicationLabels.values())[random.randint(0, target.LabelStore.count_application_labels()-1)]
-    role_label = list(target.LabelStore.roleLabels.values())[random.randint(0, target.LabelStore.count_role_labels()-1)]
+    loc_label = loc_labels[random.randint(0, len(loc_labels)-1)]
+    env_label = env_labels[random.randint(0, len(env_labels)-1)]
+    app_label = app_labels[random.randint(0, len(app_labels)-1)]
+    role_label = role_labels[random.randint(0, len(role_labels)-1)]
 
     print("    Location label will be: " + loc_label.name)
     print("    Environment label will be: " + env_label.name)
