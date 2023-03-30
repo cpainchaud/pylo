@@ -98,27 +98,6 @@ class Organization:
         if not self.load_from_cached_file(hostname, no_exception_if_file_does_not_exist=True):
             self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
 
-    def make_cache_file_from_api(self, con: pylo.APIConnector, include_deleted_workloads=False) -> (str, int):
-        # filename should be like 'cache_xxx.yyy.zzz.json'
-        filename = 'cache_' + con.hostname + '.json'
-
-        data = self.get_config_from_api(con, include_deleted_workloads=include_deleted_workloads)
-        self.pce_version = con.version
-
-        timestamp = datetime.datetime.now(datetime.timezone.utc)
-
-        json_content = {'generation_date': timestamp.isoformat(),
-                        'pce_version': self.pce_version.generate_str_from_numbers(),
-                        'data': data
-                        }
-
-        with open(filename, 'w') as outfile:
-            json.dump(json_content, outfile)
-
-        size = os.path.getsize(filename)
-
-        return filename, size
-
     def load_from_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key=False,
                                     list_of_objects_to_load: Optional[List[str]] = None):
         separator_pos = hostname.find(':')
@@ -204,7 +183,7 @@ class Organization:
         """
         Load the organization from the API with the API Connector provided. Mostly intended for developers use only
         :param con:
-        :param include_deleted_workloads: 
+        :param include_deleted_workloads:
         :param list_of_objects_to_load:
         :return:
         """
