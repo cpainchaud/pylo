@@ -14,6 +14,15 @@ label_type_role = 'role'
 
 class LabelStore:
 
+    class Utils:
+        @staticmethod
+        def list_to_dict_by_href(label_list: List[Union['pylo.Label', 'pylo.LabelGroup']]) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
+            """Converts a list of labels into a dict, where the href is the key"""
+            result: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
+            for label in label_list:
+                result[label.href] = label
+            return result
+
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: "pylo.Organization" = owner
         self.itemsByHRef: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
@@ -148,9 +157,6 @@ class LabelStore:
     
     def count_role_label_groups(self) -> int:
         return len(self.get_label_groups(label_type=label_type_role))
-
-    def get_location_labels_as_list(self):
-        return self.locationLabels.values()
     
     def get_labels(self, label_type: Optional[str] = None) -> List['pylo.Label']:
         if label_type is not None:  # label_type must be a valid type
@@ -163,11 +169,8 @@ class LabelStore:
         return data
     
     def get_labels_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, 'pylo.Label']:
-        data = {}
         label_list = self.get_labels(label_type)
-        for label in label_list.values():
-            data[label.href] = label
-        return data
+        return self.Utils.list_to_dict_by_href(label_list)
 
     def get_label_groups(self, label_type: Optional[str] = None) -> List['pylo.LabelGroup']:
         if label_type is not None:  # label_type must be a valid type
@@ -180,11 +183,8 @@ class LabelStore:
         return data
     
     def get_label_groups_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, 'pylo.LabelGroup']:
-        data = {}
         label_list = self.get_label_groups(label_type)
-        for label in label_list.values():
-            data[label.href] = label
-        return data
+        return self.Utils.list_to_dict_by_href(label_list)
 
 
     def find_object_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
