@@ -64,7 +64,7 @@ for label in labelsToImport.copy():
     msg = label.name
     labelLowerCap = label.name.lower()
 
-    lowerCapConflicts = target.LabelStore.find_label_multi_by_name_lowercase_and_type(labelLowerCap, label.type())
+    lowerCapConflicts = target.LabelStore.find_label_by_name(labelLowerCap, label_tyê=label.type(), case_sensitive=False)
 
     if len(lowerCapConflicts) > 0:
         for lowerCapLabel in lowerCapConflicts:

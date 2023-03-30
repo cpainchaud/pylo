@@ -193,12 +193,19 @@ class LabelStore:
                            allow_label: bool = True,
                            raise_exception_if_not_found: bool = False) -> Optional[Union['pylo.Label','pylo.LabelGroup',List[Union['pylo.Label','pylo.LabelGroup']]]]:
         """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
+        If case_sensitive is False it will return a list of labels with the same name rather than a single object.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
         If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
         If name is a list, a list of labels will be returned, in the same order as the list of names.
         If a label is not found, None will be returned in the list.
         """
         if not isinstance(name, list):
+            if case_sensitive is False:
+                return self.find_object_by_name([name], label_type=label_type, case_sensitive=case_sensitive,
+                                                missing_labels_names=missing_labels_names,
+                                                allow_label_group=allow_label_group,
+                                                allow_label=allow_label,
+                                                raise_exception_if_not_found=raise_exception_if_not_found)
             for label in self.itemsByHRef.values():
                 if label_type is not None and label.type != label_type:
                     continue
@@ -233,7 +240,8 @@ class LabelStore:
     def find_label_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
                             missing_labels_names: Optional[List[str]] = None,
                             raise_exception_if_not_found: bool = False) -> Optional['pylo.Label'|List['pylo.Label']]:
-        """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
+        """Find a label by its name.
+        If case_sensitive is False it will return a list of labels with the same name rather than a single object.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
         If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
         If name is a list, a list of labels will be returned, in the same order as the list of names.
@@ -264,16 +272,16 @@ class LabelStore:
         """
         self.label_resolution_cache = {}
 
-        roles = list(self.roleLabels.keys())
+        roles = list(self.get_labels_as_dict_by_href('role').keys())
         roles.append(self.cache_label_all_string)
         for role in roles:
-            apps = list(self.applicationLabels.keys())
+            apps = list(self.get_labels_as_dict_by_href('app').keys())
             apps.append(self.cache_label_all_string)
             for app in apps:
-                envs = list(self.environmentLabels.keys())
+                envs = list(self.get_labels_as_dict_by_href('env').keys())
                 envs.append(self.cache_label_all_string)
                 for env in envs:
-                    locs = list(self.locationLabels.keys())
+                    locs = list(self.get_labels_as_dict_by_href('loc').keys())
                     locs.append(self.cache_label_all_string)
                     for loc in locs:
                         group_name = role + LabelStore.cache_label_all_separator + app + LabelStore.cache_label_all_separator + env + LabelStore.cache_label_all_separator + loc
@@ -370,15 +378,6 @@ class LabelStore:
 
         self.itemsByHRef[new_label_href] = new_label
 
-        if new_label.type_is_location():
-            self.locationLabels[new_label_name] = new_label
-        elif new_label.type_is_environment():
-            self.environmentLabels[new_label_name] = new_label
-        elif new_label.type_is_application():
-            self.applicationLabels[new_label_name] = new_label
-        elif new_label.type_is_role():
-            self.roleLabels[new_label_name] = new_label
-
         return new_label
 
     def api_create_label(self, name: str, type: str) -> 'pylo.Label':
@@ -404,30 +403,6 @@ class LabelStore:
     def find_label_by_name_lowercase_and_type(self, name: str, type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         pylo.log.warn("find_label_by_name_lowercase_and_type is deprecated, use find_object_by_name instead")
         return self.find_object_by_name(name, type)
-
-    def find_label_multi_by_name_lowercase_and_type(self, name: str, type: str) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
-        """
-
-        :rtype: list[pylo.LabelCommon]
-        """
-        ref = None
-        name = name.lower()
-        result = []
-
-        if type == label_type_loc:
-            ref = self.locationLabels
-        elif type == label_type_env:
-            ref = self.environmentLabels
-        elif type == label_type_app:
-            ref = self.applicationLabels
-        elif type == label_type_role:
-            ref = self.roleLabels
-
-        for labelName in ref.keys():
-            if name == labelName.lower():
-                result.append(ref[labelName])
-
-        return result
 
     def find_by_href(self, href: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         return self.itemsByHRef.get(href)

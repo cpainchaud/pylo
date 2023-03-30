@@ -25,24 +25,24 @@ old_to_new_env_labels = pylo.IDTranslationTable()
 old_to_new_app_labels = pylo.IDTranslationTable()
 old_to_new_role_labels = pylo.IDTranslationTable()
 
-for label in origin.LabelStore.locationLabels.values():
+for label in origin.LabelStore.get_labels('loc'):
     old_to_new_loc_labels.add_source(label.name, label)
-for label in target.LabelStore.locationLabels.values():
+for label in target.LabelStore.get_labels('loc'):
     old_to_new_loc_labels.add_destination(label.name, label)
 
-for label in origin.LabelStore.environmentLabels.values():
+for label in origin.LabelStore.get_labels('env'):
     old_to_new_env_labels.add_source(label.name, label)
-for label in target.LabelStore.environmentLabels.values():
+for label in target.LabelStore.get_labels('env'):
     old_to_new_env_labels.add_destination(label.name, label)
 
-for label in origin.LabelStore.applicationLabels.values():
+for label in origin.LabelStore.get_labels('app'):
     old_to_new_app_labels.add_source(label.name, label)
-for label in target.LabelStore.applicationLabels.values():
+for label in target.LabelStore.get_labels('app'):
     old_to_new_app_labels.add_destination(label.name, label)
 
-for label in origin.LabelStore.roleLabels.values():
+for label in origin.LabelStore.get_labels('role'):
     old_to_new_role_labels.add_source(label.name, label)
-for label in target.LabelStore.roleLabels.values():
+for label in target.LabelStore.get_labels('role'):
     old_to_new_role_labels.add_destination(label.name, label)
 
 print("OK!")
