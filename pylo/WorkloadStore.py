@@ -7,7 +7,7 @@ from typing import Optional, List
 class WorkloadStore:
 
     def __init__(self, owner: 'Organization'):
-        self.owner = owner
+        self.owner: Organization = owner
         self.itemsByHRef: Dict[str, Workload] = {}
 
     def load_workloads_from_json(self, json_list):
@@ -199,17 +199,9 @@ class WorkloadStore:
         return result
 
     def count_workloads(self) -> int:
-        """
-
-
-        """
         return len(self.itemsByHRef)
 
     def count_managed_workloads(self) -> int:
-        """
-
-
-        """
         count = 0
 
         for item in self.itemsByHRef.values():
@@ -230,7 +222,7 @@ class WorkloadStore:
 
         return results
 
-    def get_managed_workloads_dict_href(self) -> Dict[str, 'Workload']:
+    def get_managed_workloads_dict_by_href(self) -> Dict[str, 'Workload']:
         """
         Get a dictionary of all managed workloads using their HREF as key
         :return:
@@ -243,10 +235,6 @@ class WorkloadStore:
         return results
 
     def count_deleted_workloads(self) -> int:
-        """
-
-
-        """
         count = 0
         for item in self.itemsByHRef.values():
             if item.deleted:
@@ -256,10 +244,6 @@ class WorkloadStore:
         return count
 
     def count_unmanaged_workloads(self, if_not_deleted=False) -> int:
-        """
-
-
-        """
         count = 0
 
         for item in self.itemsByHRef.values():
