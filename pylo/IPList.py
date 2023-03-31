@@ -91,6 +91,14 @@ class IPListStore:
 
     def count(self) -> int:
         return len(self.items_by_href)
+    
+    @property
+    def iplists(self) -> list['pylo.IPList']:
+        return list(self.items_by_href.values())
+    
+    @property
+    def iplists_by_href(self) -> Dict[str, 'pylo.IPList']:
+        return self.items_by_href.copy()
 
     def load_iplists_from_json(self, json_list: list[IPListObjectJsonStructure]):
         for json_item in json_list:
