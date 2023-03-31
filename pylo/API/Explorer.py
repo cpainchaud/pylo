@@ -355,10 +355,12 @@ class ExplorerResultSetV1:
             for record in result:
                 service_json: Dict = record.service_json.copy()
                 service_json['protocol'] = service_json.pop('proto')
+
+                # Explorer API responses and RuleCoverage API requests are using slightly different formats for services
                 if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
-                    service_json.pop('port')
+                    service_json.pop('port')  # 'port' need to be removed if it's not TCP or UDP
                 if 'user_name' in service_json:
-                    service_json.pop('user_name')
+                    service_json.pop('user_name') # 'user_name' is simply not supported by API
 
                 local_query_data = {
                     "resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]},
