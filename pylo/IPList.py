@@ -83,14 +83,11 @@ class IPList(pylo.ReferenceTracker):
 
 
 class IPListStore:
-
-    itemsByName: Dict[str, 'pylo.IPList']
     itemsByHRef: Dict[str, 'pylo.IPList']
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
         self.itemsByHRef = {}
-        self.itemsByName = {}
 
     def count(self) -> int:
         return len(self.itemsByHRef)
@@ -110,13 +107,21 @@ class IPListStore:
                 raise Exception("A iplist with href '%s' already exists in the table", new_iplist_href)
 
             self.itemsByHRef[new_iplist_href] = new_iplist
-            self.itemsByName[new_iplist_name] = new_iplist
 
             log.debug("Found iplist '%s' with href '%s'", new_iplist_name, new_iplist_href)
 
-    def find_by_href(self, href: str) -> 'pylo.IPList':
+    def find_by_href(self, href: str) -> Optional['pylo.IPList']:
         return self.itemsByHRef.get(href)
 
-    def find_by_name(self, name: str) -> Optional['pylo.IPList']:
-        return self.itemsByName.get(name)
+    def find_by_name(self, name: str, case_sensitive: bool = True ) -> Optional['pylo.IPList']:
+        if case_sensitive:
+            for iplist in self.itemsByHRef.values():
+                if iplist.name == name:
+                    return iplist
+        else:
+            lower_name = name.lower()
+            for iplist in self.itemsByHRef.values():
+                if iplist.name.lower() == lower_name:
+                    return iplist
+        return None
 
