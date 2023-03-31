@@ -162,7 +162,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             if error_msg is None:
                 add_workload_to_report(wkl, "deleted")
             else:
-                print("    - an error occured when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
+                print("    - an error occurred when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
                 add_workload_to_report(wkl, "API error: " + error_msg)
 
         print()
