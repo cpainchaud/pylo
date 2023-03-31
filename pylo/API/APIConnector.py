@@ -8,7 +8,7 @@ from pathlib import Path
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
-    VirtualServiceObjectJsonStructure
+    VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure
 
 try:
     import requests as requests
@@ -477,7 +477,7 @@ class APIConnector:
                                 retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                                 retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def rule_coverage_query(self, data, include_boundary_rules=True):
+    def rule_coverage_query(self, data: List[RuleCoverageQueryEntryJsonStructure], include_boundary_rules=True):
         params = None
         if include_boundary_rules is not None:
             params = {'include_deny_rules': include_boundary_rules}

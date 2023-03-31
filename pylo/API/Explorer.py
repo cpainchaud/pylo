@@ -2,6 +2,7 @@ import sys
 from typing import Optional, List, Dict, Literal, TypeVar, Generic
 
 import pylo
+from .JsonPayloadTypes import RuleCoverageQueryEntryJsonStructure
 from pylo.API.APIConnector import APIConnector
 
 class ExplorerResult:
@@ -429,11 +430,11 @@ class RuleCoverageQueryManager:
                     rules_array.append(rules[rule])
                 self.services.service_index_to_boundary_policy_coverage[index] = rules_array
 
-        def generate_api_payload(self) -> Dict:
-            payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
+        def generate_api_payload(self) -> RuleCoverageQueryEntryJsonStructure:
+            payload: RuleCoverageQueryEntryJsonStructure = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
                        'source': {self.src_type: {'href': self.src_href}},
                        'destination': {self.dst_type: {'href': self.dst_href}}
-                       }
+                                                            }
 
             for service_id in range(0, len(self.services.services_array)):
                 service = self.services.services_array[service_id]

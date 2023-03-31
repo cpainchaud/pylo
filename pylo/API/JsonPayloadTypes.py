@@ -3,6 +3,15 @@
 from typing import List, Optional, TypedDict, NotRequired, Union
 
 
+class HrefReference(TypedDict):
+    href: str
+
+class WorkloadHrefRef(TypedDict):
+    workload: HrefReference
+
+class IPListHrefRef(TypedDict):
+    ip_list: HrefReference
+
 class LabelObjectJsonStructure(TypedDict):
     value: str
     href: str
@@ -28,12 +37,12 @@ class LabelGroupObjectJsonStructure(TypedDict):
     deleted: bool
     created_at: str
     updated_at: str
-    labels: List[TypedDict('record', {'href': str})]
+    labels: List[HrefReference]
 
 
 class LabelGroupObjectUpdateJsonStructure(TypedDict):
     name: NotRequired[str]
-    labels: NotRequired[List[TypedDict('record', {'href': str})]]
+    labels: NotRequired[List[HrefReference]]
 
 
 class IPListObjectJsonStructure(TypedDict):
@@ -78,8 +87,8 @@ class RuleObjectJsonStructure(TypedDict):
 
 
 class RulesetScopeEntryLineJsonStructure(TypedDict):
-    label: NotRequired[TypedDict('record', {'href': str})]
-    label_group: NotRequired[TypedDict('record', {'href': str})]
+    label: NotRequired[HrefReference]
+    label_group: NotRequired[HrefReference]
 
 
 class RulesetObjectJsonStructure(TypedDict):
@@ -128,3 +137,10 @@ class PCECacheFileJsonStructure(TypedDict):
     data: PCEObjectsJsonStructure
     pce_version: str
     generation_date: str
+
+
+class RuleCoverageQueryEntryJsonStructure(TypedDict):
+    source: Union[IPListHrefRef, WorkloadHrefRef]
+    destination: Union[IPListHrefRef, WorkloadHrefRef]
+    services: List
+
