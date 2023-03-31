@@ -37,8 +37,13 @@ class VirtualServiceStore:
 
             log.debug("Found VirtualService '%s' with href '%s'", new_item_name, new_item_href)
             
+    @property
     def virtual_services(self) -> List['pylo.VirtualService']:
         return list(self.itemsByHRef.values())
+    
+    @property
+    def virtual_services_by_href(self) -> Dict[str, 'pylo.VirtualService']:
+        return self.itemsByHRef.copy()
             
     def find_by_href(self, href: str) -> Optional['pylo.VirtualService']:
         return self.itemsByHRef.get(href)
