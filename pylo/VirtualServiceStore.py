@@ -37,8 +37,20 @@ class VirtualServiceStore:
 
             log.debug("Found VirtualService '%s' with href '%s'", new_item_name, new_item_href)
             
+    def virtual_services(self) -> List['pylo.VirtualService']:
+        return list(self.itemsByHRef.values())
+            
     def find_by_href(self, href: str) -> Optional['pylo.VirtualService']:
         return self.itemsByHRef.get(href)
+    
+    def find_by_name(self, name: str, case_sensitive: bool = False) -> Optional['pylo.VirtualService']:
+        if case_sensitive:
+            return self.itemsByName.get(name)
+        else:
+            for item in self.itemsByName.values():
+                if item.name.lower() == name.lower():
+                    return item
+            return None
 
     def find_by_href_or_create_tmp(self, href: str, tmp_name: str) -> 'pylo.VirtualService':
         """
