@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, List, Dict, Literal
+from typing import Optional, List, Dict, Literal, TypeVar, Generic
 
 import pylo
 from pylo.API.APIConnector import APIConnector
@@ -346,7 +346,7 @@ class ExplorerResultSetV1:
 
         return result
 
-
+T = TypeVar('T')
 class RuleCoverageQueryManager:
 
     class QueryServices:
@@ -549,17 +549,67 @@ class RuleCoverageQueryManager:
                     rules_array.append(rules[rule])
                 self.services.service_index_to_boundary_policy_coverage[index] = rules_array
 
-    class IPListToWorkloadQueryManager:
+
+    class QueryManager(Generic[T]):
         def __init__(self, include_boundary_rules: bool = True):
-            self.queries: Dict[str, 'RuleCoverageQueryManager.IPListToWorkloadQuery'] = {}
+            self.queries: Dict[str, T] = {}
             self.include_boundary_rules = include_boundary_rules
 
-        def add_query(self, log_id: int, ip_list_href: str, workload_href: str, service_record):
-            hash_key = ip_list_href + workload_href
-            if hash_key not in self.queries:
-                self.queries[hash_key] = RuleCoverageQueryManager.IPListToWorkloadQuery(ip_list_href, workload_href)
+        def execute(self, connector: APIConnector, queries_per_batch: int):
+            # split queries into arrays of size queries_per_batch
+            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
+            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
+            for query in self.queries.values():
+                query_batch.append(query)
+                if len(query_batch) == queries_per_batch:
+                    query_batches.append(query_batch)
+                    query_batch = []
+            if len(query_batch) > 0:
+                query_batches.append(query_batch)
 
-            self.queries[hash_key].add_service(service_record, log_id)
+            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
+
+            for query_batch in query_batches:
+                # print(f'Executing batch of {len(query_batch)} queries')
+                payload = []
+                for query in query_batch:
+                    payload.append(query.generate_api_payload())
+
+                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
+                # print(api_response)
+                # print('-------------------------------------------------------')
+
+                edges = api_response.get('edges')
+                if edges is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
+
+                rules = api_response.get('rules')
+                if rules is None:
+                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
+
+                if len(edges) != len(query_batch):
+                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
+
+                for response_index, edge in enumerate(edges):
+                    query = query_batch[response_index]
+                    # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
+                    query.process_response(rules, edge)
+
+                if self.include_boundary_rules:
+                    deny_edges = api_response.get('deny_edges')
+                    if deny_edges is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
+                    if len(deny_edges) != len(query_batch):
+                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
+
+                    deny_rules = api_response.get('deny_rules')
+                    if deny_rules is None:
+                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
+
+                    for response_index, edge in enumerate(deny_edges):
+                        query = query_batch[response_index]
+                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
+                        query.process_response_boundary_deny(deny_rules, edge)
 
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
             policy_decision: Optional[Literal["allowed", "blocked", "blocked_by_boundary"]] = None
@@ -577,67 +627,17 @@ class RuleCoverageQueryManager:
 
             return policy_decision
 
-        def execute(self, connector: APIConnector, queries_per_batch: int):
-            # split queries into arrays of size queries_per_batch
-            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
-            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
-            for query in self.queries.values():
-                query_batch.append(query)
-                if len(query_batch) == queries_per_batch:
-                    query_batches.append(query_batch)
-                    query_batch = []
-            if len(query_batch) > 0:
-                query_batches.append(query_batch)
 
-            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
+    class IPListToWorkloadQueryManager(QueryManager['RuleCoverageQueryManager.IPListToWorkloadQuery']):
+        def add_query(self, log_id: int, ip_list_href: str, workload_href: str, service_record):
+            hash_key = ip_list_href + workload_href
+            if hash_key not in self.queries:
+                self.queries[hash_key] = RuleCoverageQueryManager.IPListToWorkloadQuery(ip_list_href, workload_href)
 
-            for query_batch in query_batches:
-                # print(f'Executing batch of {len(query_batch)} queries')
-                payload = []
-                for query in query_batch:
-                    payload.append(query.generate_api_payload())
+            self.queries[hash_key].add_service(service_record, log_id)
 
-                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
-                # print(api_response)
-                # print('-------------------------------------------------------')
 
-                edges = api_response.get('edges')
-                if edges is None:
-                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
-
-                rules = api_response.get('rules')
-                if rules is None:
-                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
-
-                if len(edges) != len(query_batch):
-                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
-
-                for response_index, edge in enumerate(edges):
-                    query = query_batch[response_index]
-                    # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
-                    query.process_response(rules, edge)
-
-                if self.include_boundary_rules:
-                    deny_edges = api_response.get('deny_edges')
-                    if deny_edges is None:
-                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
-                    if len(deny_edges) != len(query_batch):
-                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
-
-                    deny_rules = api_response.get('deny_rules')
-                    if deny_rules is None:
-                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
-
-                    for response_index, edge in enumerate(deny_edges):
-                        query = query_batch[response_index]
-                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
-                        query.process_response_boundary_deny(deny_rules, edge)
-
-    class WorkloadToIPListQueryManager:
-        def __init__(self, include_boundary_rules: bool = True):
-            self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToIPListQuery'] = {}
-            self.include_boundary_rules = include_boundary_rules
-
+    class WorkloadToIPListQueryManager(QueryManager['RuleCoverageQueryManager.WorkloadToIPListQuery']):
         def add_query(self, log_id: int, workload_href: str, ip_list_href: str, service_record):
             hash_key = workload_href + ip_list_href
             if hash_key not in self.queries:
@@ -645,83 +645,8 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
-            policy_decision = None
-            found_blocked_by_boundary = False
 
-            for query in self.queries.values():
-                policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
-                if policy_decision == 'allowed':
-                    return policy_decision
-                if query.get_policy_decision_for_log_id(log_id) == 'blocked_by_boundary':
-                    found_blocked_by_boundary = True
-
-            if found_blocked_by_boundary:
-                return 'blocked_by_boundary'
-
-            return policy_decision
-
-        def execute(self, connector: APIConnector, queries_per_batch: int):
-            # split queries into arrays of size queries_per_batch
-            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
-            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
-            for query in self.queries.values():
-                query_batch.append(query)
-                if len(query_batch) == queries_per_batch:
-                    query_batches.append(query_batch)
-                    query_batch = []
-            if len(query_batch) > 0:
-                query_batches.append(query_batch)
-
-            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
-
-            for query_batch in query_batches:
-                # print(f'Executing batch of {len(query_batch)} queries')
-                payload = []
-                for query in query_batch:
-                    payload.append(query.generate_api_payload())
-
-                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
-                # print(api_response)
-                # print('-------------------------------------------------------')
-
-                edges = api_response.get('edges')
-                if edges is None:
-                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
-
-                rules = api_response.get('rules')
-                if rules is None:
-                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
-
-                if len(edges) != len(query_batch):
-                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
-
-                for response_index, edge in enumerate(edges):
-                    query = query_batch[response_index]
-                    # print(f'Processing edge {edge} against query {query.ip_list_href} -> {query.workload_href} -> {len(query.services.services_array)}')
-                    query.process_response(rules, edge)
-
-                if self.include_boundary_rules:
-                    deny_edges = api_response.get('deny_edges')
-                    if deny_edges is None:
-                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
-                    if len(deny_edges) != len(query_batch):
-                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
-
-                    deny_rules = api_response.get('deny_rules')
-                    if deny_rules is None:
-                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
-
-                    for response_index, edge in enumerate(deny_edges):
-                        query = query_batch[response_index]
-                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
-                        query.process_response_boundary_deny(deny_rules, edge)
-
-    class WorkloadToWorkloadQueryManager:
-        def __init__(self, include_boundary_rules: bool = True):
-            self.queries: Dict[str, 'RuleCoverageQueryManager.WorkloadToWorkloadQuery'] = {}
-            self.include_boundary_rules = include_boundary_rules
-
+    class WorkloadToWorkloadQueryManager(QueryManager['RuleCoverageQueryManager.WorkloadToWorkloadQuery']):
         def add_query(self, log_id: int, src_workload_href: str, dst_workload_href: str, service_record):
             hash_key = src_workload_href + dst_workload_href
             if hash_key not in self.queries:
@@ -729,70 +654,6 @@ class RuleCoverageQueryManager:
 
             self.queries[hash_key].add_service(service_record, log_id)
 
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
-            policy_decision = None
-            for query in self.queries.values():
-                policy_decision = query.get_policy_decision_for_log_id(log_id) or policy_decision
-                if policy_decision == 'allowed':
-                    return policy_decision
-
-            return policy_decision
-
-        def execute(self, connector: APIConnector, queries_per_batch: int):
-            # split queries into arrays of size queries_per_batch
-            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
-            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
-            for query in self.queries.values():
-                query_batch.append(query)
-                if len(query_batch) == queries_per_batch:
-                    query_batches.append(query_batch)
-                    query_batch = []
-            if len(query_batch) > 0:
-                query_batches.append(query_batch)
-
-            # print(f'{len(query_batches)} batches of {queries_per_batch} queries')
-
-            for query_batch in query_batches:
-                # print(f'Executing batch of {len(query_batch)} queries')
-                payload = []
-                for query in query_batch:
-                    payload.append(query.generate_api_payload())
-
-                api_response = connector.rule_coverage_query(payload, include_boundary_rules=self.include_boundary_rules)
-                # print(api_response)
-                # print('-------------------------------------------------------')
-
-                edges = api_response.get('edges')
-                if edges is None:
-                    raise pylo.PyloEx('rule_coverage request has returned no "edges"', api_response)
-
-                rules = api_response.get('rules')
-                if rules is None:
-                    raise pylo.PyloEx('rule_coverage request has returned no "rules"', api_response)
-
-                if len(edges) != len(query_batch):
-                    raise pylo.PyloEx("rule_coverage has returned {} records while {} where requested".format(len(edges), len(query_batch)))
-
-                for response_index, edge in enumerate(edges):
-                    query = query_batch[response_index]
-                    # print(f'Processing edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
-                    query.process_response(rules, edge)
-
-                if self.include_boundary_rules:
-                    deny_edges = api_response.get('deny_edges')
-                    if deny_edges is None:
-                        raise pylo.PyloEx('rule_coverage request has returned no "deny_edges"', api_response)
-                    if len(deny_edges) != len(query_batch):
-                        raise pylo.PyloEx("rule_coverage has returned {} deny_edges while {} where requested".format(len(deny_edges), len(query_batch)))
-
-                    deny_rules = api_response.get('deny_rules')
-                    if deny_rules is None:
-                        raise pylo.PyloEx('rule_coverage request has returned no "deny_rules"', api_response)
-
-                    for response_index, edge in enumerate(deny_edges):
-                        query = query_batch[response_index]
-                        # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
-                        query.process_response_boundary_deny(deny_rules, edge)
 
     def __init__(self, owner: APIConnector):
         self.owner = owner
