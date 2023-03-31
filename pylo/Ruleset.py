@@ -142,14 +142,14 @@ class Ruleset:
         self.rules_by_href[new_rule.href] = new_rule
         return new_rule
 
-    def api_delete_rule(self, rule: Union[str, 'pylo.Rule']):
+    def api_delete_rule(self, rule_or_href: Union[str, 'pylo.Rule']):
         """
 
         :param rule: should be href string or a Rule object
         """
-        href = rule
-        if isinstance(rule, pylo.Rule):
-            href = rule.href
+        href = rule_or_href
+        if isinstance(rule_or_href, pylo.Rule):
+            href = rule_or_href.href
 
         find_object = self.rules_by_href.get(href)
         if find_object is None:
