@@ -178,7 +178,7 @@ class LabelStore:
                 raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
         data = []
         for label in self.itemsByHRef.values():
-            if label.is_label_group() and (label_type is None or label.type == label_type):
+            if label.is_group() and (label_type is None or label.type == label_type):
                 data.append(label)
         return data
     
