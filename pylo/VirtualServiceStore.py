@@ -8,7 +8,7 @@ class VirtualServiceStore:
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: 'pylo.Organization' = owner
-        self.itemsByHRef: Dict[str, 'pylo.VirtualService'] = {}
+        self.items_by_href: Dict[str, 'pylo.VirtualService'] = {}
         self.itemsByName: Dict[str, 'pylo.VirtualService'] = {}
 
     def load_virtualservices_from_json(self, json_list: List[VirtualServiceObjectJsonStructure]):
@@ -23,7 +23,7 @@ class VirtualServiceStore:
             new_item = pylo.VirtualService(new_item_name, new_item_href, self)
             new_item.load_from_json(json_item)
 
-            if new_item_href in self.itemsByHRef:
+            if new_item_href in self.items_by_href:
                 raise pylo.PyloEx("A VirtualService with href '%s' already exists in the table", new_item_href)
 
             if new_item_name in self.itemsByName:
@@ -32,21 +32,21 @@ class VirtualServiceStore:
                         new_item_name, new_item_href, self.itemsByName[new_item_name].href)
                 )
 
-            self.itemsByHRef[new_item_href] = new_item
+            self.items_by_href[new_item_href] = new_item
             self.itemsByName[new_item_name] = new_item
 
             log.debug("Found VirtualService '%s' with href '%s'", new_item_name, new_item_href)
             
     @property
     def virtual_services(self) -> List['pylo.VirtualService']:
-        return list(self.itemsByHRef.values())
+        return list(self.items_by_href.values())
     
     @property
     def virtual_services_by_href(self) -> Dict[str, 'pylo.VirtualService']:
-        return self.itemsByHRef.copy()
+        return self.items_by_href.copy()
             
     def find_by_href(self, href: str) -> Optional['pylo.VirtualService']:
-        return self.itemsByHRef.get(href)
+        return self.items_by_href.get(href)
     
     def find_by_name(self, name: str, case_sensitive: bool = True) -> Optional['pylo.VirtualService']:
         if case_sensitive:
@@ -69,7 +69,7 @@ class VirtualServiceStore:
         new_tmp_item.deleted = True
         new_tmp_item.temporary = True
 
-        self.itemsByHRef[href] = new_tmp_item
+        self.items_by_href[href] = new_tmp_item
         self.itemsByName[tmp_name] = new_tmp_item
 
         return new_tmp_item

@@ -409,7 +409,7 @@ class RuleHostContainer(pylo.Referencer):
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
                 # @TODO : better handling of temporary objects
-                find_object = virtual_service_store.itemsByHRef.get(href)
+                find_object = virtual_service_store.items_by_href.get(href)
                 if find_object is None:
                     # raise Exception("Cannot find VirtualService with HREF {} in Rule {}. JSON:\n {}".format(href, self.owner.href, nice_json(host_data)))
                     find_object = self.owner.owner.owner.owner.VirtualServiceStore.find_by_href_or_create_tmp(href, 'tmp-deleted-wkl-'+href)
