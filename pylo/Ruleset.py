@@ -34,7 +34,7 @@ class RulesetScope:
     def has_at_least_one_all_all_all(self) -> bool:
         for scope_entry in self.scope_entries:
             if scope_entry.is_all_all_all():
-                return true
+                return True
         return False
 
 class RulesetScopeEntry:
