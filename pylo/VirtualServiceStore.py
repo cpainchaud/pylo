@@ -43,7 +43,7 @@ class VirtualServiceStore:
     def find_by_href(self, href: str) -> Optional['pylo.VirtualService']:
         return self.itemsByHRef.get(href)
     
-    def find_by_name(self, name: str, case_sensitive: bool = False) -> Optional['pylo.VirtualService']:
+    def find_by_name(self, name: str, case_sensitive: bool = True) -> Optional['pylo.VirtualService']:
         if case_sensitive:
             return self.itemsByName.get(name)
         else:
