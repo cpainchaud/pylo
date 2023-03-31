@@ -346,7 +346,6 @@ class ExplorerResultSetV1:
 
         return result
 
-T = TypeVar('T')
 class RuleCoverageQueryManager:
 
     class QueryServices:
@@ -396,10 +395,12 @@ class RuleCoverageQueryManager:
 
             return policy_decision
 
-    class IPListToWorkloadQuery:
-        def __init__(self, ip_list_href: str, workload_href: str):
-            self.ip_list_href = ip_list_href
-            self.workload_href = workload_href
+    class ObjectToObjectQuery:
+        def __init__(self, src_href: str, src_type: Literal['ip_list','workload'], dst_href: str, dst_type: Literal['ip_list','workload']):
+            self.src_href = src_href
+            self.dst_href = dst_href
+            self.src_type = src_type
+            self.dst_type = dst_type
             self.services = RuleCoverageQueryManager.QueryServices()
 
         def add_service(self, service_record: Dict, log_id: int):
@@ -407,25 +408,6 @@ class RuleCoverageQueryManager:
 
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             return self.services.get_policy_decision_for_log_id(log_id)
-
-        def generate_api_payload(self) -> Dict:
-            payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
-                       'source': {'ip_list': {'href': self.ip_list_href}},
-                       'destination': {'workload': {'href': self.workload_href}}
-                       }
-
-            for service_id in range(0, len(self.services.services_array)):
-                service = self.services.services_array[service_id]
-                # print(service)
-                service_json: Dict = service.copy()
-                service_json['protocol'] = service_json.pop('proto')
-                if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
-                    service_json.pop('port')
-                if 'user_name' in service_json:
-                    service_json.pop('user_name')
-                payload['services'].append(service_json)
-
-            return payload
 
         def process_response(self, rules: Dict[str, str], response: [[str]]):
             if len(response) != len(self.services.services_array):
@@ -447,22 +429,10 @@ class RuleCoverageQueryManager:
                     rules_array.append(rules[rule])
                 self.services.service_index_to_boundary_policy_coverage[index] = rules_array
 
-    class WorkloadToIPListQuery:
-        def __init__(self, workload_href: str, ip_list_href: str):
-            self.workload_href = workload_href
-            self.ip_list_href = ip_list_href
-            self.services = RuleCoverageQueryManager.QueryServices()
-
-        def add_service(self, service_record: Dict, log_id: int):
-            self.services.add_service(service_record, log_id)
-
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
-            return self.services.get_policy_decision_for_log_id(log_id)
-
         def generate_api_payload(self) -> Dict:
             payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
-                       'destination': {'ip_list': {'href': self.ip_list_href}},
-                       'source': {'workload': {'href': self.workload_href}}
+                       'source': {self.src_type: {'href': self.src_href}},
+                       'destination': {self.dst_type: {'href': self.dst_href}}
                        }
 
             for service_id in range(0, len(self.services.services_array)):
@@ -478,87 +448,17 @@ class RuleCoverageQueryManager:
 
             return payload
 
-        def process_response(self, rules: Dict[str, str], response: [[str]]):
-            if len(response) != len(self.services.services_array):
-                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
-
-            for index, single_response in enumerate(response):
-                rules_array: [Dict] = []
-                for rule in single_response:
-                    rules_array.append(rules[rule])
-                self.services.service_index_policy_coverage[index] = rules_array
-
-        def process_response_boundary_deny(self, rules: Dict[str, str], response: [[str]]):
-            if len(response) != len(self.services.services_array):
-                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
-
-            for index, single_response in enumerate(response):
-                rules_array: [Dict] = []
-                for rule in single_response:
-                    rules_array.append(rules[rule])
-                self.services.service_index_to_boundary_policy_coverage[index] = rules_array
-
-    class WorkloadToWorkloadQuery:
-        def __init__(self, src_workload_href: str, dst_workload_href: str):
-            self.src_workload_href = src_workload_href
-            self.dst_workload_href = dst_workload_href
-            self.services = RuleCoverageQueryManager.QueryServices()
-
-        def add_service(self, service_record: Dict, log_id: int):
-            self.services.add_service(service_record, log_id)
-
-        def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
-            return self.services.get_policy_decision_for_log_id(log_id)
-
-        def generate_api_payload(self) -> Dict:
-            payload = {"resolve_labels_as": {"source": ["workloads"], "destination": ["workloads"]}, "services": [],
-                       'source': {'workload': {'href': self.src_workload_href}},
-                       'destination': {'workload': {'href': self.dst_workload_href}}
-                       }
-
-            for service_id in range(0, len(self.services.services_array)):
-                service = self.services.services_array[service_id]
-                # print(service)
-                service_json: Dict = service.copy()
-                service_json['protocol'] = service_json.pop('proto')
-                if 'port' in service_json and service_json['protocol'] != 17 and service_json['protocol'] != 6:
-                    service_json.pop('port')
-                if 'user_name' in service_json:
-                    service_json.pop('user_name')
-                payload['services'].append(service_json)
-
-            return payload
-
-        def process_response(self, rules: Dict[str, str], response: [[str]]):
-            if len(response) != len(self.services.services_array):
-                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
-
-            for index, single_response in enumerate(response):
-                rules_array: [Dict] = []
-                for rule in single_response:
-                    rules_array.append(rules[rule])
-                self.services.service_index_policy_coverage[index] = rules_array
-
-        def process_response_boundary_deny(self, rules: Dict[str, str], response: [[str]]):
-            if len(response) != len(self.services.services_array):
-                raise Exception('Unexpected response from rule coverage query with mis-matching services count vs reply')
-
-            for index, single_response in enumerate(response):
-                rules_array: [Dict] = []
-                for rule in single_response:
-                    rules_array.append(rules[rule])
-                self.services.service_index_to_boundary_policy_coverage[index] = rules_array
-
-
-    class QueryManager(Generic[T]):
-        def __init__(self, include_boundary_rules: bool = True):
-            self.queries: Dict[str, T] = {}
+    class QueryManager:
+        def __init__(self, src_type:Literal['ip_list','workload'], dst_type:Literal['ip_list','workload'] ,include_boundary_rules: bool = True):
+            self.queries: Dict[str, RuleCoverageQueryManager.ObjectToObjectQuery] = {}
             self.include_boundary_rules = include_boundary_rules
+            self.src_type = src_type
+            self.dst_type = dst_type
 
         def execute(self, connector: APIConnector, queries_per_batch: int):
             # split queries into arrays of size queries_per_batch
-            query_batches: List[List[RuleCoverageQueryManager.IPListToWorkloadQuery]] = []
-            query_batch: List[RuleCoverageQueryManager.IPListToWorkloadQuery] = []
+            query_batches: List[List[RuleCoverageQueryManager.ObjectToObjectQuery]] = []
+            query_batch: List[RuleCoverageQueryManager.ObjectToObjectQuery] = []
             for query in self.queries.values():
                 query_batch.append(query)
                 if len(query_batch) == queries_per_batch:
@@ -627,39 +527,19 @@ class RuleCoverageQueryManager:
 
             return policy_decision
 
-
-    class IPListToWorkloadQueryManager(QueryManager['RuleCoverageQueryManager.IPListToWorkloadQuery']):
-        def add_query(self, log_id: int, ip_list_href: str, workload_href: str, service_record):
-            hash_key = ip_list_href + workload_href
+        def add_query(self, log_id: int, src_href: str, dst_href: str, service_record):
+            hash_key = src_href + dst_href
             if hash_key not in self.queries:
-                self.queries[hash_key] = RuleCoverageQueryManager.IPListToWorkloadQuery(ip_list_href, workload_href)
-
-            self.queries[hash_key].add_service(service_record, log_id)
-
-
-    class WorkloadToIPListQueryManager(QueryManager['RuleCoverageQueryManager.WorkloadToIPListQuery']):
-        def add_query(self, log_id: int, workload_href: str, ip_list_href: str, service_record):
-            hash_key = workload_href + ip_list_href
-            if hash_key not in self.queries:
-                self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToIPListQuery(workload_href, ip_list_href)
-
-            self.queries[hash_key].add_service(service_record, log_id)
-
-
-    class WorkloadToWorkloadQueryManager(QueryManager['RuleCoverageQueryManager.WorkloadToWorkloadQuery']):
-        def add_query(self, log_id: int, src_workload_href: str, dst_workload_href: str, service_record):
-            hash_key = src_workload_href + dst_workload_href
-            if hash_key not in self.queries:
-                self.queries[hash_key] = RuleCoverageQueryManager.WorkloadToWorkloadQuery(src_workload_href, dst_workload_href)
+                self.queries[hash_key] = RuleCoverageQueryManager.ObjectToObjectQuery(src_href, self.src_type, dst_href, self.dst_type)
 
             self.queries[hash_key].add_service(service_record, log_id)
 
 
     def __init__(self, owner: APIConnector):
         self.owner = owner
-        self.iplist_to_workload_query_manager = RuleCoverageQueryManager.IPListToWorkloadQueryManager()
-        self.workload_to_iplist_query_manager = RuleCoverageQueryManager.WorkloadToIPListQueryManager()
-        self.workload_to_workload_query_manager = RuleCoverageQueryManager.WorkloadToWorkloadQueryManager()
+        self.iplist_to_workload_query_manager = RuleCoverageQueryManager.QueryManager('ip_list', 'workload')
+        self.workload_to_iplist_query_manager = RuleCoverageQueryManager.QueryManager('workload', 'ip_list')
+        self.workload_to_workload_query_manager = RuleCoverageQueryManager.QueryManager('workload', 'workload')
         self.log_id = 0
         self.log_to_id: Dict[ExplorerResult, int] = {}
         self.count_invalid_records = 0
@@ -678,7 +558,6 @@ class RuleCoverageQueryManager:
 
         if not log.source_is_workload():
             if log.destination_is_workload():
-
                 iplist_hrefs = log.get_source_iplists_href()
                 if iplist_hrefs is None:
                     iplist_hrefs = [self.any_iplist_href]
@@ -687,8 +566,8 @@ class RuleCoverageQueryManager:
 
                 for iplist_href in iplist_hrefs:
                     self.iplist_to_workload_query_manager.add_query(log_id=self.log_id,
-                                                                    ip_list_href=iplist_href,
-                                                                    workload_href=log.get_destination_workload_href(),
+                                                                    src_href=iplist_href,
+                                                                    dst_href=log.get_destination_workload_href(),
                                                                     service_record=log.service_json)
             else:  # IPList to IPList should never happen!
                 self.count_invalid_records += 1
@@ -703,13 +582,13 @@ class RuleCoverageQueryManager:
 
                 for iplist_href in iplist_hrefs:
                     self.workload_to_iplist_query_manager.add_query(log_id=self.log_id,
-                                                                    ip_list_href=iplist_href,
-                                                                    workload_href=log.get_source_workload_href(),
+                                                                    src_href=log.get_source_workload_href(),
+                                                                    dst_href=iplist_href,
                                                                     service_record=log.service_json)
             else:
                 self.workload_to_workload_query_manager.add_query(log_id=self.log_id,
-                                                                  src_workload_href=log.get_source_workload_href(),
-                                                                  dst_workload_href=log.get_destination_workload_href(),
+                                                                  src_href=log.get_source_workload_href(),
+                                                                  dst_href=log.get_destination_workload_href(),
                                                                   service_record=log.service_json)
 
     def count_queries(self):
