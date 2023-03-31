@@ -112,7 +112,10 @@ def run(forced_command_name: Optional[str] = None):
         native_parsers = selected_command.native_parsers
         execute_native_parsers(args, org, native_parsers)
 
-    commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector, native_parsers=native_parsers)
+    if native_parsers is not None:
+        commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector, native_parsers=native_parsers)
+    else:
+        commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector)
     print("**** END OF {} UTILITY ****".format(selected_command.name.upper()))
     print()
 
