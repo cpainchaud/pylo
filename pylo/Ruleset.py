@@ -172,7 +172,7 @@ class Ruleset:
             consumers=consumers, providers=providers, services=services,
             description=description, machine_auth=machine_auth, secure_connect=secure_connect, enabled=enabled,
             stateless=stateless, consuming_security_principals=consuming_security_principals,
-            resolve_consumers_as_virtual_services=resolve_providers_as_virtual_services,
+            resolve_consumers_as_virtual_services=resolve_consumers_as_virtual_services,
             resolve_consumers_as_workloads=resolve_consumers_as_workloads,
             resolve_providers_as_virtual_services=resolve_providers_as_virtual_services,
             resolve_providers_as_workloads=resolve_providers_as_workloads
