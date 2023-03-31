@@ -10,7 +10,7 @@ class ExplorerResult:
     source_workload_labels_href: List[str]
 
     def __init__(self, data):
-        self._raw_json = data
+        self.raw_json = data
         self.num_connections = data['num_connections']
 
         self.policy_decision_string = data['policy_decision']
@@ -1025,8 +1025,8 @@ class RuleCoverageQueryManager:
                 #     #  happens when source or destination is part of no IPList
                 #     decision = 'blocked'
                 # else:
-                pylo.get_logger().error(pylo.nice_json(log._raw_json))
-                raise pylo.PyloEx('No decision found for log_id {}'.format(log_id))
+                pylo.log.error(pylo.nice_json(log.raw_json))
+                raise pylo.PyloEx('No decision found for log_id {}'.format(log_id), log.raw_json)
 
             log.set_draft_mode_policy_decision(decision)
 
