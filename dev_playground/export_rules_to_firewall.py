@@ -637,7 +637,7 @@ csv_iplists_headers = ['name', 'members', 'description', 'href']
 
 iplists_tags = TagIndex()
 
-for iplist in org.IPListStore.itemsByHRef.values():
+for iplist in org.IPListStore.items_by_href.values():
     iplist_json = {'name': iplist.name, 'href': iplist.href, 'description': iplist.description}
 
     # Extracting Tags

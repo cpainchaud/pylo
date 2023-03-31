@@ -83,14 +83,14 @@ class IPList(pylo.ReferenceTracker):
 
 
 class IPListStore:
-    itemsByHRef: Dict[str, 'pylo.IPList']
+    items_by_href: Dict[str, 'pylo.IPList']
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
-        self.itemsByHRef = {}
+        self.items_by_href = {}
 
     def count(self) -> int:
-        return len(self.itemsByHRef)
+        return len(self.items_by_href)
 
     def load_iplists_from_json(self, json_list: list[IPListObjectJsonStructure]):
         for json_item in json_list:
@@ -103,24 +103,24 @@ class IPListStore:
             new_iplist = pylo.IPList(new_iplist_name, new_iplist_href, self, new_iplist_desc)
             new_iplist.load_from_json(json_item)
 
-            if new_iplist_href in self.itemsByHRef:
+            if new_iplist_href in self.items_by_href:
                 raise Exception("A iplist with href '%s' already exists in the table", new_iplist_href)
 
-            self.itemsByHRef[new_iplist_href] = new_iplist
+            self.items_by_href[new_iplist_href] = new_iplist
 
             log.debug("Found iplist '%s' with href '%s'", new_iplist_name, new_iplist_href)
 
     def find_by_href(self, href: str) -> Optional['pylo.IPList']:
-        return self.itemsByHRef.get(href)
+        return self.items_by_href.get(href)
 
     def find_by_name(self, name: str, case_sensitive: bool = True ) -> Optional['pylo.IPList']:
         if case_sensitive:
-            for iplist in self.itemsByHRef.values():
+            for iplist in self.items_by_href.values():
                 if iplist.name == name:
                     return iplist
         else:
             lower_name = name.lower()
-            for iplist in self.itemsByHRef.values():
+            for iplist in self.items_by_href.values():
                 if iplist.name.lower() == lower_name:
                     return iplist
         return None

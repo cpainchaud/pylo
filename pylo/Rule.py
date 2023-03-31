@@ -392,7 +392,7 @@ class RuleHostContainer(pylo.Referencer):
                 href = host_data['ip_list'].get('href')
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
-                find_object = iplist_store.itemsByHRef.get(href)
+                find_object = iplist_store.items_by_href.get(href)
                 if find_object is None:
                     raise Exception('Cannot find IPList with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'workload' in host_data:

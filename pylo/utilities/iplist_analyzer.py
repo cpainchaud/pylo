@@ -121,7 +121,7 @@ print("OK")
 # <editor-fold desc="Building IPLists ip4 Cache">
 iplists_ip4maps_cache: Dict[pylo.IPList, pylo.IP4Map] = {}
 print(" * Building IPLists IP4 mapping... ", end='')
-for iplist in org.IPListStore.itemsByHRef.values():
+for iplist in org.IPListStore.items_by_href.values():
     ip_map = iplist.get_ip4map()
     iplists_ip4maps_cache[iplist] = ip_map
 print("OK")
