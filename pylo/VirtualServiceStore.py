@@ -1,7 +1,7 @@
+from typing import Dict, List, Optional
 import pylo
 from pylo import log
-
-from typing import Dict
+from .API.JsonPayloadTypes import VirtualServiceObjectJsonStructure
 
 
 class VirtualServiceStore:
@@ -11,7 +11,7 @@ class VirtualServiceStore:
         self.itemsByHRef: Dict[str, 'pylo.VirtualService'] = {}
         self.itemsByName: Dict[str, 'pylo.VirtualService'] = {}
 
-    def load_virtualservices_from_json(self, json_list):
+    def load_virtualservices_from_json(self, json_list: List[VirtualServiceObjectJsonStructure]):
         for json_item in json_list:
             if 'name' not in json_item or 'href' not in json_item:
                 raise pylo.PyloEx(
@@ -36,9 +36,15 @@ class VirtualServiceStore:
             self.itemsByName[new_item_name] = new_item
 
             log.debug("Found VirtualService '%s' with href '%s'", new_item_name, new_item_href)
+            
+    def find_by_href(self, href: str) -> Optional['pylo.VirtualService']:
+        return self.itemsByHRef.get(href)
 
     def find_by_href_or_create_tmp(self, href: str, tmp_name: str) -> 'pylo.VirtualService':
-        find_object = self.itemsByHRef.get(href)
+        """
+        Mostly used for deleted objects/developers speficic use cases when load imcomplete or partial PCE objects
+        """
+        find_object = self.find_by_href(href)
         if find_object is not None:
             return find_object
 
