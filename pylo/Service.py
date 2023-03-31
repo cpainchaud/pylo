@@ -234,3 +234,23 @@ class ServiceStore(pylo.Referencer):
             self.itemsByName[new_item_name] = new_item
 
             log.debug("Found service '%s' with href '%s'", new_item_name, new_item_href)
+            
+    @property
+    def services(self):
+        return list(self.itemsByHRef.values())
+    
+    def services_dict_by_href(self):
+        return self.itemsByHRef.copy()
+    
+    def find_by_name(self, name: str, case_sensitive=True) -> Optional[Service]:
+        if not case_sensitive:
+            name = name.lower()
+            for item in self.itemsByName:
+                if item.lower() == name:
+                    return self.itemsByName[item]
+            return None
+        else:
+            return self.itemsByName.get(name)
+        
+    def find_by_href(self, href: str) -> Optional[Service]:
+        return self.itemsByHRef.get(href)
