@@ -258,10 +258,10 @@ class LabelStore:
         return self.find_label_by_name(name, case_sensitive=case_sensitive)
 
 
-    def find_label_by_name_and_type(self, name: str, type: str, case_sensitive: bool = True) \
+    def find_label_by_name_and_type(self, name: str, label_type: str, case_sensitive: bool = True) \
             -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         pylo.log.warn("find_label_by_name_and_type is deprecated, use find_label_by_name instead")
-        return self.find_label_by_name(name, label_type=type, case_sensitive=case_sensitive)
+        return self.find_label_by_name(name, label_type=label_type, case_sensitive=case_sensitive)
 
     cache_label_all_string = '-All-'
     cache_label_all_separator = '|'
@@ -380,10 +380,10 @@ class LabelStore:
 
         return new_label
 
-    def api_create_label(self, name: str, type: str) -> 'pylo.Label':
+    def api_create_label(self, name: str, label_type: str) -> 'pylo.Label':
 
         connector = pylo.find_connector_or_die(self.owner)
-        json_label = connector.objects_label_create(name, type)
+        json_label = connector.objects_label_create(name, label_type)
 
         if 'value' not in json_label or 'href' not in json_label or 'key' not in json_label:
             raise pylo.PyloEx("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))
@@ -400,9 +400,9 @@ class LabelStore:
 
         return new_label
 
-    def find_label_by_name_lowercase_and_type(self, name: str, type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
+    def find_label_by_name_lowercase_and_type(self, name: str, label_type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         pylo.log.warn("find_label_by_name_lowercase_and_type is deprecated, use find_object_by_name instead")
-        return self.find_object_by_name(name, type)
+        return self.find_object_by_name(name, label_type)
 
     def find_by_href(self, href: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         return self.itemsByHRef.get(href)
