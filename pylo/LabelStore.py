@@ -60,8 +60,9 @@ class LabelStore:
             log.debug("Found Label '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
 
     def load_label_groups_from_json(self, json_list: List[LabelGroupObjectJsonStructure]):
+        # groups cannot be loaded straight away : we need to extract of their principal properties (name, href and type)
+        #then we can extract their members in case there are nested groups
         created_groups = []
-
         for json_label in json_list:
             if 'name' not in json_label or 'href' not in json_label or 'key' not in json_label:
                 raise Exception("Cannot find 'value'/name or href for Label in JSON:\n" + nice_json(json_label))
