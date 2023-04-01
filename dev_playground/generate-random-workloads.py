@@ -1,9 +1,5 @@
 import sys
 
-from pylo import log
-import logging
-#log.setLevel(logging.DEBUG)
-
 sys.path.append('..')
 
 import argparse
