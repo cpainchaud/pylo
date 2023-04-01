@@ -72,7 +72,7 @@ else:
 print(" * PCE data statistics:\n{}".format(org.stats_to_str(padding='    ')))
 
 agents = {}
-for agent in org.AgentStore.itemsByHRef.values():
+for agent in org.AgentStore.items_by_href.values():
     if agent.mode == 'idle':
         agents[agent.href] = agent
 print(" * Found {} IDLE Agents".format(len(agents)))

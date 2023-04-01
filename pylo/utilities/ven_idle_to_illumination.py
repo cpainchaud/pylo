@@ -124,7 +124,7 @@ if href_filter_file is not None:
     print("   - CSV has {} columns and {} lines (headers don't count)".format(href_filter_data.count_columns(), href_filter_data.count_lines()), flush=True)
 
 agents = {}
-for agent in org.AgentStore.itemsByHRef.values():
+for agent in org.AgentStore.items_by_href.values():
     if agent.mode == 'idle':
         agents[agent.href] = agent
 print(" * Found {} IDLE Agents".format(len(agents)))

@@ -48,7 +48,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print(" * Listing VEN Agents TOTAL count per version:")
     version_count = {}
-    for agent in org.AgentStore.itemsByHRef.values():
+    for agent in org.AgentStore.items_by_href.values():
         if agent.software_version.version_string in version_count:
             version_count[agent.software_version.version_string] += 1
         else:
@@ -60,7 +60,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             print("   - {}: {}    *NOT SUPPORTED*".format(version_string.ljust(12, ' '), count))
         else:
             print("   - {}: {}".format(version_string.ljust(12, ' '), count))
-    print("    - TOTAL: {} Agents".format(len(org.AgentStore.itemsByHRef)))
+    print("    - TOTAL: {} Agents".format(len(org.AgentStore.items_by_href)))
 
     target_version_string = args['target_version']
     print(" * Parsing target version '{}'".format(target_version_string))
@@ -131,7 +131,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             filter_versions[raw_version_name] = parsed_version
 
     print(" * Filter out VEN Agents which aren't matching filters:")
-    agents = org.AgentStore.itemsByHRef.copy()
+    agents = org.AgentStore.items_by_href.copy()
 
     for agent_href in list(agents.keys()):
         agent = agents[agent_href]
