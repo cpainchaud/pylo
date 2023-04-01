@@ -133,7 +133,9 @@ class RuleSecurityPrincipalContainer(pylo.Referencer):
         ss_store = self.owner.owner.owner.owner.SecurityPrincipalStore  # make it a local variable for fast lookups
         for item_data in data:
             wanted_href = item_data['href']
-            found_object = ss_store.find_by_href_or_die(wanted_href)
+            found_object = ss_store.find_by_href(wanted_href)
+            if found_object is None:
+                raise pylo.PyloEx(f"Could not find SecurityPrincipal with href '{wanted_href}' inside rule href '{self.owner.href}' and Ruleset named '{self.owner.owner.name}'")
             found_object.add_reference(self)
             self._items[found_object] = found_object
 

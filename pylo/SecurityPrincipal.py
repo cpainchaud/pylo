@@ -54,12 +54,9 @@ class SecurityPrincipalStore:
 
             log.debug("Found SecurityPrincipal '%s' with href '%s'", new_item_name, new_item_href)
 
-    def find_by_href_or_die(self, href: str):
+    def find_by_href(self, href: str) -> Optional[SecurityPrincipal]:
+        return self.itemsByHRef.get(href)
 
-        find_object = self.itemsByHRef.get(href)
-        if find_object is None:
-            raise pylo.PyloEx("Workload with HREF '%s' was not found" % href)
 
-        return find_object
 
 
