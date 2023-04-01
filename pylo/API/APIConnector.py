@@ -497,10 +497,6 @@ class APIConnector:
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
     def objects_label_delete(self, href: Union[str, 'pylo.Label']):
-        """
-
-        :type href: str|pylo.Label
-        """
         path = href
         if type(href) is pylo.Label:
             path = href.href
@@ -619,18 +615,43 @@ class APIConnector:
     class WorkloadMultiDeleteTracker:
         _errors: Dict[str, str]
         _hrefs: Dict[str, bool]
-        _wkls: Dict[str, 'pylo.Workload']
+        _workloads: Dict[str, 'pylo.Workload']  # dict of workloads by HREF
         connector: 'pylo.APIConnector'
 
         def __init__(self, connector: 'pylo.APIConnector'):
             self.connector = connector
             self._hrefs = {}
             self._errors = {}
-            self._wkls = {}
+            self._workloads = {}
+
+        @property
+        def workloads(self) -> List['pylo.Workload']:
+            """
+            Return a copy of the list of workloads. Beware that if you added HREF (strings) instead of workloads, you
+            will get an empty array should ge tghe the 'hrefs' properties instead
+            :return:
+            """
+            return list(self._workloads.values())
+
+        @property
+        def workloads_by_href(self) -> Dict[str, 'pylo.Workload']:
+            """
+            Return a copy of the dict of workloads by href
+            :return:
+            """
+            return self._workloads.copy()
+
+        @property
+        def hrefs(self) -> List[str]:
+            """
+            Return a copy of the list of hrefs
+            :return:
+            """
+            return list(self._hrefs.keys())
 
         def add_workload(self, wkl: 'pylo.Workload'):
             self._hrefs[wkl.href] = True
-            self._wkls[wkl.href] = wkl
+            self._workloads[wkl.href] = wkl
 
         def add_href(self, href: str):
             self._hrefs[href] = True
@@ -638,7 +659,7 @@ class APIConnector:
         def add_error(self, href: str, message: str):
             self._errors[href] = message
 
-        def get_error_by_wlk(self, wkl: 'pylo.Workload') -> Union[str, None]:
+        def get_error_by_wlk(self, wkl: 'pylo.Workload') -> Optional[str]:
             found = self._errors.get(wkl.href, pylo.objectNotFound)
             if found is pylo.objectNotFound:
                 return None

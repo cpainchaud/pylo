@@ -28,7 +28,6 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # <editor-fold desc="PCE Configuration Download and Parsing">
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
-    used_filters = {}
 
     def add_workload_to_report(wkl: pylo.Workload, action: str):
         labels = workload.get_labels_str_list()
@@ -157,7 +156,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         delete_tracker.execute(unpair_agents=True)
         print("DONE")
 
-        for wkl in delete_tracker._wkls.values():
+        for wkl in delete_tracker.workloads:
             error_msg = delete_tracker.get_error_by_href(wkl.href)
             if error_msg is None:
                 add_workload_to_report(wkl, "deleted")
@@ -170,7 +169,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         print()
     else:
         print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(delete_tracker.count_entries()))
-        for wkl in delete_tracker._wkls.values():
+        for wkl in delete_tracker.workloads:
             add_workload_to_report(wkl, "DELETE (no confirm option used)")
 
     if csv_report.lines_count() >= 1:
