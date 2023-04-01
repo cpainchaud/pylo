@@ -118,7 +118,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
 
-    deleteTracker = org.connector.new_tracker_workload_multi_delete()
+    delete_tracker = org.connector.new_tracker_workload_multi_delete()
 
     for dup_hostname, dup_record in duplicated_hostnames._records.items():
         if not dup_record.has_duplicates():
@@ -138,27 +138,27 @@ def __main(args, org: pylo.Organization, **kwargs):
             continue
 
         for wkl in dup_record.offline:
-            deleteTracker.add_workload(wkl)
+            delete_tracker.add_workload(wkl)
             print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
         for wkl in dup_record.unmanaged:
-            deleteTracker.add_workload(wkl)
+            delete_tracker.add_workload(wkl)
             # deleteTracker.add_href('nope')
             print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
     print()
 
-    if deleteTracker.count_entries() < 1:
+    if delete_tracker.count_entries() < 1:
         print(" * No duplicate found!")
 
     elif argument_confirm:
-        print(" * Found {} workloads to be deleted".format(deleteTracker.count_entries()))
+        print(" * Found {} workloads to be deleted".format(delete_tracker.count_entries()))
         print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
-        deleteTracker.execute(unpair_agents=True)
+        delete_tracker.execute(unpair_agents=True)
         print("DONE")
 
-        for wkl in deleteTracker._wkls.values():
-            error_msg = deleteTracker.get_error_by_href(wkl.href)
+        for wkl in delete_tracker._wkls.values():
+            error_msg = delete_tracker.get_error_by_href(wkl.href)
             if error_msg is None:
                 add_workload_to_report(wkl, "deleted")
             else:
@@ -166,11 +166,11 @@ def __main(args, org: pylo.Organization, **kwargs):
                 add_workload_to_report(wkl, "API error: " + error_msg)
 
         print()
-        print(" * {} workloads deleted / {} with errors".format(deleteTracker.count_entries()-deleteTracker.count_errors(), deleteTracker.count_errors()))
+        print(" * {} workloads deleted / {} with errors".format(delete_tracker.count_entries()-delete_tracker.count_errors(), delete_tracker.count_errors()))
         print()
     else:
-        print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(deleteTracker.count_entries()))
-        for wkl in deleteTracker._wkls.values():
+        print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(delete_tracker.count_entries()))
+        for wkl in delete_tracker._wkls.values():
             add_workload_to_report(wkl, "DELETE (no confirm option used)")
 
     if csv_report.lines_count() >= 1:
