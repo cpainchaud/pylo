@@ -14,6 +14,68 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--confirm', '-c', action='store_true',
                         help='actually operate deletions')
 
+class DuplicateRecordManager:
+    class DuplicatedRecord:
+        def __init__(self):
+            self.offline = []
+            self.online = []
+            self.unmanaged= []
+
+        def add_workload(self, workload: 'pylo.Workload'):
+            if workload.unmanaged:
+                self.unmanaged.append(workload)
+                return
+            if workload.online:
+                self.online.append(workload)
+                return
+            self.offline.append(workload)
+
+        def count_workloads(self):
+            return len(self.unmanaged) + len(self.online) + len(self.offline)
+
+        def count_online(self):
+            return len(self.online)
+
+        def count_offline(self):
+            return len(self.offline)
+
+        def count_unmanaged(self):
+            return len(self.unmanaged)
+
+        def has_duplicates(self):
+            if len(self.offline) + len(self.online) + len(self.unmanaged) > 1:
+                return True
+            return False
+
+    def __init__(self):
+        self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}
+
+    def count_record(self):
+        return len(self._records)
+
+    def count_workloads(self):
+        total = 0
+        for record in self._records.values():
+            total += record.count_workloads()
+
+    def records(self) -> List['DuplicateRecordManager.DuplicatedRecord']:
+        return list(self._records.values())
+
+    def count_duplicates(self):
+        count = 0
+        for record in self._records.values():
+            if record.has_duplicates():
+                count += 1
+        return count
+
+    def add_workload(self, workload: pylo.Workload):
+        lower_hostname = workload.get_name_stripped_fqdn().lower()
+
+        if lower_hostname not in self._records:
+            self._records[lower_hostname] = self.DuplicatedRecord()
+        record = self._records[lower_hostname]
+        record.add_workload(workload)
+
 
 def __main(args, org: pylo.Organization, **kwargs):
     verbose = args['verbose']
@@ -43,68 +105,6 @@ def __main(args, org: pylo.Organization, **kwargs):
         }
 
         csv_report.add_line_from_object(new_row)
-
-    class DuplicatedRecord:
-        def __init__(self):
-            self.offline = []
-            self.online = []
-            self.unmanaged= []
-
-        def add_workload(self, wkl: pylo.Workload):
-            if wkl.unmanaged:
-                self.unmanaged.append(wkl)
-                return
-            if wkl.online:
-                self.online.append(wkl)
-                return
-            self.offline.append(wkl)
-
-        def count_workloads(self):
-            return len(self.unmanaged) + len(self.online) + len(self.offline)
-
-        def count_online(self):
-            return len(self.online)
-
-        def count_offline(self):
-            return len(self.offline)
-
-        def count_unmanaged(self):
-            return len(self.unmanaged)
-
-        def has_duplicates(self):
-            if len(self.offline) + len(self.online) + len(self.unmanaged) > 1:
-                return True
-            return False
-
-    class DuplicateRecordManager:
-        def __init__(self):
-            self._records: Dict[str, DuplicatedRecord] = {}
-
-        def count_record(self):
-            return len(self._records)
-
-        def count_workloads(self):
-            total = 0
-            for record in self._records.values():
-                total += record.count_workloads()
-
-        def records(self):
-            return list(self._records.values())
-
-        def count_duplicates(self):
-            count = 0
-            for record in self._records.values():
-                if record.has_duplicates():
-                    count += 1
-            return count
-
-        def add_workload(self, wkl: pylo.Workload):
-            lower_hostname = wkl.get_name_stripped_fqdn().lower()
-
-            if lower_hostname not in self._records:
-                self._records[lower_hostname] = DuplicatedRecord()
-            record = self._records[lower_hostname]
-            record.add_workload(wkl)
 
     duplicated_hostnames = DuplicateRecordManager()
 
