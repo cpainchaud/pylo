@@ -42,50 +42,6 @@ class LabelStore:
             self.label_types_as_set.add(dimension)
             self.label_types.append(dimension)
 
-    @property
-    def roleLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
-        """Returns a dict of all role labels, including groups. Href is the key.
-        This function is there only for retro-compatibility @deprecated"""
-        results = {}
-        for label in self.itemsByHRef.values():
-            if label.type_is_role():
-                results[label.href] = label
-
-        return results
-
-    @property
-    def applicationLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
-        """Returns a dict of all application labels, including groups. Href is the key.
-        This function is there only for retro-compatibility @deprecated"""
-        results = {}
-        for label in self.itemsByHRef.values():
-            if label.type_is_application():
-                results[label.href] = label
-
-        return results
-
-    @property
-    def environmentLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
-        """Returns a dict of all environment labels, including groups. Href is the key.
-        This function is there only for retro-compatibility @deprecated"""
-        results = {}
-        for label in self.itemsByHRef.values():
-            if label.type_is_environment():
-                results[label.href] = label
-
-        return results
-
-    @property
-    def locationLabels(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
-        """Returns a dict of all location labels, including groups. Href is the key.
-        This function is there only for retro-compatibility @deprecated"""
-        results = {}
-        for label in self.itemsByHRef.values():
-            if label.type_is_location():
-                results[label.href] = label
-
-        return results
-
     def load_labels_from_json(self, json_list: List[LabelObjectJsonStructure]):
         for json_label in json_list:
             if 'value' not in json_label or 'href' not in json_label or 'key' not in json_label:
