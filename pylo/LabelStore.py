@@ -28,12 +28,11 @@ class LabelStore:
         self.items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
         self.label_types: List[str] = []
         self.label_types_as_set: Set[str] = set()
-
+        # add the default built-in label types
         self._add_dimension(label_type_role)
         self._add_dimension(label_type_app)
         self._add_dimension(label_type_env)
         self._add_dimension(label_type_loc)
-        
 
         self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
         
@@ -246,23 +245,11 @@ class LabelStore:
 
         all_string_and_sep = LabelStore.cache_label_all_string + LabelStore.cache_label_all_separator
 
-        masks = [[False, False, False, False],
-                 [True, False, False, False],
-                 [False, True, False, False],
-                 [True, True, False, False],
-                 [False, False, True, False],
-                 [True, False, True, False],
-                 [True, True, True, False],
-                 [False, False, False, True],
-                 [True, False, False, True],
-                 [False, True, False, True],
-                 [True, True, False, True],
-                 [False, False, True, True],
-                 [True, False, True, True],
-                 [True, True, True, True]]
-
-        """masks = [
-                 [True, True, True, True]]"""
+        masks = []
+        for i in range(2**4):
+            binary = bin(i)[2:].zfill(4)
+            mask = [bool(bit) for bit in binary]
+            masks.append(mask)
 
         for workload in self.owner.WorkloadStore.itemsByHRef.values():
             if workload.deleted:
