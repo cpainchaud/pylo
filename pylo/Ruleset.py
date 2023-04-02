@@ -59,7 +59,11 @@ class RulesetScopeEntry:
             if href_entry is None:
                 raise pylo.PyloEx("Cannot find 'href' entry in scope: {}".format(pylo.nice_json(data)))
 
-            label = l_store.find_by_href_or_die(href_entry)
+            label = l_store.find_by_href(href_entry)
+            if label is None:
+                raise pylo.PyloEx("Cannot find label with href '{}' in Ruleset '{}' scope: {}".format(href_entry,
+                                                                                                      self.owner.owner.name,
+                                                                                                      pylo.nice_json(data)))
             if label.type_is_location():
                 self.loc_label = label
             elif label.type_is_environment():

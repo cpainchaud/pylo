@@ -19,7 +19,9 @@ class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
         if 'labels' in self.raw_json:
             for href_record in self.raw_json['labels']:
                 if 'href' in href_record:
-                    find_label = self.owner.find_by_href_or_die(href_record['href'])
+                    find_label = self.owner.find_by_href(href_record['href'])
+                    if find_label is None:
+                        raise pylo.PyloEx(f"LabelGroup named '{self.name}' has member with href '{href_record['href']}' not found")
                     find_label.add_reference(self)
                     self._members_by_href[find_label.href] = find_label
                 else:

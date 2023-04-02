@@ -363,12 +363,3 @@ class LabelStore:
 
     def find_by_href(self, href: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         return self.items_by_href.get(href)
-
-    def find_by_href_or_die(self, href: str) -> Union['pylo.Label', 'pylo.LabelGroup']:
-
-        obj = self.items_by_href.get(href)
-
-        if obj is None:
-            raise pylo.PyloObjectNotFound("Label with HREF '%s' was not found" % href)
-
-        return obj
