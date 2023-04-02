@@ -31,7 +31,7 @@ print("Statistics for Target PCE %s:\n%s" % (targetHostname, target.stats_to_str
 labelsToImport: List[pylo.Label] = []
 labelsInConflict: List[pylo.Label] = []
 
-for label in origin.LabelStore.itemsByHRef.values():
+for label in origin.LabelStore.items_by_href.values():
     labelName = label.name
 
     targetLabelFind = target.LabelStore.find_label_by_name_and_type(labelName, label.type())

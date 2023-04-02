@@ -249,7 +249,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     # <editor-fold desc="Label collision detection">
     print(" * Checking for Labels case collisions and missing ones to be created:")
     name_cache: Dict[str, Any] = {}
-    for label in org.LabelStore.itemsByHRef.values():
+    for label in org.LabelStore.items_by_href.values():
         lower_name = None
         if label.name is not None:
             lower_name = label.name.lower()
