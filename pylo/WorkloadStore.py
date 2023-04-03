@@ -88,7 +88,8 @@ class WorkloadStore:
             -> Dict[str, 'Workload']:
         """
         Find all Workloads which are using all the Labels from a specified list/dict. Note that labels will be ordered by type
-        and workloads will need to match 1 Label of each specified. LabelGroups will be expanded
+        and workloads will need to match 1 Label of each specified. LabelGroups will be expanded.
+        If one of the labels is None, it will be ignored
 
         :param labels: list of Labels you want to match on
         :return: a dictionary of all matching Workloads using their HREF as key
@@ -97,12 +98,18 @@ class WorkloadStore:
 
         if isinstance(labels, list):
             for label in labels:
+                if label is None:
+                    pylo.log.debug("Label is None, skipping")
+                    continue
                 if isinstance(label, LabelGroup):
                     unique_labels.update(label.expand_nested_to_dict_by_href().values())
                 else:
                     unique_labels.add(label)
         else:
             for label in labels.values():
+                if label is None:
+                    pylo.log.warn("Label is None, skipping")
+                    continue
                 if isinstance(label, LabelGroup):
                     unique_labels.update(label.expand_nested_to_dict_by_href().values())
                 else:
