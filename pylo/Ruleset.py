@@ -41,12 +41,9 @@ class RulesetScopeEntry:
 
     def __init__(self, owner: 'pylo.RulesetScope'):
         self.owner: pylo.RulesetScope = owner
-        self.loc_label: Optional['pylo.Label'] = None
-        self.env_label: Optional['pylo.Label'] = None
-        self.app_label: Optional['pylo.Label'] = None
+        self._labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
 
     def load_from_json(self, data: List[RulesetScopeEntryLineJsonStructure]):
-        self.loc_label = None
         #log.error(pylo.nice_json(data))
         l_store = self.owner.owner.owner.owner.LabelStore
         for label_json in data:
@@ -63,18 +60,38 @@ class RulesetScopeEntry:
             if label is None:
                 raise pylo.PyloEx("Cannot find label with href '{}' in Ruleset '{}' scope: {}".format(href_entry,
                                                                                                       self.owner.owner.name,
-                                                                                                      pylo.nice_json(data)))
-            if label.type_is_location():
-                self.loc_label = label
-            elif label.type_is_environment():
-                self.env_label = label
-            elif label.type_is_application():
-                self.app_label = label
-            else:
+                                                                                      pylo.nice_json(data)))
+
+            if label.type not in self.owner.owner.owner.owner.LabelStore.label_types_as_set:
                 raise pylo.PyloEx("Unsupported label type '{}' named '{}' in scope of ruleset '{}'/'{}'".format(label.type_string(),
                                                                                                                 label.name,
                                                                                                                 self.owner.owner.href,
                                                                                                                 self.owner.owner.name))
+            self._labels[label.type] = label
+
+    @property
+    def labels(self) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return a copy of the labels list
+        """
+        return list(self._labels.values())
+
+    @property
+    def labels_by_type(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return a copy of the labels dict keyed by label type
+        :return:
+        """
+        return self._labels.copy()
+
+    @property
+    def labels_by_href(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return labels dict keyed by label href
+        :return:
+        """
+        return {label.href: label for label in self._labels.values()}
+
 
     def to_string(self, label_separator = '|', use_href=False):
         string = 'All' + label_separator
@@ -103,9 +120,31 @@ class RulesetScopeEntry:
         return string
 
     def is_all_all_all(self):
-        if self.app_label is None and self.env_label is None and self.loc_label is None:
-            return True
-        return False
+        return len(self._labels) == 0
+
+    @property
+    def loc_label(self) -> Optional['pylo.Label']:
+        """
+        @deprecated
+        :return:
+        """
+        return self._labels.get('loc')
+
+    @property
+    def env_label(self) -> Optional['pylo.Label']:
+        """
+        @deprecated
+        :return:
+        """
+        return self._labels.get('env')
+
+    @property
+    def app_label(self) -> Optional['pylo.Label']:
+        """
+        @deprecated
+        :return:
+        """
+        return self._labels.get('app')
 
 
 class Ruleset:
