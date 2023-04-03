@@ -1,7 +1,7 @@
-from pylo import log, IP4Map, PyloEx, Workload, nice_json, Label
+from pylo import log, IP4Map, PyloEx, Workload, nice_json, Label, LabelGroup
 from .Helpers import *
 from .Organization import Organization
-from typing import Optional, List
+from typing import Optional, List, Union, Set
 
 
 class WorkloadStore:
@@ -84,27 +84,46 @@ class WorkloadStore:
 
         return result
 
-    def find_workloads_matching_all_labels(self, labels: List[Label]) -> Dict[str, 'Workload']:
+    def find_workloads_matching_all_labels(self, labels: Union[List[Label|LabelGroup], Dict[str,Label|LabelGroup]])\
+            -> Dict[str, 'Workload']:
         """
-        Find all Workloads which are using all the Labels from a specified list.
+        Find all Workloads which are using all the Labels from a specified list/dict. Note that labels will be ordered by type
+        and workloads will need to match 1 Label of each specified. LabelGroups will be expanded
 
         :param labels: list of Labels you want to match on
         :return: a dictionary of all matching Workloads using their HREF as key
         """
+        unique_labels: Set[Union[Label, LabelGroup]] = set()
+
+        if isinstance(labels, list):
+            for label in labels:
+                if isinstance(label, LabelGroup):
+                    unique_labels.update(label.expand_nested_to_dict_by_href().values())
+                else:
+                    unique_labels.add(label)
+        else:
+            for label in labels.values():
+                if isinstance(label, LabelGroup):
+                    unique_labels.update(label.expand_nested_to_dict_by_href().values())
+                else:
+                    unique_labels.add(label)
+
+        labels_by_type = pylo.LabelStore.Utils.list_to_dict_by_type(unique_labels)
+
         result = {}
 
-        for href, workload in self.itemsByHRef.items():
-            matched = True
-            for label in labels:
-                if label is None:
-                    continue
-                if not workload.is_using_label(label):
-                    matched = False
+        for workload in self.itemsByHRef.values():
+            workload_is_a_match = True
+            for label_type, labels_to_find in labels_by_type.items():
+                workload_label = workload.get_label_by_type_str(label_type)
+                if workload_label is None or workload_label not in labels_to_find:
+                    workload_is_a_match = False
                     break
-            if matched:
-                result[href] = workload
+            if workload_is_a_match:
+                result[workload.href] = workload
 
         return result
+
 
     def find_workload_matching_forced_name(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[Workload]:
         """
