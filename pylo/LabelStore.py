@@ -1,4 +1,4 @@
-from typing import Optional, Union, Dict, Set
+from typing import Optional, Union, Dict, Set, Iterable
 import pylo
 from pylo import log
 from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure
@@ -21,6 +21,16 @@ class LabelStore:
             result: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
             for label in label_list:
                 result[label.href] = label
+            return result
+
+        @staticmethod
+        def list_to_dict_by_type(label_list: Iterable[Union['pylo.Label', 'pylo.LabelGroup']]) -> Dict[str, List[Union['pylo.Label', 'pylo.LabelGroup']]]:
+            """Converts a list of labels into a dict, where the type is the key"""
+            result: Dict[str, List[Union['pylo.Label', 'pylo.LabelGroup']]] = {}
+            for label in label_list:
+                if label.type not in result:
+                    result[label.type] = []
+                result[label.type].append(label)
             return result
 
     def __init__(self, owner: 'pylo.Organization'):
