@@ -118,6 +118,12 @@ class RulesetObjectJsonStructure(TypedDict):
     scopes: List[List[RulesetScopeEntryLineJsonStructure]]
 
 
+class RulesetObjectUpdateStructure(TypedDict):
+    name: NotRequired[str]
+    description: NotRequired[str]
+    scopes: NotRequired[List[List[RulesetScopeEntryLineJsonStructure]]]
+
+
 class ServiceObjectJsonStructure(TypedDict):
     href: str
     name: str

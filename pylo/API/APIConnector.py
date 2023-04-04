@@ -8,7 +8,7 @@ from pathlib import Path
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
-    VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure
+    VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure
 
 try:
     import requests as requests
@@ -837,7 +837,7 @@ class APIConnector:
 
         return self.do_post_call(path=path, json_arguments=data, json_output_expected=True)
 
-    def objects_ruleset_update(self, ruleset_href: str, update_data):
+    def objects_ruleset_update(self, ruleset_href: str, update_data: RulesetObjectUpdateStructure):
         return self.do_put_call(path=ruleset_href,
                                 json_arguments=update_data,
                                 include_org_id=False,
