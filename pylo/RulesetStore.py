@@ -26,10 +26,10 @@ class RulesetStore:
         """
         return self._items_by_href.copy()
 
-    def count_rulesets(self):
+    def count_rulesets(self) -> int:
         return len(self._items_by_href)
 
-    def count_rules(self):
+    def count_rules(self) -> int:
         count = 0
         for ruleset in self._items_by_href.values():
             count += ruleset.count_rules()
