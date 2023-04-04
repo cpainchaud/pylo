@@ -60,7 +60,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
 
-    csv_expected_fields = [
+    csv_expected_fields: List[Dict] = [
         {'name': 'name', 'optional': True, 'default': ''},
         {'name': 'hostname', 'optional': False},
         {'name': 'role', 'optional': True},
@@ -215,8 +215,9 @@ def __main(args, org: pylo.Organization, **kwargs):
         print("   - No filter given (see --help)")
     else:
         print("  - loading Excel/CSV file '{}'... ".format(input_filter_file), end='', flush=True)
-        print("OK")
         filter_csv_data = pylo.CsvExcelToObject(input_filter_file, csv_filter_fields, strict_headers=True)
+        print("OK")
+
         for filter in filter_csv_data.objects():
             ip = filter.get('ip')
             if ip is None:
