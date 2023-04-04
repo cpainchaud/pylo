@@ -15,6 +15,10 @@ label_type_role = 'role'
 class LabelStore:
 
     class Utils:
+        """
+        Container meant to provide reusable utility functions for Label objects and their Store
+        """
+
         @staticmethod
         def list_to_dict_by_href(label_list: List[Union['pylo.Label', 'pylo.LabelGroup']]) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
             """Converts a list of labels into a dict, where the href is the key"""
@@ -35,7 +39,7 @@ class LabelStore:
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: "pylo.Organization" = owner
-        self.items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self._items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
         self.label_types: List[str] = []
         self.label_types_as_set: Set[str] = set()
         # add the default built-in label types
@@ -61,10 +65,10 @@ class LabelStore:
 
             new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
 
-            if new_label_href in self.items_by_href:
+            if new_label_href in self._items_by_href:
                 raise Exception("A Label with href '%s' already exists in the table", new_label_href)
 
-            self.items_by_href[new_label_href] = new_label
+            self._items_by_href[new_label_href] = new_label
             
             log.debug("Found Label '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
 
@@ -82,10 +86,10 @@ class LabelStore:
             new_label = pylo.LabelGroup(new_label_name, new_label_href, new_label_type, self)
             created_groups.append(new_label)
 
-            if new_label_href in self.items_by_href:
+            if new_label_href in self._items_by_href:
                 raise Exception("A Label with href '%s' already exists in the table", new_label_href)
 
-            self.items_by_href[new_label_href] = new_label
+            self._items_by_href[new_label_href] = new_label
 
             new_label.raw_json = json_label
 
@@ -129,7 +133,7 @@ class LabelStore:
             if label_type not in self.label_types_as_set:
                 raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
         data = []
-        for label in self.items_by_href.values():
+        for label in self._items_by_href.values():
             if label.is_label() and (label_type is None or label.type == label_type):
                 data.append(label)
         return data
@@ -143,13 +147,30 @@ class LabelStore:
             if label_type not in self.label_types_as_set:
                 raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
         data = []
-        for label in self.items_by_href.values():
+        for label in self._items_by_href.values():
             if label.is_group() and (label_type is None or label.type == label_type):
                 data.append(label)
         return data
-    
+
+
     def get_label_groups_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, 'pylo.LabelGroup']:
         label_list = self.get_label_groups(label_type)
+        return self.Utils.list_to_dict_by_href(label_list)
+
+
+    def get_both_labels_and_groups(self, label_type: Optional[str] = None) -> List[Union['pylo.Label','pylo.LabelGroup']]:
+        data = []
+        if label_type is not None:
+            if label_type not in self.label_types_as_set:
+                raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
+
+        for label in self._items_by_href.values():
+            if label_type is None or label.type == label_type:
+                data.append(label)
+        return data
+
+    def get_both_labels_and_groups_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, Union['pylo.Label','pylo.LabelGroup']]:
+        label_list = self.get_both_labels_and_groups(label_type)
         return self.Utils.list_to_dict_by_href(label_list)
 
 
@@ -172,7 +193,7 @@ class LabelStore:
                                                 allow_label_group=allow_label_group,
                                                 allow_label=allow_label,
                                                 raise_exception_if_not_found=raise_exception_if_not_found)
-            for label in self.items_by_href.values():
+            for label in self._items_by_href.values():
                 if label_type is not None and label.type != label_type:
                     continue
                 if label.is_label() and allow_label: # ignore groups
@@ -327,10 +348,10 @@ class LabelStore:
 
         new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
 
-        if new_label_href in self.items_by_href:
+        if new_label_href in self._items_by_href:
             raise Exception("A Label with href '%s' already exists in the table", new_label_href)
 
-        self.items_by_href[new_label_href] = new_label
+        self._items_by_href[new_label_href] = new_label
 
         return new_label
 
@@ -347,10 +368,10 @@ class LabelStore:
 
         new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
 
-        if new_label_href in self.items_by_href:
+        if new_label_href in self._items_by_href:
             raise Exception("A Label with href '%s' already exists in the table", new_label_href)
 
-        self.items_by_href[new_label_href] = new_label
+        self._items_by_href[new_label_href] = new_label
 
         return new_label
 
@@ -359,4 +380,4 @@ class LabelStore:
         return self.find_object_by_name(name, label_type)
 
     def find_by_href(self, href: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
-        return self.items_by_href.get(href)
+        return self._items_by_href.get(href)

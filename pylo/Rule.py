@@ -380,14 +380,14 @@ class RuleHostContainer(pylo.Referencer):
                 href = host_data['label'].get('href')
                 if href is None:
                     PyloEx('Cannot find object HREF ', host_data)
-                find_object = label_store.items_by_href.get(href)
+                find_object = label_store.find_by_href(href)
                 if find_object is None:
                     raise Exception('Cannot find Label with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'label_group' in host_data:
                 href = host_data['label_group'].get('href')
                 if href is None:
                     raise PyloEx('Cannot find object HREF ', host_data)
-                find_object = label_store.items_by_href.get(href)
+                find_object = label_store.find_by_href(href)
                 if find_object is None:
                     raise Exception('Cannot find LabelGroup with HREF {} in Rule {}'.format(href, self.owner.href))
             elif 'ip_list' in host_data:
