@@ -238,7 +238,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
                 # 'ip' field based filter
                 ip_filter = filter_from_csv_file.get('ip')
-                if ip is not None:
+                if ip_filter is not None:
                     for ip in csv_object['**ip_array**']:
                         if ip_filter == ip:
                             match_filter = True
