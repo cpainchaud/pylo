@@ -26,7 +26,7 @@ print("Loading organization from PCE '{}'... ".format(pce_hostname), end='', flu
 organization = pylo.get_organization(pce_hostname, pce_port, pce_api_user, pce_api_key, pce_org_id, pce_verify_ssl)
 print("OK!")
 
-explorer_query_filters = organization.connector.ExplorerFilterSetV1()
+explorer_query = organization.connector.new_explorer_query()
 
 # Filter by a specific device
 consumer_labels_names = ['E-PRODUCTION', 'E-PREPROD']
@@ -36,30 +36,30 @@ consumer_ip_list_name = 'I-Prod-Networks'
 consumer_labels = organization.LabelStore.find_label_by_name(consumer_labels_names, raise_exception_if_not_found=True)
 # add these labels to the filter
 for label in consumer_labels:
-    explorer_query_filters.consumer_include_label(label)
+    explorer_query.filters.consumer_include_label(label)
 
 # Lookup for IPList object
 consumer_iplist = organization.IPListStore.find_by_name(consumer_ip_list_name)
 if consumer_iplist is None:
     raise Exception("IPList '{}' not found in PCE!".format(consumer_ip_list_name))
 # add this IPList to the filter
-explorer_query_filters.consumer_include_iplist(consumer_iplist)
+explorer_query.filters.consumer_include_iplist(consumer_iplist)
 
 # Filter by services
-explorer_query_filters.service_include_add_protocol(1)  # icmp
-explorer_query_filters.service_include_add('tcp/80')  # HTTP
-explorer_query_filters.service_include_add('tcp/443')  # HTTPS
+explorer_query.filters.service_include_add_protocol(1)  # icmp
+explorer_query.filters.service_include_add('tcp/80')  # HTTP
+explorer_query.filters.service_include_add('tcp/443')  # HTTPS
 
 # Filter by policy decision
-explorer_query_filters.filter_on_policy_decision_allowed()
+explorer_query.filters.filter_on_policy_decision_allowed()
 
 #filter on last seen time
-explorer_query_filters.set_time_from_x_days_ago(5)
+explorer_query.filters.set_time_from_x_days_ago(5)
 
 
 # Query the PCE for traffic logs matching the filter
 print("Querying PCE for traffic logs matching the filter... ", end='', flush=True)
-traffic_logs = organization.connector.explorer_search(explorer_query_filters)
+traffic_logs = explorer_query.execute()
 print("OK! found {} traffic logs".format(traffic_logs.count_results()))
 
 # Print the results

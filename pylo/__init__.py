@@ -12,7 +12,7 @@ from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
 from .API.APIConnector import APIConnector, ObjectTypes
 from .API.RuleSearchQuery import RuleSearchQuery, RuleSearchQueryResolvedResultSet
 from .API.ClusterHealth import ClusterHealth
-from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager
+from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager, ExplorerFilterSetV1, ExplorerQuery
 from .API.CredentialsManager import get_credentials_from_file
 from .LabelCommon import LabelCommon
 from .Label import Label
