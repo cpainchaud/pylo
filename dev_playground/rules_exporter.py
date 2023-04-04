@@ -85,7 +85,7 @@ for header in xls_rules_headers:
     xls_column_width[header] = 0
 
 
-for ruleset in org.RulesetStore.items_by_href.values():
+for ruleset in org.RulesetStore.rulesets:
 
     log.debug(" - Handling ruleset '{}'".format(ruleset.name))
 

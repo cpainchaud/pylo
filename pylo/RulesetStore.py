@@ -13,6 +13,21 @@ class RulesetStore:
         self.items_by_href: Dict[str, 'pylo.Ruleset'] = {}
         self.items_by_name: Dict[str, 'pylo.Ruleset'] = {}
 
+    @property
+    def rulesets(self) -> List['pylo.Ruleset']:
+        """
+        :return: a copy of the list of rulesets
+        """
+        return list(self.items_by_href.values())
+
+    @property
+    def rulesets_dict_by_href(self) -> Dict[str, 'pylo.Ruleset']:
+        """
+        :return: a copy of the dict of rulesets by href
+        :return:
+        """
+        return self.items_by_href.copy()
+
     def count_rulesets(self):
         return len(self.items_by_href)
 

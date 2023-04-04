@@ -324,7 +324,7 @@ csv_rulesets_rows = []
 
 rulesets_tags = TagIndex()
 
-for ruleset in org.RulesetStore.items_by_href.values():
+for ruleset in org.RulesetStore.rulesets:
     rules = []
     r_json = {'href': ruleset.href, 'name': ruleset.name, 'description': ruleset.description,'rules': rules}
     rulesets_json.append(r_json)

@@ -22,7 +22,7 @@ def __main(options, org: pylo.Organization, **kwargs):
 
     csv_report = pylo.ArrayToExport(csv_report_headers)
 
-    for ruleset in org.RulesetStore.items_by_href.values():
+    for ruleset in org.RulesetStore.rulesets:
         for rule in ruleset.rules_by_href.values():
             options = []
             if not rule.enabled:
