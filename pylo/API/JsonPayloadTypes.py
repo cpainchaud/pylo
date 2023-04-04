@@ -6,6 +6,10 @@ from typing import List, Optional, TypedDict, NotRequired, Union
 class HrefReference(TypedDict):
     href: str
 
+class HrefReferenceWithName(TypedDict):
+    href: str
+    name: str
+
 class WorkloadHrefRef(TypedDict):
     workload: HrefReference
 
@@ -13,12 +17,14 @@ class IPListHrefRef(TypedDict):
     ip_list: HrefReference
 
 class LabelObjectJsonStructure(TypedDict):
-    value: str
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
+    deleted: bool
     href: str
     key: str
-    deleted: bool
-    created_at: str
     updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
+    value: str
 
 
 class LabelObjectCreationJsonStructure(TypedDict):
@@ -31,33 +37,35 @@ class LabelObjectUpdateJsonStructure(TypedDict):
 
 
 class LabelGroupObjectJsonStructure(TypedDict):
-    name: str
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
+    deleted: bool
     href: str
     key: str
-    deleted: bool
-    created_at: str
-    updated_at: str
     labels: List[HrefReference]
+    name: str
+    updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 
 class LabelGroupObjectUpdateJsonStructure(TypedDict):
-    name: NotRequired[str]
     labels: NotRequired[List[HrefReference]]
-
+    name: NotRequired[str]
 
 class IPListObjectJsonStructure(TypedDict):
-    href: str
-    name: str
     created_at: str
-    updated_at: str
+    created_by: Optional[HrefReferenceWithName]
     description: str
+    href: str
     ip_ranges: List[TypedDict('record', {'from_ip': str, 'to_ip': str, 'exclusion': bool})]
-
+    name: str
+    updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 class IPListObjectCreationJsonStructure(TypedDict):
-    name: str
     description: str
     ip_ranges: List[TypedDict('record', {'from_ip': str, 'to_ip': str, 'exclusion': bool})]
+    name: str
 
 
 class WorkloadInterfaceObjectJsonStructure(TypedDict):
@@ -65,25 +73,25 @@ class WorkloadInterfaceObjectJsonStructure(TypedDict):
     address: str
 
 class WorkloadObjectJsonStructure(TypedDict):
-    href: str
-    name: Optional[str]
-    hostname: Optional[str]
-    description: Optional[str]
     created_at: str
-    updated_at: str
-    labels: List[HrefReference]
-    public_ip: Optional[str]
+    created_by: Optional[HrefReferenceWithName]
+    description: Optional[str]
+    hostname: Optional[str]
+    href: str
     interfaces: List[WorkloadInterfaceObjectJsonStructure]
-
+    labels: List[HrefReference]
+    name: Optional[str]
+    public_ip: Optional[str]
+    updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 class WorkloadObjectCreateJsonStructure(TypedDict):
-    name: Optional[str]
-    hostname: Optional[str]
     description: Optional[str]
-    labels: NotRequired[List[HrefReference]]
-    public_ip: NotRequired[Optional[str]]
+    hostname: Optional[str]
     interfaces: NotRequired[List[WorkloadInterfaceObjectJsonStructure]]
-
+    labels: NotRequired[List[HrefReference]]
+    name: Optional[str]
+    public_ip: NotRequired[Optional[str]]
 
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
     href: str
@@ -97,10 +105,12 @@ class RuleDirectServiceReferenceObjectJsonStructure(TypedDict):
 
 
 class RuleObjectJsonStructure(TypedDict):
-    href: str
     created_at: str
+    created_by: Optional[HrefReferenceWithName]
+    href: str
+    ingress_services: List[RuleDirectServiceReferenceObjectJsonStructure|RuleServiceReferenceObjectJsonStructure]
     updated_at: str
-    ingress_services: List[RuleServiceReferenceObjectJsonStructure|RuleDirectServiceReferenceObjectJsonStructure]
+    updated_by: Optional[HrefReferenceWithName]
 
 
 class RulesetScopeEntryLineJsonStructure(TypedDict):
@@ -109,13 +119,15 @@ class RulesetScopeEntryLineJsonStructure(TypedDict):
 
 
 class RulesetObjectJsonStructure(TypedDict):
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
+    description: str
     href: str
     name: str
-    created_at: str
-    updated_at: str
-    description: str
     rules: List[RuleObjectJsonStructure]
     scopes: List[List[RulesetScopeEntryLineJsonStructure]]
+    updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 
 class RulesetObjectUpdateStructure(TypedDict):
@@ -146,14 +158,14 @@ class SecurityPrincipalObjectJsonStructure(TypedDict):
 
 
 class PCEObjectsJsonStructure(TypedDict):
-    labels: List[LabelObjectJsonStructure]
-    labelgroups: List[LabelGroupObjectJsonStructure]
     iplists: List[IPListObjectJsonStructure]
-    workloads: List[WorkloadObjectJsonStructure]
+    labelgroups: List[LabelGroupObjectJsonStructure]
+    labels: List[LabelObjectJsonStructure]
     rulesets: List[RulesetObjectJsonStructure]
+    security_principals: List[SecurityPrincipalObjectJsonStructure]
     services: List[ServiceObjectJsonStructure]
     virtual_services: List[VirtualServiceObjectJsonStructure]
-    security_principals: List[SecurityPrincipalObjectJsonStructure]
+    workloads: List[WorkloadObjectJsonStructure]
 
 
 class PCECacheFileJsonStructure(TypedDict):
