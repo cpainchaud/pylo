@@ -193,7 +193,7 @@ class Ruleset:
     def api_delete_rule(self, rule_or_href: Union[str, 'pylo.Rule']):
         """
 
-        :param rule: should be href string or a Rule object
+        :param rule_or_href: HRef string or a Rule object to be deleted
         """
         href = rule_or_href
         if isinstance(rule_or_href, pylo.Rule):
