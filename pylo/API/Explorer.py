@@ -271,24 +271,22 @@ class ExplorerResultSetV1:
                 self.entries: Dict[str, List[ExplorerResult]] = {}
 
             def load(self, records: List[ExplorerResult]):
-
                 for record in records:
                     hash = record.source_ip + record.destination_ip + str(record.source_workload_href) + \
                            str(record.destination_workload_href) + record.service_to_str() + \
                            record.policy_decision_string + record.draft_mode_policy_decision_to_str()
-                    hashEntry = self.entries.get(hash)
-                    if hashEntry is None:
+                    entry_from_hash = self.entries.get(hash)
+                    if entry_from_hash is None:
                         self.entries[hash] = [record]
                     else:
-                        hashEntry.append(record)
+                        entry_from_hash.append(record)
 
             def results(self) -> List[ExplorerResult]:
-
-                results: List[ExplorerResult] = []
+                results_list: List[ExplorerResult] = []
 
                 for hashEntry in self.entries.values():
                     if len(hashEntry) == 1:
-                        results.append(hashEntry[0])
+                        results_list.append(hashEntry[0])
                         continue
 
                     record_to_keep = hashEntry.pop()
@@ -320,9 +318,9 @@ class ExplorerResultSetV1:
                     record_to_keep.last_detected = last_detected
                     record_to_keep.first_detected = first_detected
 
-                    results.append(record_to_keep)
+                    results_list.append(record_to_keep)
 
-                return results
+                return results_list
 
         hash_table: HashTable = HashTable()
         hash_table.load(records)
@@ -330,8 +328,7 @@ class ExplorerResultSetV1:
 
         return results
 
-    def get_all_records(self,
-                        ) -> List[ExplorerResult]:
+    def get_all_records(self) -> List[ExplorerResult]:
         result = []
         for data in self._raw_results:
             try:
