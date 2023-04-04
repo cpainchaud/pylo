@@ -218,20 +218,20 @@ def __main(args, org: pylo.Organization, **kwargs):
         filter_csv_data = pylo.CsvExcelToObject(input_filter_file, csv_filter_fields, strict_headers=True)
         print("OK")
 
-        for filter in filter_csv_data.objects():
-            ip = filter.get('ip')
+        for filter_from_csv_file in filter_csv_data.objects():
+            ip = filter_from_csv_file.get('ip')
             if ip is None:
                 continue
             if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
-                pylo.log.error("CSV/Excel FILTER file has invalid IP {} at line #{}".format(ip, filter['*line*']))
+                pylo.log.error("CSV/Excel FILTER file has invalid IP {} at line #{}".format(ip, filter_from_csv_file['*line*']))
 
         for csv_object in csv_data.objects():
             if '**not_created_reason**' in csv_object:
                 continue
 
             match_filter = False
-            for filter in filter_csv_data.objects():
-                ip_filter = filter.get('ip')
+            for filter_from_csv_file in filter_csv_data.objects():
+                ip_filter = filter_from_csv_file.get('ip')
                 if ip is not None:
                     for ip in csv_object['**ip_array**']:
                         if ip_filter == ip:
