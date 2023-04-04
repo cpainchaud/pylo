@@ -240,6 +240,7 @@ class ExplorerResultSetV1:
     owner: 'APIConnector'
 
     def __init__(self, data, owner: 'APIConnector', emulated_process_exclusion={}):
+        self.owner = owner
         self._raw_results = data
         if len(emulated_process_exclusion) > 0:
             new_data = []
@@ -250,9 +251,19 @@ class ExplorerResultSetV1:
                 new_data.append(record)
             self._raw_results = new_data
 
-        self.owner = owner
+        self._records: List[ExplorerResult] = []
+        self._gen_records()
 
-    def count_results(self):
+    def _gen_records(self):
+        for data in self._raw_results:
+            try:
+                new_record = ExplorerResult(data)
+                self._records.append(new_record)
+
+            except pylo.PyloApiUnexpectedSyntax as error:
+                pylo.log.warn(error)
+
+    def count_records(self):
         return len(self._raw_results)
 
     def get_record(self, line: int):
@@ -264,8 +275,10 @@ class ExplorerResultSetV1:
 
         return ExplorerResult(self._raw_results[line])
 
-    @staticmethod
-    def merge_similar_records_only_process_and_user_differs(records: List[ExplorerResult]) -> List[ExplorerResult]:
+    def get_all_records(self) -> List[ExplorerResult]:
+        return self._records
+
+    def merge_similar_records_only_process_and_user_differs(self):
         class HashTable:
             def __init__(self):
                 self.entries: Dict[str, List[ExplorerResult]] = {}
@@ -323,22 +336,15 @@ class ExplorerResultSetV1:
                 return results_list
 
         hash_table: HashTable = HashTable()
-        hash_table.load(records)
-        results = hash_table.results()
+        hash_table.load(self._records)
+        self._records = hash_table.results()
 
-        return results
+    def apply_draft_policy_decision_to_all_records(self):
+        draft_manager = RuleCoverageQueryManager(self.owner)
+        draft_manager.add_query_from_explorer_results(self._records)
+        draft_manager.execute()
 
-    def get_all_records(self) -> List[ExplorerResult]:
-        result = []
-        for data in self._raw_results:
-            try:
-                new_record = ExplorerResult(data)
-                result.append(new_record)
 
-            except pylo.PyloApiUnexpectedSyntax as error:
-                pylo.log.warn(error)
-
-        return result
 
 class RuleCoverageQueryManager:
 
