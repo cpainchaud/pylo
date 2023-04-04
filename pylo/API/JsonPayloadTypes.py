@@ -60,12 +60,29 @@ class IPListObjectCreationJsonStructure(TypedDict):
     ip_ranges: List[TypedDict('record', {'from_ip': str, 'to_ip': str, 'exclusion': bool})]
 
 
+class WorkloadInterfaceObjectJsonStructure(TypedDict):
+    name: str
+    address: str
+
 class WorkloadObjectJsonStructure(TypedDict):
     href: str
     name: Optional[str]
     hostname: Optional[str]
+    description: Optional[str]
     created_at: str
     updated_at: str
+    labels: List[HrefReference]
+    public_ip: Optional[str]
+    interfaces: List[WorkloadInterfaceObjectJsonStructure]
+
+
+class WorkloadObjectCreateJsonStructure(TypedDict):
+    name: Optional[str]
+    hostname: Optional[str]
+    description: Optional[str]
+    labels: NotRequired[List[HrefReference]]
+    public_ip: NotRequired[Optional[str]]
+    interfaces: NotRequired[List[WorkloadInterfaceObjectJsonStructure]]
 
 
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
