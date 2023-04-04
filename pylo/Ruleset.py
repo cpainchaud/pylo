@@ -228,15 +228,15 @@ class Ruleset:
 
         return self.load_single_rule_from_json(new_rule_json)
 
-    def count_rules(self):
+    def count_rules(self) -> int:
         return len(self.rules_by_href)
 
-    def extract_id_from_href(self):
+    def extract_id_from_href(self) -> int:
         match = ruleset_id_extraction_regex.match(self.href)
         if match is None:
             raise pylo.PyloEx("Cannot extract ruleset_id from href '{}'".format(self.href))
 
-        return match.group("id")
+        return int(match.group("id"))
 
     def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None) -> str:
         if pce_hostname is None or pce_port is None:
