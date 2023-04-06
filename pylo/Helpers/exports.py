@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, TypedDict
 
 try:
     import xlsxwriter
@@ -13,6 +13,12 @@ except ImportError:
 import csv
 import pylo
 import os
+
+
+class ExcelHeader(TypedDict):
+    name: str
+    nice_name: Optional[str]
+    max_width: Optional[int]
 
 
 class ArrayToExport:
@@ -99,8 +105,8 @@ class ArraysToExcel:
     _sheets: Dict[str, 'ArraysToExcel.Sheet']
 
     class Sheet:
-        def __init__(self, headers, force_all_wrap_text=True, sheet_color: Optional[str] = None, order_by: Optional[List[str]] = None, multivalues_cell_delimiter=' '):
-            self._headers = headers
+        def __init__(self, headers: List[str|ExcelHeader], force_all_wrap_text=True, sheet_color: Optional[str] = None, order_by: Optional[List[str]] = None, multivalues_cell_delimiter=' '):
+            self._headers: List[str|ExcelHeader] = headers
             self._columns_count = len(headers)
             self._lines = []
             self._columns_wrap = []
