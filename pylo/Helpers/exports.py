@@ -194,13 +194,13 @@ class ArraysToExcel:
                 if type(some_text) is int:
                     return len(str(some_text))
 
-                length = 0
+                str_length = 0
                 split = some_text.split("\n")
                 for part in split:
-                    if len(part) > length:
-                        length = len(part)
+                    if len(part) > str_length:
+                        str_length = len(part)
 
-                return length
+                return str_length
 
 
             # Data may need to be sorted
