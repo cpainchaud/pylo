@@ -30,34 +30,35 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
     output_file_name = options.get('output') + os.sep + make_filename_with_timestamp('rule_export_') + output_file_extension
     output_file_name = os.path.abspath(output_file_name)
 
-    csv_report = pylo.ArrayToExport(csv_report_headers)
+    csv_report = pylo.ArraysToExcel()
+    sheet = csv_report.create_sheet('rulesets', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
 
     for ruleset in org.RulesetStore.rulesets:
         for rule in ruleset.rules_by_href.values():
-            options = []
+            rule_options = []
             if not rule.enabled:
-                options.append('disabled')
+                rule_options.append('disabled')
             if rule.secure_connect:
-                options.append('secure-connect')
+                rule_options.append('secure-connect')
             if rule.stateless:
-                options.append('stateless')
+                rule_options.append('stateless')
             if rule.machine_auth:
-                options.append('machine_auth')
+                rule_options.append('machine_auth')
 
             data = {'ruleset': ruleset.name, 'ruleset_href': ruleset.href, 'scope': ruleset.scopes.get_all_scopes_str(),
-                    'consumers': rule.consumers.members_to_str(),
-                    'providers': rule.providers.members_to_str(),
-                    'services': rule.services.members_to_str(),
-                    'options': pylo.string_list_to_text(options)}
+                    'consumers': rule.consumers.members_to_str("\n"),
+                    'providers': rule.providers.members_to_str("\n"),
+                    'services': rule.services.members_to_str("\n"),
+                    'options': pylo.string_list_to_text(rule_options, "\n")}
             if rule.is_extra_scope():
                 data['type'] = 'intra'
             else:
                 data['type'] = 'extra'
-            csv_report.add_line_from_object(data)
+            sheet.add_line_from_object(data)
 
     if output_file_format == "csv":
         print(" * Writing export file '{}' ... ".format(output_file_name), end='', flush=True)
-        csv_report.write_to_csv(output_file_name)
+        sheet.write_to_csv(output_file_name)
         print("DONE")
     elif output_file_format == "excel":
         print(" * Writing export file '{}' ... ".format(output_file_name), end='', flush=True)
