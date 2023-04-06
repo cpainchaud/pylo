@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import Dict
+from typing import Dict, List
 
 import pylo
 from .misc import make_filename_with_timestamp
@@ -15,8 +15,13 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 
 def __main(options: Dict, org: pylo.Organization, **kwargs):
-    csv_report_headers = ['ruleset', 'scope', 'type', 'consumers', 'providers', 'services', 'options',
-                          'ruleset_href',
+    csv_report_headers: List[pylo.ExcelHeader|str] = [{'name':'ruleset', 'max_width': 40},
+                                                      {'name':'scope', 'max_width': 50},
+                                                      {'name':'type', 'max_width': 10},
+                                                      {'name':'consumers', 'max_width': 80},
+                                                      {'name':'providers', 'max_width': 80},
+                                                      {'name':'services', 'max_width': 30},
+                                                      'options', 'ruleset_href'
                           ]
 
     output_file_format = options.get('format')
