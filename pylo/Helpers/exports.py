@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, TypedDict
+from typing import Dict, Any, List, Optional, TypedDict, NotRequired
 
 try:
     import xlsxwriter
@@ -17,8 +17,9 @@ import os
 
 class ExcelHeader(TypedDict):
     name: str
-    nice_name: Optional[str]
-    max_width: Optional[int]
+    nice_name: NotRequired[str]
+    max_width: NotRequired[int]
+    wrap_text: NotRequired[bool]
 
 
 class ArrayToExport:
