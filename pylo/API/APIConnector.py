@@ -8,7 +8,8 @@ from pathlib import Path
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
-    VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure
+    VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure, \
+    WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure
 
 try:
     import requests as requests
@@ -864,9 +865,9 @@ class APIConnector:
 
     def objects_rule_create(self, ruleset_href: str,
                             intra_scope: bool,
-                            consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                            providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                            services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                            consumers: List[Union[WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, 'pylo.IPList', 'pylo.Label', 'pylo.LabelGroup']],
+                            providers: List[Union[WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, 'pylo.IPList', 'pylo.Label', 'pylo.LabelGroup']],
+                            services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', RuleDirectServiceReferenceObjectJsonStructure]],
                             description='', machine_auth=False, secure_connect=False, enabled=True,
                             stateless=False, consuming_security_principals=[],
                             resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
