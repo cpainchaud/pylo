@@ -80,6 +80,9 @@ def run(forced_command_name: Optional[str] = None):
         print(" * Loading objects from cached PCE '{}' data... ".format(hostname), end="", flush=True)
         org = pylo.Organization.get_from_cache_file(hostname)
         print("OK!")
+        connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=False)
+        if connector is not None:
+            org.connector = connector
     else:
         print(" * Looking for PCE/profile '{}' credentials... ".format(hostname), end="", flush=True)
         connector = pylo.APIConnector.create_from_credentials_in_file(hostname, request_if_missing=True)
