@@ -1,10 +1,10 @@
-from typing import Optional, Union, Dict, Set, Iterable
-import pylo
+from hashlib import md5
+import random
+from typing import Union, Set, Iterable
+# PYLO imports
 from pylo import log
 from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure
 from .Helpers import *
-import random
-from hashlib import md5
 
 label_type_loc = 'loc'
 label_type_env = 'env'
