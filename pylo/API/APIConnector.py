@@ -410,7 +410,6 @@ class APIConnector:
 
         for i in range(threads_count):
             worker = Thread(target=get_objects, args=(thread_queue, i))
-            worker.setDaemon(True)
             worker.daemon = True
             worker.start()
 
