@@ -866,10 +866,13 @@ class APIConnector:
                             providers: List[Union[WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, 'pylo.IPList', 'pylo.Label', 'pylo.LabelGroup']],
                             services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', RuleDirectServiceReferenceObjectJsonStructure]],
                             description='', machine_auth=False, secure_connect=False, enabled=True,
-                            stateless=False, consuming_security_principals=[],
+                            stateless=False, consuming_security_principals=None,
                             resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
                             resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) \
             -> Dict[str, Any]:
+
+        if consuming_security_principals is None:
+            consuming_security_principals = []
 
         resolve_consumers = []
         if resolve_consumers_as_virtual_services:
