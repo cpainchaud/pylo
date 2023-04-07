@@ -1,9 +1,6 @@
 import json
 import time
-import os
 import getpass
-from enum import Enum
-from pathlib import Path
 
 from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
@@ -20,7 +17,7 @@ from threading import Thread
 from queue import Queue
 import pylo
 from pylo import log
-from typing import Union, Dict, Any, List, Optional, Type, Literal
+from typing import Union, Dict, Any, List, Optional, Literal
 
 requests.packages.urllib3.disable_warnings()
 
@@ -305,7 +302,7 @@ class APIConnector:
 
     def get_objects_count_by_type(self, object_type: str) -> int:
 
-        def extract_count(headers: requests.Response):
+        def extract_count(headers: requests.Response.headers):
             count = headers.get('x-total-count')
             if count is None:
                 raise pylo.PyloApiEx('API didnt provide field "x-total-count"')
