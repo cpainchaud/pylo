@@ -303,7 +303,7 @@ class APIConnector:
 
     def get_objects_count_by_type(self, object_type: str) -> int:
 
-        def extract_count(headers: requests.Response.headers):
+        def extract_count(headers):
             count = headers.get('x-total-count')
             if count is None:
                 raise pylo.PyloApiEx('API didnt provide field "x-total-count"')
