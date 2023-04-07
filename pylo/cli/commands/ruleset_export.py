@@ -59,7 +59,7 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
                 if scope.is_all_all_all():
                     scope_str += "*ALL LABELS*"
                     continue
-                for label in scope.labels:
+                for label in scope.labels_sorted_by_type:
                     scope_str += f"{label.name}\n"
             # remove last \n from scope
             if scope_str[-1] == "\n":
