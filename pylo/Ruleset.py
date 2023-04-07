@@ -77,6 +77,13 @@ class RulesetScopeEntry:
         return list(self._labels.values())
 
     @property
+    def labels_sorted_by_type(self) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return a copy of the labels list sorted by type which are defined by the LabelStore
+        """
+        return pylo.LabelStore.Utils.list_sort_by_type(self._labels.values(), self.owner.owner.owner.owner.LabelStore.label_types)
+
+    @property
     def labels_by_type(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
         """
         Return a copy of the labels dict keyed by label type
