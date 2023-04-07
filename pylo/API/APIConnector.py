@@ -6,7 +6,8 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
     VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure, \
-    WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure
+    WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
+    RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure
 
 try:
     import requests as requests
@@ -568,7 +569,7 @@ class APIConnector:
         return None
 
     def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None,
-                             async_mode=True):
+                             async_mode=True) -> List[WorkloadObjectJsonStructure]:
         path = '/workloads'
         data = {}
 
@@ -801,7 +802,7 @@ class APIConnector:
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
-    def objects_ruleset_get(self, max_results: int = None, async_mode=True):
+    def objects_ruleset_get(self, max_results: int = None, async_mode=True) -> List[RulesetObjectJsonStructure]:
         path = '/sec_policy/draft/rule_sets'
         data = {}
 
@@ -927,7 +928,7 @@ class APIConnector:
 
         return self.do_post_call(path, json_arguments=data, json_output_expected=True, include_org_id=False)
 
-    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True) -> Dict[str, Any]:
+    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True) -> List[SecurityPrincipalObjectJsonStructure]:
         path = '/security_principals'
         data = {}
 
