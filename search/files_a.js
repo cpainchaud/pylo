@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['organization_2epy_0',['Organization.py',['../_organization_8py.html',1,'']]]
+  ['nativeparsers_2epy_0',['NativeParsers.py',['../_native_parsers_8py.html',1,'']]]
 ];

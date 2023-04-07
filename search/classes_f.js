@@ -1,14 +1,13 @@
 var searchData=
 [
-  ['workload_0',['Workload',['../classpylo_1_1_workload_1_1_workload.html',1,'pylo::Workload']]],
-  ['workloadapiupdatestack_1',['WorkloadApiUpdateStack',['../classpylo_1_1_workload_1_1_workload_api_update_stack.html',1,'pylo::Workload']]],
-  ['workloadfilter_2',['WorkloadFilter',['../classpylo_1_1_query_1_1_workload_filter.html',1,'pylo::Query']]],
-  ['workloadinterface_3',['WorkloadInterface',['../classpylo_1_1_workload_1_1_workload_interface.html',1,'pylo::Workload']]],
-  ['workloadmultideletetracker_4',['WorkloadMultiDeleteTracker',['../classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_workload_multi_delete_tracker.html',1,'pylo::API::APIConnector::APIConnector']]],
-  ['workloadobjectjsonstructure_5',['WorkloadObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
-  ['workloadstore_6',['WorkloadStore',['../classpylo_1_1_workload_store_1_1_workload_store.html',1,'pylo::WorkloadStore']]],
-  ['workloadtoiplistquery_7',['WorkloadToIPListQuery',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_i_p_list_query.html',1,'pylo::API::Explorer::RuleCoverageQueryManager']]],
-  ['workloadtoiplistquerymanager_8',['WorkloadToIPListQueryManager',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_i_p_list_query_manager.html',1,'pylo::API::Explorer::RuleCoverageQueryManager']]],
-  ['workloadtoworkloadquery_9',['WorkloadToWorkloadQuery',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query.html',1,'pylo::API::Explorer::RuleCoverageQueryManager']]],
-  ['workloadtoworkloadquerymanager_10',['WorkloadToWorkloadQueryManager',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager_1_1_workload_to_workload_query_manager.html',1,'pylo::API::Explorer::RuleCoverageQueryManager']]]
+  ['securityprincipal_0',['SecurityPrincipal',['../classpylo_1_1_security_principal_1_1_security_principal.html',1,'pylo::SecurityPrincipal']]],
+  ['securityprincipalobjectjsonstructure_1',['SecurityPrincipalObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_security_principal_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['securityprincipalstore_2',['SecurityPrincipalStore',['../classpylo_1_1_security_principal_1_1_security_principal_store.html',1,'pylo::SecurityPrincipal']]],
+  ['service_3',['Service',['../classpylo_1_1_service_1_1_service.html',1,'pylo::Service']]],
+  ['serviceentry_4',['ServiceEntry',['../classpylo_1_1_service_1_1_service_entry.html',1,'pylo::Service']]],
+  ['serviceobjectjsonstructure_5',['ServiceObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_service_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['servicestatus_6',['ServiceStatus',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health_1_1_cluster_health_node_1_1_service_status.html',1,'pylo::API::ClusterHealth::ClusterHealth::ClusterHealthNode']]],
+  ['servicestore_7',['ServiceStore',['../classpylo_1_1_service_1_1_service_store.html',1,'pylo::Service']]],
+  ['sheet_8',['Sheet',['../classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel_1_1_sheet.html',1,'pylo::Helpers::exports::ArraysToExcel']]],
+  ['softwareversion_9',['SoftwareVersion',['../classpylo_1_1_software_version_1_1_software_version.html',1,'pylo::SoftwareVersion']]]
 ];

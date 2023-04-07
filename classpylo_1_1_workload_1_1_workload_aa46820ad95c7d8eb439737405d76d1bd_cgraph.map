@@ -1,5 +1,8 @@
 <map id="pylo.Workload.Workload.api_update_labels" name="pylo.Workload.Workload.api_update_labels">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,184,45"/>
-<area shape="rect" id="node2" href="$classpylo_1_1_workload_1_1_workload.html#a25a7ea5fe8cfd06fb79da66f5057db1c" title=" " alt="" coords="232,5,433,45"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_reference_tracker_1_1_reference_tracker.html#ae3f3a71b10cd8e448d14ca7b6cbf37a3" title=" " alt="" coords="481,5,695,45"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,99,184,139"/>
+<area shape="rect" id="node2" href="$classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#afdac2ccbfa6a11ca24bb5578c0cadc4f" title=" " alt="" coords="500,5,676,45"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a1ba89940db9bef8d53b7ce7dedbe29eb" title=" " alt="" coords="500,69,676,109"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24" title=" " alt="" coords="500,197,676,237"/>
+<area shape="rect" id="node5" href="$classpylo_1_1_workload_1_1_workload.html#a25a7ea5fe8cfd06fb79da66f5057db1c" title=" " alt="" coords="232,127,433,167"/>
+<area shape="rect" id="node6" href="$classpylo_1_1_reference_tracker_1_1_reference_tracker.html#ae3f3a71b10cd8e448d14ca7b6cbf37a3" title=" " alt="" coords="481,133,695,173"/>
 </map>

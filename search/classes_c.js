@@ -1,13 +1,12 @@
 var searchData=
 [
-  ['securityprincipal_0',['SecurityPrincipal',['../classpylo_1_1_security_principal_1_1_security_principal.html',1,'pylo::SecurityPrincipal']]],
-  ['securityprincipalobjectjsonstructure_1',['SecurityPrincipalObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_security_principal_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
-  ['securityprincipalstore_2',['SecurityPrincipalStore',['../classpylo_1_1_security_principal_1_1_security_principal_store.html',1,'pylo::SecurityPrincipal']]],
-  ['service_3',['Service',['../classpylo_1_1_service_1_1_service.html',1,'pylo::Service']]],
-  ['serviceentry_4',['ServiceEntry',['../classpylo_1_1_service_1_1_service_entry.html',1,'pylo::Service']]],
-  ['serviceobjectjsonstructure_5',['ServiceObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_service_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
-  ['servicestatus_6',['ServiceStatus',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health_1_1_cluster_health_node_1_1_service_status.html',1,'pylo::API::ClusterHealth::ClusterHealth::ClusterHealthNode']]],
-  ['servicestore_7',['ServiceStore',['../classpylo_1_1_service_1_1_service_store.html',1,'pylo::Service']]],
-  ['sheet_8',['Sheet',['../classpylo_1_1_helpers_1_1exports_1_1_arrays_to_excel_1_1_sheet.html',1,'pylo::Helpers::exports::ArraysToExcel']]],
-  ['softwareversion_9',['SoftwareVersion',['../classpylo_1_1_software_version_1_1_software_version.html',1,'pylo::SoftwareVersion']]]
+  ['pathable_0',['Pathable',['../classpylo_1_1_reference_tracker_1_1_pathable.html',1,'pylo::ReferenceTracker']]],
+  ['pcecachefilejsonstructure_1',['PCECacheFileJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_p_c_e_cache_file_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['pceobjectsjsonstructure_2',['PCEObjectsJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_p_c_e_objects_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['portmap_3',['PortMap',['../classpylo_1_1_service_1_1_port_map.html',1,'pylo::Service']]],
+  ['pyloapiex_4',['PyloApiEx',['../classpylo_1_1_exception_1_1_pylo_api_ex.html',1,'pylo::Exception']]],
+  ['pyloapitoomanyrequestsex_5',['PyloApiTooManyRequestsEx',['../classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html',1,'pylo::Exception']]],
+  ['pyloapiunexpectedsyntax_6',['PyloApiUnexpectedSyntax',['../classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html',1,'pylo::Exception']]],
+  ['pyloex_7',['PyloEx',['../classpylo_1_1_exception_1_1_pylo_ex.html',1,'pylo::Exception']]],
+  ['pyloobjectnotfound_8',['PyloObjectNotFound',['../classpylo_1_1_exception_1_1_pylo_object_not_found.html',1,'pylo::Exception']]]
 ];

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['explorerfiltersetv1_0',['ExplorerFilterSetV1',['../classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_explorer_filter_set_v1.html',1,'pylo::API::APIConnector::APIConnector']]],
-  ['explorerresult_1',['ExplorerResult',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1_1_1_explorer_result.html',1,'pylo::API::Explorer::ExplorerResultSetV1']]],
-  ['explorerresultsetv1_2',['ExplorerResultSetV1',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1.html',1,'pylo::API::Explorer']]],
-  ['extracolumn_3',['ExtraColumn',['../classpylo_1_1cli_1_1commands_1_1workload__export_1_1_extra_column.html',1,'pylo::cli::commands::workload_export']]]
+  ['directserviceinrule_0',['DirectServiceInRule',['../classpylo_1_1_rule_1_1_direct_service_in_rule.html',1,'pylo::Rule']]],
+  ['duplicatedrecord_1',['DuplicatedRecord',['../classpylo_1_1cli_1_1commands_1_1ven__duplicate__remover_1_1_duplicate_record_manager_1_1_duplicated_record.html',1,'pylo::cli::commands::ven_duplicate_remover::DuplicateRecordManager']]],
+  ['duplicaterecordmanager_2',['DuplicateRecordManager',['../classpylo_1_1cli_1_1commands_1_1ven__duplicate__remover_1_1_duplicate_record_manager.html',1,'pylo::cli::commands::ven_duplicate_remover']]]
 ];

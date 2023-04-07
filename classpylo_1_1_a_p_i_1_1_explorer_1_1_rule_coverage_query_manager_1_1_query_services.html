@@ -105,13 +105,13 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  478</span>        <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">  479</span>            self.service_hash_to_index: Dict[str, int] = {}</div>
-<div class="line"><span class="lineno">  480</span>            self.services_array: List[Dict] = []</div>
-<div class="line"><span class="lineno">  481</span>            self.service_index_to_log_ids: Dict[int, List[int]] = {}</div>
-<div class="line"><span class="lineno">  482</span>            self.service_index_policy_coverage: Dict[int, List[str]] = {} <span class="comment"># for a service ID (used as key) returns a list of matching rules HREF</span></div>
-<div class="line"><span class="lineno">  483</span>            self.service_index_to_boundary_policy_coverage: Dict[int, List[str]] = {} <span class="comment"># for a service ID (used as key) returns a list of matching boundary rules HREF</span></div>
-<div class="line"><span class="lineno">  484</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  352</span>        <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">  353</span>            self.service_hash_to_index: Dict[str, int] = {}</div>
+<div class="line"><span class="lineno">  354</span>            self.services_array: List[Dict] = []</div>
+<div class="line"><span class="lineno">  355</span>            self.service_index_to_log_ids: Dict[int, List[int]] = {}</div>
+<div class="line"><span class="lineno">  356</span>            self.service_index_policy_coverage: Dict[int, List[str]] = {} <span class="comment"># for a service ID (used as key) returns a list of matching rules HREF</span></div>
+<div class="line"><span class="lineno">  357</span>            self.service_index_to_boundary_policy_coverage: Dict[int, List[str]] = {} <span class="comment"># for a service ID (used as key) returns a list of matching boundary rules HREF</span></div>
+<div class="line"><span class="lineno">  358</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -147,25 +147,25 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  485</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
-<div class="line"><span class="lineno">  486</span>            service_hash = <span class="stringliteral">&#39;&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;proto&#39;</span>, <span class="stringliteral">&#39;no_proto&#39;</span>)) + <span class="stringliteral">&#39;/&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;port&#39;</span>, <span class="stringliteral">&#39;no_port&#39;</span>)) + <span class="stringliteral">&#39;/&#39;</span> \</div>
-<div class="line"><span class="lineno">  487</span>                           + <span class="stringliteral">&#39;/&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;process_name&#39;</span>, <span class="stringliteral">&#39;no_process_name&#39;</span>)) \</div>
-<div class="line"><span class="lineno">  488</span>                           + <span class="stringliteral">&#39;/&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;windows_service_name&#39;</span>, <span class="stringliteral">&#39;no_windows_service_name&#39;</span>))</div>
-<div class="line"><span class="lineno">  489</span>                            <span class="comment">#  username is not allows in rule_coverage</span></div>
-<div class="line"><span class="lineno">  490</span> </div>
-<div class="line"><span class="lineno">  491</span>            <span class="comment"># print(service_hash)</span></div>
-<div class="line"><span class="lineno">  492</span> </div>
-<div class="line"><span class="lineno">  493</span>            <span class="keywordflow">if</span> service_hash <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_hash_to_index:</div>
-<div class="line"><span class="lineno">  494</span>                self.service_hash_to_index[service_hash] = len(self.services_array)</div>
-<div class="line"><span class="lineno">  495</span>                self.services_array.append(service_record)</div>
-<div class="line"><span class="lineno">  496</span> </div>
-<div class="line"><span class="lineno">  497</span>            service_index = self.service_hash_to_index[service_hash]</div>
-<div class="line"><span class="lineno">  498</span>            <span class="keywordflow">if</span> service_index <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids:</div>
-<div class="line"><span class="lineno">  499</span>                self.service_index_to_log_ids[service_index] = []</div>
-<div class="line"><span class="lineno">  500</span> </div>
-<div class="line"><span class="lineno">  501</span>            <span class="keywordflow">if</span> log_id <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids[service_index]:</div>
-<div class="line"><span class="lineno">  502</span>                self.service_index_to_log_ids[service_index].append(log_id)</div>
-<div class="line"><span class="lineno">  503</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  359</span>        <span class="keyword">def </span>add_service(self, service_record: Dict, log_id: int):</div>
+<div class="line"><span class="lineno">  360</span>            service_hash = <span class="stringliteral">&#39;&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;proto&#39;</span>, <span class="stringliteral">&#39;no_proto&#39;</span>)) + <span class="stringliteral">&#39;/&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;port&#39;</span>, <span class="stringliteral">&#39;no_port&#39;</span>)) + <span class="stringliteral">&#39;/&#39;</span> \</div>
+<div class="line"><span class="lineno">  361</span>                           + <span class="stringliteral">&#39;/&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;process_name&#39;</span>, <span class="stringliteral">&#39;no_process_name&#39;</span>)) \</div>
+<div class="line"><span class="lineno">  362</span>                           + <span class="stringliteral">&#39;/&#39;</span> + str(service_record.get(<span class="stringliteral">&#39;windows_service_name&#39;</span>, <span class="stringliteral">&#39;no_windows_service_name&#39;</span>))</div>
+<div class="line"><span class="lineno">  363</span>                            <span class="comment">#  username is not allows in rule_coverage</span></div>
+<div class="line"><span class="lineno">  364</span> </div>
+<div class="line"><span class="lineno">  365</span>            <span class="comment"># print(service_hash)</span></div>
+<div class="line"><span class="lineno">  366</span> </div>
+<div class="line"><span class="lineno">  367</span>            <span class="keywordflow">if</span> service_hash <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_hash_to_index:</div>
+<div class="line"><span class="lineno">  368</span>                self.service_hash_to_index[service_hash] = len(self.services_array)</div>
+<div class="line"><span class="lineno">  369</span>                self.services_array.append(service_record)</div>
+<div class="line"><span class="lineno">  370</span> </div>
+<div class="line"><span class="lineno">  371</span>            service_index = self.service_hash_to_index[service_hash]</div>
+<div class="line"><span class="lineno">  372</span>            <span class="keywordflow">if</span> service_index <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids:</div>
+<div class="line"><span class="lineno">  373</span>                self.service_index_to_log_ids[service_index] = []</div>
+<div class="line"><span class="lineno">  374</span> </div>
+<div class="line"><span class="lineno">  375</span>            <span class="keywordflow">if</span> log_id <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.service_index_to_log_ids[service_index]:</div>
+<div class="line"><span class="lineno">  376</span>                self.service_index_to_log_ids[service_index].append(log_id)</div>
+<div class="line"><span class="lineno">  377</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -194,27 +194,27 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  504</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[Literal[<span class="stringliteral">&#39;allowed&#39;</span>, <span class="stringliteral">&#39;blocked&#39;</span>, <span class="stringliteral">&#39;blocked_by_boundary&#39;</span>]]:</div>
-<div class="line"><span class="lineno">  505</span>            policy_decision = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  506</span>            found_boundary_block = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  507</span> </div>
-<div class="line"><span class="lineno">  508</span>            <span class="keywordflow">for</span> service_id, list_of_log_ids <span class="keywordflow">in</span> self.service_index_to_log_ids.items():</div>
-<div class="line"><span class="lineno">  509</span>                <span class="keywordflow">if</span> log_id <span class="keywordflow">in</span> list_of_log_ids:</div>
-<div class="line"><span class="lineno">  510</span>                    policy_decision = <span class="stringliteral">&#39;blocked&#39;</span></div>
-<div class="line"><span class="lineno">  511</span>                    policy_coverage = self.service_index_policy_coverage[service_id]</div>
-<div class="line"><span class="lineno">  512</span>                    <span class="keywordflow">if</span> len(policy_coverage) &gt; 0:</div>
-<div class="line"><span class="lineno">  513</span>                        <span class="keywordflow">return</span> <span class="stringliteral">&#39;allowed&#39;</span></div>
-<div class="line"><span class="lineno">  514</span> </div>
-<div class="line"><span class="lineno">  515</span>                    boundary_policy_coverage = self.service_index_to_boundary_policy_coverage[service_id]</div>
-<div class="line"><span class="lineno">  516</span>                    <span class="keywordflow">if</span> len(boundary_policy_coverage) &gt; 0:</div>
-<div class="line"><span class="lineno">  517</span>                        found_boundary_block = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  518</span> </div>
-<div class="line"><span class="lineno">  519</span>            <span class="keywordflow">if</span> found_boundary_block:</div>
-<div class="line"><span class="lineno">  520</span>                <span class="keywordflow">return</span> <span class="stringliteral">&#39;blocked_by_boundary&#39;</span></div>
-<div class="line"><span class="lineno">  521</span> </div>
-<div class="line"><span class="lineno">  522</span>            <span class="keywordflow">return</span> policy_decision</div>
-<div class="line"><span class="lineno">  523</span> </div>
-<div class="line"><span class="lineno">  524</span>    <span class="keyword">class </span>IPListToWorkloadQuery:</div>
+<div class="fragment"><div class="line"><span class="lineno">  378</span>        <span class="keyword">def </span>get_policy_decision_for_log_id(self, log_id: int) -&gt; Optional[Literal[<span class="stringliteral">&#39;allowed&#39;</span>, <span class="stringliteral">&#39;blocked&#39;</span>, <span class="stringliteral">&#39;blocked_by_boundary&#39;</span>]]:</div>
+<div class="line"><span class="lineno">  379</span>            policy_decision = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  380</span>            found_boundary_block = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  381</span> </div>
+<div class="line"><span class="lineno">  382</span>            <span class="keywordflow">for</span> service_id, list_of_log_ids <span class="keywordflow">in</span> self.service_index_to_log_ids.items():</div>
+<div class="line"><span class="lineno">  383</span>                <span class="keywordflow">if</span> log_id <span class="keywordflow">in</span> list_of_log_ids:</div>
+<div class="line"><span class="lineno">  384</span>                    policy_decision = <span class="stringliteral">&#39;blocked&#39;</span></div>
+<div class="line"><span class="lineno">  385</span>                    policy_coverage = self.service_index_policy_coverage[service_id]</div>
+<div class="line"><span class="lineno">  386</span>                    <span class="keywordflow">if</span> len(policy_coverage) &gt; 0:</div>
+<div class="line"><span class="lineno">  387</span>                        <span class="keywordflow">return</span> <span class="stringliteral">&#39;allowed&#39;</span></div>
+<div class="line"><span class="lineno">  388</span> </div>
+<div class="line"><span class="lineno">  389</span>                    boundary_policy_coverage = self.service_index_to_boundary_policy_coverage[service_id]</div>
+<div class="line"><span class="lineno">  390</span>                    <span class="keywordflow">if</span> len(boundary_policy_coverage) &gt; 0:</div>
+<div class="line"><span class="lineno">  391</span>                        found_boundary_block = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  392</span> </div>
+<div class="line"><span class="lineno">  393</span>            <span class="keywordflow">if</span> found_boundary_block:</div>
+<div class="line"><span class="lineno">  394</span>                <span class="keywordflow">return</span> <span class="stringliteral">&#39;blocked_by_boundary&#39;</span></div>
+<div class="line"><span class="lineno">  395</span> </div>
+<div class="line"><span class="lineno">  396</span>            <span class="keywordflow">return</span> policy_decision</div>
+<div class="line"><span class="lineno">  397</span> </div>
+<div class="line"><span class="lineno">  398</span>    <span class="keyword">class </span>ObjectToObjectQuery:</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -224,7 +224,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:05 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

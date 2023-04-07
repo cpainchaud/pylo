@@ -1,11 +1,14 @@
 var searchData=
 [
-  ['pathable_0',['Pathable',['../classpylo_1_1_reference_tracker_1_1_pathable.html',1,'pylo::ReferenceTracker']]],
-  ['pceobjectsjsonstructure_1',['PCEObjectsJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_p_c_e_objects_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
-  ['portmap_2',['PortMap',['../classpylo_1_1_service_1_1_port_map.html',1,'pylo::Service']]],
-  ['pyloapiex_3',['PyloApiEx',['../classpylo_1_1_exception_1_1_pylo_api_ex.html',1,'pylo::Exception']]],
-  ['pyloapitoomanyrequestsex_4',['PyloApiTooManyRequestsEx',['../classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html',1,'pylo::Exception']]],
-  ['pyloapiunexpectedsyntax_5',['PyloApiUnexpectedSyntax',['../classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html',1,'pylo::Exception']]],
-  ['pyloex_6',['PyloEx',['../classpylo_1_1_exception_1_1_pylo_ex.html',1,'pylo::Exception']]],
-  ['pyloobjectnotfound_7',['PyloObjectNotFound',['../classpylo_1_1_exception_1_1_pylo_object_not_found.html',1,'pylo::Exception']]]
+  ['label_0',['Label',['../classpylo_1_1_label_1_1_label.html',1,'pylo::Label']]],
+  ['labelcommon_1',['LabelCommon',['../classpylo_1_1_label_common_1_1_label_common.html',1,'pylo::LabelCommon']]],
+  ['labeldimensionobjectstructure_2',['LabelDimensionObjectStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_label_dimension_object_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['labelgroup_3',['LabelGroup',['../classpylo_1_1_label_group_1_1_label_group.html',1,'pylo::LabelGroup']]],
+  ['labelgroupobjectjsonstructure_4',['LabelGroupObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_label_group_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['labelgroupobjectupdatejsonstructure_5',['LabelGroupObjectUpdateJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_label_group_object_update_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['labelobjectcreationjsonstructure_6',['LabelObjectCreationJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_label_object_creation_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['labelobjectjsonstructure_7',['LabelObjectJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_label_object_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['labelobjectupdatejsonstructure_8',['LabelObjectUpdateJsonStructure',['../classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_label_object_update_json_structure.html',1,'pylo::API::JsonPayloadTypes']]],
+  ['labelparser_9',['LabelParser',['../classpylo_1_1cli_1_1_native_parsers_1_1_label_parser.html',1,'pylo::cli::NativeParsers']]],
+  ['labelstore_10',['LabelStore',['../classpylo_1_1_label_store_1_1_label_store.html',1,'pylo::LabelStore']]]
 ];

@@ -106,12 +106,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af645408ec487dcb83e1cf14995899488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e554feddbfbd06341fda307574aa493"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a2e554feddbfbd06341fda307574aa493">load_from_json</a> (self)</td></tr>
 <tr class="separator:a2e554feddbfbd06341fda307574aa493"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d61e77bc9e341db7b2a2eb98f9dba08"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a8d61e77bc9e341db7b2a2eb98f9dba08">expand_nested_to_array</a> (self)</td></tr>
-<tr class="separator:a8d61e77bc9e341db7b2a2eb98f9dba08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f108bfeaa42293f9dcea708a77850a"><td class="memItemLeft" align="right" valign="top">Dict[str, '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>']&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#af9f108bfeaa42293f9dcea708a77850a">expand_nested_to_dict_by_href</a> (self)</td></tr>
+<tr class="separator:af9f108bfeaa42293f9dcea708a77850a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45397374cefd8ed0e0ee64a6ff93c96d"><td class="memItemLeft" align="right" valign="top">List[ '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>']&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a45397374cefd8ed0e0ee64a6ff93c96d">expand_nested_to_array</a> (self)</td></tr>
+<tr class="separator:a45397374cefd8ed0e0ee64a6ff93c96d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc20df18c6059e7e86d9c85f972a858e"><td class="memItemLeft" align="right" valign="top">Dict&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#adc20df18c6059e7e86d9c85f972a858e">get_api_reference_json</a> (self)</td></tr>
 <tr class="separator:adc20df18c6059e7e86d9c85f972a858e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80315799de1047c353e4cf0389fdb2e3"><td class="memItemLeft" align="right" valign="top">Dict[str, '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>']&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a80315799de1047c353e4cf0389fdb2e3">get_members</a> (self)</td></tr>
 <tr class="separator:a80315799de1047c353e4cf0389fdb2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeef0b6a2080d307fe93cd64858e7b31f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#aeef0b6a2080d307fe93cd64858e7b31f">get_members_count</a> (self)</td></tr>
+<tr class="separator:aeef0b6a2080d307fe93cd64858e7b31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d2f7cba8c8eca3a07f4f76ee28a4cda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a2d2f7cba8c8eca3a07f4f76ee28a4cda">has_member_with_href</a> (self, str href)</td></tr>
 <tr class="separator:a2d2f7cba8c8eca3a07f4f76ee28a4cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a206d5c7044b69e521ff26e3e21728448"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_label_group_1_1_label_group.html#a206d5c7044b69e521ff26e3e21728448">has_member_object</a> (self, '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>' label)</td></tr>
@@ -212,21 +216,21 @@ Additional Inherited Members</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   11</span>    <span class="keyword">def </span>__init__(self, name: str, href: str, label_type: str, owner):</div>
 <div class="line"><span class="lineno">   12</span>        pylo.ReferenceTracker.__init__(self)</div>
 <div class="line"><span class="lineno">   13</span>        pylo.LabelCommon.__init__(self, name, href, label_type, owner)</div>
-<div class="line"><span class="lineno">   14</span>        self._members: Dict[str, Union[<span class="stringliteral">&#39;pylo.Label&#39;</span>, <span class="stringliteral">&#39;pylo.LabelGroup&#39;</span>]] = {}</div>
+<div class="line"><span class="lineno">   14</span>        self._members_by_href: Dict[str, Union[<span class="stringliteral">&#39;pylo.Label&#39;</span>, <span class="stringliteral">&#39;pylo.LabelGroup&#39;</span>]] = {}</div>
 <div class="line"><span class="lineno">   15</span>        self.raw_json: Optional[LabelGroupObjectJsonStructure] = <span class="keywordtype">None</span></div>
 <div class="line"><span class="lineno">   16</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a8d61e77bc9e341db7b2a2eb98f9dba08" name="a8d61e77bc9e341db7b2a2eb98f9dba08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d61e77bc9e341db7b2a2eb98f9dba08">&#9670;&#160;</a></span>expand_nested_to_array()</h2>
+<a id="a45397374cefd8ed0e0ee64a6ff93c96d" name="a45397374cefd8ed0e0ee64a6ff93c96d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45397374cefd8ed0e0ee64a6ff93c96d">&#9670;&#160;</a></span>expand_nested_to_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def pylo.LabelGroup.LabelGroup.expand_nested_to_array </td>
+          <td class="memname"> List['<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>'] pylo.LabelGroup.LabelGroup.expand_nested_to_array </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -234,18 +238,48 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   28</span>    <span class="keyword">def </span>expand_nested_to_array(self):</div>
-<div class="line"><span class="lineno">   29</span>        results = {}</div>
-<div class="line"><span class="lineno">   30</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._members.values():</div>
-<div class="line"><span class="lineno">   31</span>            <span class="keywordflow">if</span> isinstance(label, <a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>):</div>
-<div class="line"><span class="lineno">   32</span>                results[label] = label</div>
-<div class="line"><span class="lineno">   33</span>            <span class="keywordflow">elif</span> isinstance(label, <a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a>):</div>
-<div class="line"><span class="lineno">   34</span>                <span class="keywordflow">for</span> nested_label <span class="keywordflow">in</span> label.expand_nested_to_array():</div>
-<div class="line"><span class="lineno">   35</span>                    results[nested_label] = nested_label</div>
-<div class="line"><span class="lineno">   36</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">   37</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unsupported object type {}&quot;</span>.format(type(label)))</div>
-<div class="line"><span class="lineno">   38</span>        <span class="keywordflow">return</span> list(results.values())</div>
-<div class="line"><span class="lineno">   39</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>    <span class="keyword">def </span>expand_nested_to_array(self) -&gt; List[&#39;pylo.Label&#39;]:</div>
+<div class="line"><span class="lineno">   43</span>        <span class="keywordflow">return</span> list(self.expand_nested_to_dict_by_href().values())</div>
+<div class="line"><span class="lineno">   44</span> </div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classpylo_1_1_label_group_1_1_label_group_a45397374cefd8ed0e0ee64a6ff93c96d_cgraph.png" border="0" usemap="#aclasspylo_1_1_label_group_1_1_label_group_a45397374cefd8ed0e0ee64a6ff93c96d_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_label_group_1_1_label_group_a45397374cefd8ed0e0ee64a6ff93c96d_cgraph" id="aclasspylo_1_1_label_group_1_1_label_group_a45397374cefd8ed0e0ee64a6ff93c96d_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,235,45"/>
+<area shape="rect" href="classpylo_1_1_label_group_1_1_label_group.html#af9f108bfeaa42293f9dcea708a77850a" title=" " alt="" coords="283,5,512,45"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="af9f108bfeaa42293f9dcea708a77850a" name="af9f108bfeaa42293f9dcea708a77850a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9f108bfeaa42293f9dcea708a77850a">&#9670;&#160;</a></span>expand_nested_to_dict_by_href()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Dict[str, '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>'] pylo.LabelGroup.LabelGroup.expand_nested_to_dict_by_href </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">   30</span>    <span class="keyword">def </span>expand_nested_to_dict_by_href(self) -&gt; Dict[str, &#39;pylo.Label&#39;]:</div>
+<div class="line"><span class="lineno">   31</span>        results = {}</div>
+<div class="line"><span class="lineno">   32</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._members_by_href.values():</div>
+<div class="line"><span class="lineno">   33</span>            <span class="keywordflow">if</span> isinstance(label, <a class="code hl_class" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>):</div>
+<div class="line"><span class="lineno">   34</span>                results[label.href] = label</div>
+<div class="line"><span class="lineno">   35</span>            <span class="keywordflow">elif</span> isinstance(label, <a class="code hl_class" href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup</a>):</div>
+<div class="line"><span class="lineno">   36</span>                <span class="keywordflow">for</span> nested_label <span class="keywordflow">in</span> label.expand_nested_to_dict_by_href().values():</div>
+<div class="line"><span class="lineno">   37</span>                    results[nested_label.href] = nested_label</div>
+<div class="line"><span class="lineno">   38</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">   39</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unsupported object type {}&quot;</span>.format(type(label)))</div>
+<div class="line"><span class="lineno">   40</span>        <span class="keywordflow">return</span> results</div>
+<div class="line"><span class="lineno">   41</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 <div class="ttc" id="aclasspylo_1_1_label_1_1_label_html"><div class="ttname"><a href="classpylo_1_1_label_1_1_label.html">pylo.Label.Label</a></div><div class="ttdef"><b>Definition:</b> Label.py:6</div></div>
 <div class="ttc" id="aclasspylo_1_1_label_group_1_1_label_group_html"><div class="ttname"><a href="classpylo_1_1_label_group_1_1_label_group.html">pylo.LabelGroup.LabelGroup</a></div><div class="ttdef"><b>Definition:</b> LabelGroup.py:9</div></div>
@@ -267,9 +301,9 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   40</span>    <span class="keyword">def </span>get_api_reference_json(self) -&gt; Dict:</div>
-<div class="line"><span class="lineno">   41</span>        <span class="keywordflow">return</span> {<span class="stringliteral">&#39;label_group&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.href}}</div>
-<div class="line"><span class="lineno">   42</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>    <span class="keyword">def </span>get_api_reference_json(self) -&gt; Dict:</div>
+<div class="line"><span class="lineno">   46</span>        <span class="keywordflow">return</span> {<span class="stringliteral">&#39;label_group&#39;</span>: {<span class="stringliteral">&#39;href&#39;</span>: self.href}}</div>
+<div class="line"><span class="lineno">   47</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -288,12 +322,33 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   43</span>    <span class="keyword">def </span>get_members(self) -&gt; Dict[str, &#39;pylo.Label&#39;]:</div>
-<div class="line"><span class="lineno">   44</span>        data = {}</div>
-<div class="line"><span class="lineno">   45</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._members.values():</div>
-<div class="line"><span class="lineno">   46</span>            data[label.href] = label</div>
-<div class="line"><span class="lineno">   47</span>        <span class="keywordflow">return</span> data</div>
-<div class="line"><span class="lineno">   48</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>    <span class="keyword">def </span>get_members(self) -&gt; Dict[str, &#39;pylo.Label&#39;]:</div>
+<div class="line"><span class="lineno">   49</span>        data = {}</div>
+<div class="line"><span class="lineno">   50</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._members_by_href.values():</div>
+<div class="line"><span class="lineno">   51</span>            data[label.href] = label</div>
+<div class="line"><span class="lineno">   52</span>        <span class="keywordflow">return</span> data</div>
+<div class="line"><span class="lineno">   53</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeef0b6a2080d307fe93cd64858e7b31f" name="aeef0b6a2080d307fe93cd64858e7b31f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeef0b6a2080d307fe93cd64858e7b31f">&#9670;&#160;</a></span>get_members_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> int pylo.LabelGroup.LabelGroup.get_members_count </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">   54</span>    <span class="keyword">def </span>get_members_count(self) -&gt; int:</div>
+<div class="line"><span class="lineno">   55</span>        <span class="keywordflow">return</span> len(self._members_by_href)</div>
+<div class="line"><span class="lineno">   56</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -322,9 +377,9 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   52</span>    <span class="keyword">def </span>has_member_object(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>) -&gt; bool:</div>
-<div class="line"><span class="lineno">   53</span>        <span class="keywordflow">return</span> label <span class="keywordflow">in</span> self._members.values()</div>
-<div class="line"><span class="lineno">   54</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   60</span>    <span class="keyword">def </span>has_member_object(self, label: <span class="stringliteral">&#39;pylo.Label&#39;</span>) -&gt; bool:</div>
+<div class="line"><span class="lineno">   61</span>        <span class="keywordflow">return</span> label.href <span class="keywordflow">in</span> self._members_by_href</div>
+<div class="line"><span class="lineno">   62</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -353,9 +408,9 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   49</span>    <span class="keyword">def </span>has_member_with_href(self, href: str) -&gt; bool:</div>
-<div class="line"><span class="lineno">   50</span>        <span class="keywordflow">return</span> href <span class="keywordflow">in</span> self._members</div>
-<div class="line"><span class="lineno">   51</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>    <span class="keyword">def </span>has_member_with_href(self, href: str) -&gt; bool:</div>
+<div class="line"><span class="lineno">   58</span>        <span class="keywordflow">return</span> href <span class="keywordflow">in</span> self._members_by_href</div>
+<div class="line"><span class="lineno">   59</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -376,9 +431,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpylo_1_1_label_common_1_1_label_common.html#ab6c30e1263a5a3a0a8b53f675add8b0d">pylo.LabelCommon.LabelCommon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   55</span>    <span class="keyword">def </span>is_group(self) -&gt; bool:</div>
-<div class="line"><span class="lineno">   56</span>        <span class="keywordflow">return</span> <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">   57</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>    <span class="keyword">def </span>is_group(self) -&gt; bool:</div>
+<div class="line"><span class="lineno">   64</span>        <span class="keywordflow">return</span> <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">   65</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -399,9 +454,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpylo_1_1_label_common_1_1_label_common.html#a01ed822857646a479242d025f820e170">pylo.LabelCommon.LabelCommon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   58</span>    <span class="keyword">def </span>is_label(self) -&gt; bool:</div>
-<div class="line"><span class="lineno">   59</span>        <span class="keywordflow">return</span> <span class="keyword">False</span></div>
-<div class="line"><span class="lineno">   60</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   66</span>    <span class="keyword">def </span>is_label(self) -&gt; bool:</div>
+<div class="line"><span class="lineno">   67</span>        <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><span class="lineno">   68</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -425,12 +480,14 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   19</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;labels&#39;</span> <span class="keywordflow">in</span> self.raw_json:</div>
 <div class="line"><span class="lineno">   20</span>            <span class="keywordflow">for</span> href_record <span class="keywordflow">in</span> self.raw_json[<span class="stringliteral">&#39;labels&#39;</span>]:</div>
 <div class="line"><span class="lineno">   21</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">in</span> href_record:</div>
-<div class="line"><span class="lineno">   22</span>                    find_label = self.owner.find_by_href_or_die(href_record[<span class="stringliteral">&#39;href&#39;</span>])</div>
-<div class="line"><span class="lineno">   23</span>                    find_label.add_reference(self)</div>
-<div class="line"><span class="lineno">   24</span>                    self._members[find_label.href] = find_label</div>
-<div class="line"><span class="lineno">   25</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">   26</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;LabelGroup member has no HREF&#39;</span>)</div>
-<div class="line"><span class="lineno">   27</span> </div>
+<div class="line"><span class="lineno">   22</span>                    find_label = self.owner.find_by_href(href_record[<span class="stringliteral">&#39;href&#39;</span>])</div>
+<div class="line"><span class="lineno">   23</span>                    <span class="keywordflow">if</span> find_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   24</span>                        <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(f<span class="stringliteral">&quot;LabelGroup named &#39;{self.name}&#39; has member with href &#39;{href_record[&#39;href&#39;]}&#39; not found&quot;</span>)</div>
+<div class="line"><span class="lineno">   25</span>                    find_label.add_reference(self)</div>
+<div class="line"><span class="lineno">   26</span>                    self._members_by_href[find_label.href] = find_label</div>
+<div class="line"><span class="lineno">   27</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">   28</span>                    <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;LabelGroup member has no HREF&#39;</span>)</div>
+<div class="line"><span class="lineno">   29</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -440,7 +497,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

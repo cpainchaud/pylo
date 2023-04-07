@@ -107,7 +107,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ff22ef7415eed49816b4acbd3f12930"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_exception_1_1_pylo_ex.html#a4ff22ef7415eed49816b4acbd3f12930">__init__</a> (self, arg, json_object=None)</td></tr>
 <tr class="separator:a4ff22ef7415eed49816b4acbd3f12930"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><pre class="fragment">Base class for all Pylo exceptions
+</pre> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4ff22ef7415eed49816b4acbd3f12930" name="a4ff22ef7415eed49816b4acbd3f12930"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4ff22ef7415eed49816b4acbd3f12930">&#9670;&#160;</a></span>__init__()</h2>
 
@@ -141,15 +143,15 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classpylo_1_1_exception_1_1_pylo_object_not_found.html#af691c0efb4a136084b500e8bb60f299c">pylo.Exception.PyloObjectNotFound</a>, <a class="el" href="classpylo_1_1_exception_1_1_pylo_api_ex.html#aae4f0eb31192dc97465ac9096d0b543d">pylo.Exception.PyloApiEx</a>, <a class="el" href="classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html#ad381e6c3856b8d9af7b7b714e1c91abf">pylo.Exception.PyloApiTooManyRequestsEx</a>, and <a class="el" href="classpylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html#ace1f319eb91a056ca90cc9a188c8e956">pylo.Exception.PyloApiUnexpectedSyntax</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">    5</span>    <span class="keyword">def </span>__init__(self, arg, json_object=None):</div>
-<div class="line"><span class="lineno">    6</span>        <span class="keywordflow">if</span> json_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">    7</span>            Exception.__init__(self, arg)</div>
-<div class="line"><span class="lineno">    8</span>            <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">    9</span> </div>
-<div class="line"><span class="lineno">   10</span>        text = <span class="stringliteral">&quot;{}\nJSON output:\n{}&quot;</span>.format(arg, nice_json(json_object))</div>
-<div class="line"><span class="lineno">   11</span>        super().__init__(self, text)</div>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>    <span class="keyword">def </span>__init__(self, arg, json_object=None):</div>
+<div class="line"><span class="lineno">    9</span>        <span class="keywordflow">if</span> json_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   10</span>            Exception.__init__(self, arg)</div>
+<div class="line"><span class="lineno">   11</span>            <span class="keywordflow">return</span></div>
 <div class="line"><span class="lineno">   12</span> </div>
-<div class="line"><span class="lineno">   13</span> </div>
+<div class="line"><span class="lineno">   13</span>        text = <span class="stringliteral">&quot;{}\nJSON output:\n{}&quot;</span>.format(arg, nice_json(json_object))</div>
+<div class="line"><span class="lineno">   14</span>        super().__init__(self, text)</div>
+<div class="line"><span class="lineno">   15</span> </div>
+<div class="line"><span class="lineno">   16</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -167,7 +169,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

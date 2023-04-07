@@ -103,10 +103,8 @@ Collaboration diagram for pylo.Rule.RuleServiceContainer:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a704485d7b2f0e6ce3f45a8f77810cd19"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#a704485d7b2f0e6ce3f45a8f77810cd19">__init__</a> (self, '<a class="el" href="classpylo_1_1_rule_1_1_rule.html">pylo.Rule</a>' <a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#a7c4fd782868aab927a9a68bb60c6fcf6">owner</a>)</td></tr>
 <tr class="separator:a704485d7b2f0e6ce3f45a8f77810cd19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45d18214dfd7dc0d4e5756aab7a22a33"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#a45d18214dfd7dc0d4e5756aab7a22a33">load_from_json_legacy_single</a> (self, data)</td></tr>
-<tr class="separator:a45d18214dfd7dc0d4e5756aab7a22a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b615b54f866ab8df67dc0a47d012139"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#a8b615b54f866ab8df67dc0a47d012139">load_from_json</a> (self, data_list)</td></tr>
-<tr class="separator:a8b615b54f866ab8df67dc0a47d012139"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63d70eecaf03e88a0940c327ccaf0259"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#a63d70eecaf03e88a0940c327ccaf0259">load_from_json</a> (self, List[<a class="el" href="classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_rule_service_reference_object_json_structure.html">RuleServiceReferenceObjectJsonStructure</a>|<a class="el" href="classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_rule_direct_service_reference_object_json_structure.html">RuleDirectServiceReferenceObjectJsonStructure</a>] data_list)</td></tr>
+<tr class="separator:a63d70eecaf03e88a0940c327ccaf0259"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada960a37073b77804db4873803c6334b"><td class="memItemLeft" align="right" valign="top">List[<a class="el" href="classpylo_1_1_rule_1_1_direct_service_in_rule.html">DirectServiceInRule</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#ada960a37073b77804db4873803c6334b">get_direct_services</a> (self)</td></tr>
 <tr class="separator:ada960a37073b77804db4873803c6334b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03805d0f070deb6648b46cff56a5c4b1"><td class="memItemLeft" align="right" valign="top">List[<a class="el" href="classpylo_1_1_service_1_1_service.html">pylo.Service</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_rule_1_1_rule_service_container.html#a03805d0f070deb6648b46cff56a5c4b1">get_services</a> (self)</td></tr>
@@ -156,12 +154,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  244</span>    <span class="keyword">def </span>__init__(self, owner: <span class="stringliteral">&#39;pylo.Rule&#39;</span>):</div>
-<div class="line"><span class="lineno">  245</span>        Referencer.__init__(self)</div>
-<div class="line"><span class="lineno">  246</span>        self.owner = owner</div>
-<div class="line"><span class="lineno">  247</span>        self._items: Dict[Service, Service] = {}</div>
-<div class="line"><span class="lineno">  248</span>        self._direct_services: List[DirectServiceInRule] = []</div>
-<div class="line"><span class="lineno">  249</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  249</span>    <span class="keyword">def </span>__init__(self, owner: <span class="stringliteral">&#39;pylo.Rule&#39;</span>):</div>
+<div class="line"><span class="lineno">  250</span>        Referencer.__init__(self)</div>
+<div class="line"><span class="lineno">  251</span>        self.owner = owner</div>
+<div class="line"><span class="lineno">  252</span>        self._items: Dict[Service, Service] = {}</div>
+<div class="line"><span class="lineno">  253</span>        self._direct_services: List[DirectServiceInRule] = []</div>
+<div class="line"><span class="lineno">  254</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -295,12 +293,12 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">Return a list of services directly included in the Rule
-</pre> <div class="fragment"><div class="line"><span class="lineno">  289</span>    <span class="keyword">def </span>get_direct_services(self) -&gt; List[DirectServiceInRule]:</div>
-<div class="line"><span class="lineno">  290</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  291</span><span class="stringliteral">        Return a list of services directly included </span><span class="keywordflow">in</span> the Rule</div>
-<div class="line"><span class="lineno">  292</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  293</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self._direct_services.copy()</div>
-<div class="line"><span class="lineno">  294</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  284</span>    <span class="keyword">def </span>get_direct_services(self) -&gt; List[DirectServiceInRule]:</div>
+<div class="line"><span class="lineno">  285</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  286</span><span class="stringliteral">        Return a list of services directly included </span><span class="keywordflow">in</span> the Rule</div>
+<div class="line"><span class="lineno">  287</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  288</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self._direct_services.copy()</div>
+<div class="line"><span class="lineno">  289</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -319,14 +317,14 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  295</span>    <span class="keyword">def </span>get_services(self) -&gt; List[pylo.Service]:</div>
-<div class="line"><span class="lineno">  296</span>        <span class="keywordflow">return</span> list(self._items.values())</div>
-<div class="line"><span class="lineno">  297</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  290</span>    <span class="keyword">def </span>get_services(self) -&gt; List[pylo.Service]:</div>
+<div class="line"><span class="lineno">  291</span>        <span class="keywordflow">return</span> list(self._items.values())</div>
+<div class="line"><span class="lineno">  292</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a8b615b54f866ab8df67dc0a47d012139" name="a8b615b54f866ab8df67dc0a47d012139"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b615b54f866ab8df67dc0a47d012139">&#9670;&#160;</a></span>load_from_json()</h2>
+<a id="a63d70eecaf03e88a0940c327ccaf0259" name="a63d70eecaf03e88a0940c327ccaf0259"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63d70eecaf03e88a0940c327ccaf0259">&#9670;&#160;</a></span>load_from_json()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -340,7 +338,7 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">&#160;</td>
+          <td class="paramtype">List[<a class="el" href="classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_rule_service_reference_object_json_structure.html">RuleServiceReferenceObjectJsonStructure</a>|<a class="el" href="classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_rule_direct_service_reference_object_json_structure.html">RuleDirectServiceReferenceObjectJsonStructure</a>]&#160;</td>
           <td class="paramname"><em>data_list</em>&#160;</td>
         </tr>
         <tr>
@@ -350,73 +348,35 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  262</span>    <span class="keyword">def </span>load_from_json(self, data_list):</div>
-<div class="line"><span class="lineno">  263</span>        ss_store = self.owner.owner.owner.owner.ServiceStore  <span class="comment"># make it a local variable for fast lookups</span></div>
-<div class="line"><span class="lineno">  264</span> </div>
-<div class="line"><span class="lineno">  265</span>        <span class="keywordflow">for</span> data <span class="keywordflow">in</span> data_list:</div>
-<div class="line"><span class="lineno">  266</span>            <span class="comment"># print(data)</span></div>
-<div class="line"><span class="lineno">  267</span>            href = data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
-<div class="line"><span class="lineno">  268</span>            <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  269</span>                port = data.get(<span class="stringliteral">&#39;port&#39;</span>)</div>
-<div class="line"><span class="lineno">  270</span>                <span class="keywordflow">if</span> port <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  271</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;unsupported service type in rule: {}&quot;</span>.format(nice_json(data)))</div>
-<div class="line"><span class="lineno">  272</span>                protocol = data.get(<span class="stringliteral">&#39;proto&#39;</span>)</div>
-<div class="line"><span class="lineno">  273</span>                <span class="keywordflow">if</span> protocol <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  274</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Protocol not found in direct service use: {}&quot;</span>.format(nice_json(data)))</div>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>    <span class="keyword">def </span>load_from_json(self, data_list: List[RuleServiceReferenceObjectJsonStructure|RuleDirectServiceReferenceObjectJsonStructure]):</div>
+<div class="line"><span class="lineno">  256</span>        ss_store = self.owner.owner.owner.owner.ServiceStore  <span class="comment"># make it a local variable for fast lookups</span></div>
+<div class="line"><span class="lineno">  257</span> </div>
+<div class="line"><span class="lineno">  258</span>        <span class="keywordflow">for</span> data <span class="keywordflow">in</span> data_list:</div>
+<div class="line"><span class="lineno">  259</span>            <span class="comment"># print(data)</span></div>
+<div class="line"><span class="lineno">  260</span>            href = data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
+<div class="line"><span class="lineno">  261</span>            <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  262</span>                data = typing.cast(RuleDirectServiceReferenceObjectJsonStructure, data)</div>
+<div class="line"><span class="lineno">  263</span>                port = data.get(<span class="stringliteral">&#39;port&#39;</span>)</div>
+<div class="line"><span class="lineno">  264</span>                <span class="keywordflow">if</span> port <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  265</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;unsupported service type in rule: {}&quot;</span>.format(nice_json(data)))</div>
+<div class="line"><span class="lineno">  266</span>                protocol = data.get(<span class="stringliteral">&#39;proto&#39;</span>)</div>
+<div class="line"><span class="lineno">  267</span>                <span class="keywordflow">if</span> protocol <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  268</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Protocol not found in direct service use: {}&quot;</span>.format(nice_json(data)))</div>
+<div class="line"><span class="lineno">  269</span> </div>
+<div class="line"><span class="lineno">  270</span>                to_port = data.get(<span class="stringliteral">&#39;to_port&#39;</span>)</div>
+<div class="line"><span class="lineno">  271</span>                direct_port = DirectServiceInRule(protocol, port, to_port)</div>
+<div class="line"><span class="lineno">  272</span>                self._direct_services.append(direct_port)</div>
+<div class="line"><span class="lineno">  273</span> </div>
+<div class="line"><span class="lineno">  274</span>                <span class="keywordflow">continue</span></div>
 <div class="line"><span class="lineno">  275</span> </div>
-<div class="line"><span class="lineno">  276</span>                to_port = data.get(<span class="stringliteral">&#39;to_port&#39;</span>)</div>
-<div class="line"><span class="lineno">  277</span>                direct_port = DirectServiceInRule(protocol, port, to_port)</div>
-<div class="line"><span class="lineno">  278</span>                self._direct_services.append(direct_port)</div>
-<div class="line"><span class="lineno">  279</span> </div>
-<div class="line"><span class="lineno">  280</span>                <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">  281</span> </div>
-<div class="line"><span class="lineno">  282</span>            find_service = ss_store.itemsByHRef.get(href)</div>
-<div class="line"><span class="lineno">  283</span>            <span class="keywordflow">if</span> find_service <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  284</span>                <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find Service with HREF %s in Rule %s&#39;</span>.format(href, self.owner.href))</div>
-<div class="line"><span class="lineno">  285</span> </div>
-<div class="line"><span class="lineno">  286</span>            self._items[find_service] = find_service</div>
-<div class="line"><span class="lineno">  287</span>            find_service.add_reference(self)</div>
-<div class="line"><span class="lineno">  288</span> </div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a45d18214dfd7dc0d4e5756aab7a22a33" name="a45d18214dfd7dc0d4e5756aab7a22a33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45d18214dfd7dc0d4e5756aab7a22a33">&#9670;&#160;</a></span>load_from_json_legacy_single()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def pylo.Rule.RuleServiceContainer.load_from_json_legacy_single </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  250</span>    <span class="keyword">def </span>load_from_json_legacy_single(self, data):</div>
-<div class="line"><span class="lineno">  251</span>        href = data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
-<div class="line"><span class="lineno">  252</span>        <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  253</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find service HREF&#39;</span>)</div>
-<div class="line"><span class="lineno">  254</span> </div>
-<div class="line"><span class="lineno">  255</span>        find_service = self.owner.owner.owner.owner.ServiceStore.itemsByHRef.get(href)</div>
-<div class="line"><span class="lineno">  256</span>        <span class="keywordflow">if</span> find_service <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  257</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find Service with HREF %s in Rule %s&#39;</span>.format(href, self.owner.href))</div>
-<div class="line"><span class="lineno">  258</span> </div>
-<div class="line"><span class="lineno">  259</span>        self._items[find_service] = find_service</div>
-<div class="line"><span class="lineno">  260</span>        find_service.add_reference(self)</div>
-<div class="line"><span class="lineno">  261</span> </div>
+<div class="line"><span class="lineno">  276</span>            data = typing.cast(RuleServiceReferenceObjectJsonStructure, data)</div>
+<div class="line"><span class="lineno">  277</span>            find_service = ss_store.itemsByHRef.get(href)</div>
+<div class="line"><span class="lineno">  278</span>            <span class="keywordflow">if</span> find_service <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  279</span>                <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find Service with HREF %s in Rule %s&#39;</span>.format(href, self.owner.href))</div>
+<div class="line"><span class="lineno">  280</span> </div>
+<div class="line"><span class="lineno">  281</span>            self._items[find_service] = find_service</div>
+<div class="line"><span class="lineno">  282</span>            find_service.add_reference(self)</div>
+<div class="line"><span class="lineno">  283</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -488,8 +448,16 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  298</span>    <span class="keyword">def </span>remove_direct_service(self, service: DirectServiceInRule) -&gt; bool:</div>
-<div class="line"><span class="lineno">  299</span>        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(0, len(self._direct_services)):</div>
+<pre class="fragment">Removes a direct service from the rule
+:param service:
+:return: True if the service was removed, False if it was not found
+</pre> <div class="fragment"><div class="line"><span class="lineno">  293</span>    <span class="keyword">def </span>remove_direct_service(self, service: DirectServiceInRule) -&gt; bool:</div>
+<div class="line"><span class="lineno">  294</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  295</span><span class="stringliteral">        Removes a direct service </span><span class="keyword">from</span> the rule</div>
+<div class="line"><span class="lineno">  296</span>        :param service:</div>
+<div class="line"><span class="lineno">  297</span>        :<span class="keywordflow">return</span>: <span class="keyword">True</span> <span class="keywordflow">if</span> the service was removed, <span class="keyword">False</span> <span class="keywordflow">if</span> it was <span class="keywordflow">not</span> found</div>
+<div class="line"><span class="lineno">  298</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  299</span><span class="stringliteral">        </span><span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(0, len(self._direct_services)):</div>
 <div class="line"><span class="lineno">  300</span>            <span class="keywordflow">if</span> self._direct_services[i] <span class="keywordflow">is</span> service:</div>
 <div class="line"><span class="lineno">  301</span>                del(self._direct_services[i])</div>
 <div class="line"><span class="lineno">  302</span>                <span class="keywordflow">return</span> <span class="keyword">True</span></div>
@@ -519,7 +487,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

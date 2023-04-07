@@ -71,6 +71,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">pylo Namespace Reference</div></div>
 </div><!--header-->
@@ -131,15 +132,178 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepylo_1_1_workload_store"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo_1_1_workload_store.html">WorkloadStore</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a72c451c5855e19ace0d1887d2cbf93fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a72c451c5855e19ace0d1887d2cbf93fb">get_organization</a> (str hostname, int port, str api_user, str api_key, int organization_id, bool verify_ssl=True, Optional[List['pylo.ObjectTypes']] list_of_objects_to_load=None, bool include_deleted_workloads=False)</td></tr>
+<tr class="separator:a72c451c5855e19ace0d1887d2cbf93fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e5bb9e630937c49423051730715102"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a91e5bb9e630937c49423051730715102">get_organization_using_credential_file</a> (str hostname_or_profile_name=None, str credential_file=None, Optional[List['pylo.ObjectTypes']] list_of_objects_to_load=None, bool include_deleted_workloads=False, Callable callback_api_objects_downloaded=None)</td></tr>
+<tr class="separator:a91e5bb9e630937c49423051730715102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a0af56fc2f289636339d5e600149d49be"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a0af56fc2f289636339d5e600149d49be">parent_dir</a> = os.path.abspath(os.path.dirname(__file__))</td></tr>
-<tr class="separator:a0af56fc2f289636339d5e600149d49be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ffd0a0c08b54b57d22771fad2a1f68a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a7ffd0a0c08b54b57d22771fad2a1f68a">ignoreWorkloadsWithSameName</a> = True</td></tr>
 <tr class="separator:a7ffd0a0c08b54b57d22771fad2a1f68a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a211e3953f0fbfce2a249909b98c67e6a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a211e3953f0fbfce2a249909b98c67e6a">objectNotFound</a> = object()</td></tr>
 <tr class="separator:a211e3953f0fbfce2a249909b98c67e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a72c451c5855e19ace0d1887d2cbf93fb" name="a72c451c5855e19ace0d1887d2cbf93fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c451c5855e19ace0d1887d2cbf93fb">&#9670;&#160;</a></span>get_organization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> <a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a> pylo.get_organization </td>
+          <td>(</td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>hostname</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>port</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>api_user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>api_key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>organization_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &#160;</td>
+          <td class="paramname"><em>verify_ssl</em> = <code>True</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Optional[List['pylo.ObjectTypes']] &#160;</td>
+          <td class="paramname"><em>list_of_objects_to_load</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &#160;</td>
+          <td class="paramname"><em>include_deleted_workloads</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Load an organization from the API with parameters provided as arguments.
+</pre> <div class="fragment"><div class="line"><span class="lineno">   39</span>                     include_deleted_workloads: bool = <span class="keyword">False</span>) -&gt; Organization:</div>
+<div class="line"><span class="lineno">   40</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">   41</span><span class="stringliteral">    Load an organization </span><span class="keyword">from</span> the API <span class="keyword">with</span> parameters provided <span class="keyword">as</span> arguments.</div>
+<div class="line"><span class="lineno">   42</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">   43</span><span class="stringliteral">    api = APIConnector(hostname=hostname, port=port, apiuser=api_user, apikey=api_key, org_id=organization_id,</span></div>
+<div class="line"><span class="lineno">   44</span><span class="stringliteral">                       skip_ssl_cert_check=</span><span class="keywordflow">not</span> verify_ssl)</div>
+<div class="line"><span class="lineno">   45</span>    org = Organization(1)</div>
+<div class="line"><span class="lineno">   46</span>    org.load_from_api(api, include_deleted_workloads=include_deleted_workloads,</div>
+<div class="line"><span class="lineno">   47</span>                      list_of_objects_to_load=list_of_objects_to_load)</div>
+<div class="line"><span class="lineno">   48</span> </div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">return</span> org</div>
+<div class="line"><span class="lineno">   50</span> </div>
+<div class="line"><span class="lineno">   51</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a91e5bb9e630937c49423051730715102" name="a91e5bb9e630937c49423051730715102"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91e5bb9e630937c49423051730715102">&#9670;&#160;</a></span>get_organization_using_credential_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> <a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a> pylo.get_organization_using_credential_file </td>
+          <td>(</td>
+          <td class="paramtype">str &#160;</td>
+          <td class="paramname"><em>hostname_or_profile_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">str &#160;</td>
+          <td class="paramname"><em>credential_file</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Optional[List['pylo.ObjectTypes']] &#160;</td>
+          <td class="paramname"><em>list_of_objects_to_load</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &#160;</td>
+          <td class="paramname"><em>include_deleted_workloads</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Callable &#160;</td>
+          <td class="paramname"><em>callback_api_objects_downloaded</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Credentials files will be looked for in the following order:
+1. The path provided in the credential_file argument
+2. The path provided in the PYLO_CREDENTIAL_FILE environment variable
+3. The path ~/.pylo/credentials.json
+4. Current working directory credentials.json
+:param hostname_or_profile_name:
+:param credential_file:
+:param list_of_objects_to_load:
+:param include_deleted_workloads:
+:param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects
+:return:
+</pre> <div class="fragment"><div class="line"><span class="lineno">   56</span>                                           callback_api_objects_downloaded: Callable = <span class="keywordtype">None</span>) -&gt; Organization:</div>
+<div class="line"><span class="lineno">   57</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">   58</span><span class="stringliteral">    Credentials files will be looked </span><span class="keywordflow">for</span> <span class="keywordflow">in</span> the following order:</div>
+<div class="line"><span class="lineno">   59</span>    1. The path provided <span class="keywordflow">in</span> the credential_file argument</div>
+<div class="line"><span class="lineno">   60</span>    2. The path provided <span class="keywordflow">in</span> the PYLO_CREDENTIAL_FILE environment variable</div>
+<div class="line"><span class="lineno">   61</span>    3. The path ~/.pylo/credentials.json</div>
+<div class="line"><span class="lineno">   62</span>    4. Current working directory credentials.json</div>
+<div class="line"><span class="lineno">   63</span>    :param hostname_or_profile_name:</div>
+<div class="line"><span class="lineno">   64</span>    :param credential_file:</div>
+<div class="line"><span class="lineno">   65</span>    :param list_of_objects_to_load:</div>
+<div class="line"><span class="lineno">   66</span>    :param include_deleted_workloads:</div>
+<div class="line"><span class="lineno">   67</span>    :param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects</div>
+<div class="line"><span class="lineno">   68</span>    :<span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno">   69</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">   70</span><span class="stringliteral">    </span><span class="keywordflow">return</span> Organization.get_from_api_using_credential_file(hostname_or_profile_name=hostname_or_profile_name,</div>
+<div class="line"><span class="lineno">   71</span>                                                           credential_file=credential_file,</div>
+<div class="line"><span class="lineno">   72</span>                                                           list_of_objects_to_load=list_of_objects_to_load,</div>
+<div class="line"><span class="lineno">   73</span>                                                           include_deleted_workloads=include_deleted_workloads,</div>
+<div class="line"><span class="lineno">   74</span>                                                           callback_api_objects_downloaded=callback_api_objects_downloaded)</div>
+<div class="line"><span class="lineno">   75</span> </div>
+<div class="line"><span class="lineno">   76</span> </div>
+<div class="line"><span class="lineno">   77</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a7ffd0a0c08b54b57d22771fad2a1f68a" name="a7ffd0a0c08b54b57d22771fad2a1f68a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ffd0a0c08b54b57d22771fad2a1f68a">&#9670;&#160;</a></span>ignoreWorkloadsWithSameName</h2>
@@ -169,24 +333,10 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a0af56fc2f289636339d5e600149d49be" name="a0af56fc2f289636339d5e600149d49be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0af56fc2f289636339d5e600149d49be">&#9670;&#160;</a></span>parent_dir</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">pylo.parent_dir = os.path.abspath(os.path.dirname(__file__))</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:05 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

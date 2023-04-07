@@ -108,10 +108,11 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    9</span><span class="keyword">def </span>fill_parser(parser: argparse.ArgumentParser):</div>
-<div class="line"><span class="lineno">   10</span>    parser.add_argument(<span class="stringliteral">&#39;--output&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;.&#39;</span>)</div>
-<div class="line"><span class="lineno">   11</span> </div>
-<div class="line"><span class="lineno">   12</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   12</span><span class="keyword">def </span>fill_parser(parser: argparse.ArgumentParser):</div>
+<div class="line"><span class="lineno">   13</span>    parser.add_argument(<span class="stringliteral">&#39;--output&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;.&#39;</span>)</div>
+<div class="line"><span class="lineno">   14</span>    parser.add_argument(<span class="stringliteral">&#39;--format&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;excel&#39;</span>, choices=[<span class="stringliteral">&#39;csv&#39;</span>, <span class="stringliteral">&#39;excel&#39;</span>])</div>
+<div class="line"><span class="lineno">   15</span> </div>
+<div class="line"><span class="lineno">   16</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -147,7 +148,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

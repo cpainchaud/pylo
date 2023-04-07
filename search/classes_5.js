@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['get_5fblock_5fresponse_0',['get_block_response',['../classpylo_1_1_query_1_1get__block__response.html',1,'pylo::Query']]]
+  ['filter_0',['Filter',['../classpylo_1_1_query_1_1_filter.html',1,'pylo::Query']]],
+  ['filtercollections_1',['FilterCollections',['../classpylo_1_1_query_1_1_filter_collections.html',1,'pylo::Query']]],
+  ['filtercontext_2',['FilterContext',['../classpylo_1_1_query_1_1_filter_context.html',1,'pylo::Query']]]
 ];

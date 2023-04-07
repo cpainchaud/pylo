@@ -202,11 +202,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">:return: True if "All Workloads" is referenced by this container
+<pre class="fragment">Check if this container references "All Workloads"
+:return: True if "All Workloads" is referenced by this container
 </pre> <div class="fragment"><div class="line"><span class="lineno">  612</span>    <span class="keyword">def </span>contains_all_workloads(self) -&gt; bool:</div>
 <div class="line"><span class="lineno">  613</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  614</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">  615</span><span class="stringliteral">        :</span><span class="keywordflow">return</span>: <span class="keyword">True</span> <span class="keywordflow">if</span> <span class="stringliteral">&quot;All Workloads&quot;</span> <span class="keywordflow">is</span> referenced by this container</div>
+<div class="line"><span class="lineno">  614</span><span class="stringliteral">        Check </span><span class="keywordflow">if</span> this container references <span class="stringliteral">&quot;All Workloads&quot;</span></div>
+<div class="line"><span class="lineno">  615</span>        :<span class="keywordflow">return</span>: <span class="keyword">True</span> <span class="keywordflow">if</span> <span class="stringliteral">&quot;All Workloads&quot;</span> <span class="keywordflow">is</span> referenced by this container</div>
 <div class="line"><span class="lineno">  616</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">  617</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self._hasAllWorkloads</div>
 </div><!-- fragment -->
@@ -641,21 +642,21 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  380</span>                href = host_data[<span class="stringliteral">&#39;label&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  381</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  382</span>                    PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
-<div class="line"><span class="lineno">  383</span>                find_object = label_store.itemsByHRef.get(href)</div>
+<div class="line"><span class="lineno">  383</span>                find_object = label_store.find_by_href(href)</div>
 <div class="line"><span class="lineno">  384</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  385</span>                    <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find Label with HREF {} in Rule {}&#39;</span>.format(href, self.owner.href))</div>
 <div class="line"><span class="lineno">  386</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;label_group&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  387</span>                href = host_data[<span class="stringliteral">&#39;label_group&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  388</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  389</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
-<div class="line"><span class="lineno">  390</span>                find_object = label_store.itemsByHRef.get(href)</div>
+<div class="line"><span class="lineno">  390</span>                find_object = label_store.find_by_href(href)</div>
 <div class="line"><span class="lineno">  391</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  392</span>                    <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find LabelGroup with HREF {} in Rule {}&#39;</span>.format(href, self.owner.href))</div>
 <div class="line"><span class="lineno">  393</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;ip_list&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  394</span>                href = host_data[<span class="stringliteral">&#39;ip_list&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  395</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  396</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
-<div class="line"><span class="lineno">  397</span>                find_object = iplist_store.itemsByHRef.get(href)</div>
+<div class="line"><span class="lineno">  397</span>                find_object = iplist_store.items_by_href.get(href)</div>
 <div class="line"><span class="lineno">  398</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  399</span>                    <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find IPList with HREF {} in Rule {}&#39;</span>.format(href, self.owner.href))</div>
 <div class="line"><span class="lineno">  400</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;workload&#39;</span> <span class="keywordflow">in</span> host_data:</div>
@@ -672,7 +673,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  411</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  412</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
 <div class="line"><span class="lineno">  413</span>                <span class="comment"># @TODO : better handling of temporary objects</span></div>
-<div class="line"><span class="lineno">  414</span>                find_object = virtual_service_store.itemsByHRef.get(href)</div>
+<div class="line"><span class="lineno">  414</span>                find_object = virtual_service_store.items_by_href.get(href)</div>
 <div class="line"><span class="lineno">  415</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  416</span>                    <span class="comment"># raise Exception(&quot;Cannot find VirtualService with HREF {} in Rule {}. JSON:\n {}&quot;.format(href, self.owner.href, nice_json(host_data)))</span></div>
 <div class="line"><span class="lineno">  417</span>                    find_object = self.owner.owner.owner.owner.VirtualServiceStore.find_by_href_or_create_tmp(href, <span class="stringliteral">&#39;tmp-deleted-wkl-&#39;</span>+href)</div>
@@ -765,11 +766,12 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpylo_1_1_rule_1_1_rule_host_container_a23151fbd43e6a356b2a8db100440ceac_cgraph.png" border="0" usemap="#aclasspylo_1_1_rule_1_1_rule_host_container_a23151fbd43e6a356b2a8db100440ceac_cgraph" alt=""/></div>
 <map name="aclasspylo_1_1_rule_1_1_rule_host_container_a23151fbd43e6a356b2a8db100440ceac_cgraph" id="aclasspylo_1_1_rule_1_1_rule_host_container_a23151fbd43e6a356b2a8db100440ceac_cgraph">
-<area shape="rect" title=" " alt="" coords="5,101,248,141"/>
+<area shape="rect" title=" " alt="" coords="5,133,248,173"/>
 <area shape="rect" href="classpylo_1_1_rule_1_1_rule_host_container.html#adf10f20214bbd902886a912b0a802828" title=" " alt="" coords="296,5,503,45"/>
 <area shape="rect" href="classpylo_1_1_rule_1_1_rule_host_container.html#a501c68ee708d26a8a431744ac6fb09a7" title=" " alt="" coords="296,69,503,109"/>
-<area shape="rect" href="classpylo_1_1_rule_1_1_rule_host_container.html#a14c8f372afc4e07b99e1b442f3ab7bd3" title=" " alt="" coords="296,133,503,173"/>
-<area shape="rect" href="classpylo_1_1_rule_1_1_rule_host_container.html#add6c9b9483d7284ad07735bf916f617a" title=" " alt="" coords="296,197,503,237"/>
+<area shape="rect" href="classpylo_1_1_label_store_1_1_label_store.html#a509a7e4f712935c3c9f1e92a68a07e80" title=" " alt="" coords="300,133,499,173"/>
+<area shape="rect" href="classpylo_1_1_rule_1_1_rule_host_container.html#a14c8f372afc4e07b99e1b442f3ab7bd3" title=" " alt="" coords="296,197,503,237"/>
+<area shape="rect" href="classpylo_1_1_rule_1_1_rule_host_container.html#add6c9b9483d7284ad07735bf916f617a" title=" " alt="" coords="296,261,503,301"/>
 </map>
 </div>
 
@@ -810,7 +812,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -85,8 +85,10 @@ $(function() {
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7844f081a9e18d7017b3900aef3e112c"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#a7844f081a9e18d7017b3900aef3e112c">__init__</a> (self, '<a class="el" href="classpylo_1_1_organization_1_1_organization.html">pylo.Organization</a>' <a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#a08cdd4a64b9a863b6a1745004a5671a7">owner</a>)</td></tr>
 <tr class="separator:a7844f081a9e18d7017b3900aef3e112c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a959688350005074c290d24da5fa18a5a"><td class="memItemLeft" align="right" valign="top"> '<a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>'&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#a959688350005074c290d24da5fa18a5a">find_by_href_or_die</a> (self, str href)</td></tr>
-<tr class="separator:a959688350005074c290d24da5fa18a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9b99c40fb0cc3a113c1cb146ae20f5d"><td class="memItemLeft" align="right" valign="top">List[ '<a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>']&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#ab9b99c40fb0cc3a113c1cb146ae20f5d">agents</a> (self)</td></tr>
+<tr class="separator:ab9b99c40fb0cc3a113c1cb146ae20f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19fb469a1eb7dd28004a90d00d3c64b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">VENAgent</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#a19fb469a1eb7dd28004a90d00d3c64b7">find_by_href</a> (self, str href)</td></tr>
+<tr class="separator:a19fb469a1eb7dd28004a90d00d3c64b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b1d7a43b27e04cafa2fb09905395b22"><td class="memItemLeft" align="right" valign="top"> '<a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>'&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#a6b1d7a43b27e04cafa2fb09905395b22">create_ven_agent_from_workload_record</a> (self, '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>' workload, json_data)</td></tr>
 <tr class="separator:a6b1d7a43b27e04cafa2fb09905395b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8b03cca305437b01639a7e6c8f48796"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_agent_store.html#ae8b03cca305437b01639a7e6c8f48796">count_agents</a> (self)</td></tr>
@@ -125,13 +127,40 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <div class="fragment"><div class="line"><span class="lineno">  103</span>    <span class="keyword">def </span>__init__(self, owner: <span class="stringliteral">&#39;pylo.Organization&#39;</span>):</div>
 <div class="line"><span class="lineno">  104</span>        self.owner = owner</div>
-<div class="line"><span class="lineno">  105</span>        self.itemsByHRef: Dict[str, <a class="code hl_class" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>] = {}</div>
+<div class="line"><span class="lineno">  105</span>        self.items_by_href: Dict[str, <a class="code hl_class" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>] = {}</div>
 <div class="line"><span class="lineno">  106</span> </div>
 <div class="ttc" id="aclasspylo_1_1_agent_store_1_1_v_e_n_agent_html"><div class="ttname"><a href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.AgentStore.VENAgent</a></div><div class="ttdef"><b>Definition:</b> AgentStore.py:13</div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab9b99c40fb0cc3a113c1cb146ae20f5d" name="ab9b99c40fb0cc3a113c1cb146ae20f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9b99c40fb0cc3a113c1cb146ae20f5d">&#9670;&#160;</a></span>agents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> List['<a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>'] pylo.AgentStore.AgentStore.agents </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Returns a copy of the list of all agents in the store
+:return:
+</pre> <div class="fragment"><div class="line"><span class="lineno">  108</span>    <span class="keyword">def </span>agents(self) -&gt; List[&#39;pylo.VENAgent&#39;]:</div>
+<div class="line"><span class="lineno">  109</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  110</span><span class="stringliteral">        Returns a copy of the list of all agents </span><span class="keywordflow">in</span> the store</div>
+<div class="line"><span class="lineno">  111</span>        :<span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno">  112</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  113</span><span class="stringliteral">        </span><span class="keywordflow">return</span> list(self.items_by_href.values())</div>
+<div class="line"><span class="lineno">  114</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ae8b03cca305437b01639a7e6c8f48796" name="ae8b03cca305437b01639a7e6c8f48796"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae8b03cca305437b01639a7e6c8f48796">&#9670;&#160;</a></span>count_agents()</h2>
 
@@ -147,11 +176,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  127</span>    <span class="keyword">def </span>count_agents(self) -&gt; int:</div>
-<div class="line"><span class="lineno">  128</span>        <span class="keywordflow">return</span> len(self.itemsByHRef)</div>
-<div class="line"><span class="lineno">  129</span> </div>
-<div class="line"><span class="lineno">  130</span> </div>
-<div class="line"><span class="lineno">  131</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  130</span>    <span class="keyword">def </span>count_agents(self) -&gt; int:</div>
+<div class="line"><span class="lineno">  131</span>        <span class="keywordflow">return</span> len(self.items_by_href)</div>
+<div class="line"><span class="lineno">  132</span> </div>
+<div class="line"><span class="lineno">  133</span> </div>
+<div class="line"><span class="lineno">  134</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -186,30 +215,30 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  115</span>    <span class="keyword">def </span>create_ven_agent_from_workload_record(self, workload: <span class="stringliteral">&#39;pylo.Workload&#39;</span>, json_data) -&gt; <span class="stringliteral">&#39;pylo.VENAgent&#39;</span>:</div>
-<div class="line"><span class="lineno">  116</span>        href = json_data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
-<div class="line"><span class="lineno">  117</span>        <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  118</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Cannot extract Agent href from workload &#39;{}&#39;&quot;</span>.format(workload.href))</div>
-<div class="line"><span class="lineno">  119</span> </div>
-<div class="line"><span class="lineno">  120</span>        agent = <a class="code hl_class" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>(href, self, workload)</div>
-<div class="line"><span class="lineno">  121</span>        agent.load_from_json(json_data)</div>
+<div class="fragment"><div class="line"><span class="lineno">  118</span>    <span class="keyword">def </span>create_ven_agent_from_workload_record(self, workload: <span class="stringliteral">&#39;pylo.Workload&#39;</span>, json_data) -&gt; <span class="stringliteral">&#39;pylo.VENAgent&#39;</span>:</div>
+<div class="line"><span class="lineno">  119</span>        href = json_data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
+<div class="line"><span class="lineno">  120</span>        <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  121</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Cannot extract Agent href from workload &#39;{}&#39;&quot;</span>.format(workload.href))</div>
 <div class="line"><span class="lineno">  122</span> </div>
-<div class="line"><span class="lineno">  123</span>        self.itemsByHRef[href] = agent</div>
-<div class="line"><span class="lineno">  124</span> </div>
-<div class="line"><span class="lineno">  125</span>        <span class="keywordflow">return</span> agent</div>
-<div class="line"><span class="lineno">  126</span> </div>
+<div class="line"><span class="lineno">  123</span>        agent = <a class="code hl_class" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>(href, self, workload)</div>
+<div class="line"><span class="lineno">  124</span>        agent.load_from_json(json_data)</div>
+<div class="line"><span class="lineno">  125</span> </div>
+<div class="line"><span class="lineno">  126</span>        self.items_by_href[href] = agent</div>
+<div class="line"><span class="lineno">  127</span> </div>
+<div class="line"><span class="lineno">  128</span>        <span class="keywordflow">return</span> agent</div>
+<div class="line"><span class="lineno">  129</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a959688350005074c290d24da5fa18a5a" name="a959688350005074c290d24da5fa18a5a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a959688350005074c290d24da5fa18a5a">&#9670;&#160;</a></span>find_by_href_or_die()</h2>
+<a id="a19fb469a1eb7dd28004a90d00d3c64b7" name="a19fb469a1eb7dd28004a90d00d3c64b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19fb469a1eb7dd28004a90d00d3c64b7">&#9670;&#160;</a></span>find_by_href()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"> '<a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">pylo.VENAgent</a>' pylo.AgentStore.AgentStore.find_by_href_or_die </td>
+          <td class="memname"> <a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html">VENAgent</a> pylo.AgentStore.AgentStore.find_by_href </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -227,14 +256,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  107</span>    <span class="keyword">def </span>find_by_href_or_die(self, href: str) -&gt; <span class="stringliteral">&#39;pylo.VENAgent&#39;</span>:</div>
-<div class="line"><span class="lineno">  108</span> </div>
-<div class="line"><span class="lineno">  109</span>        find_object = self.itemsByHRef.get(href)</div>
-<div class="line"><span class="lineno">  110</span>        <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  111</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Agent with ID {} was not found&quot;</span>.format(href))</div>
-<div class="line"><span class="lineno">  112</span> </div>
-<div class="line"><span class="lineno">  113</span>        <span class="keywordflow">return</span> find_object</div>
-<div class="line"><span class="lineno">  114</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  115</span>    <span class="keyword">def </span>find_by_href(self, href: str) -&gt; VENAgent:</div>
+<div class="line"><span class="lineno">  116</span>        <span class="keywordflow">return</span> self.items_by_href.get(href)</div>
+<div class="line"><span class="lineno">  117</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -259,7 +283,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:05 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

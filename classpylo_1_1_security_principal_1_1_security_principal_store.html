@@ -87,8 +87,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2941c263738d1d2e322a3363166d988a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97427842d47ad9e1f5f9c2d118e4a520"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_security_principal_1_1_security_principal_store.html#a97427842d47ad9e1f5f9c2d118e4a520">load_principals_from_json</a> (self, json_list)</td></tr>
 <tr class="separator:a97427842d47ad9e1f5f9c2d118e4a520"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e0666478cc7b097f112c572e61b1418"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_security_principal_1_1_security_principal_store.html#a6e0666478cc7b097f112c572e61b1418">find_by_href_or_die</a> (self, str href)</td></tr>
-<tr class="separator:a6e0666478cc7b097f112c572e61b1418"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91d06543d8a6a093bf0bdd8329056d68"><td class="memItemLeft" align="right" valign="top">Optional[<a class="el" href="classpylo_1_1_security_principal_1_1_security_principal.html">SecurityPrincipal</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_security_principal_1_1_security_principal_store.html#a91d06543d8a6a093bf0bdd8329056d68">find_by_href</a> (self, str href)</td></tr>
+<tr class="separator:a91d06543d8a6a093bf0bdd8329056d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -131,14 +131,14 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6e0666478cc7b097f112c572e61b1418" name="a6e0666478cc7b097f112c572e61b1418"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e0666478cc7b097f112c572e61b1418">&#9670;&#160;</a></span>find_by_href_or_die()</h2>
+<a id="a91d06543d8a6a093bf0bdd8329056d68" name="a91d06543d8a6a093bf0bdd8329056d68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91d06543d8a6a093bf0bdd8329056d68">&#9670;&#160;</a></span>find_by_href()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def pylo.SecurityPrincipal.SecurityPrincipalStore.find_by_href_or_die </td>
+          <td class="memname"> Optional[<a class="el" href="classpylo_1_1_security_principal_1_1_security_principal.html">SecurityPrincipal</a>] pylo.SecurityPrincipal.SecurityPrincipalStore.find_by_href </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -156,16 +156,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   57</span>    <span class="keyword">def </span>find_by_href_or_die(self, href: str):</div>
-<div class="line"><span class="lineno">   58</span> </div>
-<div class="line"><span class="lineno">   59</span>        find_object = self.itemsByHRef.get(href)</div>
-<div class="line"><span class="lineno">   60</span>        <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   61</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Workload with HREF &#39;%s&#39; was not found&quot;</span> % href)</div>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>    <span class="keyword">def </span>find_by_href(self, href: str) -&gt; Optional[SecurityPrincipal]:</div>
+<div class="line"><span class="lineno">   58</span>        <span class="keywordflow">return</span> self.itemsByHRef.get(href)</div>
+<div class="line"><span class="lineno">   59</span> </div>
+<div class="line"><span class="lineno">   60</span> </div>
+<div class="line"><span class="lineno">   61</span> </div>
 <div class="line"><span class="lineno">   62</span> </div>
-<div class="line"><span class="lineno">   63</span>        <span class="keywordflow">return</span> find_object</div>
-<div class="line"><span class="lineno">   64</span> </div>
-<div class="line"><span class="lineno">   65</span> </div>
-<div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -219,6 +215,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   54</span> </div>
 <div class="line"><span class="lineno">   55</span>            log.debug(<span class="stringliteral">&quot;Found SecurityPrincipal &#39;%s&#39; with href &#39;%s&#39;&quot;</span>, new_item_name, new_item_href)</div>
 <div class="line"><span class="lineno">   56</span> </div>
+<div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 <div class="ttc" id="aclasspylo_1_1_security_principal_1_1_security_principal_html"><div class="ttname"><a href="classpylo_1_1_security_principal_1_1_security_principal.html">pylo.SecurityPrincipal.SecurityPrincipal</a></div><div class="ttdef"><b>Definition:</b> SecurityPrincipal.py:7</div></div>
 </div><!-- fragment -->
 </div>
@@ -258,7 +255,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2023 15:23:06 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
