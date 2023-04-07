@@ -140,24 +140,38 @@ class RulesetObjectUpdateStructure(TypedDict):
 
 
 class ServiceObjectJsonStructure(TypedDict):
+    created_at: str
     href: str
     name: str
-    created_at: str
     updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 
 class VirtualServiceObjectJsonStructure(TypedDict):
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
     href: str
     name: str
-    created_at: str
     updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 
 class SecurityPrincipalObjectJsonStructure(TypedDict):
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
     href: str
     name: str
-    created_at: str
     updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
+
+class LabelDimensionObjectStructure(TypedDict):
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
+    display_name: str
+    href: str
+    key: str
+    updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
 
 
 class PCEObjectsJsonStructure(TypedDict):
