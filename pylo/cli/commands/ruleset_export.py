@@ -21,7 +21,9 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
                                                       {'name':'consumers', 'max_width': 80},
                                                       {'name':'providers', 'max_width': 80},
                                                       {'name':'services', 'max_width': 30},
-                                                      'options', 'ruleset_href'
+                                                      {'name':'options', 'max_width': 40},
+                                                      {'name':'ruleset_url', 'max_width': 40, 'wrap_text': False},
+                                                      {'name':'ruleset_href', 'max_width': 30, 'wrap_text': False}
                           ]
 
     output_file_format = options.get('format')
@@ -54,7 +56,8 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
                     'consumers': rule.consumers.members_to_str("\n"),
                     'providers': rule.providers.members_to_str("\n"),
                     'services': rule.services.members_to_str("\n"),
-                    'options': pylo.string_list_to_text(rule_options, "\n")}
+                    'options': pylo.string_list_to_text(rule_options, "\n"),
+                    'ruleset_url': ruleset.get_ruleset_url()}
             if rule.is_extra_scope():
                 data['type'] = 'intra'
             else:
