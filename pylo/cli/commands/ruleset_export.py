@@ -15,7 +15,7 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 
 def __main(options: Dict, org: pylo.Organization, **kwargs):
-    csv_report_headers: List[pylo.ExcelHeader|str] = [{'name':'ruleset', 'max_width': 40},
+    csv_report_headers: List[pylo.ExcelHeader] = [{'name':'ruleset', 'max_width': 40},
                                                       {'name':'scope', 'max_width': 50},
                                                       {'name':'type', 'max_width': 10},
                                                       {'name':'consumers', 'max_width': 80},
