@@ -41,7 +41,7 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
     sheet = csv_report.create_sheet('rulesets', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
 
     for ruleset in org.RulesetStore.rulesets:
-        for rule in ruleset.rules_by_href.values():
+        for rule in ruleset.rules_ordered_by_type:
             rule_options = []
             if not rule.enabled:
                 rule_options.append('disabled')
@@ -52,11 +52,12 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
             if rule.machine_auth:
                 rule_options.append('machine_auth')
 
-            data = {'ruleset': ruleset.name, 'ruleset_href': ruleset.href, 'scope': ruleset.scopes.get_all_scopes_str(),
+            data = {'ruleset': ruleset.name, 'scope': ruleset.scopes.get_all_scopes_str(),
                     'consumers': rule.consumers.members_to_str("\n"),
                     'providers': rule.providers.members_to_str("\n"),
                     'services': rule.services.members_to_str("\n"),
                     'options': pylo.string_list_to_text(rule_options, "\n"),
+                    'ruleset_href': ruleset.href,
                     'ruleset_url': ruleset.get_ruleset_url()}
             if rule.is_extra_scope():
                 data['type'] = 'extra'
