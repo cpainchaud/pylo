@@ -52,7 +52,21 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
             if rule.machine_auth:
                 rule_options.append('machine_auth')
 
-            data = {'ruleset': ruleset.name, 'scope': ruleset.scopes.get_all_scopes_str(),
+            scope_str = ''
+            for scope in ruleset.scopes.scope_entries.values():
+                if len(scope_str) > 0:
+                    scope_str += "\n"
+                if scope.is_all_all_all():
+                    scope_str += "*ALL LABELS*"
+                    continue
+                for label in scope.labels:
+                    scope_str += f"{label.name}\n"
+            # remove last \n from scope
+            if scope_str[-1] == "\n":
+                scope_str = scope_str[:-1]
+
+
+            data = {'ruleset': ruleset.name, 'scope': scope_str,
                     'consumers': rule.consumers.members_to_str("\n"),
                     'providers': rule.providers.members_to_str("\n"),
                     'services': rule.services.members_to_str("\n"),
