@@ -37,6 +37,16 @@ class LabelStore:
                 result[label.type].append(label)
             return result
 
+        @staticmethod
+        def list_sort_by_type(label_list: Iterable[Union['pylo.Label', 'pylo.LabelGroup']], type_order: List[str]) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
+            """Sorts a list of labels by type, using the provided type order"""
+            result: List[Union['pylo.Label', 'pylo.LabelGroup']] = []
+            for label_type in type_order:
+                for label in label_list:
+                    if label.type == label_type:
+                        result.append(label)
+            return result
+
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: "pylo.Organization" = owner
         self._items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
