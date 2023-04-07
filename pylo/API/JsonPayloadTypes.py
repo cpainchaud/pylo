@@ -16,6 +16,9 @@ class WorkloadHrefRef(TypedDict):
 class IPListHrefRef(TypedDict):
     ip_list: HrefReference
 
+class VirtualServiceHrefRef(TypedDict):
+    virtual_service: HrefReference
+
 class LabelObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
