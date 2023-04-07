@@ -80,9 +80,9 @@ def get_credentials_from_file(hostname_or_profile_name: str = None,
                         found_profile = profile
                         break
                 if found_profile is None:
-                    raise PyloEx("No profile found in credential file '{}' with hostname/profile: {}."
+                    raise PyloEx("No profile named '{}' found in credential file '{}' with hostname/profile: {}."
                                  " Available profiles are: {}".
-                                 format(credential_file, hostname_or_profile_name, available_profiles_names))
+                                 format(hostname_or_profile_name, credential_file, hostname_or_profile_name, available_profiles_names))
 
             else:
                 log.debug("Credentials file is not a list, assuming it is a single profile")
