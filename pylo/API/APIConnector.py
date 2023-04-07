@@ -7,7 +7,8 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
     VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure, \
     WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
-    RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure
+    RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
+    LabelDimensionObjectStructure
 
 try:
     import requests as requests
@@ -39,7 +40,7 @@ def get_field_or_die(field_name: str, data):
 
 
 ObjectTypes = Literal['iplists', 'workloads', 'virtual_services', 'labels', 'labelgroups', 'services', 'rulesets',
-                     'security_principals']
+                     'security_principals', 'label_dimensions']
 
 all_object_types: Dict[ObjectTypes, ObjectTypes] = {
         'iplists': 'iplists',
@@ -50,6 +51,7 @@ all_object_types: Dict[ObjectTypes, ObjectTypes] = {
         'services': 'services',
         'rulesets': 'rulesets',
         'security_principals': 'security_principals',
+        'label_dimensions': 'label_dimensions'
     }
 
 
@@ -326,6 +328,8 @@ class APIConnector:
             return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True))
         elif object_type == 'security_principals':
             return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True))
+        elif object_type == 'label_dimensions':
+            return extract_count(self.do_get_call('/label_dimensions', async_call=False, return_headers=True))
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
@@ -340,6 +344,13 @@ class APIConnector:
                 object_to_load[object_type] = True
         else:
             object_to_load = pylo.APIConnector.get_all_object_types()
+
+        self.get_software_version()
+
+        # whatever the request was, label dimensions are not optional
+        if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
+            object_to_load['label_dimensions'] = object_to_load['label_dimensions']
+
 
         threads_count = 4
         data: PCEObjectsJsonStructure = pylo.Organization.create_fake_empty_config()
@@ -400,7 +411,11 @@ class APIConnector:
                             data['security_principals'] = self.objects_securityprincipal_get()
                         else:
                             data['security_principals'] = self.objects_securityprincipal_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
-
+                    elif object_type == 'label_dimensions':
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['label_dimensions'] = self.objects_label_dimension_get()
+                        else:
+                            data['label_dimensions'] = self.objects_label_dimension_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
                     else:
                         raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
                 except Exception as e:
@@ -519,6 +534,14 @@ class APIConnector:
     def objects_labelgroup_update(self, href: str, data: LabelGroupObjectUpdateJsonStructure):
         path = href
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
+
+    def objects_label_dimension_get(self, max_results: int = None, async_mode=False) -> List[LabelDimensionObjectStructure]:
+        path = '/label_dimensions'
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_virtual_service_get(self, max_results: int = None, async_mode=True) -> List[VirtualServiceObjectJsonStructure]:
         path = '/sec_policy/draft/virtual_services'
