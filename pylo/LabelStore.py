@@ -3,7 +3,7 @@ import random
 from typing import Union, Set, Iterable
 # PYLO imports
 from pylo import log
-from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure
+from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure, LabelDimensionObjectStructure
 from .Helpers import *
 
 label_type_loc = 'loc'
@@ -52,11 +52,6 @@ class LabelStore:
         self._items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
         self.label_types: List[str] = []
         self.label_types_as_set: Set[str] = set()
-        # add the default built-in label types
-        self._add_dimension(label_type_role)
-        self._add_dimension(label_type_app)
-        self._add_dimension(label_type_env)
-        self._add_dimension(label_type_loc)
 
         self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
         
@@ -65,6 +60,18 @@ class LabelStore:
             self.label_types_as_set.add(dimension)
             self.label_types.append(dimension)
 
+    def load_label_dimensions(self, json_list: Optional[List[LabelDimensionObjectStructure]]):
+        if json_list is None:
+            # add the default built-in label types
+            self._add_dimension(label_type_role)
+            self._add_dimension(label_type_app)
+            self._add_dimension(label_type_env)
+            self._add_dimension(label_type_loc)
+            return
+
+        for dimension in json_list:
+            self._add_dimension(dimension['key'])
+
     def load_labels_from_json(self, json_list: List[LabelObjectJsonStructure]):
         for json_label in json_list:
             if 'value' not in json_label or 'href' not in json_label or 'key' not in json_label:
@@ -72,6 +79,9 @@ class LabelStore:
             new_label_name = json_label['value']
             new_label_href = json_label['href']
             new_label_type = json_label['key']
+
+            if new_label_type not in self.label_types_as_set:
+                raise pylo.PyloApiEx("Label type '%s' is not a valid type for Label '%s' (href: %s)" % (new_label_type, new_label_name, new_label_href))
 
             new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
 
