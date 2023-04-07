@@ -183,6 +183,7 @@ class PCEObjectsJsonStructure(TypedDict):
     services: List[ServiceObjectJsonStructure]
     virtual_services: List[VirtualServiceObjectJsonStructure]
     workloads: List[WorkloadObjectJsonStructure]
+    label_dimensions: List[LabelDimensionObjectStructure]
 
 
 class PCECacheFileJsonStructure(TypedDict):
