@@ -159,7 +159,25 @@ class Ruleset:
         self.name: str = ''
         self.description: str = ''
         self.scopes: 'pylo.RulesetScope' = pylo.RulesetScope(self)
-        self.rules_by_href: Dict[str, 'pylo.Rule'] = {}
+        self._rules_by_href: Dict[str, 'pylo.Rule'] = {}
+        self._rules: List['pylo.Rule'] = []
+
+    @property
+    def rules(self):
+        """
+        Return a copy of the rules list
+        :return:
+        """
+        return self._rules.copy()
+
+    @property
+    def rules_by_href(self):
+        """
+        Return a copy of the rules dict keyed by href
+        :return:
+        """
+        return self._rules_by_href.copy()
+
 
     def load_from_json(self, data: RulesetObjectJsonStructure):
         if 'name' not in data:
@@ -187,7 +205,8 @@ class Ruleset:
     def load_single_rule_from_json(self, rule_data: RuleObjectJsonStructure) -> 'pylo.Rule':
         new_rule = pylo.Rule(self)
         new_rule.load_from_json(rule_data)
-        self.rules_by_href[new_rule.href] = new_rule
+        self._rules_by_href[new_rule.href] = new_rule
+        self._rules.append(new_rule)
         return new_rule
 
     def api_delete_rule(self, rule_or_href: Union[str, 'pylo.Rule']):
@@ -199,12 +218,13 @@ class Ruleset:
         if isinstance(rule_or_href, pylo.Rule):
             href = rule_or_href.href
 
-        find_object = self.rules_by_href.get(href)
+        find_object = self._rules_by_href.get(href)
         if find_object is None:
             raise pylo.PyloEx("Cannot delete a Rule with href={} which is not part of ruleset {}/{}".format(href, self.name, self.href))
 
         self.owner.owner.connector.objects_rule_delete(href)
-        del self.rules_by_href[href]
+        del self._rules_by_href[href]
+        self._rules.remove(find_object)
 
     def api_create_rule(self, intra_scope: bool,
                         consumers: List['pylo.RuleActorsAcceptableTypes'],
@@ -229,7 +249,7 @@ class Ruleset:
         return self.load_single_rule_from_json(new_rule_json)
 
     def count_rules(self) -> int:
-        return len(self.rules_by_href)
+        return len(self._rules)
 
     def extract_id_from_href(self) -> int:
         match = ruleset_id_extraction_regex.match(self.href)
