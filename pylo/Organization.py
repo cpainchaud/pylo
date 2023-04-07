@@ -138,6 +138,8 @@ class Organization:
         if self.pce_version is None:
             raise pylo.PyloEx('Organization has no "version" specified')
 
+        self.LabelStore.load_label_dimensions(data.get('label_dimensions'))
+
         if 'labels' in object_to_load:
             if 'labels' not in data:
                 raise Exception("'labels' was not found in json data")
@@ -228,13 +230,16 @@ class Organization:
         """
         stats = ""
         stats += "{}- Version {}".format(padding, self.pce_version.generate_str_from_numbers()) + os.linesep
-        stats += "{}- {} Labels in total. Loc: {} / Env: {} / App: {} / Role: {}".\
+
+        labels_str = ''
+        for dimension in self.LabelStore.label_types:
+            labels_str += " {}: {} /".format(dimension, self.LabelStore.count_labels(dimension))
+        # remove last ' /'
+        labels_str = labels_str[:-2]
+        stats += "{}- {} Labels in total. {}".\
             format(padding,
                    self.LabelStore.count_labels(),
-                   self.LabelStore.count_location_labels(),
-                   self.LabelStore.count_environment_labels(),
-                   self.LabelStore.count_application_labels(),
-                   self.LabelStore.count_role_labels())
+                   labels_str)
 
         stats += os.linesep + "{}- Workloads: Managed: {} / Unmanaged: {} / Deleted: {}". \
             format(padding,
