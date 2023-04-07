@@ -1,8 +1,8 @@
 from typing import Optional, List, Union, Dict
 
 import pylo
-from .API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, RulesetScopeEntryLineJsonStructure
-from pylo import log, Organization
+from .API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, \
+    RulesetScopeEntryLineJsonStructure
 import re
 
 ruleset_id_extraction_regex = re.compile(r"^/orgs/([0-9]+)/sec_policy/([0-9]+)?(draft)?/rule_sets/(?P<id>[0-9]+)$")
@@ -245,11 +245,13 @@ class Ruleset:
     def api_create_rule(self, intra_scope: bool,
                         consumers: List['pylo.RuleActorsAcceptableTypes'],
                         providers: List['pylo.RuleActorsAcceptableTypes'],
-                        services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                        services: List[Union['pylo.Service', 'pylo.DirectServiceInRule']],
                         description='', machine_auth=False, secure_connect=False, enabled=True,
-                        stateless=False, consuming_security_principals=[],
+                        stateless=False, consuming_security_principals=None,
                         resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
                         resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> 'pylo.Rule':
+        if consuming_security_principals is None:
+            consuming_security_principals = []
 
         new_rule_json = self.owner.owner.connector.objects_rule_create(
             intra_scope=intra_scope, ruleset_href=self.href,
