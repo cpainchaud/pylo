@@ -16,6 +16,9 @@ class WorkloadHrefRef(TypedDict):
 class IPListHrefRef(TypedDict):
     ip_list: HrefReference
 
+class ServiceHrefRef(TypedDict):
+    service: HrefReference
+
 class VirtualServiceHrefRef(TypedDict):
     virtual_service: HrefReference
 
