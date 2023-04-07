@@ -159,6 +159,7 @@ class Ruleset:
         self.name: str = ''
         self.description: str = ''
         self.scopes: 'pylo.RulesetScope' = pylo.RulesetScope(self)
+        # must keep an ordered list of rules while the dict by href is there for quick searches
         self._rules_by_href: Dict[str, 'pylo.Rule'] = {}
         self._rules: List['pylo.Rule'] = []
 
@@ -177,6 +178,21 @@ class Ruleset:
         :return:
         """
         return self._rules_by_href.copy()
+
+    @property
+    def rules_ordered_by_type(self):
+        """
+        Return a list of rules ordered by type (Intra Scope First)
+        :return:
+        """
+        rules: List[pylo.Rule] = []
+        for rule in self._rules:
+            if rule.is_intra_scope():
+                rules.append(rule)
+        for rule in self._rules:
+            if not rule.is_intra_scope():
+                rules.append(rule)
+        return rules
 
 
     def load_from_json(self, data: RulesetObjectJsonStructure):
