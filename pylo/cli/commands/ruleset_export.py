@@ -59,9 +59,9 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
                     'options': pylo.string_list_to_text(rule_options, "\n"),
                     'ruleset_url': ruleset.get_ruleset_url()}
             if rule.is_extra_scope():
-                data['type'] = 'intra'
-            else:
                 data['type'] = 'extra'
+            else:
+                data['type'] = 'intra'
             sheet.add_line_from_object(data)
 
     if output_file_format == "csv":
