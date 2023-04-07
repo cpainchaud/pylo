@@ -26,7 +26,7 @@ unique_ipranges = {}
 total_ipranges = 0
 unused_iplists = []
 
-for iplist in org.IPListStore.itemsByHRef.values():
+for iplist in org.IPListStore.items_by_href.values():
     #print("- handling of iplist '{}' with {} members".format(iplist.name, iplist.count_entries()))
     entries_hash = ""
     for entry in sorted(iplist.raw_entries):

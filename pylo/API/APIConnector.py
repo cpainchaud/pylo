@@ -1,12 +1,14 @@
 import json
 import time
-import os
 import getpass
-from pathlib import Path
 
-from pylo.API.JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
+from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
-    LabelGroupObjectUpdateJsonStructure
+    LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
+    VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure, \
+    WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
+    RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
+    LabelDimensionObjectStructure
 
 try:
     import requests as requests
@@ -15,11 +17,9 @@ except ImportError:
 
 from threading import Thread
 from queue import Queue
-from datetime import datetime, timedelta
 import pylo
 from pylo import log
-from typing import Union, Dict, Any, List, Optional, Tuple
-
+from typing import Union, Dict, Any, List, Optional, Literal
 
 requests.packages.urllib3.disable_warnings()
 
@@ -39,7 +39,10 @@ def get_field_or_die(field_name: str, data):
     return field
 
 
-_all_object_types: Dict[str, str] = {
+ObjectTypes = Literal['iplists', 'workloads', 'virtual_services', 'labels', 'labelgroups', 'services', 'rulesets',
+                     'security_principals', 'label_dimensions']
+
+all_object_types: Dict[ObjectTypes, ObjectTypes] = {
         'iplists': 'iplists',
         'workloads': 'workloads',
         'virtual_services': 'virtual_services',
@@ -48,6 +51,7 @@ _all_object_types: Dict[str, str] = {
         'services': 'services',
         'rulesets': 'rulesets',
         'security_principals': 'security_principals',
+        'label_dimensions': 'label_dimensions'
     }
 
 
@@ -68,79 +72,52 @@ class APIConnector:
         self._cached_session = requests.session()
 
     @staticmethod
-    def get_all_object_types_names_except(exception_list: List[str]):
+    def get_all_object_types_names_except(exception_list: List[ObjectTypes]):
 
         if len(exception_list) == 0:
-            return _all_object_types.values()
+            return all_object_types.values()
 
-        # first let's check that all names in exception_list are valid
+        # first let's check that all names in exception_list are valid (case mismatches and typos...)
         for name in exception_list:
-            if name not in _all_object_types:
+            if name not in all_object_types:
                 raise pylo.PyloEx("object type named '{}' doesn't exist. The list of supported objects names is: {}".
-                                  format(name, pylo.string_list_to_text(_all_object_types.values())))
+                                  format(name, pylo.string_list_to_text(all_object_types.values())))
 
         object_names_list: List[str] = []
-        for name in _all_object_types.values():
-            for lookup_name in exception_list:
-                if name == lookup_name:
-                    break
-            if lookup_name == name:
-                continue
-
-            object_names_list.append(name)
+        for name in all_object_types.values():
+            if name not in exception_list:
+                object_names_list.append(name)
 
     @staticmethod
     def get_all_object_types():
-        return _all_object_types.copy()
+        return all_object_types.copy()
 
     @staticmethod
-    def create_from_credentials_in_file(hostname: str, request_if_missing = False):
+    def create_from_credentials_in_file(hostname_or_profile_name: str, request_if_missing: bool = False,
+                                        credential_file: Optional[str] = None) -> Optional['APIConnector']:
 
-        separator_pos = hostname.find(':')
-        port = 8443
+        credentials = pylo.get_credentials_from_file(hostname_or_profile_name, credential_file)
 
-        if separator_pos > 0:
-            port = hostname[separator_pos+1:]
-            hostname = hostname[0:separator_pos]
-
-        filename = str(Path.home()) + '/pylo/credentials.json'
-        filename = Path(filename)
-
-        if not os.path.isfile(filename):
-            filename = 'ilo.json'
-
-        if os.path.isfile(filename):
-            with open(filename) as json_file:
-                data = json.load(json_file)
-                if hostname in data:
-                    cur = data[hostname]
-                    ignore_ssl = False
-                    org_id = 1
-                    if 'ignore-ssl' in cur:
-                        ssl_value = cur['ignore-ssl']
-                        if type(ssl_value) is str:
-                            if ssl_value.lower() == 'yes':
-                                ignore_ssl = True
-                    if 'org_id' in cur:
-                        org_id_value = cur['org_id']
-                        if type(org_id_value) is int:
-                            org_id = org_id_value
-                        else:
-                            raise pylo.PyloEx("org_id must be an integer", cur)
-                    return APIConnector(hostname, cur['port'], cur['user'], cur['key'], org_id=org_id, skip_ssl_cert_check=ignore_ssl)
+        if credentials is not None:
+            return APIConnector(credentials['hostname'], credentials['port'], credentials['api_user'],
+                                credentials['api_key'], skip_ssl_cert_check=not credentials['verify_ssl'],
+                                org_id=credentials['org_id'])
 
         if not request_if_missing:
             return None
 
-        print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname), end='')
+        print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname_or_profile_name), end='')
         user = input()
+        print('API password:', end='')
         password = getpass.getpass()
+        print('Server port:', end='')
+        port = int(input())
 
-        connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True)
+        connector = pylo.APIConnector(hostname_or_profile_name, port, user, password, skip_ssl_cert_check=True)
         return connector
 
     def _make_url(self, path: str, include_org_id):
-        url = "https://" + self.hostname + ":" + self.port + "/api/v2"
+        url = "https://{0}:{1}/api/v2".format(self.hostname, self.port)
         if include_org_id:
             url += '/orgs/' + str(self.orgID)
         url += path
@@ -279,17 +256,21 @@ class APIConnector:
                     or \
                     method == 'PUT' and req.status_code != 204 and req.status_code != 200:
 
-                if req.status_code == 429:  # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
+                if req.status_code == 429:
+                    # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
                     jout = req.json()
                     if len(jout) > 0:
                         if "token" in jout[0]:
                             if jout[0]['token'] == 'too_many_requests_error':
                                 if retry_count_if_api_call_limit_reached < 1:
-                                    raise pylo.PyloApiTooManyRequestsEx('API has hit DOS protection limit (X calls per minute)', jout)
+                                    raise pylo.PyloApiTooManyRequestsEx(
+                                        'API has hit DOS protection limit (X calls per minute)', jout)
 
                                 retry_count_if_api_call_limit_reached = retry_count_if_api_call_limit_reached - 1
-                                log.info("API has returned 'too_many_requests_error', we will sleep for {} seconds and retry {} more times".format(retry_wait_time_if_api_call_limit_reached,
-                                                                                                                                                   retry_count_if_api_call_limit_reached))
+                                log.info(
+                                    "API has returned 'too_many_requests_error', we will sleep for {} seconds and retry {} more times".format(
+                                        retry_wait_time_if_api_call_limit_reached,
+                                        retry_count_if_api_call_limit_reached))
                                 time.sleep(retry_wait_time_if_api_call_limit_reached)
                                 continue
 
@@ -314,17 +295,17 @@ class APIConnector:
 
         raise pylo.PyloApiEx("Unexpected API output or race condition")
 
-    def getSoftwareVersion(self) -> Optional['pylo.SoftwareVersion']:
+    def get_software_version(self) -> Optional['pylo.SoftwareVersion']:
         self.collect_pce_infos()
         return self.version
 
-    def getSoftwareVersionString(self) -> str:
+    def get_software_version_string(self) -> str:
         self.collect_pce_infos()
         return self.version_string
 
     def get_objects_count_by_type(self, object_type: str) -> int:
 
-        def extract_count(headers: requests.Response):
+        def extract_count(headers):
             count = headers.get('x-total-count')
             if count is None:
                 raise pylo.PyloApiEx('API didnt provide field "x-total-count"')
@@ -347,6 +328,8 @@ class APIConnector:
             return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True))
         elif object_type == 'security_principals':
             return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True))
+        elif object_type == 'label_dimensions':
+            return extract_count(self.do_get_call('/label_dimensions', async_call=False, return_headers=True))
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
@@ -361,6 +344,13 @@ class APIConnector:
                 object_to_load[object_type] = True
         else:
             object_to_load = pylo.APIConnector.get_all_object_types()
+
+        self.get_software_version()
+
+        # whatever the request was, label dimensions are not optional
+        if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
+            object_to_load['label_dimensions'] = object_to_load['label_dimensions']
+
 
         threads_count = 4
         data: PCEObjectsJsonStructure = pylo.Organization.create_fake_empty_config()
@@ -421,7 +411,11 @@ class APIConnector:
                             data['security_principals'] = self.objects_securityprincipal_get()
                         else:
                             data['security_principals'] = self.objects_securityprincipal_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
-
+                    elif object_type == 'label_dimensions':
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                            data['label_dimensions'] = self.objects_label_dimension_get()
+                        else:
+                            data['label_dimensions'] = self.objects_label_dimension_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
                     else:
                         raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
                 except Exception as e:
@@ -431,7 +425,6 @@ class APIConnector:
 
         for i in range(threads_count):
             worker = Thread(target=get_objects, args=(thread_queue, i))
-            worker.setDaemon(True)
             worker.daemon = True
             worker.start()
 
@@ -496,7 +489,7 @@ class APIConnector:
                                 retry_count_if_api_call_limit_reached=retry_count_if_api_call_limit_reached,
                                 retry_wait_time_if_api_call_limit_reached=retry_wait_time_if_api_call_limit_reached)
 
-    def rule_coverage_query(self, data, include_boundary_rules=True):
+    def rule_coverage_query(self, data: List[RuleCoverageQueryEntryJsonStructure], include_boundary_rules=True):
         params = None
         if include_boundary_rules is not None:
             params = {'include_deny_rules': include_boundary_rules}
@@ -516,10 +509,6 @@ class APIConnector:
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
     def objects_label_delete(self, href: Union[str, 'pylo.Label']):
-        """
-
-        :type href: str|pylo.Label
-        """
         path = href
         if type(href) is pylo.Label:
             path = href.href
@@ -546,16 +535,28 @@ class APIConnector:
         path = href
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
-    def objects_virtual_service_get(self, max_results: int = None, async_mode=True):
+    def objects_label_dimension_get(self, max_results: int = None, async_mode=False) -> List[LabelDimensionObjectStructure]:
+        path = '/label_dimensions'
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
+
+    def objects_virtual_service_get(self, max_results: int = None, async_mode=True) -> List[VirtualServiceObjectJsonStructure]:
         path = '/sec_policy/draft/virtual_services'
         data = {}
 
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        results = self.do_get_call(path=path, async_call=async_mode, params=data)
+        # check type
+        if type(results) is list:
+            return results
+        raise pylo.PyloEx("Unexpected result type '{}' while expecting an array of Virtual Service objects".format(type(results)), results)
 
-    def objects_iplist_get(self, max_results: int = None, async_mode=True, search_name: str = None):
+    def objects_iplist_get(self, max_results: int = None, async_mode=True, search_name: str = None) -> List[IPListObjectJsonStructure]:
         path = '/sec_policy/draft/ip_lists'
         data = {}
 
@@ -565,13 +566,22 @@ class APIConnector:
         if max_results is not None:
             data['max_results'] = max_results
 
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        results: List[IPListObjectJsonStructure] = self.do_get_call(path=path, async_call=async_mode, params=data)
+        # check type
+        if type(results) is list:
+            return results
 
-    def objects_iplist_create(self, json_blob):
+        raise pylo.PyloEx("Unexpected result type '{}' while expecting an array of IP List objects".format(type(results)), results)
+
+    def objects_iplist_create(self, json_blob: IPListObjectCreationJsonStructure):
         path = '/sec_policy/draft/ip_lists'
         return self.do_post_call(path=path, json_arguments=json_blob)
 
     def objects_iplists_get_default_any(self) -> Optional[str]:
+        """
+           Returns the href of the default 'ANY' IP List or None (which is a bad sign!)
+        :return:
+        """
         response = self.objects_iplist_get(max_results=10, async_mode=False, search_name='0.0.0.0')
 
         for item in response:
@@ -580,7 +590,8 @@ class APIConnector:
 
         return None
 
-    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None, async_mode=True):
+    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None,
+                             async_mode=True) -> List[WorkloadObjectJsonStructure]:
         path = '/workloads'
         data = {}
 
@@ -624,18 +635,43 @@ class APIConnector:
     class WorkloadMultiDeleteTracker:
         _errors: Dict[str, str]
         _hrefs: Dict[str, bool]
-        _wkls: Dict[str, 'pylo.Workload']
+        _workloads: Dict[str, 'pylo.Workload']  # dict of workloads by HREF
         connector: 'pylo.APIConnector'
 
         def __init__(self, connector: 'pylo.APIConnector'):
             self.connector = connector
             self._hrefs = {}
             self._errors = {}
-            self._wkls = {}
+            self._workloads = {}
+
+        @property
+        def workloads(self) -> List['pylo.Workload']:
+            """
+            Return a copy of the list of workloads. Beware that if you added HREF (strings) instead of workloads, you
+            will get an empty array should ge tghe the 'hrefs' properties instead
+            :return:
+            """
+            return list(self._workloads.values())
+
+        @property
+        def workloads_by_href(self) -> Dict[str, 'pylo.Workload']:
+            """
+            Return a copy of the dict of workloads by href
+            :return:
+            """
+            return self._workloads.copy()
+
+        @property
+        def hrefs(self) -> List[str]:
+            """
+            Return a copy of the list of hrefs
+            :return:
+            """
+            return list(self._hrefs.keys())
 
         def add_workload(self, wkl: 'pylo.Workload'):
             self._hrefs[wkl.href] = True
-            self._wkls[wkl.href] = wkl
+            self._workloads[wkl.href] = wkl
 
         def add_href(self, href: str):
             self._hrefs[href] = True
@@ -643,7 +679,7 @@ class APIConnector:
         def add_error(self, href: str, message: str):
             self._errors[href] = message
 
-        def get_error_by_wlk(self, wkl: 'pylo.Workload') -> Union[str, None]:
+        def get_error_by_wlk(self, wkl: 'pylo.Workload') -> Optional[str]:
             found = self._errors.get(wkl.href, pylo.objectNotFound)
             if found is pylo.objectNotFound:
                 return None
@@ -712,12 +748,7 @@ class APIConnector:
     def new_tracker_workload_multi_delete(self):
         return APIConnector.WorkloadMultiDeleteTracker(self)
 
-    def objects_workload_delete_multi(self, href_or_workload_array):
-        """
-
-        :type href_or_workload_array: list[str]|list[pylo.Workload]
-        """
-
+    def objects_workload_delete_multi(self, href_or_workload_array: Union[List['pylo.Workload'],List[str]]):
         if len(href_or_workload_array) < 1:
             return
 
@@ -793,7 +824,7 @@ class APIConnector:
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
-    def objects_ruleset_get(self, max_results: int = None, async_mode=True):
+    def objects_ruleset_get(self, max_results: int = None, async_mode=True) -> List[RulesetObjectJsonStructure]:
         path = '/sec_policy/draft/rule_sets'
         data = {}
 
@@ -826,7 +857,7 @@ class APIConnector:
 
         return self.do_post_call(path=path, json_arguments=data, json_output_expected=True)
 
-    def objects_ruleset_update(self, ruleset_href: str, update_data):
+    def objects_ruleset_update(self, ruleset_href: str, update_data: RulesetObjectUpdateStructure):
         return self.do_put_call(path=ruleset_href,
                                 json_arguments=update_data,
                                 include_org_id=False,
@@ -854,13 +885,17 @@ class APIConnector:
 
     def objects_rule_create(self, ruleset_href: str,
                             intra_scope: bool,
-                            consumers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                            providers: List[Union['pylo.IPList', 'pylo.Label', 'pylo.LabelGroup', Dict]],
-                            services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                            consumers: List[Union[WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, 'pylo.IPList', 'pylo.Label', 'pylo.LabelGroup']],
+                            providers: List[Union[WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, 'pylo.IPList', 'pylo.Label', 'pylo.LabelGroup']],
+                            services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', RuleDirectServiceReferenceObjectJsonStructure]],
                             description='', machine_auth=False, secure_connect=False, enabled=True,
-                            stateless=False, consuming_security_principals=[],
+                            stateless=False, consuming_security_principals=None,
                             resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
-                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> Dict[str, Any]:
+                            resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) \
+            -> Dict[str, Any]:
+
+        if consuming_security_principals is None:
+            consuming_security_principals = []
 
         resolve_consumers = []
         if resolve_consumers_as_virtual_services:
@@ -915,7 +950,7 @@ class APIConnector:
 
         return self.do_post_call(path, json_arguments=data, json_output_expected=True, include_org_id=False)
 
-    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True) -> Dict[str, Any]:
+    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True) -> List[SecurityPrincipalObjectJsonStructure]:
         path = '/security_principals'
         data = {}
 
@@ -992,7 +1027,7 @@ class APIConnector:
                                 self._items[result_name].extra_debug_message = extra_infos
                                 break
 
-        def get_failed_items(self) -> Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem']:
+        def get_failed_items(self) -> Dict[str, 'APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem']:
             results: Dict[str, 'pylo.APIConnector.ApiAgentCompatibilityReport.ApiAgentCompatibilityReportItem'] = {}
             for infos in self._items.values():
                 if infos.status != 'green':
@@ -1053,379 +1088,15 @@ class APIConnector:
         return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)
 
     def objects_agent_reassign_pce(self, agent_href: str, target_pce: str):
+        """
+        Reassign an agent to a different PCE
+        :param agent_href:
+        :param target_pce:
+        :return:
+        """
         path = agent_href + '/update'
         data = {"target_pce_fqdn": target_pce}
         return self.do_put_call(path, json_arguments=data, include_org_id=False, json_output_expected=False)
-
-    class ExplorerFilterSetV1:
-        exclude_processes_emulate: Dict[str, str]
-        _exclude_processes: List[str]
-        _exclude_direct_services: List['pylo.DirectServiceInRule']
-        _time_from: Optional[datetime]
-        _time_to: Optional[datetime]
-        _policy_decision_filter: List[str]
-        _consumer_labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]
-        __filter_provider_ip_exclude: List[str]
-        __filter_consumer_ip_exclude: List[str]
-        __filter_provider_ip_include: List[str]
-        __filter_consumer_ip_include: List[str]
-
-        def __init__(self, max_results=10000):
-            self.__filter_consumer_ip_exclude = []
-            self.__filter_provider_ip_exclude = []
-            self.__filter_consumer_ip_include = []
-            self.__filter_provider_ip_include = []
-            self._consumer_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-            self._consumer_exclude_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-            self._provider_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-            self._provider_exclude_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-
-            self._consumer_workloads = {}
-            self._provider_workloads = {}
-
-            self._consumer_iplists = {}
-            self._consumer_iplists_exclude = {}
-            self._provider_iplists = {}
-            self._provider_iplists_exclude = {}
-
-
-            self.max_results = max_results
-            self._policy_decision_filter = []
-            self._time_from = None
-            self._time_to = None
-
-            self._include_direct_services = []
-
-            self._exclude_broadcast = False
-            self._exclude_multicast = False
-            self._exclude_direct_services = []
-            self.exclude_processes_emulate = {}
-            self._exclude_processes = []
-
-        @staticmethod
-        def __filter_prop_add_label(prop_dict, label_or_href):
-            """
-
-            @type prop_dict: dict
-            @type label_or_href: str|pylo.Label|pylo.LabelGroup
-            """
-            if isinstance(label_or_href, str):
-                prop_dict[label_or_href] = label_or_href
-                return
-            elif isinstance(label_or_href, pylo.Label):
-                prop_dict[label_or_href.href] = label_or_href
-                return
-            elif isinstance(label_or_href, pylo.LabelGroup):
-                # since 21.5 labelgroups can be included directly
-                # for nested_label in label_or_href.expand_nested_to_array():
-                #    prop_dict[nested_label.href] = nested_label
-                prop_dict[label_or_href.href] = label_or_href
-                return
-            else:
-                raise pylo.PyloEx("Unsupported object type {}".format(type(label_or_href)))
-
-        def consumer_include_label(self, label_or_href):
-            """
-
-            @type label_or_href: str|pylo.Label|pylo.LabelGroup
-            """
-            self.__filter_prop_add_label(self._consumer_labels, label_or_href)
-
-        def consumer_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
-            self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)
-
-        def consumer_exclude_labels(self, labels: List[Union[str, 'pylo.Label', 'pylo.LabelGroup']]):
-            for label in labels:
-                self.consumer_exclude_label(label)
-
-        def consumer_include_workload(self, workload_or_href:Union[str, 'pylo.Workload']):
-            if isinstance(workload_or_href, str):
-                self._consumer_workloads[workload_or_href] = workload_or_href
-                return
-
-            if isinstance(workload_or_href, pylo.Workload):
-                self._consumer_workloads[workload_or_href.href] = workload_or_href.href
-                return
-
-            raise pylo.PyloEx("Unsupported object type {}".format(type(workload_or_href)))
-
-        def provider_include_workload(self, workload_or_href:Union[str, 'pylo.Workload']):
-            if isinstance(workload_or_href, str):
-                self._provider_workloads[workload_or_href] = workload_or_href
-                return
-
-            if isinstance(workload_or_href, pylo.Workload):
-                self._provider_workloads[workload_or_href.href] = workload_or_href.href
-                return
-
-            raise pylo.PyloEx("Unsupported object type {}".format(type(workload_or_href)))
-
-        def consumer_include_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
-            if isinstance(iplist_or_href, str):
-                self._consumer_iplists[iplist_or_href] = iplist_or_href
-                return
-
-            if isinstance(iplist_or_href, pylo.IPList):
-                self._consumer_iplists[iplist_or_href.href] = iplist_or_href.href
-                return
-
-            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
-
-        def consumer_exclude_cidr(self, ipaddress: str):
-            self.__filter_consumer_ip_exclude.append(ipaddress)
-
-        def consumer_exclude_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
-            if isinstance(iplist_or_href, str):
-                self._consumer_iplists_exclude[iplist_or_href] = iplist_or_href
-                return
-
-            if isinstance(iplist_or_href, pylo.IPList):
-                self._consumer_iplists_exclude[iplist_or_href.href] = iplist_or_href.href
-                return
-
-            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
-
-        def consumer_exclude_ip4map(self, map: 'pylo.IP4Map'):
-            for item in map.to_list_of_cidr_string():
-                self.consumer_exclude_cidr(item)
-
-        def consumer_include_cidr(self, ipaddress: str):
-            self.__filter_consumer_ip_include.append(ipaddress)
-
-        def consumer_include_ip4map(self, map: 'pylo.IP4Map'):
-            for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
-                self.consumer_include_cidr(item)
-
-        def provider_include_label(self, label_or_href):
-            """
-
-            @type label_or_href: str|pylo.Label|pylo.LabelGroup
-            """
-            self.__filter_prop_add_label(self._provider_labels, label_or_href)
-
-        def provider_include_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
-            if isinstance(iplist_or_href, str):
-                self._provider_iplists[iplist_or_href] = iplist_or_href
-                return
-
-            if isinstance(iplist_or_href, pylo.IPList):
-                self._provider_iplists[iplist_or_href.href] = iplist_or_href.href
-                return
-
-            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
-
-        def provider_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
-            self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
-
-        def provider_exclude_labels(self, labels_or_hrefs: List[Union[str, 'pylo.Label', 'pylo.LabelGroup']]):
-            for label in labels_or_hrefs:
-                self.provider_exclude_label(label)
-
-        def provider_exclude_cidr(self, ipaddress: str):
-            self.__filter_provider_ip_exclude.append(ipaddress)
-
-        def provider_exclude_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
-            if isinstance(iplist_or_href, str):
-                self._provider_iplists_exclude[iplist_or_href] = iplist_or_href
-                return
-
-            if isinstance(iplist_or_href, pylo.IPList):
-                self._provider_iplists_exclude[iplist_or_href.href] = iplist_or_href.href
-                return
-
-            raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
-
-        def provider_exclude_ip4map(self, map: 'pylo.IP4Map'):
-            for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
-                self.provider_exclude_cidr(item)
-
-        def provider_include_cidr(self, ipaddress: str):
-            self.__filter_provider_ip_include.append(ipaddress)
-
-        def provider_include_ip4map(self, map: 'pylo.IP4Map'):
-            for item in map.to_list_of_cidr_string():
-                self.provider_include_cidr(item)
-
-        def service_include_add(self, service: 'pylo.DirectServiceInRule'):
-            self._include_direct_services.append(service)
-
-        def service_exclude_add(self, service: 'pylo.DirectServiceInRule'):
-            self._exclude_direct_services.append(service)
-
-        def process_exclude_add(self, process_name: str, emulate_on_client=False):
-            if emulate_on_client:
-                self.exclude_processes_emulate[process_name] = process_name
-            else:
-                self._exclude_processes.append(process_name)
-
-        def set_exclude_broadcast(self, exclude=True):
-            self._exclude_broadcast = exclude
-
-        def set_exclude_multicast(self, exclude=True):
-            self._exclude_multicast = exclude
-
-        def set_time_from(self, time: datetime):
-            self._time_from = time
-
-        def set_time_from_x_seconds_ago(self, seconds: int):
-            self._time_from = datetime.utcnow() - timedelta(seconds=seconds)
-
-        def set_time_from_x_days_ago(self, days: int):
-            return self.set_time_from_x_seconds_ago(days*60*60*24)
-
-        def set_max_results(self, max: int):
-            self.max_results = max
-
-        def set_time_to(self, time: datetime):
-            self._time_to = time
-
-        def filter_on_policy_decision_unknown(self):
-            self._policy_decision_filter.append('unknown')
-
-        def filter_on_policy_decision_blocked(self):
-            self._policy_decision_filter.append('blocked')
-
-        def filter_on_policy_decision_potentially_blocked(self):
-            self._policy_decision_filter.append('potentially_blocked')
-
-        def filter_on_policy_decision_all_blocked(self):
-            self.filter_on_policy_decision_blocked()
-            self.filter_on_policy_decision_potentially_blocked()
-
-        def filter_on_policy_decision_allowed(self):
-            self._policy_decision_filter.append('allowed')
-
-        def generate_json_query(self):
-            # examples:
-            # {"sources":{"include":[[]],"exclude":[]}
-            #  "destinations":{"include":[[]],"exclude":[]},
-            #  "services":{"include":[],"exclude":[]},
-            #  "sources_destinations_query_op":"and",
-            #  "start_date":"2015-02-21T09:18:46.751Z","end_date":"2020-02-21T09:18:46.751Z",
-            #  "policy_decisions":[],
-            #  "max_results":10000}
-            #
-            filters = {
-                "sources": {"include": [], "exclude": []},
-                "destinations": {"include": [], "exclude": []},
-                "services": {"include": [], "exclude": []},
-                "sources_destinations_query_op": "and",
-                "policy_decisions": self._policy_decision_filter,
-                "max_results": self.max_results,
-                "query_name": "api call"
-                }
-
-            if self._exclude_broadcast:
-                filters['destinations']['exclude'].append({'transmission': 'broadcast'})
-
-            if self._exclude_multicast:
-                filters['destinations']['exclude'].append({'transmission': 'multicast'})
-
-            if self._time_from is not None:
-                filters["start_date"] = self._time_from.strftime('%Y-%m-%dT%H:%M:%SZ')
-            else:
-                filters["start_date"] = "2010-10-13T11:27:28.824Z",
-
-            if self._time_to is not None:
-                filters["end_date"] = self._time_to.strftime('%Y-%m-%dT%H:%M:%SZ')
-            else:
-                filters["end_date"] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-
-            if len(self._consumer_labels) > 0:
-                tmp = []
-                for label in self._consumer_labels.values():
-                    if label.is_label():
-                        tmp.append({'label': {'href': label.href}})
-                    else:
-                        tmp.append({'label_group': {'href': label.href}})
-                filters['sources']['include'].append(tmp)
-
-            if len(self._consumer_workloads) > 0:
-                tmp = []
-                for workload_href in self._consumer_workloads.keys():
-                    tmp.append({'workload': {'href': workload_href}})
-                filters['sources']['include'].append(tmp)
-
-            if len(self._consumer_iplists) > 0:
-                tmp = []
-                for iplist_href in self._consumer_iplists.keys():
-                    tmp.append({'ip_list': {'href': iplist_href}})
-                filters['sources']['include'].append(tmp)
-
-            if len(self.__filter_consumer_ip_include) > 0:
-                tmp = []
-                for ip_txt in self.__filter_consumer_ip_include:
-                    tmp.append({'ip_address': ip_txt})
-                filters['sources']['include'].append(tmp)
-
-            if len(self._provider_labels) > 0:
-                tmp = []
-                for label in self._provider_labels.values():
-                    if label.is_label():
-                        tmp.append({'label': {'href': label.href}})
-                    else:
-                        pass
-                        tmp.append({'label_group': {'href': label.href}})
-                filters['destinations']['include'].append(tmp)
-
-            if len(self._provider_workloads) > 0:
-                tmp = []
-                for workload_href in self._provider_workloads.keys():
-                    tmp.append({'workload': {'href': workload_href}})
-                filters['destinations']['include'].append(tmp)
-
-            if len(self._provider_iplists) > 0:
-                tmp = []
-                for iplist_href in self._provider_iplists.keys():
-                    tmp.append({'ip_list': {'href': iplist_href}})
-                filters['destinations']['include'].append(tmp)
-
-            if len(self.__filter_provider_ip_include) > 0:
-                tmp = []
-                for ip_txt in self.__filter_provider_ip_include:
-                    tmp.append({'ip_address': ip_txt})
-                filters['destinations']['include'].append(tmp)
-
-            consumer_exclude_json = []
-            if len(self._consumer_exclude_labels) > 0:
-                for label_href in self._consumer_exclude_labels.keys():
-                    filters['sources']['exclude'].append({'label': {'href': label_href}})
-
-            if len(self._consumer_iplists_exclude) > 0:
-                for iplist_href in self._consumer_iplists_exclude.keys():
-                    filters['sources']['exclude'].append({'ip_list': {'href': iplist_href}})
-
-            if len(self.__filter_consumer_ip_exclude) > 0:
-                for ipaddress in self.__filter_consumer_ip_exclude:
-                    filters['sources']['exclude'].append({'ip_address': ipaddress})
-
-            provider_exclude_json = []
-            if len(self._provider_exclude_labels) > 0:
-                for label_href in self._provider_exclude_labels.keys():
-                    filters['destinations']['exclude'].append({'label': {'href': label_href}})
-
-            if len(self._provider_iplists_exclude) > 0:
-                for iplist_href in self._provider_iplists_exclude.keys():
-                    filters['destinations']['exclude'].append({'ip_list': {'href': iplist_href}})
-
-            if len(self.__filter_provider_ip_exclude) > 0:
-                for ipaddress in self.__filter_provider_ip_exclude:
-                    filters['destinations']['exclude'].append({'ip_address': ipaddress})
-
-            if len(self._include_direct_services) > 0:
-                for service in self._include_direct_services:
-                    filters['services']['include'] .append(service.get_api_json())
-
-            if len(self._exclude_direct_services) > 0:
-                for service in self._exclude_direct_services:
-                    filters['services']['exclude'].append(service.get_api_json())
-
-            if len(self._exclude_processes) > 0:
-                for process in self._exclude_processes:
-                    filters['services']['exclude'].append({'process_name': process})
-
-            # print(filters)
-            return filters
 
     def explorer_async_queries_all_status_get(self):
         """
@@ -1441,14 +1112,17 @@ class APIConnector:
 
         raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
 
-    def explorer_search(self, filters: Union[Dict, 'pylo.APIConnector.ExplorerFilterSetV1'], max_running_time_seconds = 1800, check_for_update_interntval_seconds = 10) -> 'pylo.ExplorerResultSetV1':
+    def explorer_search(self, filters: Union[Dict, 'pylo.ExplorerFilterSetV1'],
+                        max_running_time_seconds=1800,
+                        check_for_update_interval_seconds=10) -> 'pylo.ExplorerResultSetV1':
         path = "/traffic_flows/async_queries"
-        if isinstance(filters, pylo.APIConnector.ExplorerFilterSetV1):
+        if isinstance(filters, pylo.ExplorerFilterSetV1):
             data = filters.generate_json_query()
         else:
             data = filters
 
-        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=True, json_output_expected=True)
+        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=True,
+                                                       json_output_expected=True)
 
         if 'status' not in query_queued_json_response:
             raise pylo.PyloApiEx("Invalid response from API, missing 'status' property", query_queued_json_response)
@@ -1483,7 +1157,7 @@ class APIConnector:
                 raise pylo.PyloApiEx("Query failed with status {}".format(queries_status_json_response['status']),
                                      queries_status_json_response)
 
-            time.sleep(check_for_update_interntval_seconds)
+            time.sleep(check_for_update_interval_seconds)
 
         if query_status is None:
             raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
@@ -1515,6 +1189,10 @@ class APIConnector:
 
         return dict_of_health_reports
 
-    def new_RuleSearchQuery(self) -> 'pylo.RuleSearchQuery':
+    def new_rule_search_query(self) -> 'pylo.RuleSearchQuery':
         return pylo.RuleSearchQuery(self)
+
+    def new_explorer_query(self, max_results: int = 1500, max_running_time_seconds: int = 1800,
+                           check_for_update_interval_seconds: int = 10) -> 'pylo.ExplorerQuery':
+        return pylo.ExplorerQuery(self, max_results, max_running_time_seconds, check_for_update_interval_seconds)
 

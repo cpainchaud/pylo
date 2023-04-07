@@ -6,21 +6,13 @@ import math
 import pylo
 from .misc import make_filename_with_timestamp
 from . import Command
+from ..NativeParsers import LabelParser
 
 command_name = 'ven-idle-to-visibility'
 objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--filter-env-label', type=str, required=False, default=None,
-                        help='Filter agents by environment labels (separated by commas)')
-    parser.add_argument('--filter-loc-label', type=str, required=False, default=None,
-                        help='Filter agents by environment labels (separated by commas)')
-    parser.add_argument('--filter-app-label', type=str, required=False, default=None,
-                        help='Filter agents by role labels (separated by commas)')
-    parser.add_argument('--filter-role-label', type=str, required=False, default=None,
-                        help='Filter agents by role labels (separated by commas)')
-
     parser.add_argument('--filter-on-href-from-file', type=str, required=False, default=None,
                         help='Filter agents on workload href found in specific csv file')
 
@@ -30,14 +22,22 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--ignore-all-incompatibilities', action='store_true',
                         help="Don't check compatibility report and just do the change!")
 
-    parser.add_argument('--confirm', action='store_true',
+    parser.add_argument('-c', '--confirm', action='store_true',
                         help='Request upgrade of the Agents')
 
-    parser.add_argument('--mode', type=str.lower, required=True, choices=['build', 'test'],
+    parser.add_argument('-m', '--mode', type=str.lower, required=True, choices=['build', 'test'],
                         help='Select if you want to switch from IDLE to BUILD or TEST')
 
 
-def __main(args, org: pylo.Organization, **kwargs):
+@dataclass
+class MyBuiltInParser:
+    filter_env_label = LabelParser('--filter-env-label', '-env', 'env', is_required=False, allow_multiple=True)
+    filter_app_label = LabelParser('--filter-app-label', '-app', 'app', is_required=False, allow_multiple=True)
+    filter_role_label = LabelParser('--filter-role-label', '-role', 'role', is_required=False, allow_multiple=True)
+    filter_loc_label = LabelParser('--filter-loc-label', '-loc', 'loc', is_required=False, allow_multiple=True)
+
+
+def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwargs):
     confirmed_updates = args['confirm']
     switch_to_mode = args['mode']
     href_filter_file = args['filter_on_href_from_file']
@@ -84,7 +84,7 @@ def __main(args, org: pylo.Organization, **kwargs):
               flush=True)
 
     agents = {}
-    for agent in org.AgentStore.itemsByHRef.values():
+    for agent in org.AgentStore.items_by_href.values():
         if agent.mode == 'idle':
             agents[agent.href] = agent
     print(" * Found {} IDLE Agents".format(len(agents)))
@@ -92,57 +92,38 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print(" * Parsing filters")
 
-    env_label_list = {}
-    if args['filter_env_label'] is not None:
+    env_label_list = native_parsers.filter_env_label.results
+    if env_label_list is None:
+        print("   * No Environment Labels specified")
+    else:
         print("   * Environment Labels specified")
-        for raw_label_name in args['filter_env_label'].split(','):
-            print("     - label named '{}'".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_env)
-            if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print(" found")
-                env_label_list[label] = label
+        for label in env_label_list:
+            print("     - label named '{}'".format(label.name))
 
-    loc_label_list = {}
-    if args['filter_loc_label'] is not None:
+    loc_label_list = native_parsers.filter_loc_label.results
+    if loc_label_list is None:
+        print("   * No Location Labels specified")
+    else:
         print("   * Location Labels specified")
-        for raw_label_name in args['filter_loc_label'].split(','):
-            print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_loc)
-            if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print(" found")
-                loc_label_list[label] = label
+        for label in loc_label_list:
+            print("     - label named '{}'".format(label.name))
 
-    app_label_list = {}
-    if args['filter_app_label'] is not None:
+    app_label_list = native_parsers.filter_app_label.results
+    if app_label_list is None:
+        print("   * No Application Labels specified")
+    else:
         print("   * Application Labels specified")
-        for raw_label_name in args['filter_app_label'].split(','):
-            print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_app)
-            if label is None:
-                print(" NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print(" found")
-                app_label_list[label] = label
+        for label in app_label_list:
+            print("     - label named '{}'".format(label.name))
 
-    role_label_list = {}
-    if args['filter_role_label'] is not None:
+    role_label_list = native_parsers.filter_role_label.results
+    if role_label_list is None:
+        print("   * No Role Labels specified")
+    else:
         print("   * Role Labels specified")
-        for raw_label_name in args['filter_role_label'].split(','):
-            print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_role)
-            if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print("found")
-                role_label_list[label] = label
+        for label in role_label_list:
+            print("     - label named '{}'".format(label.name))
+
     print("  * DONE")
 
     print(" * Applying filters to the list of Agents...", flush=True, end='')
@@ -151,16 +132,16 @@ def __main(args, org: pylo.Organization, **kwargs):
         agent = agents[agent_href]
         workload = agent.workload
 
-        if len(env_label_list) > 0 and (workload.env_label is None or workload.env_label not in env_label_list):
+        if env_label_list is not None and (workload.env_label is None or workload.env_label not in env_label_list):
             del agents[agent_href]
             continue
-        if len(loc_label_list) > 0 and (workload.loc_label is None or workload.loc_label not in loc_label_list):
+        if loc_label_list is not None and (workload.loc_label is None or workload.loc_label not in loc_label_list):
             del agents[agent_href]
             continue
-        if len(app_label_list) > 0 and (workload.app_label is None or workload.app_label not in app_label_list):
+        if app_label_list is not None and (workload.app_label is None or workload.app_label not in app_label_list):
             del agents[agent_href]
             continue
-        if len(role_label_list) > 0 and (workload.role_label is None or workload.role_label not in role_label_list):
+        if role_label_list is not None and (workload.role_label is None or workload.role_label not in role_label_list):
             del agents[agent_href]
             continue
 
@@ -300,6 +281,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         print()
 
 
-
-
-command_object = Command(command_name, __main, fill_parser, objects_load_filter)
+command_object = Command(command_name, __main, fill_parser,
+                         load_specific_objects_only=objects_load_filter,
+                         native_parsers_as_class=MyBuiltInParser()
+                         )

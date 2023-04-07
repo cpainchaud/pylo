@@ -48,7 +48,7 @@ if connector is None:
     print("****ERROR**** No cached credentials found for PCE {}".format())
     exit(1)
 
-print("PCE Software version is {}".format(connector.getSoftwareVersionString()))
+print("PCE Software version is {}".format(connector.get_software_version_string()))
 
 print("* Now downloading Workload JSON...", end='', flush=True)
 all_workloads_json = connector.objects_workload_get(max_results=999999, async_mode=False)
@@ -66,7 +66,7 @@ print("* attempting to create an IP¨List", end='', flush=True)
 data = {'name': 'an IPList 2', "ip_ranges": [
     {"from_ip": "192.168.0.0/24"},
     {"from_ip": "172.16.0.0/24"},
-] }
+]}
 result = connector.objects_iplist_create(data)
 
 if 'href' not in result:
@@ -74,7 +74,6 @@ if 'href' not in result:
     exit(1)
 
 print("OK! created with HREF={}".format(result['href']))
-
 
 print()
 

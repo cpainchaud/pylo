@@ -2,14 +2,15 @@ from typing import Dict, Optional, List
 
 
 class Command:
-
     def __init__(self, name: str, main_func, parser_func, load_specific_objects_only: Optional[List[str]] = None,
-                 skip_pce_config_loading: bool = False):
+                 skip_pce_config_loading: bool = False,
+                 native_parsers_as_class: Optional = None):
         self.name: str = name
         self.main = main_func
         self.fill_parser = parser_func
         self.load_specific_objects_only: Optional[List[str]] = load_specific_objects_only
         self.skip_pce_config_loading = skip_pce_config_loading
+        self.native_parsers = native_parsers_as_class
         available_commands[name] = self
 
 

@@ -52,7 +52,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print(" * Checking for iplist name collisions:", flush=True)
     name_cache = {}
-    for iplist in org.IPListStore.itemsByHRef.values():
+    for iplist in org.IPListStore.items_by_href.values():
         if iplist.name is not None and len(iplist.name) > 0:
             lower_name = iplist.name.lower()
             if lower_name not in name_cache:

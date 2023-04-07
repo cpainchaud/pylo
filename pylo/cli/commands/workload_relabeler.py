@@ -373,7 +373,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             change_needed = False
 
             if csv_object[label_type] is not None and len(csv_object[label_type]) > 0:
-                label_found = org.LabelStore.find_label_by_name_lowercase_and_type(csv_object[label_type], pylo.LabelStore.label_type_str_to_int(label_type))
+                label_found = org.LabelStore.find_label_by_name(csv_object[label_type], label_type)
                 if label_found is None:
                     change_needed = True
                     temp_label_name = '**{}**{}'.format(label_type, csv_object[label_type].lower())
@@ -434,7 +434,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         def process_label(label_type: str):
             if data[label_type] is not None and len(data[label_type]) > 0:
                 # print(data)
-                found_label = org.LabelStore.find_label_by_name_lowercase_and_type(data[label_type], pylo.LabelStore.label_type_str_to_int(label_type))
+                found_label = org.LabelStore.find_label_by_name(data[label_type], pylo.LabelStore.label_type)
                 if found_label is None:
                     raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data[label_type], data['*line*']))
                 workload_found_label = workload.get_label_by_type_str(label_type)

@@ -5,10 +5,6 @@ import sys
 originHostname='10.107.3.2'
 targetHostname='ilo-emea-poc.xmp.net.intra'
 
-
-origin = pylo.Organization(1)
-target = pylo.Organization(1)
-
 exit_with_error = None
 
 
@@ -50,11 +46,11 @@ def check_conflicts_between_two_pce(origin: pylo.Organization, target: pylo.Orga
 
 
 print("Loading Origin PCE configuration from " + originHostname + " or cached file... ", end="", flush=True)
-origin.load_from_cache_or_saved_credentials(originHostname)
+origin = pylo.get_organization_using_credential_file(originHostname)
 print("OK!")
 
 print("Loading Target PCE configuration from " + targetHostname + " or cached file ... ", end="", flush=True)
-target.load_from_cache_or_saved_credentials(targetHostname)
+target = pylo.get_organization_using_credential_file(targetHostname)
 print("OK!")
 
 conflicting_name_at_origin = check_unique_within_single_pce(origin)

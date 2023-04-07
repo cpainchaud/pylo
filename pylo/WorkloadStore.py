@@ -1,13 +1,13 @@
-from pylo import log, IP4Map, PyloEx, Workload, nice_json, Label
+from pylo import log, IP4Map, PyloEx, Workload, nice_json, Label, LabelGroup
 from .Helpers import *
 from .Organization import Organization
-from typing import Optional, List
+from typing import Optional, List, Union, Set
 
 
 class WorkloadStore:
 
     def __init__(self, owner: 'Organization'):
-        self.owner = owner
+        self.owner: Organization = owner
         self.itemsByHRef: Dict[str, Workload] = {}
 
     def load_workloads_from_json(self, json_list):
@@ -84,27 +84,53 @@ class WorkloadStore:
 
         return result
 
-    def find_workloads_matching_all_labels(self, labels: List[Label]) -> Dict[str, 'Workload']:
+    def find_workloads_matching_all_labels(self, labels: Union[List[Label|LabelGroup], Dict[str,Label|LabelGroup]])\
+            -> Dict[str, 'Workload']:
         """
-        Find all Workloads which are using all the Labels from a specified list.
+        Find all Workloads which are using all the Labels from a specified list/dict. Note that labels will be ordered by type
+        and workloads will need to match 1 Label of each specified. LabelGroups will be expanded.
+        If one of the labels is None, it will be ignored
 
         :param labels: list of Labels you want to match on
         :return: a dictionary of all matching Workloads using their HREF as key
         """
-        result = {}
+        unique_labels: Set[Union[Label, LabelGroup]] = set()
 
-        for href, workload in self.itemsByHRef.items():
-            matched = True
+        if isinstance(labels, list):
             for label in labels:
                 if label is None:
+                    pylo.log.debug("Label is None, skipping")
                     continue
-                if not workload.is_using_label(label):
-                    matched = False
+                if isinstance(label, LabelGroup):
+                    unique_labels.update(label.expand_nested_to_dict_by_href().values())
+                else:
+                    unique_labels.add(label)
+        else:
+            for label in labels.values():
+                if label is None:
+                    pylo.log.warn("Label is None, skipping")
+                    continue
+                if isinstance(label, LabelGroup):
+                    unique_labels.update(label.expand_nested_to_dict_by_href().values())
+                else:
+                    unique_labels.add(label)
+
+        labels_by_type = pylo.LabelStore.Utils.list_to_dict_by_type(unique_labels)
+
+        result = {}
+
+        for workload in self.itemsByHRef.values():
+            workload_is_a_match = True
+            for label_type, labels_to_find in labels_by_type.items():
+                workload_label = workload.get_label_by_type_str(label_type)
+                if workload_label is None or workload_label not in labels_to_find:
+                    workload_is_a_match = False
                     break
-            if matched:
-                result[href] = workload
+            if workload_is_a_match:
+                result[workload.href] = workload
 
         return result
+
 
     def find_workload_matching_forced_name(self, name: str, case_sensitive: bool = True, strip_fqdn: bool = False) -> Optional[Workload]:
         """
@@ -199,17 +225,9 @@ class WorkloadStore:
         return result
 
     def count_workloads(self) -> int:
-        """
-
-
-        """
         return len(self.itemsByHRef)
 
     def count_managed_workloads(self) -> int:
-        """
-
-
-        """
         count = 0
 
         for item in self.itemsByHRef.values():
@@ -230,7 +248,7 @@ class WorkloadStore:
 
         return results
 
-    def get_managed_workloads_dict_href(self) -> Dict[str, 'Workload']:
+    def get_managed_workloads_dict_by_href(self) -> Dict[str, 'Workload']:
         """
         Get a dictionary of all managed workloads using their HREF as key
         :return:
@@ -243,10 +261,6 @@ class WorkloadStore:
         return results
 
     def count_deleted_workloads(self) -> int:
-        """
-
-
-        """
         count = 0
         for item in self.itemsByHRef.values():
             if item.deleted:
@@ -256,10 +270,6 @@ class WorkloadStore:
         return count
 
     def count_unmanaged_workloads(self, if_not_deleted=False) -> int:
-        """
-
-
-        """
         count = 0
 
         for item in self.itemsByHRef.values():
@@ -267,5 +277,13 @@ class WorkloadStore:
                 count += 1
 
         return count
+
+    @property
+    def workloads(self) -> List['Workload']:
+        """
+        Get a list of all workloads
+        :return:
+        """
+        return list(self.itemsByHRef.values())
 
 

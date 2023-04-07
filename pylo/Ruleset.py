@@ -1,7 +1,8 @@
 from typing import Optional, List, Union, Dict
 
 import pylo
-from pylo import log, Organization
+from .API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, \
+    RulesetScopeEntryLineJsonStructure
 import re
 
 ruleset_id_extraction_regex = re.compile(r"^/orgs/([0-9]+)/sec_policy/([0-9]+)?(draft)?/rule_sets/(?P<id>[0-9]+)$")
@@ -13,7 +14,7 @@ class RulesetScope:
         self.owner: 'pylo.Ruleset' = owner
         self.scope_entries: Dict['pylo.RulesetScopeEntry', 'pylo.RulesetScopeEntry'] = {}
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: List[List[RulesetScopeEntryLineJsonStructure]]):
         for scope_json in data:
             scope_entry = pylo.RulesetScopeEntry(self)
             scope_entry.load_from_json(scope_json)
@@ -30,17 +31,19 @@ class RulesetScope:
 
         return result
 
+    def has_at_least_one_all_all_all(self) -> bool:
+        for scope_entry in self.scope_entries:
+            if scope_entry.is_all_all_all():
+                return True
+        return False
 
 class RulesetScopeEntry:
 
     def __init__(self, owner: 'pylo.RulesetScope'):
         self.owner: pylo.RulesetScope = owner
-        self.loc_label: Optional['pylo.Label'] = None
-        self.env_label: Optional['pylo.Label'] = None
-        self.app_label: Optional['pylo.Label'] = None
+        self._labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
 
-    def load_from_json(self, data):
-        self.loc_label = None
+    def load_from_json(self, data: List[RulesetScopeEntryLineJsonStructure]):
         #log.error(pylo.nice_json(data))
         l_store = self.owner.owner.owner.owner.LabelStore
         for label_json in data:
@@ -53,18 +56,49 @@ class RulesetScopeEntry:
             if href_entry is None:
                 raise pylo.PyloEx("Cannot find 'href' entry in scope: {}".format(pylo.nice_json(data)))
 
-            label = l_store.find_by_href_or_die(href_entry)
-            if label.type_is_location():
-                self.loc_label = label
-            elif label.type_is_environment():
-                self.env_label = label
-            elif label.type_is_application():
-                self.app_label = label
-            else:
+            label = l_store.find_by_href(href_entry)
+            if label is None:
+                raise pylo.PyloEx("Cannot find label with href '{}' in Ruleset '{}' scope: {}".format(href_entry,
+                                                                                                      self.owner.owner.name,
+                                                                                      pylo.nice_json(data)))
+
+            if label.type not in self.owner.owner.owner.owner.LabelStore.label_types_as_set:
                 raise pylo.PyloEx("Unsupported label type '{}' named '{}' in scope of ruleset '{}'/'{}'".format(label.type_string(),
                                                                                                                 label.name,
                                                                                                                 self.owner.owner.href,
                                                                                                                 self.owner.owner.name))
+            self._labels[label.type] = label
+
+    @property
+    def labels(self) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return a copy of the labels list
+        """
+        return list(self._labels.values())
+
+    @property
+    def labels_sorted_by_type(self) -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return a copy of the labels list sorted by type which are defined by the LabelStore
+        """
+        return pylo.LabelStore.Utils.list_sort_by_type(self._labels.values(), self.owner.owner.owner.owner.LabelStore.label_types)
+
+    @property
+    def labels_by_type(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return a copy of the labels dict keyed by label type
+        :return:
+        """
+        return self._labels.copy()
+
+    @property
+    def labels_by_href(self) -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return labels dict keyed by label href
+        :return:
+        """
+        return {label.href: label for label in self._labels.values()}
+
 
     def to_string(self, label_separator = '|', use_href=False):
         string = 'All' + label_separator
@@ -93,9 +127,31 @@ class RulesetScopeEntry:
         return string
 
     def is_all_all_all(self):
-        if self.app_label is None and self.env_label is None and self.loc_label is None:
-            return True
-        return False
+        return len(self._labels) == 0
+
+    @property
+    def loc_label(self) -> Optional['pylo.Label']:
+        """
+        @deprecated
+        :return:
+        """
+        return self._labels.get('loc')
+
+    @property
+    def env_label(self) -> Optional['pylo.Label']:
+        """
+        @deprecated
+        :return:
+        """
+        return self._labels.get('env')
+
+    @property
+    def app_label(self) -> Optional['pylo.Label']:
+        """
+        @deprecated
+        :return:
+        """
+        return self._labels.get('app')
 
 
 class Ruleset:
@@ -110,9 +166,43 @@ class Ruleset:
         self.name: str = ''
         self.description: str = ''
         self.scopes: 'pylo.RulesetScope' = pylo.RulesetScope(self)
-        self.rules_by_href: Dict[str, 'pylo.Rule'] = {}
+        # must keep an ordered list of rules while the dict by href is there for quick searches
+        self._rules_by_href: Dict[str, 'pylo.Rule'] = {}
+        self._rules: List['pylo.Rule'] = []
 
-    def load_from_json(self, data):
+    @property
+    def rules(self):
+        """
+        Return a copy of the rules list
+        :return:
+        """
+        return self._rules.copy()
+
+    @property
+    def rules_by_href(self):
+        """
+        Return a copy of the rules dict keyed by href
+        :return:
+        """
+        return self._rules_by_href.copy()
+
+    @property
+    def rules_ordered_by_type(self):
+        """
+        Return a list of rules ordered by type (Intra Scope First)
+        :return:
+        """
+        rules: List[pylo.Rule] = []
+        for rule in self._rules:
+            if rule.is_intra_scope():
+                rules.append(rule)
+        for rule in self._rules:
+            if not rule.is_intra_scope():
+                rules.append(rule)
+        return rules
+
+
+    def load_from_json(self, data: RulesetObjectJsonStructure):
         if 'name' not in data:
             raise pylo.PyloEx("Cannot find Ruleset name in JSON data: \n" + pylo.Helpers.nice_json(data))
         self.name = data['name']
@@ -121,56 +211,61 @@ class Ruleset:
             raise pylo.PyloEx("Cannot find Ruleset href in JSON data: \n" + pylo.Helpers.nice_json(data))
         self.href = data['href']
 
-        if 'scopes' not in data:
+        scopes_json = data.get('scopes')
+        if scopes_json is None:
             raise pylo.PyloEx("Cannot find Ruleset scope in JSON data: \n" + pylo.Helpers.nice_json(data))
 
         self.description = data.get('description')
         if self.description is None:
             self.description = ''
 
-        self.scopes.load_from_json(data['scopes'])
+        self.scopes.load_from_json(scopes_json)
 
         if 'rules' in data:
             for rule_data in data['rules']:
                 self.load_single_rule_from_json(rule_data)
 
-    def load_single_rule_from_json(self, rule_data) -> 'pylo.Rule':
+    def load_single_rule_from_json(self, rule_data: RuleObjectJsonStructure) -> 'pylo.Rule':
         new_rule = pylo.Rule(self)
         new_rule.load_from_json(rule_data)
-        self.rules_by_href[new_rule.href] = new_rule
+        self._rules_by_href[new_rule.href] = new_rule
+        self._rules.append(new_rule)
         return new_rule
 
-    def api_delete_rule(self, rule: Union[str, 'pylo.Rule']):
+    def api_delete_rule(self, rule_or_href: Union[str, 'pylo.Rule']):
         """
 
-        :param rule: should be href string or a Rule object
+        :param rule_or_href: HRef string or a Rule object to be deleted
         """
-        href = rule
-        if isinstance(rule, pylo.Rule):
-            href = rule.href
+        href = rule_or_href
+        if isinstance(rule_or_href, pylo.Rule):
+            href = rule_or_href.href
 
-        find_object = self.rules_by_href.get(href)
+        find_object = self._rules_by_href.get(href)
         if find_object is None:
             raise pylo.PyloEx("Cannot delete a Rule with href={} which is not part of ruleset {}/{}".format(href, self.name, self.href))
 
         self.owner.owner.connector.objects_rule_delete(href)
-        del self.rules_by_href[href]
+        del self._rules_by_href[href]
+        self._rules.remove(find_object)
 
     def api_create_rule(self, intra_scope: bool,
                         consumers: List['pylo.RuleActorsAcceptableTypes'],
                         providers: List['pylo.RuleActorsAcceptableTypes'],
-                        services: List[Union['pylo.Service', 'pylo.DirectServiceInRule', Dict]],
+                        services: List[Union['pylo.Service', 'pylo.DirectServiceInRule']],
                         description='', machine_auth=False, secure_connect=False, enabled=True,
-                        stateless=False, consuming_security_principals=[],
+                        stateless=False, consuming_security_principals=None,
                         resolve_consumers_as_virtual_services=True, resolve_consumers_as_workloads=True,
                         resolve_providers_as_virtual_services=True, resolve_providers_as_workloads=True) -> 'pylo.Rule':
+        if consuming_security_principals is None:
+            consuming_security_principals = []
 
         new_rule_json = self.owner.owner.connector.objects_rule_create(
             intra_scope=intra_scope, ruleset_href=self.href,
             consumers=consumers, providers=providers, services=services,
             description=description, machine_auth=machine_auth, secure_connect=secure_connect, enabled=enabled,
             stateless=stateless, consuming_security_principals=consuming_security_principals,
-            resolve_consumers_as_virtual_services=resolve_providers_as_virtual_services,
+            resolve_consumers_as_virtual_services=resolve_consumers_as_virtual_services,
             resolve_consumers_as_workloads=resolve_consumers_as_workloads,
             resolve_providers_as_virtual_services=resolve_providers_as_virtual_services,
             resolve_providers_as_workloads=resolve_providers_as_workloads
@@ -178,17 +273,17 @@ class Ruleset:
 
         return self.load_single_rule_from_json(new_rule_json)
 
-    def count_rules(self):
-        return len(self.rules_by_href)
+    def count_rules(self) -> int:
+        return len(self._rules)
 
-    def extract_id_from_href(self):
+    def extract_id_from_href(self) -> int:
         match = ruleset_id_extraction_regex.match(self.href)
         if match is None:
             raise pylo.PyloEx("Cannot extract ruleset_id from href '{}'".format(self.href))
 
-        return match.group("id")
+        return int(match.group("id"))
 
-    def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None):
+    def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None) -> str:
         if pce_hostname is None or pce_port is None:
             connector = pylo.find_connector_or_die(self)
             if pce_hostname is None:

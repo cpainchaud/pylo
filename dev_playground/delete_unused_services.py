@@ -2,16 +2,9 @@ import pylo
 import sys
 
 hostname='10.107.3.2'
-hostname='ilo-emea-poc.xmp.net.intra'
-
-
-
-org = pylo.Organization(1)
-target = pylo.Organization(1)
-
 
 print("Loading Origin PCE configuration from " + hostname + " or cached file... ", end="", flush=True)
-org.load_from_cache_or_saved_credentials(hostname)
+org = pylo.get_organization_using_credential_file(hostname)
 print("OK!\n")
 
 

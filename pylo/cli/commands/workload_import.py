@@ -4,6 +4,7 @@ import sys
 import argparse
 import math
 import pylo
+from pylo.API.JsonPayloadTypes import WorkloadObjectCreateJsonStructure
 from .misc import make_filename_with_timestamp
 from . import Command
 
@@ -60,7 +61,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
 
-    csv_expected_fields = [
+    csv_expected_fields: List[Dict] = [
         {'name': 'name', 'optional': True, 'default': ''},
         {'name': 'hostname', 'optional': False},
         {'name': 'role', 'optional': True},
@@ -215,23 +216,29 @@ def __main(args, org: pylo.Organization, **kwargs):
         print("   - No filter given (see --help)")
     else:
         print("  - loading Excel/CSV file '{}'... ".format(input_filter_file), end='', flush=True)
-        print("OK")
         filter_csv_data = pylo.CsvExcelToObject(input_filter_file, csv_filter_fields, strict_headers=True)
-        for filter in filter_csv_data.objects():
-            ip = filter.get('ip')
+        print("OK")
+
+        # First pass on filters data to ensure that if an IP address is specified then it must be a valid one, it will
+        # errors at a later stage
+        for filter_from_csv_file in filter_csv_data.objects():
+            ip = filter_from_csv_file.get('ip')
             if ip is None:
                 continue
             if not pylo.is_valid_ipv4(ip) and not pylo.is_valid_ipv6(ip):
-                pylo.log.error("CSV/Excel FILTER file has invalid IP {} at line #{}".format(ip, filter['*line*']))
+                pylo.log.error("CSV/Excel FILTER file has invalid IP {} at line #{}".format(ip, filter_from_csv_file['*line*']))
 
+        # Actually apply the filters
         for csv_object in csv_data.objects():
             if '**not_created_reason**' in csv_object:
                 continue
 
             match_filter = False
-            for filter in filter_csv_data.objects():
-                ip_filter = filter.get('ip')
-                if ip is not None:
+            for filter_from_csv_file in filter_csv_data.objects():
+
+                # 'ip' field based filter
+                ip_filter = filter_from_csv_file.get('ip')
+                if ip_filter is not None:
                     for ip in csv_object['**ip_array**']:
                         if ip_filter == ip:
                             match_filter = True
@@ -241,6 +248,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                     break
 
             if not match_filter:
+                # for reporting purposes show why it was not created
                 csv_object['**not_created_reason**'] = "No match in input filter file"
 
     print("  *OK")
@@ -249,8 +257,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     # <editor-fold desc="Label collision detection">
     print(" * Checking for Labels case collisions and missing ones to be created:")
     name_cache: Dict[str, Any] = {}
-    for label in org.LabelStore.itemsByHRef.values():
-        lower_name = None
+    for label in org.LabelStore.get_labels():
         if label.name is not None:
             lower_name = label.name.lower()
             if lower_name not in name_cache:
@@ -281,15 +288,6 @@ def __main(args, org: pylo.Organization, **kwargs):
         if loc_label is None:
             loc_label = ''
         loc_label_lower = loc_label.lower()
-
-        #if len(role_label_lower) < 1:
-        #    raise pylo.PyloEx("CSV Line #{} has no Role label defined".format(csv_object['*line*']))
-        #if len(app_label_lower) < 1:
-        #    raise pylo.PyloEx("CSV Line #{} has no App label defined".format(csv_object['*line*']))
-        #if len(env_label_lower) < 1:
-        #    raise pylo.PyloEx("CSV Line #{} has no Env label defined".format(csv_object['*line*']))
-        #if len(loc_label_lower) < 1:
-        #    raise pylo.PyloEx("CSV Line #{} has no Loc label defined".format(csv_object['*line*']))
 
         if len(role_label_lower) == 0:
             pass
@@ -373,7 +371,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     print(' * Preparing Workloads JSON payloads...')
     workloads_json_data = []
     for data in csv_objects_to_create:
-        new_workload = {}
+        new_workload: WorkloadObjectCreateJsonStructure = {}
         workloads_json_data.append(new_workload)
 
         if len(data['name']) > 0:

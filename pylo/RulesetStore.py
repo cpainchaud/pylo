@@ -3,22 +3,35 @@ from typing import Optional, List, Union, Dict
 import pylo
 from pylo import log, Organization, PyloEx, Rule, Ruleset
 from .Helpers import nice_json
-import re
 
 
 class RulesetStore:
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: pylo.Organization = owner
-        self.items_by_href: Dict[str, 'pylo.Ruleset'] = {}
-        self.items_by_name: Dict[str, 'pylo.Ruleset'] = {}
+        self._items_by_href: Dict[str, 'pylo.Ruleset'] = {}
 
-    def count_rulesets(self):
-        return len(self.items_by_href)
+    @property
+    def rulesets(self) -> List['pylo.Ruleset']:
+        """
+        :return: a copy of the list of rulesets
+        """
+        return list(self._items_by_href.values())
 
-    def count_rules(self):
+    @property
+    def rulesets_dict_by_href(self) -> Dict[str, 'pylo.Ruleset']:
+        """
+        :return: a copy of the dict of rulesets by href
+        :return:
+        """
+        return self._items_by_href.copy()
+
+    def count_rulesets(self) -> int:
+        return len(self._items_by_href)
+
+    def count_rules(self) -> int:
         count = 0
-        for ruleset in self.items_by_href.values():
+        for ruleset in self._items_by_href.values():
             count += ruleset.count_rules()
 
         return count
@@ -31,27 +44,19 @@ class RulesetStore:
         new_item = Ruleset(self)
         new_item.load_from_json(json_item)
 
-        if new_item.href in self.items_by_href:
+        if new_item.href in self._items_by_href:
             raise PyloEx(
                 "A Ruleset with href '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
                 % (new_item.href, nice_json(json_item)))
 
-        if new_item.name in self.items_by_name:
-            print("The following Ruleset is conflicting (name already exists): '%s' Href: '%s'" % (
-                self.items_by_name[new_item.name].name, self.items_by_name[new_item.name].href), flush=True)
-            raise PyloEx(
-                "A Ruleset with name '%s' already exists in the table, please check your JSON data for consistency. JSON:\n%s"
-                % (new_item.name, nice_json(json_item)))
-
-        self.items_by_href[new_item.href] = new_item
-        self.items_by_name[new_item.name] = new_item
+        self._items_by_href[new_item.href] = new_item
 
         log.debug("Found Ruleset '%s' with href '%s'" % (new_item.name, new_item.href))
 
         return new_item
 
     def find_rule_by_href(self, href: str) -> Optional['pylo.Rule']:
-        for ruleset in self.items_by_href.values():
+        for ruleset in self._items_by_href.values():
             rule = ruleset.rules_by_href.get(href)
             if rule is not None:
                 return rule
@@ -59,13 +64,12 @@ class RulesetStore:
         return None
 
     def find_ruleset_by_name(self, name: str, case_sensitive=True) -> Optional['pylo.Ruleset']:
+        used_name = name
         if case_sensitive:
-            return self.items_by_name.get(name)
+            used_name = name.lower()
 
-        lower_name = name.lower()
-
-        for ruleset in self.items_by_href.values():
-            if ruleset.name.lower() == lower_name:
+        for ruleset in self._items_by_href.values():
+            if ruleset.name.lower() == used_name:
                 return ruleset
 
         return None
@@ -89,10 +93,9 @@ class RulesetStore:
         if isinstance(ruleset, Ruleset):
             href = ruleset.href
 
-        find_object = self.items_by_href.get(href)
+        find_object = self._items_by_href.get(href)
         if find_object is None:
             raise PyloEx("Cannot delete a Ruleset with href={} which is not part of this RulesetStore".format(href))
 
         self.owner.connector.objects_ruleset_delete(href)
-        del self.items_by_href[href]
-        del self.items_by_name[find_object.name]
+        del self._items_by_href[href]

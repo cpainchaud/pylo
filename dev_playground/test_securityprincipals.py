@@ -12,11 +12,8 @@ args = vars(parser.parse_args())
 
 hostname = args['pce']
 
-
-org = pylo.Organization(1)
-
 print("Loading Origin PCE configuration from " + hostname + " or cached file... ", end="", flush=True)
-org.load_from_cache_or_saved_credentials(hostname)
+org  = pylo.get_organization_using_credential_file(hostname)
 print("OK!\n")
 
 print("Organization statistics:\n{}\n\n".format(org.stats_to_str()))

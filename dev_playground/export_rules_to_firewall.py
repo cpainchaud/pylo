@@ -254,15 +254,13 @@ def label_tuple_to_group_name(role: pylo.Label, app: pylo.Label, env: pylo.Label
     return string
 
 
-org = pylo.Organization(1)
-
 if args['use_cache']:
     print("Loading Origin PCE configuration from '{}' or cached file... ".format(hostname), end="", flush=True)
-    org.load_from_cache_or_saved_credentials(hostname)
+    org = pylo.Organization.get_from_cache_file(hostname)
     print("OK!\n")
 else:
     print("Loading Origin PCE configuration from '{}'... ".format(hostname), end="", flush=True)
-    org.load_from_saved_credentials(hostname, prompt_for_api_key=True)
+    org = pylo.Organization.get_from_api_using_credential_file(hostname, prompt_for_api_key=True)
     print("OK!\n")
 
 print(org.stats_to_str())
@@ -326,7 +324,7 @@ csv_rulesets_rows = []
 
 rulesets_tags = TagIndex()
 
-for ruleset in org.RulesetStore.items_by_href.values():
+for ruleset in org.RulesetStore.rulesets:
     rules = []
     r_json = {'href': ruleset.href, 'name': ruleset.name, 'description': ruleset.description,'rules': rules}
     rulesets_json.append(r_json)
@@ -639,7 +637,7 @@ csv_iplists_headers = ['name', 'members', 'description', 'href']
 
 iplists_tags = TagIndex()
 
-for iplist in org.IPListStore.itemsByHRef.values():
+for iplist in org.IPListStore.items_by_href.values():
     iplist_json = {'name': iplist.name, 'href': iplist.href, 'description': iplist.description}
 
     # Extracting Tags

@@ -1,4 +1,5 @@
 import sys
+from typing import List
 
 from pylo import log
 import logging
@@ -10,23 +11,16 @@ import argparse
 import pylo
 
 
-
-
-#originHostname='ilo-amer-poc.xmp.net.intra'
 originHostname='10.107.3.2'
-targetHostname='ilo-emea-poc.xmp.net.intra'
+targetHostname='10.256.3.2'
 
-
-
-origin = pylo.Organization(1)
-target = pylo.Organization(1)
 
 print("Loading Origin PCE configuration from " + originHostname + " or cached file... ", end="", flush=True)
-origin.load_from_cache_or_saved_credentials(originHostname)
+origin = pylo.get_organization_using_credential_file(originHostname)
 print("OK!")
 
 print("Loading Target PCE configuration from " + targetHostname + " or cached file ... ", end="", flush=True)
-target.load_from_cache_or_saved_credentials(targetHostname)
+target = pylo.get_organization_using_credential_file(targetHostname)
 print("OK!")
 
 
@@ -34,13 +28,13 @@ print("Statistics for Origin PCE %s:\n%s" % (originHostname, origin.stats_to_str
 print("Statistics for Target PCE %s:\n%s" % (targetHostname, target.stats_to_str()))
 
 
-labelsToImport = []  # type: List[pylo.Label]
-labelsInConflict = []  # type: List[pylo.Label]
+labelsToImport: List[pylo.Label] = []
+labelsInConflict: List[pylo.Label] = []
 
-for label in origin.LabelStore.itemsByHRef.values():
+for label in origin.LabelStore.get_both_labels_and_groups():
     labelName = label.name
 
-    targetLabelFind = target.LabelStore.find_label_by_name_and_type(labelName, label.type())
+    targetLabelFind = target.LabelStore.find_label_by_name_and_type(labelName, label.type)
     if targetLabelFind is not None:
         labelsInConflict.append(label)
     else:
@@ -64,7 +58,7 @@ for label in labelsToImport.copy():
     msg = label.name
     labelLowerCap = label.name.lower()
 
-    lowerCapConflicts = target.LabelStore.find_label_multi_by_name_lowercase_and_type(labelLowerCap, label.type())
+    lowerCapConflicts = target.LabelStore.find_label_by_name(labelLowerCap, label_tyê=label.type(), case_sensitive=False)
 
     if len(lowerCapConflicts) > 0:
         for lowerCapLabel in lowerCapConflicts:
@@ -89,9 +83,5 @@ for label in labelsToImport:
     print("    + CREATED!")
 
 print("\n*****  IMPORT DONE!  *****\n")
-
-
-
-
 
 

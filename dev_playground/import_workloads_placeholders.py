@@ -3,19 +3,15 @@ import sys
 import copy
 
 originHostname='10.107.3.2'
-targetHostname='ilo-emea-poc.xmp.net.intra'
+targetHostname='10.253.3.2'
 
-
-
-origin = pylo.Organization(1)
-target = pylo.Organization(1)
 
 
 print("Loading Origin PCE configuration from " + originHostname + " or cached file... ", end="", flush=True)
-origin.load_from_cache_or_saved_credentials(originHostname)
+origin = pylo.Organization.get_from_api_using_credential_file(originHostname)
 print("OK!")
 print("Loading Target PCE configuration from " + targetHostname + " or cached file ... ", end="", flush=True)
-target.load_from_cache_or_saved_credentials(targetHostname)
+target = pylo.get_organization_using_credential_file(targetHostname)
 print("OK!")
 print()
 
@@ -25,24 +21,24 @@ old_to_new_env_labels = pylo.IDTranslationTable()
 old_to_new_app_labels = pylo.IDTranslationTable()
 old_to_new_role_labels = pylo.IDTranslationTable()
 
-for label in origin.LabelStore.locationLabels.values():
+for label in origin.LabelStore.get_labels('loc'):
     old_to_new_loc_labels.add_source(label.name, label)
-for label in target.LabelStore.locationLabels.values():
+for label in target.LabelStore.get_labels('loc'):
     old_to_new_loc_labels.add_destination(label.name, label)
 
-for label in origin.LabelStore.environmentLabels.values():
+for label in origin.LabelStore.get_labels('env'):
     old_to_new_env_labels.add_source(label.name, label)
-for label in target.LabelStore.environmentLabels.values():
+for label in target.LabelStore.get_labels('env'):
     old_to_new_env_labels.add_destination(label.name, label)
 
-for label in origin.LabelStore.applicationLabels.values():
+for label in origin.LabelStore.get_labels('app'):
     old_to_new_app_labels.add_source(label.name, label)
-for label in target.LabelStore.applicationLabels.values():
+for label in target.LabelStore.get_labels('app'):
     old_to_new_app_labels.add_destination(label.name, label)
 
-for label in origin.LabelStore.roleLabels.values():
+for label in origin.LabelStore.get_labels('role'):
     old_to_new_role_labels.add_source(label.name, label)
-for label in target.LabelStore.roleLabels.values():
+for label in target.LabelStore.get_labels('role'):
     old_to_new_role_labels.add_destination(label.name, label)
 
 print("OK!")

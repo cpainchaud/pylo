@@ -102,15 +102,18 @@ class AgentStore:
 
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
-        self.itemsByHRef: Dict[str, pylo.VENAgent] = {}
+        self.items_by_href: Dict[str, pylo.VENAgent] = {}
 
-    def find_by_href_or_die(self, href: str) -> 'pylo.VENAgent':
+    @property
+    def agents(self) -> List['pylo.VENAgent']:
+        """
+        Returns a copy of the list of all agents in the store
+        :return:
+        """
+        return list(self.items_by_href.values())
 
-        find_object = self.itemsByHRef.get(href)
-        if find_object is None:
-            raise pylo.PyloEx("Agent with ID {} was not found".format(href))
-
-        return find_object
+    def find_by_href(self, href: str) -> VENAgent:
+        return self.items_by_href.get(href)
 
     def create_ven_agent_from_workload_record(self, workload: 'pylo.Workload', json_data) -> 'pylo.VENAgent':
         href = json_data.get('href')
@@ -120,12 +123,12 @@ class AgentStore:
         agent = pylo.VENAgent(href, self, workload)
         agent.load_from_json(json_data)
 
-        self.itemsByHRef[href] = agent
+        self.items_by_href[href] = agent
 
         return agent
 
     def count_agents(self) -> int:
-        return len(self.itemsByHRef)
+        return len(self.items_by_href)
 
 
 

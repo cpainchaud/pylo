@@ -126,7 +126,7 @@ if args['filter_role_label'] is not None:
             role_label_list[label] = label
 
 
-agents = org.AgentStore.itemsByHRef.copy()
+agents = org.AgentStore.items_by_href.copy()
 
 for agent_href in list(agents.keys()):
     agent = agents[agent_href]
