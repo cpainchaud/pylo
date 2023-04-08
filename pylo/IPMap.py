@@ -1,5 +1,5 @@
 from .Exception import PyloEx
-from .Helpers.functions import is_valid_ipv6, is_valid_ipv4, string_list_to_text
+from .Helpers.functions import is_valid_ipv6, string_list_to_text
 import ipaddress
 import copy
 from typing import Optional, List, Dict
@@ -118,10 +118,10 @@ class IP4Map:
         if len(self._entries) < 1:
             return False
 
-        copyOfMap = copy.deepcopy(another_map)
-        copyOfMap.substract(self)
+        copy_of_map = copy.deepcopy(another_map)
+        copy_of_map.substract(self)
 
-        if len(copyOfMap._entries) < 1:
+        if len(copy_of_map._entries) < 1:
             return True
         return False
 
@@ -158,7 +158,7 @@ class IP4Map:
 
         return affected_rows
 
-    def substract_from_text(self, entry: str, ignore_ipv6=False):
+    def subtract_from_text(self, entry: str, ignore_ipv6=False):
 
         new_entry = self.ip_entry_from_text(entry, ignore_ipv6=ignore_ipv6)
 
@@ -301,15 +301,15 @@ class IP4Map:
 # test.add_from_text('192.168.1.2')
 # test.add_from_text('1.0.0.0/8')
 # test.add_from_text('192.168.1.0-192.168.2.0')
-# test.substract_from_text('192.168.0.0-192.168.1.255')
+# test.subtract_from_text('192.168.0.0-192.168.1.255')
 #
 # test.add_from_text('200.0.0.0-200.1.255.255')
-# test.substract_from_text('199.255.255.255-200.1.0.0')  # should produce 200.1.0.1-200.1.255.255
+# test.subtract_from_text('199.255.255.255-200.1.0.0')  # should produce 200.1.0.1-200.1.255.255
 #
 # test.add_from_text('200.10.0.0-200.11.255.255')
-# test.substract_from_text('200.10.10.10-200.11.0.0')  # should produce 200.10.0.0-200.10.10.9 and 200.11.0.1-200.11.255.255
+# test.subtract_from_text('200.10.10.10-200.11.0.0')  # should produce 200.10.0.0-200.10.10.9 and 200.11.0.1-200.11.255.255
 #
 # test.add_from_text('200.20.0.0-200.21.255.255')
-# test.substract_from_text('200.20.10.10-200.22.0.0')  # should produce 200.20.0.0-200.20.10.9
+# test.subtract_from_text('200.20.10.10-200.22.0.0')  # should produce 200.20.0.0-200.20.10.9
 #
 # test.print_to_std(header="Show IP4Map test:", padding='')
