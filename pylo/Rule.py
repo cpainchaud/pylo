@@ -526,12 +526,14 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def members_to_str(self, separator=',') -> str:
+    def members_to_str(self, separator=',', sort_alphabetically=True, sort_labels_by_type=True) -> str:
         """
-        Conveniently creates a string with all members of this container, ordered by Label, IList, Workload,
+        Conveniently creates a string with all members of this container, ordered by Label, IPList, Workload,
         and  Virtual Service
 
         :param separator: string use to separate each member in the lit
+        :param sort_alphabetically: if True, the members will be sorted alphabetically
+        :param sort_labels_by_type: if True, the labels will be sorted by type (role, app, env, loc ...)
         :return:
         """
         text = ''
@@ -539,22 +541,36 @@ class RuleHostContainer(pylo.Referencer):
         if self._hasAllWorkloads:
             text += "All Workloads"
 
-        for label in self.get_labels():
+        labels = self.get_labels()
+        if sort_alphabetically:
+            labels = sorted(labels, key=lambda x: x.name.lower())
+        if sort_labels_by_type:
+            labels = pylo.LabelStore.Utils.list_sort_by_type(labels, self.owner.owner.owner.owner.LabelStore.label_types)
+        for label in labels:
             if len(text) > 0:
                 text += separator
             text += label.name
 
-        for item in self.get_iplists():
+        iplists = self.get_iplists()
+        if sort_alphabetically:
+            iplists = sorted(iplists, key=lambda x: x.name.lower())
+        for item in iplists:
             if len(text) > 0:
                 text += separator
             text += item.name
 
-        for item in self.get_workloads():
+        workloads = self.get_workloads()
+        if sort_alphabetically:
+            workloads = sorted(workloads, key=lambda x: x.name.lower())
+        for item in workloads:
             if len(text) > 0:
                 text += separator
             text += item.get_name()
 
-        for item in self.get_virtual_services():
+        virtual_services = self.get_virtual_services()
+        if sort_alphabetically:
+            virtual_services = sorted(virtual_services, key=lambda x: x.name.lower())
+        for item in virtual_services:
             if len(text) > 0:
                 text += separator
             text += item.name
