@@ -3,9 +3,8 @@ from typing import Optional, List, Union, Dict, Any, NewType
 
 import pylo
 from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
-from pylo import log, Organization, Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
+from pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList
-import re
 
 RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
 
