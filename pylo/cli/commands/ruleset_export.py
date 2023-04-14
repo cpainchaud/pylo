@@ -10,8 +10,9 @@ command_name = 'rule-export'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--output', required=False, default='.')
-    parser.add_argument('--format', required=False, default='excel', choices=['csv', 'excel'])
+    parser.add_argument('--format', '-f', required=False, default='excel', choices=['csv', 'excel'], help='Output file format')
+    parser.add_argument('--output', '-o', required=False, default='.', help='Directory where to save the output file')
+
 
 
 def __main(options: Dict, org: pylo.Organization, **kwargs):
