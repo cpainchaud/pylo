@@ -61,7 +61,7 @@ class LabelStore:
             self.label_types.append(dimension)
 
     def load_label_dimensions(self, json_list: Optional[List[LabelDimensionObjectStructure]]):
-        if json_list is None:
+        if json_list is None or len(json_list) == 0:
             # add the default built-in label types
             self._add_dimension(label_type_role)
             self._add_dimension(label_type_app)

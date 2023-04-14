@@ -102,11 +102,11 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             self.ven_agent = self.owner.owner.AgentStore.create_ven_agent_from_workload_record(self, agent_json)
             self.online = data['online']
             self.os_id = data.get('os_id')
-            if self.os_id is None:
-                raise PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
+            #if self.os_id is None:
+            #    raise PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
             self.os_detail = data.get('os_detail')
-            if self.os_detail is None:
-                raise PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
+            #if self.os_detail is None:
+            #    raise PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
 
         self.description = data.get('description')
 

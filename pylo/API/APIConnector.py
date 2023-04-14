@@ -192,8 +192,8 @@ class APIConnector:
             except Exception as e:
                 raise pylo.PyloApiEx("PCE connectivity or low level issue: {}".format(e))
 
-            answerSize = len(req.content) / 1024
-            log.info("URL downloaded (size "+str( int(answerSize) )+"KB) Reply headers:\n" +
+            answer_size = len(req.content) / 1024
+            log.info("URL downloaded (size "+str( int(answer_size) )+"KB) Reply headers:\n" +
                      "HTTP " + method + " " + url + " STATUS " + str(req.status_code) + " " + req.reason)
             log.info(req.headers)
             # log.info("Request Body:" + pylo.nice_json(json_arguments))
@@ -258,13 +258,13 @@ class APIConnector:
 
                 if req.status_code == 429:
                     # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
-                    jout = req.json()
-                    if len(jout) > 0:
-                        if "token" in jout[0]:
-                            if jout[0]['token'] == 'too_many_requests_error':
+                    json_out = req.json()
+                    if len(json_out) > 0:
+                        if "token" in json_out[0]:
+                            if json_out[0]['token'] == 'too_many_requests_error':
                                 if retry_count_if_api_call_limit_reached < 1:
                                     raise pylo.PyloApiTooManyRequestsEx(
-                                        'API has hit DOS protection limit (X calls per minute)', jout)
+                                        'API has hit DOS protection limit (X calls per minute)', json_out)
 
                                 retry_count_if_api_call_limit_reached = retry_count_if_api_call_limit_reached - 1
                                 log.info(
@@ -281,15 +281,15 @@ class APIConnector:
                 return req.headers
 
             if json_output_expected:
-                log.info("Parsing API answer to JSON (with a size of " + str( int(answerSize) ) + "KB)")
-                jout = req.json()
+                log.info("Parsing API answer to JSON (with a size of " + str( int(answer_size) ) + "KB)")
+                json_out = req.json()
                 log.info("Done!")
-                if answerSize < 5:
+                if answer_size < 5:
                     log.info("Resulting JSON object:")
-                    log.info(json.dumps(jout, indent=2, sort_keys=True))
+                    log.info(json.dumps(json_out, indent=2, sort_keys=True))
                 else:
                     log.info("Answer is too large to be printed")
-                return jout
+                return json_out
 
             return req.text
 
@@ -347,9 +347,11 @@ class APIConnector:
 
         self.get_software_version()
 
-        # whatever the request was, label dimensions are not optional
+        # whatever the request was, label dimensions are not optional if PCE is 22.2+
         if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
             object_to_load['label_dimensions'] = object_to_load['label_dimensions']
+        else:
+            del object_to_load['label_dimensions']
 
 
         threads_count = 4
@@ -442,10 +444,10 @@ class APIConnector:
         if self.version is not None:  # Make sure we collect data only once
             return
         path = "/product_version"
-        jout = self.do_get_call(path, include_org_id=False, skip_product_version_check=True)
+        json_output = self.do_get_call(path, include_org_id=False, skip_product_version_check=True)
 
-        self.version_string = jout['version']
-        self.version = pylo.SoftwareVersion(jout['long_display'])
+        self.version_string = json_output['version']
+        self.version = pylo.SoftwareVersion(json_output['long_display'])
 
     def policy_check(self, protocol, port=None, src_ip=None, src_href=None, dst_ip=None, dst_href=None,
                      retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
@@ -648,7 +650,7 @@ class APIConnector:
         def workloads(self) -> List['pylo.Workload']:
             """
             Return a copy of the list of workloads. Beware that if you added HREF (strings) instead of workloads, you
-            will get an empty array should ge tghe the 'hrefs' properties instead
+            will get an empty array should ge the the 'hrefs' properties instead
             :return:
             """
             return list(self._workloads.values())

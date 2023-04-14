@@ -1,5 +1,5 @@
-from typing import Dict, List, Any
 import pylo
+from API.JsonPayloadTypes import ServiceHrefRef
 from pylo import log
 from .Helpers import *
 from typing import *
@@ -194,7 +194,7 @@ class Service(pylo.ReferenceTracker):
         if data['deleted_at'] is not None:
             self.deleted = True
 
-    def get_api_reference_json(self):
+    def get_api_reference_json(self) -> ServiceHrefRef:
         return {'service': {'href': self.href}}
 
     def get_entries_str_list(self, protocol_first=True) -> List[str]:
@@ -236,10 +236,10 @@ class ServiceStore(pylo.Referencer):
             log.debug("Found service '%s' with href '%s'", new_item_name, new_item_href)
             
     @property
-    def services(self):
+    def services(self) -> List[Service]:
         return list(self.itemsByHRef.values())
     
-    def services_dict_by_href(self):
+    def services_dict_by_href(self) -> Dict[str, Service]:
         return self.itemsByHRef.copy()
     
     def find_by_name(self, name: str, case_sensitive=True) -> Optional[Service]:

@@ -3,9 +3,8 @@ from typing import Optional, List, Union, Dict, Any, NewType
 
 import pylo
 from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
-from pylo import log, Organization, Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
+from pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList
-import re
 
 RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
 
@@ -526,38 +525,93 @@ class RuleHostContainer(pylo.Referencer):
 
         return result
 
-    def members_to_str(self, separator=',') -> str:
+    def members_to_str(self, separator=',', sort_alphabetically=True, sort_labels_by_type=True,
+                       prefix_objects_with_type=False, object_types_as_section=False) -> str:
         """
-        Conveniently creates a string with all members of this container, ordered by Label, IList, Workload,
+        Conveniently creates a string with all members of this container, ordered by Label, IPList, Workload,
         and  Virtual Service
 
         :param separator: string use to separate each member in the lit
+        :param sort_alphabetically: if True, the members will be sorted alphabetically
+        :param sort_labels_by_type: if True, the labels will be sorted by type (role, app, env, loc ...)
+        :param prefix_objects_with_type: if True, the objects will be prefixed with their type (Label, IPList, Workload, Virtual Service)
+        :param object_types_as_section: if True, the objects will be grouped by type and each group will be separated with a header
         :return:
         """
         text = ''
 
         if self._hasAllWorkloads:
-            text += "All Workloads"
+            text += "*All Workloads*"
 
-        for label in self.get_labels():
+        labels = self.get_labels()
+        if len(labels) > 0:
             if len(text) > 0:
                 text += separator
-            text += label.name
+            text += 'LABELS:'
+        if sort_alphabetically:
+            labels = sorted(labels, key=lambda x: x.name.lower())
+        if sort_labels_by_type:
+            labels = pylo.LabelStore.Utils.list_sort_by_type(labels, self.owner.owner.owner.owner.LabelStore.label_types)
 
-        for item in self.get_iplists():
+        for label in labels:
+            if prefix_objects_with_type:
+                if label.is_group():
+                    prefix = 'lbg:'
+                else:
+                    prefix = 'lbl:'
+            else:
+                prefix = ''
             if len(text) > 0:
                 text += separator
-            text += item.name
+            text += prefix + label.name
 
-        for item in self.get_workloads():
+        iplists = self.get_iplists()
+        if len(iplists) > 0:
             if len(text) > 0:
                 text += separator
-            text += item.get_name()
-
-        for item in self.get_virtual_services():
+            text += 'IPLISTS:'
+        if sort_alphabetically:
+            iplists = sorted(iplists, key=lambda x: x.name.lower())
+        if prefix_objects_with_type:
+            prefix = 'ipl:'
+        else:
+            prefix = ''
+        for item in iplists:
             if len(text) > 0:
                 text += separator
-            text += item.name
+            text += prefix + item.name
+
+        workloads = self.get_workloads()
+        if len(workloads) > 0:
+            if len(text) > 0:
+                text += separator
+            text += 'WORKLOADS:'
+        if sort_alphabetically:
+            workloads = sorted(workloads, key=lambda x: x.name.lower())
+        if prefix_objects_with_type:
+            prefix = 'wkl:'
+        else:
+            prefix = ''
+        for item in workloads:
+            if len(text) > 0:
+                text += separator
+            text += prefix + item.get_name()
+
+        virtual_services = self.get_virtual_services()
+        if len(virtual_services) > 0:
+            if len(text) > 0:
+                text += separator
+            text += 'VIRTUAL SERVICES:'
+        if sort_alphabetically:
+            virtual_services = sorted(virtual_services, key=lambda x: x.name.lower())
+        if prefix_objects_with_type:
+            prefix = 'vs:'
+        else:
+            prefix = ''
+        for item in virtual_services:
+            if len(text) > 0:
+                text += separator
+            text += prefix + item.name
 
         return text
 

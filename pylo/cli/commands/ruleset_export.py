@@ -10,21 +10,45 @@ command_name = 'rule-export'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--output', required=False, default='.')
-    parser.add_argument('--format', required=False, default='excel', choices=['csv', 'excel'])
+    parser.add_argument('--format', '-f', required=False, default='excel',choices=['csv', 'excel'], help='Output file format')
+    parser.add_argument('--output', '-o', required=False, default='.', help='Directory where to save the output file')
+    parser.add_argument('--prefix-objects-with-type', nargs='?', const=True, default=False,
+                        help='Prefix objects with their type (e.g. "label:mylabel")')
+    parser.add_argument('--object-types-as-section', action='store_true', default=False,
+                        help="Consumer and providers will show objects types section headers, example:" + os.linesep +
+                        "LABELS: " + os.linesep +
+                        "R-WEB" + os.linesep +
+                        "A-FUSION" + os.linesep +
+                        "IPLISTS: " + os.linesep +
+                        "Private_Networks" + os.linesep +
+                        "Public_NATed")
+
 
 
 def __main(options: Dict, org: pylo.Organization, **kwargs):
-    csv_report_headers: List[pylo.ExcelHeader|str] = [{'name':'ruleset', 'max_width': 40},
-                                                      {'name':'scope', 'max_width': 50},
-                                                      {'name':'type', 'max_width': 10},
-                                                      {'name':'consumers', 'max_width': 80},
-                                                      {'name':'providers', 'max_width': 80},
-                                                      {'name':'services', 'max_width': 30},
-                                                      {'name':'options', 'max_width': 40},
-                                                      {'name':'ruleset_url', 'max_width': 40, 'wrap_text': False},
-                                                      {'name':'ruleset_href', 'max_width': 30, 'wrap_text': False}
-                          ]
+    csv_report_headers: List[pylo.ExcelHeader] = \
+        [{'name': 'ruleset', 'max_width': 40},
+         {'name': 'scope', 'max_width': 50},
+         {'name': 'type', 'max_width': 10},
+         {'name': 'consumers', 'max_width': 80},
+         {'name': 'providers', 'max_width': 80},
+         {'name': 'services', 'max_width': 30},
+         {'name': 'options', 'max_width': 40},
+         {'name': 'ruleset_url', 'max_width': 40, 'wrap_text': False},
+         {'name': 'ruleset_href', 'max_width': 30, 'wrap_text': False}
+         ]
+
+    setting_prefix_objects_with_type: bool|str = options['prefix_objects_with_type']
+    if setting_prefix_objects_with_type is False:
+        print(" * Prefix for object types are disabled")
+    else:
+        print(" * Prefix for object types are enabled")
+
+    setting_object_types_as_section: bool = options['prefix_objects_with_type']
+    if setting_object_types_as_section is False:
+        print(" * Object types as section are disabled")
+    else:
+        print(" * Object types as section are enabled")
 
     output_file_format = options.get('format')
     if output_file_format == "excel":
@@ -66,9 +90,15 @@ def __main(options: Dict, org: pylo.Organization, **kwargs):
                 scope_str = scope_str[:-1]
 
 
+            consumers_str = rule.consumers.members_to_str("\n", prefix_objects_with_type=setting_prefix_objects_with_type,
+                                                            object_types_as_section=setting_object_types_as_section)
+            providers_str = rule.providers.members_to_str("\n", prefix_objects_with_type=setting_prefix_objects_with_type,
+                                                          object_types_as_section=setting_object_types_as_section)
+
+
             data = {'ruleset': ruleset.name, 'scope': scope_str,
-                    'consumers': rule.consumers.members_to_str("\n"),
-                    'providers': rule.providers.members_to_str("\n"),
+                    'consumers': consumers_str,
+                    'providers': providers_str,
                     'services': rule.services.members_to_str("\n"),
                     'options': pylo.string_list_to_text(rule_options, "\n"),
                     'ruleset_href': ruleset.href,

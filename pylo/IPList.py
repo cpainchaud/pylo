@@ -69,7 +69,7 @@ class IPList(pylo.ReferenceTracker):
 
         for entry in self.raw_entries:
             if entry[0] == '!':
-                map.substract_from_text(entry[1:], ignore_ipv6=True)
+                map.subtract_from_text(entry[1:], ignore_ipv6=True)
             else:
                 map.add_from_text(entry, ignore_ipv6=True)
 
