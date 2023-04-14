@@ -12,8 +12,8 @@ var searchData=
   ['service_5finclude_5fadd_5fprotocol_5fudp_9',['service_include_add_protocol_udp',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_filter_set_v1.html#a01bce88adca43a7be9eaf5fd2dbfb796',1,'pylo::API::Explorer::ExplorerFilterSetV1']]],
   ['service_5fto_5fstr_10',['service_to_str',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result.html#afeac03fd9673e94c2af2626f2c54e1dc',1,'pylo::API::Explorer::ExplorerResult']]],
   ['service_5fto_5fstr_5farray_11',['service_to_str_array',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result.html#a225a3fe9a09e08227763284cf2ebd3c5',1,'pylo::API::Explorer::ExplorerResult']]],
-  ['services_12',['services',['../classpylo_1_1_service_1_1_service_store.html#a28fa126e7b2144554a4abb483903b801',1,'pylo::Service::ServiceStore']]],
-  ['services_5fdict_5fby_5fhref_13',['services_dict_by_href',['../classpylo_1_1_service_1_1_service_store.html#ab87dc134ff1e525e850339e235b7edc3',1,'pylo::Service::ServiceStore']]],
+  ['services_12',['services',['../classpylo_1_1_service_1_1_service_store.html#a642456ac404d7d8f80d12350c2811b4e',1,'pylo::Service::ServiceStore']]],
+  ['services_5fdict_5fby_5fhref_13',['services_dict_by_href',['../classpylo_1_1_service_1_1_service_store.html#ac5ced28d71fa4a274f2176da01cb424b',1,'pylo::Service::ServiceStore']]],
   ['set_5factive_5fmode_14',['set_active_mode',['../classpylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query.html#a0c0a16b4de1daef9c14d08bd36419f74',1,'pylo::API::RuleSearchQuery::RuleSearchQuery']]],
   ['set_5fadvanced_5fmode_15',['set_advanced_mode',['../classpylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query.html#ae66850caec752c954c02fa9a43b067f3',1,'pylo::API::RuleSearchQuery::RuleSearchQuery']]],
   ['set_5fbasic_5fmode_16',['set_basic_mode',['../classpylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query.html#aa1e05a49e469519c2e1055f0189e2e0f',1,'pylo::API::RuleSearchQuery::RuleSearchQuery']]],
@@ -38,6 +38,6 @@ var searchData=
   ['status_5fis_5fwarning_35',['status_is_warning',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a5047d3df467793ce73e72a540c9175f1',1,'pylo::API::ClusterHealth::ClusterHealth']]],
   ['string_5flist_5fto_5ftext_36',['string_list_to_text',['../namespacepylo_1_1_helpers_1_1functions.html#ad70cdfa734ee6fe8c4bd75b4eca5a032',1,'pylo::Helpers::functions']]],
   ['substract_37',['substract',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#ad612257a3469b77c0375331d2f382deb',1,'pylo::IPMap::IP4Map']]],
-  ['substract_5ffrom_5ftext_38',['substract_from_text',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a878fe6d99e609f462fd176a35995931e',1,'pylo::IPMap::IP4Map']]],
-  ['substract_5fsingle_5fentry_39',['substract_single_entry',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a1b43e571c1af868f4ca8e4159556a227',1,'pylo::IPMap::IP4Map']]]
+  ['substract_5fsingle_5fentry_38',['substract_single_entry',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a1b43e571c1af868f4ca8e4159556a227',1,'pylo::IPMap::IP4Map']]],
+  ['subtract_5ffrom_5ftext_39',['subtract_from_text',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a59895e75c0560610d4ca2cc185d93464',1,'pylo::IPMap::IP4Map']]]
 ];

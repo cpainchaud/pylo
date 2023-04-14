@@ -105,10 +105,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adad4e00571724267cc08f708de8114bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb8673f60c7a87d79901b8af75918f3c"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#aeb8673f60c7a87d79901b8af75918f3c">load_services_from_json</a> (self, json_list)</td></tr>
 <tr class="separator:aeb8673f60c7a87d79901b8af75918f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28fa126e7b2144554a4abb483903b801"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#a28fa126e7b2144554a4abb483903b801">services</a> (self)</td></tr>
-<tr class="separator:a28fa126e7b2144554a4abb483903b801"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab87dc134ff1e525e850339e235b7edc3"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#ab87dc134ff1e525e850339e235b7edc3">services_dict_by_href</a> (self)</td></tr>
-<tr class="separator:ab87dc134ff1e525e850339e235b7edc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a642456ac404d7d8f80d12350c2811b4e"><td class="memItemLeft" align="right" valign="top">List[<a class="el" href="classpylo_1_1_service_1_1_service.html">Service</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#a642456ac404d7d8f80d12350c2811b4e">services</a> (self)</td></tr>
+<tr class="separator:a642456ac404d7d8f80d12350c2811b4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ced28d71fa4a274f2176da01cb424b"><td class="memItemLeft" align="right" valign="top">Dict[str, <a class="el" href="classpylo_1_1_service_1_1_service.html">Service</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#ac5ced28d71fa4a274f2176da01cb424b">services_dict_by_href</a> (self)</td></tr>
+<tr class="separator:ac5ced28d71fa4a274f2176da01cb424b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a120e91bf65845ffca5317519047d4299"><td class="memItemLeft" align="right" valign="top">Optional[<a class="el" href="classpylo_1_1_service_1_1_service.html">Service</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#a120e91bf65845ffca5317519047d4299">find_by_name</a> (self, str name, case_sensitive=True)</td></tr>
 <tr class="separator:a120e91bf65845ffca5317519047d4299"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59e6b6ecca8c82422501a9c0d8a58bbe"><td class="memItemLeft" align="right" valign="top">Optional[<a class="el" href="classpylo_1_1_service_1_1_service.html">Service</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_service_1_1_service_store.html#a59e6b6ecca8c82422501a9c0d8a58bbe">find_by_href</a> (self, str href)</td></tr>
@@ -288,14 +288,14 @@ Public Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a28fa126e7b2144554a4abb483903b801" name="a28fa126e7b2144554a4abb483903b801"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28fa126e7b2144554a4abb483903b801">&#9670;&#160;</a></span>services()</h2>
+<a id="a642456ac404d7d8f80d12350c2811b4e" name="a642456ac404d7d8f80d12350c2811b4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a642456ac404d7d8f80d12350c2811b4e">&#9670;&#160;</a></span>services()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def pylo.Service.ServiceStore.services </td>
+          <td class="memname"> List[<a class="el" href="classpylo_1_1_service_1_1_service.html">Service</a>] pylo.Service.ServiceStore.services </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -303,20 +303,20 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  239</span>    <span class="keyword">def </span>services(self):</div>
+<div class="fragment"><div class="line"><span class="lineno">  239</span>    <span class="keyword">def </span>services(self) -&gt; List[Service]:</div>
 <div class="line"><span class="lineno">  240</span>        <span class="keywordflow">return</span> list(self.itemsByHRef.values())</div>
 <div class="line"><span class="lineno">  241</span>    </div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="ab87dc134ff1e525e850339e235b7edc3" name="ab87dc134ff1e525e850339e235b7edc3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab87dc134ff1e525e850339e235b7edc3">&#9670;&#160;</a></span>services_dict_by_href()</h2>
+<a id="ac5ced28d71fa4a274f2176da01cb424b" name="ac5ced28d71fa4a274f2176da01cb424b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ced28d71fa4a274f2176da01cb424b">&#9670;&#160;</a></span>services_dict_by_href()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def pylo.Service.ServiceStore.services_dict_by_href </td>
+          <td class="memname"> Dict[str, <a class="el" href="classpylo_1_1_service_1_1_service.html">Service</a>] pylo.Service.ServiceStore.services_dict_by_href </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -324,7 +324,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  242</span>    <span class="keyword">def </span>services_dict_by_href(self):</div>
+<div class="fragment"><div class="line"><span class="lineno">  242</span>    <span class="keyword">def </span>services_dict_by_href(self) -&gt; Dict[str, Service]:</div>
 <div class="line"><span class="lineno">  243</span>        <span class="keywordflow">return</span> self.itemsByHRef.copy()</div>
 <div class="line"><span class="lineno">  244</span>    </div>
 </div><!-- fragment -->
@@ -393,7 +393,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 14 2023 09:42:00 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -109,10 +109,21 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="fragment"><div class="line"><span class="lineno">   12</span><span class="keyword">def </span>fill_parser(parser: argparse.ArgumentParser):</div>
-<div class="line"><span class="lineno">   13</span>    parser.add_argument(<span class="stringliteral">&#39;--output&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;.&#39;</span>)</div>
-<div class="line"><span class="lineno">   14</span>    parser.add_argument(<span class="stringliteral">&#39;--format&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;excel&#39;</span>, choices=[<span class="stringliteral">&#39;csv&#39;</span>, <span class="stringliteral">&#39;excel&#39;</span>])</div>
-<div class="line"><span class="lineno">   15</span> </div>
-<div class="line"><span class="lineno">   16</span> </div>
+<div class="line"><span class="lineno">   13</span>    parser.add_argument(<span class="stringliteral">&#39;--format&#39;</span>, <span class="stringliteral">&#39;-f&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;excel&#39;</span>,choices=[<span class="stringliteral">&#39;csv&#39;</span>, <span class="stringliteral">&#39;excel&#39;</span>], help=<span class="stringliteral">&#39;Output file format&#39;</span>)</div>
+<div class="line"><span class="lineno">   14</span>    parser.add_argument(<span class="stringliteral">&#39;--output&#39;</span>, <span class="stringliteral">&#39;-o&#39;</span>, required=<span class="keyword">False</span>, default=<span class="stringliteral">&#39;.&#39;</span>, help=<span class="stringliteral">&#39;Directory where to save the output file&#39;</span>)</div>
+<div class="line"><span class="lineno">   15</span>    parser.add_argument(<span class="stringliteral">&#39;--prefix-objects-with-type&#39;</span>, nargs=<span class="stringliteral">&#39;?&#39;</span>, const=<span class="keyword">True</span>, default=<span class="keyword">False</span>,</div>
+<div class="line"><span class="lineno">   16</span>                        help=<span class="stringliteral">&#39;Prefix objects with their type (e.g. &quot;label:mylabel&quot;)&#39;</span>)</div>
+<div class="line"><span class="lineno">   17</span>    parser.add_argument(<span class="stringliteral">&#39;--object-types-as-section&#39;</span>, action=<span class="stringliteral">&#39;store_true&#39;</span>, default=<span class="keyword">False</span>,</div>
+<div class="line"><span class="lineno">   18</span>                        help=<span class="stringliteral">&quot;Consumer and providers will show objects types section headers, example:&quot;</span> + os.linesep +</div>
+<div class="line"><span class="lineno">   19</span>                        <span class="stringliteral">&quot;LABELS: &quot;</span> + os.linesep +</div>
+<div class="line"><span class="lineno">   20</span>                        <span class="stringliteral">&quot;R-WEB&quot;</span> + os.linesep +</div>
+<div class="line"><span class="lineno">   21</span>                        <span class="stringliteral">&quot;A-FUSION&quot;</span> + os.linesep +</div>
+<div class="line"><span class="lineno">   22</span>                        <span class="stringliteral">&quot;IPLISTS: &quot;</span> + os.linesep +</div>
+<div class="line"><span class="lineno">   23</span>                        <span class="stringliteral">&quot;Private_Networks&quot;</span> + os.linesep +</div>
+<div class="line"><span class="lineno">   24</span>                        <span class="stringliteral">&quot;Public_NATed&quot;</span>)</div>
+<div class="line"><span class="lineno">   25</span> </div>
+<div class="line"><span class="lineno">   26</span> </div>
+<div class="line"><span class="lineno">   27</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -148,7 +159,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 7 2023 13:15:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Apr 14 2023 09:41:59 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

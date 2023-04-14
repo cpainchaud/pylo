@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,945,85,970"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,981,85,1006"/>
 <area shape="rect" id="node2" href="$classpylo_1_1_a_p_i_1_1_credentials_manager_1_1_credential_file_entry.html" title=" " alt="" coords="163,5,354,45"/>
 <area shape="rect" id="node3" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_href_reference.html" title=" " alt="" coords="166,69,351,109"/>
 <area shape="rect" id="node4" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_href_reference_with_name.html" title=" " alt="" coords="166,133,351,173"/>
@@ -22,12 +22,13 @@
 <area shape="rect" id="node21" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_ruleset_object_update_structure.html" title=" " alt="" coords="159,1253,358,1293"/>
 <area shape="rect" id="node22" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_ruleset_scope_entry_line_json_structure.html" title=" " alt="" coords="139,1317,378,1357"/>
 <area shape="rect" id="node23" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_security_principal_object_json_structure.html" title=" " alt="" coords="139,1381,378,1421"/>
-<area shape="rect" id="node24" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_service_object_json_structure.html" title=" " alt="" coords="166,1445,351,1485"/>
-<area shape="rect" id="node25" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_virtual_service_href_ref.html" title=" " alt="" coords="166,1509,351,1549"/>
-<area shape="rect" id="node26" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_virtual_service_object_json_structure.html" title=" " alt="" coords="147,1573,370,1613"/>
-<area shape="rect" id="node27" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_href_ref.html" title=" " alt="" coords="166,1637,351,1677"/>
-<area shape="rect" id="node28" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_interface_object_json_structure.html" title=" " alt="" coords="135,1701,382,1741"/>
-<area shape="rect" id="node29" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_create_json_structure.html" title=" " alt="" coords="142,1765,375,1805"/>
-<area shape="rect" id="node30" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html" title=" " alt="" coords="161,1829,356,1869"/>
-<area shape="rect" id="node31" href="$classpylo_1_1_helpers_1_1exports_1_1_excel_header.html" title=" " alt="" coords="173,1893,345,1933"/>
+<area shape="rect" id="node24" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_service_href_ref.html" title=" " alt="" coords="166,1445,351,1485"/>
+<area shape="rect" id="node25" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_service_object_json_structure.html" title=" " alt="" coords="166,1509,351,1549"/>
+<area shape="rect" id="node26" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_virtual_service_href_ref.html" title=" " alt="" coords="166,1573,351,1613"/>
+<area shape="rect" id="node27" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_virtual_service_object_json_structure.html" title=" " alt="" coords="147,1637,370,1677"/>
+<area shape="rect" id="node28" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_href_ref.html" title=" " alt="" coords="166,1701,351,1741"/>
+<area shape="rect" id="node29" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_interface_object_json_structure.html" title=" " alt="" coords="135,1765,382,1805"/>
+<area shape="rect" id="node30" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_create_json_structure.html" title=" " alt="" coords="142,1829,375,1869"/>
+<area shape="rect" id="node31" href="$classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html" title=" " alt="" coords="161,1893,356,1933"/>
+<area shape="rect" id="node32" href="$classpylo_1_1_helpers_1_1exports_1_1_excel_header.html" title=" " alt="" coords="173,1957,345,1997"/>
 </map>
