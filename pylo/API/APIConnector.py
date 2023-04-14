@@ -347,9 +347,11 @@ class APIConnector:
 
         self.get_software_version()
 
-        # whatever the request was, label dimensions are not optional
+        # whatever the request was, label dimensions are not optional if PCE is 22.2+
         if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
             object_to_load['label_dimensions'] = object_to_load['label_dimensions']
+        else:
+            del object_to_load['label_dimensions']
 
 
         threads_count = 4
