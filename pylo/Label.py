@@ -1,3 +1,4 @@
+from .API.JsonPayloadTypes import LabelHrefRef
 from .ReferenceTracker import ReferenceTracker
 from .LabelCommon import LabelCommon
 from .LabelStore import LabelStore
@@ -19,6 +20,6 @@ class Label(ReferenceTracker, LabelCommon):
                 "value": self.name,
                 "key": self.type}
 
-    def get_api_reference_json(self):
+    def get_api_reference_json(self) -> LabelHrefRef:
         return {'label': {'href': self.href}}
 
