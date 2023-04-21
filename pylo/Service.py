@@ -1,5 +1,5 @@
 import pylo
-from API.JsonPayloadTypes import ServiceHrefRef
+from .API.JsonPayloadTypes import ServiceHrefRef
 from pylo import log
 from .Helpers import *
 from typing import *

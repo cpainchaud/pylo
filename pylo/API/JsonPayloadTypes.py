@@ -10,6 +10,9 @@ class HrefReferenceWithName(TypedDict):
     href: str
     name: str
 
+class LabelHrefRef(TypedDict):
+    label: HrefReference
+
 class WorkloadHrefRef(TypedDict):
     workload: HrefReference
 
