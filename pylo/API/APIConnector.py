@@ -335,23 +335,24 @@ class APIConnector:
 
     def get_pce_objects(self, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
 
-        object_to_load = {}
+        objects_to_load = {}
         if list_of_objects_to_load is not None:
             all_types = pylo.APIConnector.get_all_object_types()
             for object_type in list_of_objects_to_load:
                 if object_type not in all_types:
                     raise pylo.PyloEx("Unknown object type '{}'".format(object_type))
-                object_to_load[object_type] = True
+                objects_to_load[object_type] = True
         else:
-            object_to_load = pylo.APIConnector.get_all_object_types()
+            objects_to_load = pylo.APIConnector.get_all_object_types()
 
         self.get_software_version()
 
         # whatever the request was, label dimensions are not optional if PCE is 22.2+
         if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
-            object_to_load['label_dimensions'] = object_to_load['label_dimensions']
+            objects_to_load['label_dimensions'] = objects_to_load['label_dimensions']
         else:
-            del object_to_load['label_dimensions']
+            if 'label_dimensions' in objects_to_load:
+                del objects_to_load['label_dimensions']
 
 
         threads_count = 4
@@ -430,7 +431,7 @@ class APIConnector:
             worker.daemon = True
             worker.start()
 
-        for type in object_to_load.keys():
+        for type in objects_to_load.keys():
             thread_queue.put((type, errors,))
 
         thread_queue.join()
