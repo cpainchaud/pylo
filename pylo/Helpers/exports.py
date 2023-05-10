@@ -223,7 +223,7 @@ class ArraysToExcel:
 
             columns_max_width = []
             for header in self._headers:
-                columns_max_width.append(0)
+                    columns_max_width.append(0)
 
             for line in self._lines:
                 new_line = []
@@ -247,27 +247,28 @@ class ArraysToExcel:
                 cell_format.set_text_wrap(self._columns_wrap[header_index])
                 cell_format.set_valign('vcenter')
 
-
                 header_max_width_setting = None
 
                 if type(header) is str:
                     xls_headers.append({'header': header, 'format': cell_format})
                     column_name_length = len(header)
                 else:
-                    xls_headers.append({'header': header.get('nice_name') or header.get('name'), 'format': cell_format})
-                    column_name_length = len(header['nice_name'])
+                    column_name = header.get('nice_name') or header.get('name')
+                    xls_headers.append({'header': column_name, 'format': cell_format})
+                    column_name_length = len(column_name)
                     header_max_width_setting = header.get('max_width')
 
-                # calculating columns width from content length
+                # default is to use width=longest string
                 column_width = columns_max_width[header_index]+1
 
+                if column_width < column_name_length:
+                    column_width = column_name_length
+
                 if header_max_width_setting is not None:
-                    if header_max_width_setting == 'auto':
-                        column_width = columns_max_width[header_index]+1
+                    if header_max_width_setting is None or header_max_width_setting == 'auto':
+                        pass
                     elif columns_max_width[header_index] > header_max_width_setting:
                         column_width = header_max_width_setting
-                    else:
-                        column_width = columns_max_width[header_index]+1
 
                 #print("column '{}' width={} vs setting={} vs calculated={}".format(header_index, column_width, header_max_width_setting, columns_max_width[header_index]))
 
