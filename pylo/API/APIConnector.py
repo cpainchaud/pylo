@@ -349,7 +349,7 @@ class APIConnector:
 
         # whatever the request was, label dimensions are not optional if PCE is 22.2+
         if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
-            objects_to_load['label_dimensions'] = objects_to_load['label_dimensions']
+            objects_to_load['label_dimensions'] = 'label_dimensions'
         else:
             if 'label_dimensions' in objects_to_load:
                 del objects_to_load['label_dimensions']
