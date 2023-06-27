@@ -349,7 +349,7 @@ class APIConnector:
 
         # whatever the request was, label dimensions are not optional if PCE is 22.2+
         if self.version.is_greater_or_equal_than(pylo.SoftwareVersion("22.2.0")):
-            objects_to_load['label_dimensions'] = objects_to_load['label_dimensions']
+            objects_to_load['label_dimensions'] = 'label_dimensions'
         else:
             if 'label_dimensions' in objects_to_load:
                 del objects_to_load['label_dimensions']
@@ -723,17 +723,17 @@ class APIConnector:
 
         def _unpair_agents(self, workloads_hrefs: [str]):
             for href in workloads_hrefs:
-                retryCount = 5
+                retry_count = 5
                 api_result = None
 
-                while retryCount >= 0:
-                    retryCount -= 1
+                while retry_count >= 0:
+                    retry_count -= 1
                     try:
                         api_result = self.connector.objects_workload_unpair_multi([href])
                         break
 
                     except pylo.PyloApiTooManyRequestsEx as ex:
-                        if retryCount <= 0:
+                        if retry_count <= 0:
                             self._errors[href] = str(ex)
                             break
                         time.sleep(6)
