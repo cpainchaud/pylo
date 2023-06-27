@@ -361,7 +361,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  223</span> </div>
 <div class="line"><span class="lineno">  224</span>            columns_max_width = []</div>
 <div class="line"><span class="lineno">  225</span>            <span class="keywordflow">for</span> header <span class="keywordflow">in</span> self._headers:</div>
-<div class="line"><span class="lineno">  226</span>                columns_max_width.append(0)</div>
+<div class="line"><span class="lineno">  226</span>                    columns_max_width.append(0)</div>
 <div class="line"><span class="lineno">  227</span> </div>
 <div class="line"><span class="lineno">  228</span>            <span class="keywordflow">for</span> line <span class="keywordflow">in</span> self._lines:</div>
 <div class="line"><span class="lineno">  229</span>                new_line = []</div>
@@ -385,49 +385,50 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  247</span>                cell_format.set_text_wrap(self._columns_wrap[header_index])</div>
 <div class="line"><span class="lineno">  248</span>                cell_format.set_valign(<span class="stringliteral">&#39;vcenter&#39;</span>)</div>
 <div class="line"><span class="lineno">  249</span> </div>
-<div class="line"><span class="lineno">  250</span> </div>
-<div class="line"><span class="lineno">  251</span>                header_max_width_setting = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  252</span> </div>
-<div class="line"><span class="lineno">  253</span>                <span class="keywordflow">if</span> type(header) <span class="keywordflow">is</span> str:</div>
-<div class="line"><span class="lineno">  254</span>                    xls_headers.append({<span class="stringliteral">&#39;header&#39;</span>: header, <span class="stringliteral">&#39;format&#39;</span>: cell_format})</div>
-<div class="line"><span class="lineno">  255</span>                    column_name_length = len(header)</div>
-<div class="line"><span class="lineno">  256</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  257</span>                    xls_headers.append({<span class="stringliteral">&#39;header&#39;</span>: header.get(<span class="stringliteral">&#39;nice_name&#39;</span>) <span class="keywordflow">or</span> header.get(<span class="stringliteral">&#39;name&#39;</span>), <span class="stringliteral">&#39;format&#39;</span>: cell_format})</div>
-<div class="line"><span class="lineno">  258</span>                    column_name_length = len(header[<span class="stringliteral">&#39;nice_name&#39;</span>])</div>
+<div class="line"><span class="lineno">  250</span>                header_max_width_setting = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  251</span> </div>
+<div class="line"><span class="lineno">  252</span>                <span class="keywordflow">if</span> type(header) <span class="keywordflow">is</span> str:</div>
+<div class="line"><span class="lineno">  253</span>                    xls_headers.append({<span class="stringliteral">&#39;header&#39;</span>: header, <span class="stringliteral">&#39;format&#39;</span>: cell_format})</div>
+<div class="line"><span class="lineno">  254</span>                    column_name_length = len(header)</div>
+<div class="line"><span class="lineno">  255</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  256</span>                    column_name = header.get(<span class="stringliteral">&#39;nice_name&#39;</span>) <span class="keywordflow">or</span> header.get(<span class="stringliteral">&#39;name&#39;</span>)</div>
+<div class="line"><span class="lineno">  257</span>                    xls_headers.append({<span class="stringliteral">&#39;header&#39;</span>: column_name, <span class="stringliteral">&#39;format&#39;</span>: cell_format})</div>
+<div class="line"><span class="lineno">  258</span>                    column_name_length = len(column_name)</div>
 <div class="line"><span class="lineno">  259</span>                    header_max_width_setting = header.get(<span class="stringliteral">&#39;max_width&#39;</span>)</div>
 <div class="line"><span class="lineno">  260</span> </div>
-<div class="line"><span class="lineno">  261</span>                <span class="comment"># calculating columns width from content length</span></div>
+<div class="line"><span class="lineno">  261</span>                <span class="comment"># default is to use width=longest string</span></div>
 <div class="line"><span class="lineno">  262</span>                column_width = columns_max_width[header_index]+1</div>
 <div class="line"><span class="lineno">  263</span> </div>
-<div class="line"><span class="lineno">  264</span>                <span class="keywordflow">if</span> header_max_width_setting <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  265</span>                    <span class="keywordflow">if</span> header_max_width_setting == <span class="stringliteral">&#39;auto&#39;</span>:</div>
-<div class="line"><span class="lineno">  266</span>                        column_width = columns_max_width[header_index]+1</div>
-<div class="line"><span class="lineno">  267</span>                    <span class="keywordflow">elif</span> columns_max_width[header_index] &gt; header_max_width_setting:</div>
-<div class="line"><span class="lineno">  268</span>                        column_width = header_max_width_setting</div>
-<div class="line"><span class="lineno">  269</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  270</span>                        column_width = columns_max_width[header_index]+1</div>
-<div class="line"><span class="lineno">  271</span> </div>
-<div class="line"><span class="lineno">  272</span>                <span class="comment">#print(&quot;column &#39;{}&#39; width={} vs setting={} vs calculated={}&quot;.format(header_index, column_width, header_max_width_setting, columns_max_width[header_index]))</span></div>
-<div class="line"><span class="lineno">  273</span> </div>
-<div class="line"><span class="lineno">  274</span>                xls_worksheet.set_column(header_index, header_index, width=column_width*1.1)</div>
-<div class="line"><span class="lineno">  275</span> </div>
-<div class="line"><span class="lineno">  276</span>                header_index += 1</div>
-<div class="line"><span class="lineno">  277</span> </div>
-<div class="line"><span class="lineno">  278</span>            <span class="keywordflow">if</span> len(self._lines) &gt; 0:</div>
-<div class="line"><span class="lineno">  279</span>                xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,</div>
-<div class="line"><span class="lineno">  280</span>                                                {<span class="stringliteral">&#39;header_row&#39;</span>: <span class="keyword">True</span>, <span class="stringliteral">&#39;data&#39;</span>: xls_data, <span class="stringliteral">&#39;columns&#39;</span>: xls_headers}</div>
-<div class="line"><span class="lineno">  281</span>                                                )</div>
-<div class="line"><span class="lineno">  282</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  283</span>                fake_data = []</div>
-<div class="line"><span class="lineno">  284</span>                <span class="keywordflow">for</span> header <span class="keywordflow">in</span> self._headers:</div>
-<div class="line"><span class="lineno">  285</span>                    fake_data.append(<span class="keywordtype">None</span>)</div>
-<div class="line"><span class="lineno">  286</span> </div>
-<div class="line"><span class="lineno">  287</span>                xls_table = xls_worksheet.add_table(0, 0, 1, len(self._headers)-1,</div>
-<div class="line"><span class="lineno">  288</span>                                                    {<span class="stringliteral">&#39;header_row&#39;</span>: <span class="keyword">True</span>, <span class="stringliteral">&#39;data&#39;</span>: [fake_data], <span class="stringliteral">&#39;columns&#39;</span>: xls_headers}</div>
-<div class="line"><span class="lineno">  289</span>                                                    )</div>
-<div class="line"><span class="lineno">  290</span>            xls_worksheet.freeze_panes(1, 0)</div>
-<div class="line"><span class="lineno">  291</span> </div>
-<div class="line"><span class="lineno">  292</span>    <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">  264</span>                <span class="keywordflow">if</span> column_width &lt; column_name_length:</div>
+<div class="line"><span class="lineno">  265</span>                    column_width = column_name_length</div>
+<div class="line"><span class="lineno">  266</span> </div>
+<div class="line"><span class="lineno">  267</span>                <span class="keywordflow">if</span> header_max_width_setting <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  268</span>                    <span class="keywordflow">if</span> header_max_width_setting <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> header_max_width_setting == <span class="stringliteral">&#39;auto&#39;</span>:</div>
+<div class="line"><span class="lineno">  269</span>                        <span class="keywordflow">pass</span></div>
+<div class="line"><span class="lineno">  270</span>                    <span class="keywordflow">elif</span> columns_max_width[header_index] &gt; header_max_width_setting:</div>
+<div class="line"><span class="lineno">  271</span>                        column_width = header_max_width_setting</div>
+<div class="line"><span class="lineno">  272</span> </div>
+<div class="line"><span class="lineno">  273</span>                <span class="comment">#print(&quot;column &#39;{}&#39; width={} vs setting={} vs calculated={}&quot;.format(header_index, column_width, header_max_width_setting, columns_max_width[header_index]))</span></div>
+<div class="line"><span class="lineno">  274</span> </div>
+<div class="line"><span class="lineno">  275</span>                xls_worksheet.set_column(header_index, header_index, width=column_width*1.1)</div>
+<div class="line"><span class="lineno">  276</span> </div>
+<div class="line"><span class="lineno">  277</span>                header_index += 1</div>
+<div class="line"><span class="lineno">  278</span> </div>
+<div class="line"><span class="lineno">  279</span>            <span class="keywordflow">if</span> len(self._lines) &gt; 0:</div>
+<div class="line"><span class="lineno">  280</span>                xls_table = xls_worksheet.add_table(0, 0, len(self._lines), len(self._headers)-1,</div>
+<div class="line"><span class="lineno">  281</span>                                                {<span class="stringliteral">&#39;header_row&#39;</span>: <span class="keyword">True</span>, <span class="stringliteral">&#39;data&#39;</span>: xls_data, <span class="stringliteral">&#39;columns&#39;</span>: xls_headers}</div>
+<div class="line"><span class="lineno">  282</span>                                                )</div>
+<div class="line"><span class="lineno">  283</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  284</span>                fake_data = []</div>
+<div class="line"><span class="lineno">  285</span>                <span class="keywordflow">for</span> header <span class="keywordflow">in</span> self._headers:</div>
+<div class="line"><span class="lineno">  286</span>                    fake_data.append(<span class="keywordtype">None</span>)</div>
+<div class="line"><span class="lineno">  287</span> </div>
+<div class="line"><span class="lineno">  288</span>                xls_table = xls_worksheet.add_table(0, 0, 1, len(self._headers)-1,</div>
+<div class="line"><span class="lineno">  289</span>                                                    {<span class="stringliteral">&#39;header_row&#39;</span>: <span class="keyword">True</span>, <span class="stringliteral">&#39;data&#39;</span>: [fake_data], <span class="stringliteral">&#39;columns&#39;</span>: xls_headers}</div>
+<div class="line"><span class="lineno">  290</span>                                                    )</div>
+<div class="line"><span class="lineno">  291</span>            xls_worksheet.freeze_panes(1, 0)</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>    <span class="keyword">def </span>__init__(self):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -536,7 +537,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 21 2023 09:21:41 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Tue Jun 27 2023 07:01:39 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
