@@ -84,6 +84,10 @@ class VENAgent(pylo.ReferenceTracker):
             else:
                 self.mode = "build"
 
+    @property
+    def status(self) -> Literal['stopped','active','suspended','uninstalled']:
+        return self.raw_json['status']['status']
+
     def get_last_heartbeat_date(self) -> Optional[datetime.datetime]:
         if self._last_heartbeat is None:
             self._last_heartbeat = self._get_date_from_json('last_heartbeat_on')
