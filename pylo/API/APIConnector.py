@@ -8,7 +8,7 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure, \
     WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
     RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
-    LabelDimensionObjectStructure
+    LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure
 
 try:
     import requests as requests
@@ -593,7 +593,11 @@ class APIConnector:
 
         return None
 
-    def objects_workload_get(self, include_deleted=False, filter_by_ip: str = None, max_results: int = None,
+    def objects_workload_get(self,
+                             include_deleted=False,
+                             filter_by_ip: str = None,
+                             filter_by_label: WorkloadsGetQueryLabelFilterJsonStructure=None,
+                             max_results: int = None,
                              async_mode=True) -> List[WorkloadObjectJsonStructure]:
         path = '/workloads'
         data = {}
@@ -603,6 +607,10 @@ class APIConnector:
 
         if filter_by_ip is not None:
             data['ip_address'] = filter_by_ip
+
+        if filter_by_label is not None:
+            # filter_by_label must be converted to json text
+            data['labels'] = json.dumps(filter_by_label)
 
         if max_results is not None:
             data['max_results'] = max_results
