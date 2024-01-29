@@ -8,5 +8,6 @@ var searchData=
   ['workload_5fhref_5',['workload_href',['../namespacepylo_1_1utilities_1_1ven__idle__to__illumination.html#af324fdc2b8a95beee6c300d52bf1d666',1,'pylo::utilities::ven_idle_to_illumination']]],
   ['workload_5fhref_5ffound_6',['workload_href_found',['../namespacepylo_1_1utilities_1_1ven__idle__to__illumination.html#a333d18954b9ed05929eefb82f335b144',1,'pylo::utilities::ven_idle_to_illumination']]],
   ['workload_5fto_5fiplist_5fquery_5fmanager_7',['workload_to_iplist_query_manager',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#aafdf66275e73f45807087e18832543fa',1,'pylo::API::Explorer::RuleCoverageQueryManager']]],
-  ['workload_5fto_5fworkload_5fquery_5fmanager_8',['workload_to_workload_query_manager',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#ae89273dd79b5bd4e9e735c7ab1ace021',1,'pylo::API::Explorer::RuleCoverageQueryManager']]]
+  ['workload_5fto_5fworkload_5fquery_5fmanager_8',['workload_to_workload_query_manager',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#ae89273dd79b5bd4e9e735c7ab1ace021',1,'pylo::API::Explorer::RuleCoverageQueryManager']]],
+  ['workloadsgetquerylabelfilterjsonstructure_9',['WorkloadsGetQueryLabelFilterJsonStructure',['../namespacepylo_1_1_a_p_i_1_1_json_payload_types.html#abc5ecd0096372ce7538b44f276b27eb5',1,'pylo::API::JsonPayloadTypes']]]
 ];

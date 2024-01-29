@@ -213,9 +213,9 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  116</span>        execute_native_parsers(args, org, native_parsers)</div>
 <div class="line"><span class="lineno">  117</span> </div>
 <div class="line"><span class="lineno">  118</span>    <span class="keywordflow">if</span> native_parsers <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  119</span>        commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector, native_parsers=native_parsers)</div>
+<div class="line"><span class="lineno">  119</span>        commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector, native_parsers=native_parsers, pce_cache_was_used=settings_use_cache)</div>
 <div class="line"><span class="lineno">  120</span>    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  121</span>        commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector)</div>
+<div class="line"><span class="lineno">  121</span>        commands.available_commands[selected_command.name].main(args, org, config_data=config_data, connector=connector, pce_cache_was_used=settings_use_cache)</div>
 <div class="line"><span class="lineno">  122</span>    print(<span class="stringliteral">&quot;**** END OF {} UTILITY ****&quot;</span>.format(selected_command.name.upper()))</div>
 <div class="line"><span class="lineno">  123</span>    print()</div>
 <div class="line"><span class="lineno">  124</span> </div>
@@ -229,7 +229,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 27 2023 07:01:39 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Mon Jan 29 2024 12:36:41 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

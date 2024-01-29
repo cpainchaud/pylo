@@ -33,11 +33,12 @@ var searchData=
   ['source_5fis_5fworkload_30',['source_is_workload',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result.html#a15afdfc44a092c5c9efc59cd68e36d1e',1,'pylo::API::Explorer::ExplorerResult']]],
   ['static_5fname_5fstripped_5ffqdn_31',['static_name_stripped_fqdn',['../classpylo_1_1_workload_1_1_workload.html#a3c27ff0fa9e8334d53e4e1eeb0e60ef1',1,'pylo::Workload::Workload']]],
   ['stats_5fto_5fstr_32',['stats_to_str',['../classpylo_1_1_organization_1_1_organization.html#a4971f0461f118ed980b6f59ec1da29b0',1,'pylo.Organization.Organization.stats_to_str()'],['../classpylo_1_1tmp_1_1_i_d_translation_table.html#aad3f6d24d2e8f46a5345372d846d3231',1,'pylo.tmp.IDTranslationTable.stats_to_str()']]],
-  ['status_5fis_5ferror_33',['status_is_error',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a4d706d301e65b7ec3b47a4ce57c60967',1,'pylo::API::ClusterHealth::ClusterHealth']]],
-  ['status_5fis_5fok_34',['status_is_ok',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a5b42a9a322980ae4eced5be3fcb6422a',1,'pylo::API::ClusterHealth::ClusterHealth']]],
-  ['status_5fis_5fwarning_35',['status_is_warning',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a5047d3df467793ce73e72a540c9175f1',1,'pylo::API::ClusterHealth::ClusterHealth']]],
-  ['string_5flist_5fto_5ftext_36',['string_list_to_text',['../namespacepylo_1_1_helpers_1_1functions.html#ad70cdfa734ee6fe8c4bd75b4eca5a032',1,'pylo::Helpers::functions']]],
-  ['substract_37',['substract',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#ad612257a3469b77c0375331d2f382deb',1,'pylo::IPMap::IP4Map']]],
-  ['substract_5fsingle_5fentry_38',['substract_single_entry',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a1b43e571c1af868f4ca8e4159556a227',1,'pylo::IPMap::IP4Map']]],
-  ['subtract_5ffrom_5ftext_39',['subtract_from_text',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a59895e75c0560610d4ca2cc185d93464',1,'pylo::IPMap::IP4Map']]]
+  ['status_33',['status',['../classpylo_1_1_agent_store_1_1_v_e_n_agent.html#a372e3b019b24c993fcb6db435c0d9589',1,'pylo::AgentStore::VENAgent']]],
+  ['status_5fis_5ferror_34',['status_is_error',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a4d706d301e65b7ec3b47a4ce57c60967',1,'pylo::API::ClusterHealth::ClusterHealth']]],
+  ['status_5fis_5fok_35',['status_is_ok',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a5b42a9a322980ae4eced5be3fcb6422a',1,'pylo::API::ClusterHealth::ClusterHealth']]],
+  ['status_5fis_5fwarning_36',['status_is_warning',['../classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html#a5047d3df467793ce73e72a540c9175f1',1,'pylo::API::ClusterHealth::ClusterHealth']]],
+  ['string_5flist_5fto_5ftext_37',['string_list_to_text',['../namespacepylo_1_1_helpers_1_1functions.html#ad70cdfa734ee6fe8c4bd75b4eca5a032',1,'pylo::Helpers::functions']]],
+  ['substract_38',['substract',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#ad612257a3469b77c0375331d2f382deb',1,'pylo::IPMap::IP4Map']]],
+  ['substract_5fsingle_5fentry_39',['substract_single_entry',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a1b43e571c1af868f4ca8e4159556a227',1,'pylo::IPMap::IP4Map']]],
+  ['subtract_5ffrom_5ftext_40',['subtract_from_text',['../classpylo_1_1_i_p_map_1_1_i_p4_map.html#a59895e75c0560610d4ca2cc185d93464',1,'pylo::IPMap::IP4Map']]]
 ];

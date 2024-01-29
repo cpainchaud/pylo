@@ -105,6 +105,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3949f6ee0b37e126970958e997819915"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34aa2dc9e5f13b891ac1f6eebf91be48"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html#a34aa2dc9e5f13b891ac1f6eebf91be48">load_from_json</a> (self, data)</td></tr>
 <tr class="separator:a34aa2dc9e5f13b891ac1f6eebf91be48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a372e3b019b24c993fcb6db435c0d9589"><td class="memItemLeft" align="right" valign="top">Literal[ 'stopped', 'active', 'suspended', 'uninstalled']&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html#a372e3b019b24c993fcb6db435c0d9589">status</a> (self)</td></tr>
+<tr class="separator:a372e3b019b24c993fcb6db435c0d9589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50ce779fa2423daddd26b82e3453ba23"><td class="memItemLeft" align="right" valign="top">Optional[datetime.datetime]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html#a50ce779fa2423daddd26b82e3453ba23">get_last_heartbeat_date</a> (self)</td></tr>
 <tr class="separator:a50ce779fa2423daddd26b82e3453ba23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b8a95a6e5aafdacd9592d9f373745c4"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_agent_store_1_1_v_e_n_agent.html#a8b8a95a6e5aafdacd9592d9f373745c4">get_status_security_policy_applied_at</a> (self)</td></tr>
@@ -210,11 +212,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   87</span>    <span class="keyword">def </span>get_last_heartbeat_date(self) -&gt; Optional[datetime.datetime]:</div>
-<div class="line"><span class="lineno">   88</span>        <span class="keywordflow">if</span> self._last_heartbeat <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   89</span>            self._last_heartbeat = self._get_date_from_json(<span class="stringliteral">&#39;last_heartbeat_on&#39;</span>)</div>
-<div class="line"><span class="lineno">   90</span>        <span class="keywordflow">return</span> self._last_heartbeat</div>
-<div class="line"><span class="lineno">   91</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>    <span class="keyword">def </span>get_last_heartbeat_date(self) -&gt; Optional[datetime.datetime]:</div>
+<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">if</span> self._last_heartbeat <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   93</span>            self._last_heartbeat = self._get_date_from_json(<span class="stringliteral">&#39;last_heartbeat_on&#39;</span>)</div>
+<div class="line"><span class="lineno">   94</span>        <span class="keywordflow">return</span> self._last_heartbeat</div>
+<div class="line"><span class="lineno">   95</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -242,11 +244,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   92</span>    <span class="keyword">def </span>get_status_security_policy_applied_at(self):</div>
-<div class="line"><span class="lineno">   93</span>        <span class="keywordflow">if</span> self._status_security_policy_applied_at <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   94</span>            self._status_security_policy_applied_at = self._get_date_from_json(<span class="stringliteral">&#39;security_policy_applied_at&#39;</span>)</div>
-<div class="line"><span class="lineno">   95</span>        <span class="keywordflow">return</span> self._status_security_policy_applied_at</div>
-<div class="line"><span class="lineno">   96</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   96</span>    <span class="keyword">def </span>get_status_security_policy_applied_at(self):</div>
+<div class="line"><span class="lineno">   97</span>        <span class="keywordflow">if</span> self._status_security_policy_applied_at <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   98</span>            self._status_security_policy_applied_at = self._get_date_from_json(<span class="stringliteral">&#39;security_policy_applied_at&#39;</span>)</div>
+<div class="line"><span class="lineno">   99</span>        <span class="keywordflow">return</span> self._status_security_policy_applied_at</div>
+<div class="line"><span class="lineno">  100</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -274,10 +276,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   97</span>    <span class="keyword">def </span>get_status_security_policy_sync_state(self):</div>
-<div class="line"><span class="lineno">   98</span>        <span class="keywordflow">return</span> self._status_security_policy_sync_state</div>
-<div class="line"><span class="lineno">   99</span> </div>
-<div class="line"><span class="lineno">  100</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  101</span>    <span class="keyword">def </span>get_status_security_policy_sync_state(self):</div>
+<div class="line"><span class="lineno">  102</span>        <span class="keywordflow">return</span> self._status_security_policy_sync_state</div>
+<div class="line"><span class="lineno">  103</span> </div>
+<div class="line"><span class="lineno">  104</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -350,6 +352,27 @@ Here is the call graph for this function:</div>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a372e3b019b24c993fcb6db435c0d9589" name="a372e3b019b24c993fcb6db435c0d9589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a372e3b019b24c993fcb6db435c0d9589">&#9670;&#160;</a></span>status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Literal['stopped','active','suspended','uninstalled'] pylo.AgentStore.VENAgent.status </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">   88</span>    <span class="keyword">def </span>status(self) -&gt; Literal[&#39;stopped&#39;,&#39;active&#39;,&#39;suspended&#39;,&#39;uninstalled&#39;]:</div>
+<div class="line"><span class="lineno">   89</span>        <span class="keywordflow">return</span> self.raw_json[<span class="stringliteral">&#39;status&#39;</span>][<span class="stringliteral">&#39;status&#39;</span>]</div>
+<div class="line"><span class="lineno">   90</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a6ae84362d9e2258bbdc78b7121769ec3" name="a6ae84362d9e2258bbdc78b7121769ec3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6ae84362d9e2258bbdc78b7121769ec3">&#9670;&#160;</a></span>mode</h2>
@@ -399,7 +422,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 27 2023 07:01:39 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Mon Jan 29 2024 12:36:41 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
