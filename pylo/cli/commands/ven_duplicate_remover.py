@@ -5,7 +5,7 @@ from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'
-objects_load_filter = ['workloads', 'labels']
+objects_load_filter = ['labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -13,6 +13,10 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='')
     parser.add_argument('--confirm', '-c', action='store_true',
                         help='actually operate deletions')
+    parser.add_argument('--filter-label', '-fl', action='append',
+                        help='Only look at workloads matching specified labels')
+    parser.add_argument('--ignore-unmanaged-workloads', '-iuw', action='store_true',
+                        help='Do not touch unmanaged workloads nor include them to detect duplicates')
 
 class DuplicateRecordManager:
     class DuplicatedRecord:
@@ -77,9 +81,10 @@ class DuplicateRecordManager:
         record.add_workload(workload)
 
 
-def __main(args, org: pylo.Organization, **kwargs):
+def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     verbose = args['verbose']
     argument_confirm = args['confirm']
+    arg_ignore_unmanaged_workloads = args['ignore_unmanaged_workloads'] is True
 
     output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_')
     output_file_csv = output_file_prefix + '.csv'
@@ -88,7 +93,51 @@ def __main(args, org: pylo.Organization, **kwargs):
     csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'href', 'action']
     csv_report = pylo.ArrayToExport(csv_report_headers)
 
-    # <editor-fold desc="PCE Configuration Download and Parsing">
+    # <editor-fold desc="Download workloads from PCE">
+    filter_labels: Dict[str, List[pylo.Label]] = {}
+    if args['filter_label'] is not None:
+        for label_name in args['filter_label']:
+            label = org.LabelStore.find_label_by_name(label_name)
+            if label is None:
+                raise pylo.PyloEx("Cannot find label '{}' in the PCE".format(label_name))
+            if label.type_string() in filter_labels:
+                filter_labels[label.type_string()].append(label)
+            else:
+                filter_labels[label.type_string()] = [label]
+    if pce_cache_was_used:
+        print("* Skipping Workloads download as it was loaded from cache file")
+    else:
+        print("* Downloading Workloads data from the PCE... ", flush=True)
+        if args['filter_label'] is None:
+            workloads_json = org.connector.objects_workload_get(async_mode=True, max_results=1000000)
+        else:
+            filter_labels_list_of_list: List[List[pylo.Label]] = []
+            # convert filter_labels dict to an array of arrays
+            for label_type, label_list in filter_labels.items():
+                filter_labels_list_of_list.append(label_list)
+
+            # convert filter_labels_list_of_list to a matrix of all possibilities
+            # example: [[a,b],[c,d]] becomes [[a,c],[a,d],[b,c],[b,d]]
+            filter_labels_matrix = [[]]
+            for label_list in filter_labels_list_of_list:
+                new_matrix = []
+                for label in label_list:
+                    for row in filter_labels_matrix:
+                        new_row = row.copy()
+                        new_row.append(label.href)
+                        new_matrix.append(new_row)
+                filter_labels_matrix = new_matrix
+            print(filter_labels_matrix)
+
+            workloads_json = org.connector.objects_workload_get(async_mode=False, max_results=1000000, filter_by_label=filter_labels_matrix)
+
+        org.WorkloadStore.load_workloads_from_json(workloads_json)
+
+    print("OK!")
+    # </editor-fold>
+
+    print(org.stats_to_str())
+
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
 
     def add_workload_to_report(wkl: pylo.Workload, action: str):
@@ -113,6 +162,9 @@ def __main(args, org: pylo.Organization, **kwargs):
     for workload in all_workloads.values():
         if workload.deleted:
             continue
+        if workload.unmanaged and arg_ignore_unmanaged_workloads:
+            continue
+
         duplicated_hostnames.add_workload(workload)
 
     print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
@@ -133,8 +185,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             continue
 
         if dup_record.count_online() > 1:
-            print("     - IGNORED: there are more than 1 VEN online")
-            continue
+            print("     - WARNING: there are more than 1 VEN online")
 
         for wkl in dup_record.offline:
             delete_tracker.add_workload(wkl)
