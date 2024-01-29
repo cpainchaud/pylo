@@ -1,6 +1,6 @@
 """This module contains the JSON payload types for the PCE API."""
 
-from typing import List, Optional, TypedDict, NotRequired, Union
+from typing import List, Optional, TypedDict, NotRequired, Union, Literal
 
 
 class HrefReference(TypedDict):
@@ -202,4 +202,19 @@ class RuleCoverageQueryEntryJsonStructure(TypedDict):
     source: Union[IPListHrefRef, WorkloadHrefRef]
     destination: Union[IPListHrefRef, WorkloadHrefRef]
     services: List
+
+
+WorkloadsGetQueryLabelFilterJsonStructure = List[List[str]]
+
+AuditLogApiEventType = Literal['agent.clone_detected', 'workloads.update', 'workload.update', 'workload_interfaces.update']
+
+class AuditLogEntryJsonStructure(TypedDict):
+    event_type: AuditLogApiEventType
+    timestamp: str
+
+class AuditLogApiRequestPayloadStructure(TypedDict):
+    pass
+
+class AuditLogApiReplyEventJsonStructure(TypedDict):
+    pass
 
