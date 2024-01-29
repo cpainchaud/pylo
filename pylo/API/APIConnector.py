@@ -58,7 +58,8 @@ all_object_types: Dict[ObjectTypes, ObjectTypes] = {
 class APIConnector:
     """docstring for APIConnector."""
 
-    def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, org_id=1):
+    def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, org_id=1, name='unnamed'):
+        self.name = name
         self.hostname: str = hostname
         if type(port) is int:
             port = str(port)
@@ -101,7 +102,7 @@ class APIConnector:
         if credentials is not None:
             return APIConnector(credentials['hostname'], credentials['port'], credentials['api_user'],
                                 credentials['api_key'], skip_ssl_cert_check=not credentials['verify_ssl'],
-                                org_id=credentials['org_id'])
+                                org_id=credentials['org_id'], name=credentials['name'])
 
         if not request_if_missing:
             return None
@@ -112,8 +113,10 @@ class APIConnector:
         password = getpass.getpass()
         print('Server port:', end='')
         port = int(input())
+        print('A name for this connection (ie: MyCompany PROD')
+        name = input()
 
-        connector = pylo.APIConnector(hostname_or_profile_name, port, user, password, skip_ssl_cert_check=True)
+        connector = pylo.APIConnector(hostname_or_profile_name, port, user, password, skip_ssl_cert_check=True, name=name)
         return connector
 
     def _make_url(self, path: str, include_org_id):
