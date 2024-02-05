@@ -567,3 +567,10 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
             self.loc_label = loc_label
 
         return changes_occurred
+
+    def get_pce_ui_url(self) -> str:
+        """
+        generates a URL link for the Workload vs PCE UI
+        :return: url string
+        """
+        return self.owner.owner.connector.get_pce_ui_workload_url(self.href)

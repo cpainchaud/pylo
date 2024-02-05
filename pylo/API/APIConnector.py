@@ -119,8 +119,15 @@ class APIConnector:
         connector = pylo.APIConnector(hostname_or_profile_name, port, user, password, skip_ssl_cert_check=True, name=name)
         return connector
 
-    def _make_url(self, path: str, include_org_id):
-        url = "https://{0}:{1}/api/v2".format(self.hostname, self.port)
+    def _make_base_url(self, path: str='') -> str:
+        # remove leading '/' from path if exists
+        if len(path) > 0 and path[0] == '/':
+            path = path[1:]
+        url = "https://{0}:{1}/{2}".format(self.hostname, self.port, path)
+        return url
+
+    def _make_api_url(self, path: str = '', include_org_id=False) -> str:
+        url = self._make_base_url('/api/v2')
         if include_org_id:
             url += '/orgs/' + str(self.orgID)
         url += path
@@ -174,7 +181,7 @@ class APIConnector:
         if self.version is None and not skip_product_version_check:
             self.collect_pce_infos()
 
-        url = self._make_url(path, include_org_id)
+        url = self._make_api_url(path, include_org_id)
 
         headers = {'Accept': 'application/json'}
 
@@ -661,8 +668,7 @@ class APIConnector:
         @property
         def workloads(self) -> List['pylo.Workload']:
             """
-            Return a copy of the list of workloads. Beware that if you added HREF (strings) instead of workloads, you
-            will get an empty array should ge the the 'hrefs' properties instead
+            Return a copy of the list of workloads.
             :return:
             """
             return list(self._workloads.values())
@@ -1209,4 +1215,25 @@ class APIConnector:
     def new_explorer_query(self, max_results: int = 1500, max_running_time_seconds: int = 1800,
                            check_for_update_interval_seconds: int = 10) -> 'pylo.ExplorerQuery':
         return pylo.ExplorerQuery(self, max_results, max_running_time_seconds, check_for_update_interval_seconds)
+
+
+    def new_audit_log_query(self, max_results: int = 10000, max_running_time_seconds: int = 1800,
+                            check_for_update_interval_seconds: int = 10) -> 'pylo.AuditLogQuery':
+        return pylo.AuditLogQuery(self, max_results, max_running_time_seconds )
+
+    def audit_log_query(self, max_results = 1000, event_type: Optional[str] = None) -> List[AuditLogApiReplyEventJsonStructure]:
+        url = '/events'
+        args = {'max_results': max_results}
+        if event_type is not None:
+            args['event_type'] = event_type
+
+        return self.do_get_call(path=url, params=args)
+
+
+    def get_pce_ui_workload_url(self, href: str) -> str:
+        # extract UUID from workload HREF:
+        uuid = href.split('/')[-1]
+        return self._make_base_url('/#/workloads/' + uuid )
+
+
 
