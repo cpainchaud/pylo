@@ -148,6 +148,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1698846f41bbda8a87ba1d29eb010e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25a7ea5fe8cfd06fb79da66f5057db1c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a25a7ea5fe8cfd06fb79da66f5057db1c">update_labels</a> (self, List[<a class="el" href="classpylo_1_1_label_1_1_label.html">Label</a>] list_of_labels, missing_label_type_means_no_change=False)</td></tr>
 <tr class="separator:a25a7ea5fe8cfd06fb79da66f5057db1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32c36623653131dab4027ee8be49a317"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a32c36623653131dab4027ee8be49a317">get_pce_ui_url</a> (self)</td></tr>
+<tr class="separator:a32c36623653131dab4027ee8be49a317"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpylo_1_1_reference_tracker_1_1_reference_tracker"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpylo_1_1_reference_tracker_1_1_reference_tracker')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpylo_1_1_reference_tracker_1_1_reference_tracker.html">pylo.ReferenceTracker.ReferenceTracker</a></td></tr>
 <tr class="memitem:ab62e0de35a3358f9120ab07f4184f640 inherit pub_methods_classpylo_1_1_reference_tracker_1_1_reference_tracker"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_reference_tracker_1_1_reference_tracker.html#ab62e0de35a3358f9120ab07f4184f640">__init__</a> (self)</td></tr>
 <tr class="separator:ab62e0de35a3358f9120ab07f4184f640 inherit pub_methods_classpylo_1_1_reference_tracker_1_1_reference_tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1059,6 +1061,32 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a32c36623653131dab4027ee8be49a317" name="a32c36623653131dab4027ee8be49a317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32c36623653131dab4027ee8be49a317">&#9670;&#160;</a></span>get_pce_ui_url()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> str pylo.Workload.Workload.get_pce_ui_url </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">generates a URL link for the Workload vs PCE UI
+:return: url string
+</pre> <div class="fragment"><div class="line"><span class="lineno">  571</span>    <span class="keyword">def </span>get_pce_ui_url(self) -&gt; str:</div>
+<div class="line"><span class="lineno">  572</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  573</span><span class="stringliteral">        generates a URL link </span><span class="keywordflow">for</span> the Workload vs PCE UI</div>
+<div class="line"><span class="lineno">  574</span>        :<span class="keywordflow">return</span>: url string</div>
+<div class="line"><span class="lineno">  575</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  576</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self.owner.owner.connector.get_pce_ui_workload_url(self.href)</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a1698846f41bbda8a87ba1d29eb010e22" name="a1698846f41bbda8a87ba1d29eb010e22"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1698846f41bbda8a87ba1d29eb010e22">&#9670;&#160;</a></span>get_status_string()</h2>
 
@@ -1489,6 +1517,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  567</span>            self.loc_label = loc_label</div>
 <div class="line"><span class="lineno">  568</span> </div>
 <div class="line"><span class="lineno">  569</span>        <span class="keywordflow">return</span> changes_occurred</div>
+<div class="line"><span class="lineno">  570</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1735,7 +1764,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jan 29 2024 12:36:41 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Mon Feb 5 2024 13:32:12 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

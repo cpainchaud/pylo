@@ -44,5 +44,6 @@ var searchData=
   ['app_5flabel_41',['app_label',['../classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#afdac2ccbfa6a11ca24bb5578c0cadc4f',1,'pylo::Ruleset::RulesetScopeEntry']]],
   ['apply_5fcli_5fargs_42',['apply_cli_args',['../classpylo_1_1cli_1_1commands_1_1workload__export_1_1_extra_column.html#aa6de7d76ed9fdcbdb34abb0ea9950800',1,'pylo::cli::commands::workload_export::ExtraColumn']]],
   ['apply_5fdraft_5fpolicy_5fdecision_5fto_5fall_5frecords_43',['apply_draft_policy_decision_to_all_records',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1.html#a989e68b4529370bf19bd3fa070427f7c',1,'pylo::API::Explorer::ExplorerResultSetV1']]],
-  ['apply_5fpolicy_5fdecisions_5fto_5flogs_44',['apply_policy_decisions_to_logs',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#ab8d6ac4f4ccc899cacede10301d15863',1,'pylo::API::Explorer::RuleCoverageQueryManager']]]
+  ['apply_5fpolicy_5fdecisions_5fto_5flogs_44',['apply_policy_decisions_to_logs',['../classpylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#ab8d6ac4f4ccc899cacede10301d15863',1,'pylo::API::Explorer::RuleCoverageQueryManager']]],
+  ['audit_5flog_5fquery_45',['audit_log_query',['../classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a308d048d572cba49e93e90468268dc97',1,'pylo::API::APIConnector::APIConnector']]]
 ];
