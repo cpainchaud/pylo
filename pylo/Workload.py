@@ -1,6 +1,7 @@
 from typing import Optional, List, Union
 
 import pylo
+from pylo.API.JsonPayloadTypes import WorkloadObjectJsonStructure
 from pylo import log
 from .AgentStore import VENAgent
 from .Helpers import *
@@ -70,7 +71,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         self.temporary = False
         self.deleted = False
 
-        self.raw_json: Optional[Dict[str, Any]] = None
+        self.raw_json: Optional[WorkloadObjectJsonStructure] = None
 
         self._batch_update_stack: Optional[WorkloadApiUpdateStack] = None
 
@@ -201,6 +202,10 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
                 result.add_from_text(interface.ip)
 
         return result
+
+    @property
+    def created_at(self) -> str:
+        return self.raw_json['created_at']
 
     def is_using_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']) -> bool:
         """

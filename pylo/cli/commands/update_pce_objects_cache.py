@@ -18,10 +18,10 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='should deleted workloads be downloaded as well')
 
 
-def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = None, config_data=None):
+def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = None, config_data=None, **kwargs):
 
     # filename should be like 'cache_xxx.yyy.zzz.json'
-    filename = 'cache_' + connector.hostname + '.json'
+    filename = 'cache_' + connector.name + '.json'
 
     timestamp = datetime.datetime.now(datetime.timezone.utc)
 

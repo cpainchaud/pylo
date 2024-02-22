@@ -120,6 +120,7 @@ class AgentStore:
         return self.items_by_href.get(href)
 
     def create_ven_agent_from_workload_record(self, workload: 'pylo.Workload', json_data) -> 'pylo.VENAgent':
+        # For developer use only. This is called by the WorkloadStore when it creates a new workload as the Agent records are read from there
         href = json_data.get('href')
         if href is None:
             raise pylo.PyloEx("Cannot extract Agent href from workload '{}'".format(workload.href))

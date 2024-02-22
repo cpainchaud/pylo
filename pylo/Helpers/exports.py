@@ -251,11 +251,11 @@ class ArraysToExcel:
 
                 if type(header) is str:
                     xls_headers.append({'header': header, 'format': cell_format})
-                    column_name_length = len(header)
+                    column_name_length = len(header) + 2 # add 2 for dropdown menus
                 else:
                     column_name = header.get('nice_name') or header.get('name')
                     xls_headers.append({'header': column_name, 'format': cell_format})
-                    column_name_length = len(column_name)
+                    column_name_length = len(column_name) + 2 # add 2 for dropdown menus
                     header_max_width_setting = header.get('max_width')
 
                 # default is to use width=longest string
