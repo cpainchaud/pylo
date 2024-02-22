@@ -122,7 +122,7 @@ class WorkloadStore:
         for workload in self.itemsByHRef.values():
             workload_is_a_match = True
             for label_type, labels_to_find in labels_by_type.items():
-                workload_label = workload.get_label_by_type_str(label_type)
+                workload_label = workload.get_label(label_type)
                 if workload_label is None or workload_label not in labels_to_find:
                     workload_is_a_match = False
                     break

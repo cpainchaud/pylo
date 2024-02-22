@@ -379,10 +379,10 @@ def __main(args, org: pylo.Organization, **kwargs):
                     temp_label_name = '**{}**{}'.format(label_type, csv_object[label_type].lower())
                     labels_to_be_created[temp_label_name] = {'name': csv_object[label_type], 'type': label_type}
                 else:
-                    if label_found is not workload.get_label_by_type_str(label_type):
+                    if label_found is not workload.get_label(label_type):
                         change_needed = True
             else:
-                if workload.get_label_by_type_str(label_type) is not None:
+                if workload.get_label(label_type) is not None:
                     change_needed = True
 
             return change_needed
@@ -437,7 +437,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                 found_label = org.LabelStore.find_label_by_name(data[label_type], pylo.LabelStore.label_type)
                 if found_label is None:
                     raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data[label_type], data['*line*']))
-                workload_found_label = workload.get_label_by_type_str(label_type)
+                workload_found_label = workload.get_label(label_type)
                 if workload_found_label is not found_label:
                     new_workload['labels'].append({'href': found_label.href})
                     changed_labels[label_type] = {'name': found_label.name, 'href': found_label.href}

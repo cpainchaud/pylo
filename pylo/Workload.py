@@ -318,69 +318,19 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         """
         labels = ''
 
-        if self.role_label is None:
-            labels += '*None*' + separator
-        else:
-            labels += self.role_label.name + separator
-
-        if self.app_label is None:
-            labels += '*None*' + separator
-        else:
-            labels += self.app_label.name + separator
-
-        if self.env_label is None:
-            labels += '*None*' + separator
-        else:
-            labels += self.env_label.name + separator
-
-        if self.loc_label is None:
-            labels += '*None*'
-        else:
-            labels += self.loc_label.name
+        first = True
+        for dimensions in self.owner.owner.LabelStore.label_types:
+            label = self.get_label(dimensions)
+            if not first:
+                labels += separator
+            if label is not None:
+                labels += label.name
+            else:
+                labels += '*None*'
+            first = False
 
         return labels
 
-    def get_label_str_by_type(self, label_type: str, none_str='') -> str:
-        if label_type == 'role':
-            if self.role_label is None:
-                return none_str
-            return self.role_label.name
-
-        if label_type == 'app':
-            if self.app_label is None:
-                return none_str
-            return self.app_label.name
-
-        if label_type == 'env':
-            if self.env_label is None:
-                return none_str
-            return self.env_label.name
-
-        if label_type == 'loc':
-            if self.loc_label is None:
-                return none_str
-            return self.loc_label.name
-
-    def get_label_href_by_type(self, label_type: str, none_str='') -> str:
-        if label_type == 'role':
-            if self.role_label is None:
-                return none_str
-            return self.role_label.href
-
-        if label_type == 'app':
-            if self.app_label is None:
-                return none_str
-            return self.app_label.href
-
-        if label_type == 'env':
-            if self.env_label is None:
-                return none_str
-            return self.env_label.href
-
-        if label_type == 'loc':
-            if self.loc_label is None:
-                return none_str
-            return self.loc_label.href
 
     def get_appgroup_str(self, separator: str = '|') -> str:
         labels = ''
@@ -431,23 +381,6 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
             labels.append(self.loc_label.name)
 
         return labels
-
-    def get_label_by_type_str(self, label_type: str) -> 'pylo.Label':
-        """
-        Return the label of specified type assigned to this Workload
-        :rtype: type of label (as a string: role, app, env or loc)
-        """
-        label_type = label_type.lower()
-        if label_type == 'role':
-            return self.role_label
-        if label_type == 'app':
-            return self.app_label
-        if label_type == 'env':
-            return self.env_label
-        if label_type == 'loc':
-            return self.loc_label
-
-        raise PyloEx("unsupported label_type '{}'".format(label_type))
 
     def get_name(self) -> str:
         """

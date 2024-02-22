@@ -89,7 +89,7 @@ class LabelParser(BaseParser):
         filtered_workloads = []
         for workload in workloads:
             for label_type in labels_dict_by_type:
-                if workload.get_label_by_type_str(label_type) in labels_dict_by_type[label_type]:
+                if workload.get_label(label_type) in labels_dict_by_type[label_type]:
                     filtered_workloads.append(workload)
 
         return filtered_workloads
