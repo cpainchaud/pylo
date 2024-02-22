@@ -9,6 +9,7 @@ from .Exception import PyloEx
 from .Label import Label
 from .ReferenceTracker import ReferenceTracker, Referencer
 from .IPMap import IP4Map
+from .LabeledObject import LabeledObject
 
 
 class WorkloadInterface:
@@ -40,11 +41,12 @@ class WorkloadApiUpdateStack:
         return len(self.json_payload)
 
 
-class Workload(pylo.ReferenceTracker, pylo.Referencer):
+class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
 
     def __init__(self, name: str, href: str, owner: 'pylo.WorkloadStore'):
         ReferenceTracker.__init__(self)
         Referencer.__init__(self)
+        LabeledObject.__init__(self)
         self.owner = owner
         self.name: str = name
         self.href: str = href
@@ -59,11 +61,6 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         self.os_id: Optional[str] = None
         self.os_detail: Optional[str] = None
 
-        self.loc_label: Optional[Label] = None
-        self.env_label: Optional[Label] = None
-        self.app_label: Optional[Label] = None
-        self.role_label: Optional[Label] = None
-
         self.ven_agent: Optional[VENAgent] = None
 
         self.unmanaged = True
@@ -74,6 +71,26 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
         self.raw_json: Optional[WorkloadObjectJsonStructure] = None
 
         self._batch_update_stack: Optional[WorkloadApiUpdateStack] = None
+
+    @property
+    def loc_label(self) -> Optional['pylo.Label']:
+        """ @deprecated use get_label() instead """
+        return self.get_label('loc')
+
+    @property
+    def env_label(self) -> Optional['pylo.Label']:
+        """ @deprecated use get_label() instead """
+        return self.get_label('env')
+
+    @property
+    def app_label(self) -> Optional['pylo.Label']:
+        """ @deprecated use get_label() instead """
+        return self.get_label('app')
+
+    @property
+    def role_label(self) -> Optional['pylo.Label']:
+        """ @deprecated use get_label() instead """
+        return self.get_label('role')
 
     def load_from_json(self, data):
         """
@@ -140,33 +157,8 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer):
                             "Workload '%s'/'%s' is referencing label href '%s' which does not exist" % (
                             self.name, self.href, href))
 
-                elif label_object.type_is_location():
-                    if self.loc_label is not None:
-                        raise PyloEx(
-                            "Workload '%s' found 2 location labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.get_name(), self.loc_label.name, label_object.name))
-                    self.loc_label = label_object
-
-                elif label_object.type_is_environment():
-                    if self.env_label is not None:
-                        raise PyloEx(
-                            "Workload '%s' found 2 environment labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.get_name(), self.env_label.name, label_object.name))
-                    self.env_label = label_object
-
-                elif label_object.type_is_application():
-                    if self.app_label is not None:
-                        raise PyloEx(
-                            "Workload '%s' found 2 application labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.get_name(), self.app_label.name, label_object.name))
-                    self.app_label = label_object
-
-                elif label_object.type_is_role():
-                    if self.role_label is not None:
-                        raise PyloEx(
-                            "Workload '%s' found 2 role labels while parsing JSON, labels are '%s' and '%s':\n" % (
-                                self.get_name(), self.role_label.name, label_object.name))
-                    self.role_label = label_object
+                self.set_label(label_object)
+                # print("Workload '%s'/'%s' is referencing label '%s'/'%s'" % (self.name, self.hostname, label_object.type, label_object.name))
 
                 label_object.add_reference(self)
 
