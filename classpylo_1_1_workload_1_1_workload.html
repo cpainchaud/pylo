@@ -142,16 +142,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0d518ce678c65cab5c0e342fb52ed4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4416a817408f68b8fef880f5b152addb"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a4416a817408f68b8fef880f5b152addb">get_labels_str</a> (self, str separator='|')</td></tr>
 <tr class="separator:a4416a817408f68b8fef880f5b152addb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afefd32c021560d8e0ac14b7e09dd7c13"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#afefd32c021560d8e0ac14b7e09dd7c13">get_label_str_by_type</a> (self, str label_type, none_str='')</td></tr>
-<tr class="separator:afefd32c021560d8e0ac14b7e09dd7c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b38ddc9e34656edb2bf7cdb5ad47945"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a2b38ddc9e34656edb2bf7cdb5ad47945">get_label_href_by_type</a> (self, str label_type, none_str='')</td></tr>
-<tr class="separator:a2b38ddc9e34656edb2bf7cdb5ad47945"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c37d6006bbc03db8aeb366ab6ddf79a"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a5c37d6006bbc03db8aeb366ab6ddf79a">get_appgroup_str</a> (self, str separator='|')</td></tr>
 <tr class="separator:a5c37d6006bbc03db8aeb366ab6ddf79a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b099c250ac76d45d425ca1fae575cab"><td class="memItemLeft" align="right" valign="top">List[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a9b099c250ac76d45d425ca1fae575cab">get_labels_str_list</a> (self, Optional[str] missing_str='')</td></tr>
 <tr class="separator:a9b099c250ac76d45d425ca1fae575cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4289ac5acc0d4278c7d3b16783f0b836"><td class="memItemLeft" align="right" valign="top"> '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>'&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#a4289ac5acc0d4278c7d3b16783f0b836">get_label_by_type_str</a> (self, str label_type)</td></tr>
-<tr class="separator:a4289ac5acc0d4278c7d3b16783f0b836"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab702d4a81b5d3591323a5bdc901a775d"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#ab702d4a81b5d3591323a5bdc901a775d">get_name</a> (self)</td></tr>
 <tr class="separator:ab702d4a81b5d3591323a5bdc901a775d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1d2f7f9ee354be3815be1e957d277b2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_workload_1_1_workload.html#ac1d2f7f9ee354be3815be1e957d277b2">get_name_stripped_fqdn</a> (self)</td></tr>
@@ -701,26 +695,26 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  385</span>    <span class="keyword">def </span>get_appgroup_str(self, separator: str = <span class="stringliteral">&#39;|&#39;</span>) -&gt; str:</div>
-<div class="line"><span class="lineno">  386</span>        labels = <span class="stringliteral">&#39;&#39;</span></div>
-<div class="line"><span class="lineno">  387</span> </div>
-<div class="line"><span class="lineno">  388</span>        <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  389</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
-<div class="line"><span class="lineno">  390</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  391</span>            labels += self.app_label.name + separator</div>
-<div class="line"><span class="lineno">  392</span> </div>
-<div class="line"><span class="lineno">  393</span>        <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  394</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
-<div class="line"><span class="lineno">  395</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  396</span>            labels += self.env_label.name + separator</div>
-<div class="line"><span class="lineno">  397</span> </div>
-<div class="line"><span class="lineno">  398</span>        <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  399</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span></div>
-<div class="line"><span class="lineno">  400</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  401</span>            labels += self.loc_label.name</div>
-<div class="line"><span class="lineno">  402</span> </div>
-<div class="line"><span class="lineno">  403</span>        <span class="keywordflow">return</span> labels</div>
-<div class="line"><span class="lineno">  404</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  335</span>    <span class="keyword">def </span>get_appgroup_str(self, separator: str = <span class="stringliteral">&#39;|&#39;</span>) -&gt; str:</div>
+<div class="line"><span class="lineno">  336</span>        labels = <span class="stringliteral">&#39;&#39;</span></div>
+<div class="line"><span class="lineno">  337</span> </div>
+<div class="line"><span class="lineno">  338</span>        <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  339</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
+<div class="line"><span class="lineno">  340</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  341</span>            labels += self.app_label.name + separator</div>
+<div class="line"><span class="lineno">  342</span> </div>
+<div class="line"><span class="lineno">  343</span>        <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  344</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
+<div class="line"><span class="lineno">  345</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  346</span>            labels += self.env_label.name + separator</div>
+<div class="line"><span class="lineno">  347</span> </div>
+<div class="line"><span class="lineno">  348</span>        <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  349</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span></div>
+<div class="line"><span class="lineno">  350</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  351</span>            labels += self.loc_label.name</div>
+<div class="line"><span class="lineno">  352</span> </div>
+<div class="line"><span class="lineno">  353</span>        <span class="keywordflow">return</span> labels</div>
+<div class="line"><span class="lineno">  354</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -766,196 +760,6 @@ Here is the call graph for this function:</div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a4289ac5acc0d4278c7d3b16783f0b836" name="a4289ac5acc0d4278c7d3b16783f0b836"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4289ac5acc0d4278c7d3b16783f0b836">&#9670;&#160;</a></span>get_label_by_type_str()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"> '<a class="el" href="classpylo_1_1_label_1_1_label.html">pylo.Label</a>' pylo.Workload.Workload.get_label_by_type_str </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">str&#160;</td>
-          <td class="paramname"><em>label_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<pre class="fragment">Return the label of specified type assigned to this Workload
-:rtype: type of label (as a string: role, app, env or loc)
-</pre> <div class="fragment"><div class="line"><span class="lineno">  435</span>    <span class="keyword">def </span>get_label_by_type_str(self, label_type: str) -&gt; <span class="stringliteral">&#39;pylo.Label&#39;</span>:</div>
-<div class="line"><span class="lineno">  436</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  437</span><span class="stringliteral">        Return the label of specified type assigned to this Workload</span></div>
-<div class="line"><span class="lineno">  438</span><span class="stringliteral">        :rtype: type of label (</span><span class="keyword">as</span> a string: role, app, env <span class="keywordflow">or</span> loc)</div>
-<div class="line"><span class="lineno">  439</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  440</span><span class="stringliteral">        label_type = label_type.lower()</span></div>
-<div class="line"><span class="lineno">  441</span><span class="stringliteral">        </span><span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;role&#39;</span>:</div>
-<div class="line"><span class="lineno">  442</span>            <span class="keywordflow">return</span> self.role_label</div>
-<div class="line"><span class="lineno">  443</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;app&#39;</span>:</div>
-<div class="line"><span class="lineno">  444</span>            <span class="keywordflow">return</span> self.app_label</div>
-<div class="line"><span class="lineno">  445</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;env&#39;</span>:</div>
-<div class="line"><span class="lineno">  446</span>            <span class="keywordflow">return</span> self.env_label</div>
-<div class="line"><span class="lineno">  447</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;loc&#39;</span>:</div>
-<div class="line"><span class="lineno">  448</span>            <span class="keywordflow">return</span> self.loc_label</div>
-<div class="line"><span class="lineno">  449</span> </div>
-<div class="line"><span class="lineno">  450</span>        <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;unsupported label_type &#39;{}&#39;&quot;</span>.format(label_type))</div>
-<div class="line"><span class="lineno">  451</span> </div>
-</div><!-- fragment --><div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classpylo_1_1_workload_1_1_workload_a4289ac5acc0d4278c7d3b16783f0b836_cgraph.png" border="0" usemap="#aclasspylo_1_1_workload_1_1_workload_a4289ac5acc0d4278c7d3b16783f0b836_cgraph" alt=""/></div>
-<map name="aclasspylo_1_1_workload_1_1_workload_a4289ac5acc0d4278c7d3b16783f0b836_cgraph" id="aclasspylo_1_1_workload_1_1_workload_a4289ac5acc0d4278c7d3b16783f0b836_cgraph">
-<area shape="rect" title=" " alt="" coords="5,69,185,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#afdac2ccbfa6a11ca24bb5578c0cadc4f" title=" " alt="" coords="233,5,409,45"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a1ba89940db9bef8d53b7ce7dedbe29eb" title=" " alt="" coords="233,69,409,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24" title=" " alt="" coords="233,133,409,173"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a2b38ddc9e34656edb2bf7cdb5ad47945" name="a2b38ddc9e34656edb2bf7cdb5ad47945"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b38ddc9e34656edb2bf7cdb5ad47945">&#9670;&#160;</a></span>get_label_href_by_type()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"> str pylo.Workload.Workload.get_label_href_by_type </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">str&#160;</td>
-          <td class="paramname"><em>label_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>none_str</em> = <code>''</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  364</span>    <span class="keyword">def </span>get_label_href_by_type(self, label_type: str, none_str=<span class="stringliteral">&#39;&#39;</span>) -&gt; str:</div>
-<div class="line"><span class="lineno">  365</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;role&#39;</span>:</div>
-<div class="line"><span class="lineno">  366</span>            <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  367</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  368</span>            <span class="keywordflow">return</span> self.role_label.href</div>
-<div class="line"><span class="lineno">  369</span> </div>
-<div class="line"><span class="lineno">  370</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;app&#39;</span>:</div>
-<div class="line"><span class="lineno">  371</span>            <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  372</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  373</span>            <span class="keywordflow">return</span> self.app_label.href</div>
-<div class="line"><span class="lineno">  374</span> </div>
-<div class="line"><span class="lineno">  375</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;env&#39;</span>:</div>
-<div class="line"><span class="lineno">  376</span>            <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  377</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  378</span>            <span class="keywordflow">return</span> self.env_label.href</div>
-<div class="line"><span class="lineno">  379</span> </div>
-<div class="line"><span class="lineno">  380</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;loc&#39;</span>:</div>
-<div class="line"><span class="lineno">  381</span>            <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  382</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  383</span>            <span class="keywordflow">return</span> self.loc_label.href</div>
-<div class="line"><span class="lineno">  384</span> </div>
-</div><!-- fragment --><div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classpylo_1_1_workload_1_1_workload_a2b38ddc9e34656edb2bf7cdb5ad47945_cgraph.png" border="0" usemap="#aclasspylo_1_1_workload_1_1_workload_a2b38ddc9e34656edb2bf7cdb5ad47945_cgraph" alt=""/></div>
-<map name="aclasspylo_1_1_workload_1_1_workload_a2b38ddc9e34656edb2bf7cdb5ad47945_cgraph" id="aclasspylo_1_1_workload_1_1_workload_a2b38ddc9e34656edb2bf7cdb5ad47945_cgraph">
-<area shape="rect" title=" " alt="" coords="5,69,185,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#afdac2ccbfa6a11ca24bb5578c0cadc4f" title=" " alt="" coords="233,5,409,45"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a1ba89940db9bef8d53b7ce7dedbe29eb" title=" " alt="" coords="233,69,409,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24" title=" " alt="" coords="233,133,409,173"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="afefd32c021560d8e0ac14b7e09dd7c13" name="afefd32c021560d8e0ac14b7e09dd7c13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afefd32c021560d8e0ac14b7e09dd7c13">&#9670;&#160;</a></span>get_label_str_by_type()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"> str pylo.Workload.Workload.get_label_str_by_type </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">str&#160;</td>
-          <td class="paramname"><em>label_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>none_str</em> = <code>''</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  343</span>    <span class="keyword">def </span>get_label_str_by_type(self, label_type: str, none_str=<span class="stringliteral">&#39;&#39;</span>) -&gt; str:</div>
-<div class="line"><span class="lineno">  344</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;role&#39;</span>:</div>
-<div class="line"><span class="lineno">  345</span>            <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  346</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  347</span>            <span class="keywordflow">return</span> self.role_label.name</div>
-<div class="line"><span class="lineno">  348</span> </div>
-<div class="line"><span class="lineno">  349</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;app&#39;</span>:</div>
-<div class="line"><span class="lineno">  350</span>            <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  351</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  352</span>            <span class="keywordflow">return</span> self.app_label.name</div>
-<div class="line"><span class="lineno">  353</span> </div>
-<div class="line"><span class="lineno">  354</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;env&#39;</span>:</div>
-<div class="line"><span class="lineno">  355</span>            <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  356</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  357</span>            <span class="keywordflow">return</span> self.env_label.name</div>
-<div class="line"><span class="lineno">  358</span> </div>
-<div class="line"><span class="lineno">  359</span>        <span class="keywordflow">if</span> label_type == <span class="stringliteral">&#39;loc&#39;</span>:</div>
-<div class="line"><span class="lineno">  360</span>            <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  361</span>                <span class="keywordflow">return</span> none_str</div>
-<div class="line"><span class="lineno">  362</span>            <span class="keywordflow">return</span> self.loc_label.name</div>
-<div class="line"><span class="lineno">  363</span> </div>
-</div><!-- fragment --><div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classpylo_1_1_workload_1_1_workload_afefd32c021560d8e0ac14b7e09dd7c13_cgraph.png" border="0" usemap="#aclasspylo_1_1_workload_1_1_workload_afefd32c021560d8e0ac14b7e09dd7c13_cgraph" alt=""/></div>
-<map name="aclasspylo_1_1_workload_1_1_workload_afefd32c021560d8e0ac14b7e09dd7c13_cgraph" id="aclasspylo_1_1_workload_1_1_workload_afefd32c021560d8e0ac14b7e09dd7c13_cgraph">
-<area shape="rect" title=" " alt="" coords="5,69,185,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#afdac2ccbfa6a11ca24bb5578c0cadc4f" title=" " alt="" coords="233,5,409,45"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a1ba89940db9bef8d53b7ce7dedbe29eb" title=" " alt="" coords="233,69,409,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24" title=" " alt="" coords="233,133,409,173"/>
-</map>
-</div>
-
-</div>
-</div>
 <a id="a4416a817408f68b8fef880f5b152addb" name="a4416a817408f68b8fef880f5b152addb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4416a817408f68b8fef880f5b152addb">&#9670;&#160;</a></span>get_labels_str()</h2>
 
@@ -992,37 +796,27 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  318</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">  319</span><span class="stringliteral">        labels = &#39;&#39;</span></div>
 <div class="line"><span class="lineno">  320</span> </div>
-<div class="line"><span class="lineno">  321</span>        <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  322</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
-<div class="line"><span class="lineno">  323</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  324</span>            labels += self.role_label.name + separator</div>
-<div class="line"><span class="lineno">  325</span> </div>
-<div class="line"><span class="lineno">  326</span>        <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  327</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
-<div class="line"><span class="lineno">  328</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  329</span>            labels += self.app_label.name + separator</div>
-<div class="line"><span class="lineno">  330</span> </div>
-<div class="line"><span class="lineno">  331</span>        <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  332</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span> + separator</div>
-<div class="line"><span class="lineno">  333</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  334</span>            labels += self.env_label.name + separator</div>
-<div class="line"><span class="lineno">  335</span> </div>
-<div class="line"><span class="lineno">  336</span>        <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  337</span>            labels += <span class="stringliteral">&#39;*None*&#39;</span></div>
-<div class="line"><span class="lineno">  338</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  339</span>            labels += self.loc_label.name</div>
-<div class="line"><span class="lineno">  340</span> </div>
-<div class="line"><span class="lineno">  341</span>        <span class="keywordflow">return</span> labels</div>
-<div class="line"><span class="lineno">  342</span> </div>
+<div class="line"><span class="lineno">  321</span>        first = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  322</span>        <span class="keywordflow">for</span> dimensions <span class="keywordflow">in</span> self.owner.owner.LabelStore.label_types:</div>
+<div class="line"><span class="lineno">  323</span>            label = self.get_label(dimensions)</div>
+<div class="line"><span class="lineno">  324</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> first:</div>
+<div class="line"><span class="lineno">  325</span>                labels += separator</div>
+<div class="line"><span class="lineno">  326</span>            <span class="keywordflow">if</span> label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  327</span>                labels += label.name</div>
+<div class="line"><span class="lineno">  328</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  329</span>                labels += <span class="stringliteral">&#39;*None*&#39;</span></div>
+<div class="line"><span class="lineno">  330</span>            first = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  331</span> </div>
+<div class="line"><span class="lineno">  332</span>        <span class="keywordflow">return</span> labels</div>
+<div class="line"><span class="lineno">  333</span> </div>
+<div class="line"><span class="lineno">  334</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpylo_1_1_workload_1_1_workload_a4416a817408f68b8fef880f5b152addb_cgraph.png" border="0" usemap="#aclasspylo_1_1_workload_1_1_workload_a4416a817408f68b8fef880f5b152addb_cgraph" alt=""/></div>
 <map name="aclasspylo_1_1_workload_1_1_workload_a4416a817408f68b8fef880f5b152addb_cgraph" id="aclasspylo_1_1_workload_1_1_workload_a4416a817408f68b8fef880f5b152addb_cgraph">
-<area shape="rect" title=" " alt="" coords="5,69,185,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#afdac2ccbfa6a11ca24bb5578c0cadc4f" title=" " alt="" coords="233,5,409,45"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a1ba89940db9bef8d53b7ce7dedbe29eb" title=" " alt="" coords="233,69,409,109"/>
-<area shape="rect" href="classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24" title=" " alt="" coords="233,133,409,173"/>
+<area shape="rect" title=" " alt="" coords="5,5,185,45"/>
+<area shape="rect" href="classpylo_1_1_labeled_object_1_1_labeled_object.html#aec086a272e9babdeba1c492bcc3a0113" title=" " alt="" coords="233,5,415,45"/>
 </map>
 </div>
 
@@ -1056,36 +850,36 @@ Here is the call graph for this function:</div>
 <pre class="fragment">Conveniently returns the list of Workload labels as a list of strings
 :param missing_str: if a label type is missing then missing_str will be used to represent it
 :return:
-</pre> <div class="fragment"><div class="line"><span class="lineno">  405</span>    <span class="keyword">def </span>get_labels_str_list(self, missing_str: Optional[str] = <span class="stringliteral">&#39;&#39;</span>) -&gt; List[str]:</div>
-<div class="line"><span class="lineno">  406</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  407</span><span class="stringliteral">        Conveniently returns the list of Workload labels </span><span class="keyword">as</span> a list of strings</div>
-<div class="line"><span class="lineno">  408</span>        :param missing_str: <span class="keywordflow">if</span> a label type <span class="keywordflow">is</span> missing then missing_str will be used to represent it</div>
-<div class="line"><span class="lineno">  409</span>        :<span class="keywordflow">return</span>:</div>
-<div class="line"><span class="lineno">  410</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  411</span><span class="stringliteral">        labels = []</span></div>
-<div class="line"><span class="lineno">  412</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">  413</span><span class="stringliteral">        </span><span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  414</span>            labels.append(missing_str)</div>
-<div class="line"><span class="lineno">  415</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  416</span>            labels.append(self.role_label.name)</div>
-<div class="line"><span class="lineno">  417</span> </div>
-<div class="line"><span class="lineno">  418</span>        <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  419</span>            labels.append(missing_str)</div>
-<div class="line"><span class="lineno">  420</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  421</span>            labels.append(self.app_label.name)</div>
-<div class="line"><span class="lineno">  422</span> </div>
-<div class="line"><span class="lineno">  423</span>        <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  424</span>            labels.append(missing_str)</div>
-<div class="line"><span class="lineno">  425</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  426</span>            labels.append(self.env_label.name)</div>
-<div class="line"><span class="lineno">  427</span> </div>
-<div class="line"><span class="lineno">  428</span>        <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  429</span>            labels.append(missing_str)</div>
-<div class="line"><span class="lineno">  430</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  431</span>            labels.append(self.loc_label.name)</div>
-<div class="line"><span class="lineno">  432</span> </div>
-<div class="line"><span class="lineno">  433</span>        <span class="keywordflow">return</span> labels</div>
-<div class="line"><span class="lineno">  434</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  355</span>    <span class="keyword">def </span>get_labels_str_list(self, missing_str: Optional[str] = <span class="stringliteral">&#39;&#39;</span>) -&gt; List[str]:</div>
+<div class="line"><span class="lineno">  356</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  357</span><span class="stringliteral">        Conveniently returns the list of Workload labels </span><span class="keyword">as</span> a list of strings</div>
+<div class="line"><span class="lineno">  358</span>        :param missing_str: <span class="keywordflow">if</span> a label type <span class="keywordflow">is</span> missing then missing_str will be used to represent it</div>
+<div class="line"><span class="lineno">  359</span>        :<span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno">  360</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  361</span><span class="stringliteral">        labels = []</span></div>
+<div class="line"><span class="lineno">  362</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">  363</span><span class="stringliteral">        </span><span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  364</span>            labels.append(missing_str)</div>
+<div class="line"><span class="lineno">  365</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  366</span>            labels.append(self.role_label.name)</div>
+<div class="line"><span class="lineno">  367</span> </div>
+<div class="line"><span class="lineno">  368</span>        <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  369</span>            labels.append(missing_str)</div>
+<div class="line"><span class="lineno">  370</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  371</span>            labels.append(self.app_label.name)</div>
+<div class="line"><span class="lineno">  372</span> </div>
+<div class="line"><span class="lineno">  373</span>        <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  374</span>            labels.append(missing_str)</div>
+<div class="line"><span class="lineno">  375</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  376</span>            labels.append(self.env_label.name)</div>
+<div class="line"><span class="lineno">  377</span> </div>
+<div class="line"><span class="lineno">  378</span>        <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  379</span>            labels.append(missing_str)</div>
+<div class="line"><span class="lineno">  380</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  381</span>            labels.append(self.loc_label.name)</div>
+<div class="line"><span class="lineno">  382</span> </div>
+<div class="line"><span class="lineno">  383</span>        <span class="keywordflow">return</span> labels</div>
+<div class="line"><span class="lineno">  384</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1118,19 +912,19 @@ Here is the call graph for this function:</div>
 <pre class="fragment">Return forced name if it exists, hostname otherwise
 
 :return:
-</pre> <div class="fragment"><div class="line"><span class="lineno">  452</span>    <span class="keyword">def </span>get_name(self) -&gt; str:</div>
-<div class="line"><span class="lineno">  453</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  454</span><span class="stringliteral">        Return forced name </span><span class="keywordflow">if</span> it exists, hostname otherwise</div>
-<div class="line"><span class="lineno">  455</span> </div>
-<div class="line"><span class="lineno">  456</span>        :<span class="keywordflow">return</span>:</div>
-<div class="line"><span class="lineno">  457</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  458</span><span class="stringliteral">        </span><span class="keywordflow">if</span> self.forced_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  459</span>            <span class="keywordflow">return</span> self.forced_name</div>
-<div class="line"><span class="lineno">  460</span>        <span class="keywordflow">if</span> self.hostname <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  461</span>            pylo.get_logger().warning(<span class="stringliteral">&quot;workload with href &#39;{}&#39; has no name nor host name&quot;</span>.format(self.href))</div>
-<div class="line"><span class="lineno">  462</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;*unknown*&quot;</span></div>
-<div class="line"><span class="lineno">  463</span>        <span class="keywordflow">return</span> self.hostname</div>
-<div class="line"><span class="lineno">  464</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  385</span>    <span class="keyword">def </span>get_name(self) -&gt; str:</div>
+<div class="line"><span class="lineno">  386</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  387</span><span class="stringliteral">        Return forced name </span><span class="keywordflow">if</span> it exists, hostname otherwise</div>
+<div class="line"><span class="lineno">  388</span> </div>
+<div class="line"><span class="lineno">  389</span>        :<span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno">  390</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  391</span><span class="stringliteral">        </span><span class="keywordflow">if</span> self.forced_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  392</span>            <span class="keywordflow">return</span> self.forced_name</div>
+<div class="line"><span class="lineno">  393</span>        <span class="keywordflow">if</span> self.hostname <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  394</span>            pylo.get_logger().warning(<span class="stringliteral">&quot;workload with href &#39;{}&#39; has no name nor host name&quot;</span>.format(self.href))</div>
+<div class="line"><span class="lineno">  395</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;*unknown*&quot;</span></div>
+<div class="line"><span class="lineno">  396</span>        <span class="keywordflow">return</span> self.hostname</div>
+<div class="line"><span class="lineno">  397</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1149,10 +943,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  465</span>    <span class="keyword">def </span>get_name_stripped_fqdn(self):</div>
-<div class="line"><span class="lineno">  466</span>        name_split = self.get_name().split(<span class="stringliteral">&#39;.&#39;</span>)</div>
-<div class="line"><span class="lineno">  467</span>        <span class="keywordflow">return</span> name_split[0]</div>
-<div class="line"><span class="lineno">  468</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  398</span>    <span class="keyword">def </span>get_name_stripped_fqdn(self):</div>
+<div class="line"><span class="lineno">  399</span>        name_split = self.get_name().split(<span class="stringliteral">&#39;.&#39;</span>)</div>
+<div class="line"><span class="lineno">  400</span>        <span class="keywordflow">return</span> name_split[0]</div>
+<div class="line"><span class="lineno">  401</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1182,12 +976,12 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 <pre class="fragment">generates a URL link for the Workload vs PCE UI
 :return: url string
-</pre> <div class="fragment"><div class="line"><span class="lineno">  568</span>    <span class="keyword">def </span>get_pce_ui_url(self) -&gt; str:</div>
-<div class="line"><span class="lineno">  569</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  570</span><span class="stringliteral">        generates a URL link </span><span class="keywordflow">for</span> the Workload vs PCE UI</div>
-<div class="line"><span class="lineno">  571</span>        :<span class="keywordflow">return</span>: url string</div>
-<div class="line"><span class="lineno">  572</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  573</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self.owner.owner.connector.get_pce_ui_workload_url(self.href)</div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  501</span>    <span class="keyword">def </span>get_pce_ui_url(self) -&gt; str:</div>
+<div class="line"><span class="lineno">  502</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  503</span><span class="stringliteral">        generates a URL link </span><span class="keywordflow">for</span> the Workload vs PCE UI</div>
+<div class="line"><span class="lineno">  504</span>        :<span class="keywordflow">return</span>: url string</div>
+<div class="line"><span class="lineno">  505</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  506</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self.owner.owner.connector.get_pce_ui_workload_url(self.href)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1206,11 +1000,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  474</span>    <span class="keyword">def </span>get_status_string(self) -&gt; str:</div>
-<div class="line"><span class="lineno">  475</span>        <span class="keywordflow">if</span> self.ven_agent <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  476</span>            <span class="keywordflow">return</span> <span class="stringliteral">&#39;not-applicable&#39;</span></div>
-<div class="line"><span class="lineno">  477</span>        <span class="keywordflow">return</span> self.ven_agent.mode</div>
-<div class="line"><span class="lineno">  478</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  407</span>    <span class="keyword">def </span>get_status_string(self) -&gt; str:</div>
+<div class="line"><span class="lineno">  408</span>        <span class="keywordflow">if</span> self.ven_agent <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  409</span>            <span class="keywordflow">return</span> <span class="stringliteral">&#39;not-applicable&#39;</span></div>
+<div class="line"><span class="lineno">  410</span>        <span class="keywordflow">return</span> self.ven_agent.mode</div>
+<div class="line"><span class="lineno">  411</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1527,10 +1321,10 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  470</span>    <span class="keyword">def </span>static_name_stripped_fqdn(name: str):</div>
-<div class="line"><span class="lineno">  471</span>        name_split = name.split(<span class="stringliteral">&#39;.&#39;</span>)</div>
-<div class="line"><span class="lineno">  472</span>        <span class="keywordflow">return</span> name_split[0]</div>
-<div class="line"><span class="lineno">  473</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  403</span>    <span class="keyword">def </span>static_name_stripped_fqdn(name: str):</div>
+<div class="line"><span class="lineno">  404</span>        name_split = name.split(<span class="stringliteral">&#39;.&#39;</span>)</div>
+<div class="line"><span class="lineno">  405</span>        <span class="keywordflow">return</span> name_split[0]</div>
+<div class="line"><span class="lineno">  406</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1570,95 +1364,95 @@ Here is the call graph for this function:</div>
 :param list_of_labels: labels to replace currently assigned ones
 :param missing_label_type_means_no_change: if a label type is missing and this is False then existing label of type in the Workload will be removed
 :return:
-</pre> <div class="fragment"><div class="line"><span class="lineno">  479</span>    <span class="keyword">def </span>update_labels(self, list_of_labels: List[Label], missing_label_type_means_no_change=<span class="keyword">False</span>) -&gt; bool:</div>
-<div class="line"><span class="lineno">  480</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  481</span><span class="stringliteral">        WARNING: this will </span><span class="keywordflow">not</span> send updates to PCE API, use the <span class="stringliteral">&#39;api_&#39;</span> prefixed function <span class="keywordflow">for</span> that</div>
-<div class="line"><span class="lineno">  482</span> </div>
-<div class="line"><span class="lineno">  483</span>        :param list_of_labels: labels to replace currently assigned ones</div>
-<div class="line"><span class="lineno">  484</span>        :param missing_label_type_means_no_change: <span class="keywordflow">if</span> a label type <span class="keywordflow">is</span> missing <span class="keywordflow">and</span> this <span class="keywordflow">is</span> <span class="keyword">False</span> then existing label of type <span class="keywordflow">in</span> the Workload will be removed</div>
-<div class="line"><span class="lineno">  485</span>        :<span class="keywordflow">return</span>:</div>
-<div class="line"><span class="lineno">  486</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  487</span><span class="stringliteral">        changes_occurred = </span><span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  488</span>        role_label: Optional[Label] = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  489</span>        app_label: Optional[Label] = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  490</span>        env_label: Optional[Label] = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  491</span>        loc_label: Optional[Label] = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  492</span> </div>
-<div class="line"><span class="lineno">  493</span>        <span class="keywordflow">if</span> len(list_of_labels) &gt; 4:</div>
-<div class="line"><span class="lineno">  494</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;More than 4 labels provided&quot;</span>)</div>
-<div class="line"><span class="lineno">  495</span> </div>
-<div class="line"><span class="lineno">  496</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> list_of_labels:</div>
-<div class="line"><span class="lineno">  497</span>            <span class="keywordflow">if</span> label.type_is_role():</div>
-<div class="line"><span class="lineno">  498</span>                <span class="keywordflow">if</span> role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  499</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ROLE label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(role_label.name, label.name))</div>
-<div class="line"><span class="lineno">  500</span>                role_label = label</div>
-<div class="line"><span class="lineno">  501</span>            <span class="keywordflow">elif</span> label.type_is_application():</div>
-<div class="line"><span class="lineno">  502</span>                <span class="keywordflow">if</span> app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  503</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;APP label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(app_label.name, label.name))</div>
-<div class="line"><span class="lineno">  504</span>                app_label = label</div>
-<div class="line"><span class="lineno">  505</span>            <span class="keywordflow">elif</span> label.type_is_environment():</div>
-<div class="line"><span class="lineno">  506</span>                <span class="keywordflow">if</span> env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  507</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ENV label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(env_label.name, label.name))</div>
-<div class="line"><span class="lineno">  508</span>                env_label = label</div>
-<div class="line"><span class="lineno">  509</span>            <span class="keywordflow">elif</span> label.type_is_location():</div>
-<div class="line"><span class="lineno">  510</span>                <span class="keywordflow">if</span> loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  511</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;LOC label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(loc_label.name, label.name))</div>
-<div class="line"><span class="lineno">  512</span>                loc_label = label</div>
-<div class="line"><span class="lineno">  513</span> </div>
-<div class="line"><span class="lineno">  514</span>        <span class="keywordflow">if</span> role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  515</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
-<div class="line"><span class="lineno">  516</span>                <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  517</span>                    changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  518</span>                    self.role_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  519</span>                    self.role_label = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  520</span>        <span class="keywordflow">elif</span> role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.role_label:</div>
-<div class="line"><span class="lineno">  521</span>            changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  522</span>            <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  523</span>                self.role_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  524</span>            role_label.add_reference(self)</div>
-<div class="line"><span class="lineno">  525</span>            self.role_label = role_label</div>
-<div class="line"><span class="lineno">  526</span> </div>
-<div class="line"><span class="lineno">  527</span>        <span class="keywordflow">if</span> app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  528</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
-<div class="line"><span class="lineno">  529</span>                <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  530</span>                    changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  531</span>                    self.app_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  532</span>                    self.app_label = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  533</span>        <span class="keywordflow">elif</span> app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.app_label:</div>
-<div class="line"><span class="lineno">  534</span>            changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  535</span>            <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  536</span>                self.app_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  537</span>            app_label.add_reference(self)</div>
-<div class="line"><span class="lineno">  538</span>            self.app_label = app_label</div>
-<div class="line"><span class="lineno">  539</span> </div>
-<div class="line"><span class="lineno">  540</span>        <span class="keywordflow">if</span> env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  541</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
-<div class="line"><span class="lineno">  542</span>                <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  543</span>                    changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  544</span>                    self.env_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  545</span>                    self.env_label = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  546</span>        <span class="keywordflow">elif</span> env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.env_label:</div>
-<div class="line"><span class="lineno">  547</span>            changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  548</span>            <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  549</span>                self.env_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  550</span>            env_label.add_reference(self)</div>
-<div class="line"><span class="lineno">  551</span>            self.env_label = env_label</div>
-<div class="line"><span class="lineno">  552</span> </div>
-<div class="line"><span class="lineno">  553</span>        <span class="keywordflow">if</span> loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  554</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
-<div class="line"><span class="lineno">  555</span>                <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  556</span>                    changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  557</span>                    self.loc_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  558</span>                    self.loc_label = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  559</span>        <span class="keywordflow">elif</span> loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.loc_label:</div>
-<div class="line"><span class="lineno">  560</span>            changes_occurred = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  561</span>            <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  562</span>                self.loc_label.remove_reference(self)</div>
-<div class="line"><span class="lineno">  563</span>            loc_label.add_reference(self)</div>
-<div class="line"><span class="lineno">  564</span>            self.loc_label = loc_label</div>
-<div class="line"><span class="lineno">  565</span> </div>
-<div class="line"><span class="lineno">  566</span>        <span class="keywordflow">return</span> changes_occurred</div>
-<div class="line"><span class="lineno">  567</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  412</span>    <span class="keyword">def </span>update_labels(self, list_of_labels: List[Label], missing_label_type_means_no_change=<span class="keyword">False</span>) -&gt; bool:</div>
+<div class="line"><span class="lineno">  413</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  414</span><span class="stringliteral">        WARNING: this will </span><span class="keywordflow">not</span> send updates to PCE API, use the <span class="stringliteral">&#39;api_&#39;</span> prefixed function <span class="keywordflow">for</span> that</div>
+<div class="line"><span class="lineno">  415</span> </div>
+<div class="line"><span class="lineno">  416</span>        :param list_of_labels: labels to replace currently assigned ones</div>
+<div class="line"><span class="lineno">  417</span>        :param missing_label_type_means_no_change: <span class="keywordflow">if</span> a label type <span class="keywordflow">is</span> missing <span class="keywordflow">and</span> this <span class="keywordflow">is</span> <span class="keyword">False</span> then existing label of type <span class="keywordflow">in</span> the Workload will be removed</div>
+<div class="line"><span class="lineno">  418</span>        :<span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno">  419</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  420</span><span class="stringliteral">        changes_occurred = </span><span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  421</span>        role_label: Optional[Label] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  422</span>        app_label: Optional[Label] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  423</span>        env_label: Optional[Label] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  424</span>        loc_label: Optional[Label] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  425</span> </div>
+<div class="line"><span class="lineno">  426</span>        <span class="keywordflow">if</span> len(list_of_labels) &gt; 4:</div>
+<div class="line"><span class="lineno">  427</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;More than 4 labels provided&quot;</span>)</div>
+<div class="line"><span class="lineno">  428</span> </div>
+<div class="line"><span class="lineno">  429</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> list_of_labels:</div>
+<div class="line"><span class="lineno">  430</span>            <span class="keywordflow">if</span> label.type_is_role():</div>
+<div class="line"><span class="lineno">  431</span>                <span class="keywordflow">if</span> role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  432</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ROLE label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(role_label.name, label.name))</div>
+<div class="line"><span class="lineno">  433</span>                role_label = label</div>
+<div class="line"><span class="lineno">  434</span>            <span class="keywordflow">elif</span> label.type_is_application():</div>
+<div class="line"><span class="lineno">  435</span>                <span class="keywordflow">if</span> app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  436</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;APP label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(app_label.name, label.name))</div>
+<div class="line"><span class="lineno">  437</span>                app_label = label</div>
+<div class="line"><span class="lineno">  438</span>            <span class="keywordflow">elif</span> label.type_is_environment():</div>
+<div class="line"><span class="lineno">  439</span>                <span class="keywordflow">if</span> env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  440</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ENV label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(env_label.name, label.name))</div>
+<div class="line"><span class="lineno">  441</span>                env_label = label</div>
+<div class="line"><span class="lineno">  442</span>            <span class="keywordflow">elif</span> label.type_is_location():</div>
+<div class="line"><span class="lineno">  443</span>                <span class="keywordflow">if</span> loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  444</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;LOC label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(loc_label.name, label.name))</div>
+<div class="line"><span class="lineno">  445</span>                loc_label = label</div>
+<div class="line"><span class="lineno">  446</span> </div>
+<div class="line"><span class="lineno">  447</span>        <span class="keywordflow">if</span> role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  448</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
+<div class="line"><span class="lineno">  449</span>                <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  450</span>                    changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  451</span>                    self.role_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  452</span>                    self.role_label = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  453</span>        <span class="keywordflow">elif</span> role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.role_label:</div>
+<div class="line"><span class="lineno">  454</span>            changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  455</span>            <span class="keywordflow">if</span> self.role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  456</span>                self.role_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  457</span>            role_label.add_reference(self)</div>
+<div class="line"><span class="lineno">  458</span>            self.role_label = role_label</div>
+<div class="line"><span class="lineno">  459</span> </div>
+<div class="line"><span class="lineno">  460</span>        <span class="keywordflow">if</span> app_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  461</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
+<div class="line"><span class="lineno">  462</span>                <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  463</span>                    changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  464</span>                    self.app_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  465</span>                    self.app_label = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  466</span>        <span class="keywordflow">elif</span> app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.app_label:</div>
+<div class="line"><span class="lineno">  467</span>            changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  468</span>            <span class="keywordflow">if</span> self.app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  469</span>                self.app_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  470</span>            app_label.add_reference(self)</div>
+<div class="line"><span class="lineno">  471</span>            self.app_label = app_label</div>
+<div class="line"><span class="lineno">  472</span> </div>
+<div class="line"><span class="lineno">  473</span>        <span class="keywordflow">if</span> env_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  474</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
+<div class="line"><span class="lineno">  475</span>                <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  476</span>                    changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  477</span>                    self.env_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  478</span>                    self.env_label = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  479</span>        <span class="keywordflow">elif</span> env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.env_label:</div>
+<div class="line"><span class="lineno">  480</span>            changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  481</span>            <span class="keywordflow">if</span> self.env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  482</span>                self.env_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  483</span>            env_label.add_reference(self)</div>
+<div class="line"><span class="lineno">  484</span>            self.env_label = env_label</div>
+<div class="line"><span class="lineno">  485</span> </div>
+<div class="line"><span class="lineno">  486</span>        <span class="keywordflow">if</span> loc_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  487</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> missing_label_type_means_no_change:</div>
+<div class="line"><span class="lineno">  488</span>                <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  489</span>                    changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  490</span>                    self.loc_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  491</span>                    self.loc_label = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  492</span>        <span class="keywordflow">elif</span> loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> self.loc_label:</div>
+<div class="line"><span class="lineno">  493</span>            changes_occurred = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  494</span>            <span class="keywordflow">if</span> self.loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  495</span>                self.loc_label.remove_reference(self)</div>
+<div class="line"><span class="lineno">  496</span>            loc_label.add_reference(self)</div>
+<div class="line"><span class="lineno">  497</span>            self.loc_label = loc_label</div>
+<div class="line"><span class="lineno">  498</span> </div>
+<div class="line"><span class="lineno">  499</span>        <span class="keywordflow">return</span> changes_occurred</div>
+<div class="line"><span class="lineno">  500</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1902,7 +1696,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Feb 22 2024 14:46:28 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Feb 22 2024 15:06:44 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

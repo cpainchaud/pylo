@@ -678,7 +678,7 @@ If one of the labels is None, it will be ignored
 <div class="line"><span class="lineno">  122</span>        <span class="keywordflow">for</span> workload <span class="keywordflow">in</span> self.itemsByHRef.values():</div>
 <div class="line"><span class="lineno">  123</span>            workload_is_a_match = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  124</span>            <span class="keywordflow">for</span> label_type, labels_to_find <span class="keywordflow">in</span> labels_by_type.items():</div>
-<div class="line"><span class="lineno">  125</span>                workload_label = workload.get_label_by_type_str(label_type)</div>
+<div class="line"><span class="lineno">  125</span>                workload_label = workload.get_label(label_type)</div>
 <div class="line"><span class="lineno">  126</span>                <span class="keywordflow">if</span> workload_label <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> workload_label <span class="keywordflow">not</span> <span class="keywordflow">in</span> labels_to_find:</div>
 <div class="line"><span class="lineno">  127</span>                    workload_is_a_match = <span class="keyword">False</span></div>
 <div class="line"><span class="lineno">  128</span>                    <span class="keywordflow">break</span></div>
@@ -889,7 +889,7 @@ If one of the labels is None, it will be ignored
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Feb 22 2024 14:46:28 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Feb 22 2024 15:06:44 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
