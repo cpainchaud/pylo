@@ -24,7 +24,7 @@ var searchData=
   ['load_5fsingle_5fruleset_5ffrom_5fjson_21',['load_single_ruleset_from_json',['../classpylo_1_1_ruleset_store_1_1_ruleset_store.html#a1c908173cbb79cb0dfc523b752440fd5',1,'pylo::RulesetStore::RulesetStore']]],
   ['load_5fvirtualservices_5ffrom_5fjson_22',['load_virtualservices_from_json',['../classpylo_1_1_virtual_service_store_1_1_virtual_service_store.html#abace767d9cf04d71ae354610bae65128',1,'pylo::VirtualServiceStore::VirtualServiceStore']]],
   ['load_5fworkloads_5ffrom_5fjson_23',['load_workloads_from_json',['../classpylo_1_1_workload_store_1_1_workload_store.html#a24b8e7b01c2d7b0be4caa4eec752a0bc',1,'pylo::WorkloadStore::WorkloadStore']]],
-  ['loc_5flabel_24',['loc_label',['../classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24',1,'pylo::Ruleset::RulesetScopeEntry']]],
+  ['loc_5flabel_24',['loc_label',['../classpylo_1_1_ruleset_1_1_ruleset_scope_entry.html#a9132e67c22abc55f2e9476194d999f24',1,'pylo.Ruleset.RulesetScopeEntry.loc_label()'],['../classpylo_1_1_workload_1_1_workload.html#a902feb084cbbde6a6aa4f6f5a97c78e8',1,'pylo.Workload.Workload.loc_label()']]],
   ['log_5fset_5fdebug_25',['log_set_debug',['../namespacepylo_1_1tmp.html#a113531ee43d66825f98f6716d3524991',1,'pylo::tmp']]],
   ['log_5fset_5finfo_26',['log_set_info',['../namespacepylo_1_1tmp.html#a31990f1fd8e56f5a78a593efb7e3c2fa',1,'pylo::tmp']]],
   ['log_5fset_5fwarning_27',['log_set_warning',['../namespacepylo_1_1tmp.html#ac6a2d3fdcf0f2f4254c6eba447beef14',1,'pylo::tmp']]]

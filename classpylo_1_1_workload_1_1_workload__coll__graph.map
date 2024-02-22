@@ -1,5 +1,6 @@
 <map id="pylo.Workload.Workload" name="pylo.Workload.Workload">
-<area shape="rect" id="node1" title=" " alt="" coords="153,93,311,119"/>
-<area shape="rect" id="node2" href="$classpylo_1_1_reference_tracker_1_1_reference_tracker.html" title=" " alt="" coords="5,5,219,45"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_reference_tracker_1_1_referencer.html" title=" " alt="" coords="243,13,461,38"/>
+<area shape="rect" id="node1" title=" " alt="" coords="271,70,429,95"/>
+<area shape="rect" id="node2" href="$classpylo_1_1_reference_tracker_1_1_reference_tracker.html" title=" " alt="" coords="7,5,221,45"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_reference_tracker_1_1_referencer.html" title=" " alt="" coords="5,70,223,95"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_labeled_object_1_1_labeled_object.html" title=" " alt="" coords="23,120,205,160"/>
 </map>

@@ -1,5 +1,6 @@
 <map id="pylo.LabelStore.LabelStore.count_labels" name="pylo.LabelStore.LabelStore.count_labels">
-<area shape="rect" id="node1" title=" " alt="" coords="5,37,217,77"/>
-<area shape="rect" id="node2" href="$classpylo_1_1_rule_1_1_rule_host_container.html#a501c68ee708d26a8a431744ac6fb09a7" title=" " alt="" coords="265,5,472,45"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_label_store_1_1_label_store.html#a509a7e4f712935c3c9f1e92a68a07e80" title=" " alt="" coords="269,69,468,109"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,69,217,109"/>
+<area shape="rect" id="node2" href="$classpylo_1_1_labeled_object_1_1_labeled_object.html#a038a2a305ac63b7dc937234d79f04636" title=" " alt="" coords="278,5,459,45"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_rule_1_1_rule_host_container.html#a501c68ee708d26a8a431744ac6fb09a7" title=" " alt="" coords="265,69,472,109"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_label_store_1_1_label_store.html#a509a7e4f712935c3c9f1e92a68a07e80" title=" " alt="" coords="269,133,468,173"/>
 </map>
