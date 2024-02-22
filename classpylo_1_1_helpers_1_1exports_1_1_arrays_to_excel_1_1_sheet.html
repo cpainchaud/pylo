@@ -389,11 +389,11 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  251</span> </div>
 <div class="line"><span class="lineno">  252</span>                <span class="keywordflow">if</span> type(header) <span class="keywordflow">is</span> str:</div>
 <div class="line"><span class="lineno">  253</span>                    xls_headers.append({<span class="stringliteral">&#39;header&#39;</span>: header, <span class="stringliteral">&#39;format&#39;</span>: cell_format})</div>
-<div class="line"><span class="lineno">  254</span>                    column_name_length = len(header)</div>
+<div class="line"><span class="lineno">  254</span>                    column_name_length = len(header) + 2 <span class="comment"># add 2 for dropdown menus</span></div>
 <div class="line"><span class="lineno">  255</span>                <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  256</span>                    column_name = header.get(<span class="stringliteral">&#39;nice_name&#39;</span>) <span class="keywordflow">or</span> header.get(<span class="stringliteral">&#39;name&#39;</span>)</div>
 <div class="line"><span class="lineno">  257</span>                    xls_headers.append({<span class="stringliteral">&#39;header&#39;</span>: column_name, <span class="stringliteral">&#39;format&#39;</span>: cell_format})</div>
-<div class="line"><span class="lineno">  258</span>                    column_name_length = len(column_name)</div>
+<div class="line"><span class="lineno">  258</span>                    column_name_length = len(column_name) + 2 <span class="comment"># add 2 for dropdown menus</span></div>
 <div class="line"><span class="lineno">  259</span>                    header_max_width_setting = header.get(<span class="stringliteral">&#39;max_width&#39;</span>)</div>
 <div class="line"><span class="lineno">  260</span> </div>
 <div class="line"><span class="lineno">  261</span>                <span class="comment"># default is to use width=longest string</span></div>
@@ -537,7 +537,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 5 2024 13:32:12 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Feb 22 2024 12:16:51 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
