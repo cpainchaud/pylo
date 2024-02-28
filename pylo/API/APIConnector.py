@@ -658,6 +658,11 @@ class APIConnector:
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
+    def object_workload_get_active_policies(self, workload_href: str):
+        path = '/sec_policy/active/policy_view'
+        data = {'workload': workload_href}
+        return self.do_get_call(path=path, async_call=False, params=data, include_org_id=True, json_output_expected=True)
+
     class WorkloadMultiDeleteTracker:
         _errors: Dict[str, str]
         _hrefs: Dict[str, bool]
