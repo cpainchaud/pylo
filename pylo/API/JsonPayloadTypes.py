@@ -91,6 +91,7 @@ class WorkloadObjectJsonStructure(TypedDict):
     labels: List[HrefReference]
     name: Optional[str]
     public_ip: Optional[str]
+    managed: bool
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
 
@@ -161,6 +162,25 @@ class VirtualServiceObjectJsonStructure(TypedDict):
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
 
+class NetworkDeviceConfigObjectJsonStructure(TypedDict):
+    device_type: Literal['switch']
+    name: str
+
+class NetworkDeviceObjectJsonStructure(TypedDict):
+    href: str
+    config: NetworkDeviceConfigObjectJsonStructure
+    supported_endpoint_type: Literal['switch_port']
+
+class NetworkDeviceEndpointConfigObjectJsonStructure(TypedDict):
+    type: Literal['switch_port']
+    name: str
+    workload_discovery: bool
+
+class NetworkDeviceEndpointObjectJsonStructure(TypedDict):
+    href: str
+    config: NetworkDeviceEndpointConfigObjectJsonStructure
+    status: Literal['unmonitored', 'monitored']
+    workloads: List[HrefReference]
 
 class SecurityPrincipalObjectJsonStructure(TypedDict):
     created_at: str

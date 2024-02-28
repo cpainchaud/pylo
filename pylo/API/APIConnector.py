@@ -8,7 +8,8 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     VirtualServiceObjectJsonStructure, RuleCoverageQueryEntryJsonStructure, RulesetObjectUpdateStructure, \
     WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
     RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
-    LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure
+    LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure, \
+    NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference
 
 try:
     import requests as requests
@@ -607,6 +608,7 @@ class APIConnector:
                              include_deleted=False,
                              filter_by_ip: str = None,
                              filter_by_label: WorkloadsGetQueryLabelFilterJsonStructure=None,
+                             filter_by_name: str = None,
                              max_results: int = None,
                              async_mode=True) -> List[WorkloadObjectJsonStructure]:
         path = '/workloads'
@@ -621,6 +623,9 @@ class APIConnector:
         if filter_by_label is not None:
             # filter_by_label must be converted to json text
             data['labels'] = json.dumps(filter_by_label)
+
+        if filter_by_name is not None:
+            data['name'] = filter_by_name
 
         if max_results is not None:
             data['max_results'] = max_results
@@ -843,6 +848,34 @@ class APIConnector:
             path = href.href
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
+
+    def objects_network_device_get(self,
+                                       max_results: int = None) -> List[NetworkDeviceObjectJsonStructure]:
+        path = '/network_devices'
+        data = {}
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, async_call=False, params=data)
+
+    def object_network_device_endpoints_get(self, network_device_href: str) -> List[NetworkDeviceEndpointObjectJsonStructure]:
+        path = '{}/network_endpoints'.format(network_device_href)
+        data = {}
+
+        return self.do_get_call(path=path, async_call=False, include_org_id=False )
+
+    def object_network_device_endpoint_create(self, network_device_href: str, name: str, endpoint_type: Literal['switch_port'], workloads_href: List[str]) -> List[NetworkDeviceEndpointObjectJsonStructure]:
+        path = '{}/network_endpoints'.format(network_device_href)
+
+        worklaods_href_objects = []
+        for workload_href in workloads_href:
+            worklaods_href_objects.append({'href': workload_href})
+
+        data = { 'config': { 'name': name, 'endpoint_type': endpoint_type }, 'workloads': worklaods_href_objects}
+
+        return self.do_post_call(path=path, async_call=False, include_org_id=False, json_arguments=data, json_output_expected=True)
+
 
     def objects_ruleset_get(self, max_results: int = None, async_mode=True) -> List[RulesetObjectJsonStructure]:
         path = '/sec_policy/draft/rule_sets'
