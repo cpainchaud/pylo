@@ -174,6 +174,9 @@ class ArraysToExcel:
         def lines_count(self):
             return len(self._lines)
 
+        def reorder_lines(self, order_by: List[str]):
+            self._lines = sorted(self._lines, key=lambda x: [x[self._headers_name_to_index[header_name]] for header_name in order_by])
+
         def add_line_from_object(self, record):
             new_line = []
             for header in self._headers:
