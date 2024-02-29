@@ -97,6 +97,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a50a4ce9d791bdec28ce745ef9b0b6a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a24a2038c5d65025c563b8270c1e6c4"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1ven__duplicate__remover_1_1_duplicate_record_manager_1_1_duplicated_record.html#a9a24a2038c5d65025c563b8270c1e6c4">has_duplicates</a> (self)</td></tr>
 <tr class="separator:a9a24a2038c5d65025c563b8270c1e6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6303937dd6d48dbb640dbc59d218c16"><td class="memItemLeft" align="right" valign="top"> '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>'&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1ven__duplicate__remover_1_1_duplicate_record_manager_1_1_duplicated_record.html#ad6303937dd6d48dbb640dbc59d218c16">find_latest_created_at</a> (self)</td></tr>
+<tr class="separator:ad6303937dd6d48dbb640dbc59d218c16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc9d7d5a2531183ee5f7e4eb159965cf"><td class="memItemLeft" align="right" valign="top"> '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>'&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1ven__duplicate__remover_1_1_duplicate_record_manager_1_1_duplicated_record.html#adc9d7d5a2531183ee5f7e4eb159965cf">find_latest_heartbeat</a> (self)</td></tr>
+<tr class="separator:adc9d7d5a2531183ee5f7e4eb159965cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -123,11 +127,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   23</span>        <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">   24</span>            self.offline = []</div>
-<div class="line"><span class="lineno">   25</span>            self.online = []</div>
-<div class="line"><span class="lineno">   26</span>            self.unmanaged= []</div>
-<div class="line"><span class="lineno">   27</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>        <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">   30</span>            self.offline = []</div>
+<div class="line"><span class="lineno">   31</span>            self.online = []</div>
+<div class="line"><span class="lineno">   32</span>            self.unmanaged= []</div>
+<div class="line"><span class="lineno">   33</span>            self.all: List[<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>] = []</div>
+<div class="line"><span class="lineno">   34</span> </div>
+<div class="ttc" id="aclasspylo_1_1_workload_1_1_workload_html"><div class="ttname"><a href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload.Workload</a></div><div class="ttdef"><b>Definition:</b> Workload.py:44</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -157,15 +163,16 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   28</span>        <span class="keyword">def </span>add_workload(self, workload: <span class="stringliteral">&#39;pylo.Workload&#39;</span>):</div>
-<div class="line"><span class="lineno">   29</span>            <span class="keywordflow">if</span> workload.unmanaged:</div>
-<div class="line"><span class="lineno">   30</span>                self.unmanaged.append(workload)</div>
-<div class="line"><span class="lineno">   31</span>                <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">   32</span>            <span class="keywordflow">if</span> workload.online:</div>
-<div class="line"><span class="lineno">   33</span>                self.online.append(workload)</div>
-<div class="line"><span class="lineno">   34</span>                <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">   35</span>            self.offline.append(workload)</div>
-<div class="line"><span class="lineno">   36</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>        <span class="keyword">def </span>add_workload(self, workload: <span class="stringliteral">&#39;pylo.Workload&#39;</span>):</div>
+<div class="line"><span class="lineno">   36</span>            self.all.append(workload)</div>
+<div class="line"><span class="lineno">   37</span>            <span class="keywordflow">if</span> workload.unmanaged:</div>
+<div class="line"><span class="lineno">   38</span>                self.unmanaged.append(workload)</div>
+<div class="line"><span class="lineno">   39</span>                <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">   40</span>            <span class="keywordflow">if</span> workload.online:</div>
+<div class="line"><span class="lineno">   41</span>                self.online.append(workload)</div>
+<div class="line"><span class="lineno">   42</span>                <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">   43</span>            self.offline.append(workload)</div>
+<div class="line"><span class="lineno">   44</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -184,9 +191,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   43</span>        <span class="keyword">def </span>count_offline(self):</div>
-<div class="line"><span class="lineno">   44</span>            <span class="keywordflow">return</span> len(self.offline)</div>
-<div class="line"><span class="lineno">   45</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>        <span class="keyword">def </span>count_offline(self):</div>
+<div class="line"><span class="lineno">   52</span>            <span class="keywordflow">return</span> len(self.offline)</div>
+<div class="line"><span class="lineno">   53</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -205,9 +212,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   40</span>        <span class="keyword">def </span>count_online(self):</div>
-<div class="line"><span class="lineno">   41</span>            <span class="keywordflow">return</span> len(self.online)</div>
-<div class="line"><span class="lineno">   42</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>        <span class="keyword">def </span>count_online(self):</div>
+<div class="line"><span class="lineno">   49</span>            <span class="keywordflow">return</span> len(self.online)</div>
+<div class="line"><span class="lineno">   50</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -226,9 +233,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   46</span>        <span class="keyword">def </span>count_unmanaged(self):</div>
-<div class="line"><span class="lineno">   47</span>            <span class="keywordflow">return</span> len(self.unmanaged)</div>
-<div class="line"><span class="lineno">   48</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>        <span class="keyword">def </span>count_unmanaged(self):</div>
+<div class="line"><span class="lineno">   55</span>            <span class="keywordflow">return</span> len(self.unmanaged)</div>
+<div class="line"><span class="lineno">   56</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -247,9 +254,64 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   37</span>        <span class="keyword">def </span>count_workloads(self):</div>
-<div class="line"><span class="lineno">   38</span>            <span class="keywordflow">return</span> len(self.unmanaged) + len(self.online) + len(self.offline)</div>
-<div class="line"><span class="lineno">   39</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>        <span class="keyword">def </span>count_workloads(self):</div>
+<div class="line"><span class="lineno">   46</span>            <span class="keywordflow">return</span> len(self.unmanaged) + len(self.online) + len(self.offline)</div>
+<div class="line"><span class="lineno">   47</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad6303937dd6d48dbb640dbc59d218c16" name="ad6303937dd6d48dbb640dbc59d218c16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6303937dd6d48dbb640dbc59d218c16">&#9670;&#160;</a></span>find_latest_created_at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>' pylo.cli.commands.ven_duplicate_remover.DuplicateRecordManager.DuplicatedRecord.find_latest_created_at </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">   62</span>        <span class="keyword">def </span>find_latest_created_at(self)-&gt; &#39;pylo.Workload&#39;:</div>
+<div class="line"><span class="lineno">   63</span>            latest: Optional[<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">   64</span>            <span class="keywordflow">for</span> wkl <span class="keywordflow">in</span> self.all:</div>
+<div class="line"><span class="lineno">   65</span>                <span class="keywordflow">if</span> wkl.unmanaged:</div>
+<div class="line"><span class="lineno">   66</span>                    <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">   67</span>                <span class="keywordflow">if</span> latest <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> wkl.created_at &gt; latest.created_at:</div>
+<div class="line"><span class="lineno">   68</span>                    latest = wkl</div>
+<div class="line"><span class="lineno">   69</span>            <span class="keywordflow">return</span> latest</div>
+<div class="line"><span class="lineno">   70</span> </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adc9d7d5a2531183ee5f7e4eb159965cf" name="adc9d7d5a2531183ee5f7e4eb159965cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc9d7d5a2531183ee5f7e4eb159965cf">&#9670;&#160;</a></span>find_latest_heartbeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"> '<a class="el" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>' pylo.cli.commands.ven_duplicate_remover.DuplicateRecordManager.DuplicatedRecord.find_latest_heartbeat </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="fragment"><div class="line"><span class="lineno">   71</span>        <span class="keyword">def </span>find_latest_heartbeat(self)-&gt; &#39;pylo.Workload&#39;:</div>
+<div class="line"><span class="lineno">   72</span>            latest: Optional[<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">   73</span>            <span class="keywordflow">for</span> wkl <span class="keywordflow">in</span> self.all:</div>
+<div class="line"><span class="lineno">   74</span>                <span class="keywordflow">if</span> wkl.unmanaged:</div>
+<div class="line"><span class="lineno">   75</span>                    <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">   76</span>                <span class="keywordflow">if</span> latest <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> wkl.ven_agent.get_last_heartbeat_date() &gt; latest.ven_agent.get_last_heartbeat_date():</div>
+<div class="line"><span class="lineno">   77</span>                    latest = wkl</div>
+<div class="line"><span class="lineno">   78</span>            <span class="keywordflow">return</span> latest</div>
+<div class="line"><span class="lineno">   79</span> </div>
+<div class="line"><span class="lineno">   80</span>    <span class="keyword">def </span>__init__(self):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -268,12 +330,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   49</span>        <span class="keyword">def </span>has_duplicates(self):</div>
-<div class="line"><span class="lineno">   50</span>            <span class="keywordflow">if</span> len(self.offline) + len(self.online) + len(self.unmanaged) &gt; 1:</div>
-<div class="line"><span class="lineno">   51</span>                <span class="keywordflow">return</span> <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">   52</span>            <span class="keywordflow">return</span> <span class="keyword">False</span></div>
-<div class="line"><span class="lineno">   53</span> </div>
-<div class="line"><span class="lineno">   54</span>    <span class="keyword">def </span>__init__(self):</div>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>        <span class="keyword">def </span>has_duplicates(self):</div>
+<div class="line"><span class="lineno">   58</span>            <span class="keywordflow">if</span> len(self.offline) + len(self.online) + len(self.unmanaged) &gt; 1:</div>
+<div class="line"><span class="lineno">   59</span>                <span class="keywordflow">return</span> <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">   60</span>            <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><span class="lineno">   61</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -326,7 +387,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 28 2024 14:45:25 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Feb 29 2024 13:34:45 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

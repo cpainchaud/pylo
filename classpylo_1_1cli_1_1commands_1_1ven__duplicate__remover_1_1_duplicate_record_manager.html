@@ -117,9 +117,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   54</span>    <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">   55</span>        self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}</div>
-<div class="line"><span class="lineno">   56</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>    <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">   81</span>        self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}</div>
+<div class="line"><span class="lineno">   82</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -149,15 +149,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   75</span>    <span class="keyword">def </span>add_workload(self, workload: pylo.Workload):</div>
-<div class="line"><span class="lineno">   76</span>        lower_hostname = workload.get_name_stripped_fqdn().lower()</div>
-<div class="line"><span class="lineno">   77</span> </div>
-<div class="line"><span class="lineno">   78</span>        <span class="keywordflow">if</span> lower_hostname <span class="keywordflow">not</span> <span class="keywordflow">in</span> self._records:</div>
-<div class="line"><span class="lineno">   79</span>            self._records[lower_hostname] = self.DuplicatedRecord()</div>
-<div class="line"><span class="lineno">   80</span>        record = self._records[lower_hostname]</div>
-<div class="line"><span class="lineno">   81</span>        record.add_workload(workload)</div>
-<div class="line"><span class="lineno">   82</span> </div>
-<div class="line"><span class="lineno">   83</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  101</span>    <span class="keyword">def </span>add_workload(self, workload: pylo.Workload):</div>
+<div class="line"><span class="lineno">  102</span>        lower_hostname = workload.get_name_stripped_fqdn().lower()</div>
+<div class="line"><span class="lineno">  103</span> </div>
+<div class="line"><span class="lineno">  104</span>        <span class="keywordflow">if</span> lower_hostname <span class="keywordflow">not</span> <span class="keywordflow">in</span> self._records:</div>
+<div class="line"><span class="lineno">  105</span>            self._records[lower_hostname] = self.DuplicatedRecord()</div>
+<div class="line"><span class="lineno">  106</span>        record = self._records[lower_hostname]</div>
+<div class="line"><span class="lineno">  107</span>        record.add_workload(workload)</div>
+<div class="line"><span class="lineno">  108</span> </div>
+<div class="line"><span class="lineno">  109</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -176,13 +176,13 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   68</span>    <span class="keyword">def </span>count_duplicates(self):</div>
-<div class="line"><span class="lineno">   69</span>        count = 0</div>
-<div class="line"><span class="lineno">   70</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
-<div class="line"><span class="lineno">   71</span>            <span class="keywordflow">if</span> record.has_duplicates():</div>
-<div class="line"><span class="lineno">   72</span>                count += 1</div>
-<div class="line"><span class="lineno">   73</span>        <span class="keywordflow">return</span> count</div>
-<div class="line"><span class="lineno">   74</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>    <span class="keyword">def </span>count_duplicates(self):</div>
+<div class="line"><span class="lineno">   95</span>        count = 0</div>
+<div class="line"><span class="lineno">   96</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
+<div class="line"><span class="lineno">   97</span>            <span class="keywordflow">if</span> record.has_duplicates():</div>
+<div class="line"><span class="lineno">   98</span>                count += 1</div>
+<div class="line"><span class="lineno">   99</span>        <span class="keywordflow">return</span> count</div>
+<div class="line"><span class="lineno">  100</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -201,9 +201,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   57</span>    <span class="keyword">def </span>count_record(self):</div>
-<div class="line"><span class="lineno">   58</span>        <span class="keywordflow">return</span> len(self._records)</div>
-<div class="line"><span class="lineno">   59</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   83</span>    <span class="keyword">def </span>count_record(self):</div>
+<div class="line"><span class="lineno">   84</span>        <span class="keywordflow">return</span> len(self._records)</div>
+<div class="line"><span class="lineno">   85</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -222,11 +222,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   60</span>    <span class="keyword">def </span>count_workloads(self):</div>
-<div class="line"><span class="lineno">   61</span>        total = 0</div>
-<div class="line"><span class="lineno">   62</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
-<div class="line"><span class="lineno">   63</span>            total += record.count_workloads()</div>
-<div class="line"><span class="lineno">   64</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>    <span class="keyword">def </span>count_workloads(self):</div>
+<div class="line"><span class="lineno">   87</span>        total = 0</div>
+<div class="line"><span class="lineno">   88</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
+<div class="line"><span class="lineno">   89</span>            total += record.count_workloads()</div>
+<div class="line"><span class="lineno">   90</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -245,9 +245,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   65</span>    <span class="keyword">def </span>records(self) -&gt; List[&#39;DuplicateRecordManager.DuplicatedRecord&#39;]:</div>
-<div class="line"><span class="lineno">   66</span>        <span class="keywordflow">return</span> list(self._records.values())</div>
-<div class="line"><span class="lineno">   67</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>    <span class="keyword">def </span>records(self) -&gt; List[&#39;DuplicateRecordManager.DuplicatedRecord&#39;]:</div>
+<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">return</span> list(self._records.values())</div>
+<div class="line"><span class="lineno">   93</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -257,7 +257,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 28 2024 14:45:25 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Feb 29 2024 13:34:45 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
