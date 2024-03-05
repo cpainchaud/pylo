@@ -1,12 +1,13 @@
+import datetime
+
 import pylo
 import argparse
-from typing import Dict, List, Any
+from typing import Dict, List, Literal, Optional
 from .misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'
 objects_load_filter = ['labels']
-
 
 def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--verbose', '-v', action='store_true',
@@ -17,6 +18,232 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Only look at workloads matching specified labels')
     parser.add_argument('--ignore-unmanaged-workloads', '-iuw', action='store_true',
                         help='Do not touch unmanaged workloads nor include them to detect duplicates')
+    parser.add_argument('--report-format', '-rf', action='append', type=str, choices=['csv', 'xlsx'], default=None,
+                        help='Which report formats you want to produce (repeat option to have several)')
+    parser.add_argument('--do-not-delete-the-most-recent-workload', '-nrc', action='store_true',
+                        help='Workload which was created the last will not be deleted')
+    parser.add_argument('--do-not-delete-the-most-recently-heartbeating-workload', '-nrh', action='store_true',
+                        help='Workload which was heartbeating the last will not be deleted')
+    parser.add_argument('--do-not-delete-if-last-heartbeat-is-more-recent-than', type=int, default=None,
+                        help='Workload which was heartbeating the last will not be deleted if the last heartbeat is more recent than the specified number of days')
+
+
+
+def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
+
+    report_wanted_format: List[Literal['csv','xlsx']] = args['report_format']
+    if report_wanted_format is None:
+        report_wanted_format = ['xlsx']
+
+
+    arg_verbose = args['verbose']
+    arg_confirm = args['confirm']
+    arg_ignore_unmanaged_workloads = args['ignore_unmanaged_workloads'] is True
+    arg_do_not_delete_the_most_recent_workload = args['do_not_delete_the_most_recent_workload'] is True
+    arg_do_not_delete_the_most_recently_heartbeating_workload = args['do_not_delete_the_most_recently_heartbeating_workload'] is True
+    arg_do_not_delete_if_last_heartbeat_is_more_recent_than = args['do_not_delete_if_last_heartbeat_is_more_recent_than']
+
+    output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_')
+    output_file_csv = output_file_prefix + '.csv'
+    output_file_excel = output_file_prefix + '.xlsx'
+
+
+
+    csv_report_headers = [{'name':'name'},
+                          {'name':'hostname'}]
+
+    # insert all label dimensions
+    for label_type in org.LabelStore.label_types:
+        csv_report_headers.append({'name': 'label_'+label_type, 'wrap_text': False})
+
+    csv_report_headers += [
+                          'online',
+                          {'name':'last_heartbeat', 'max_width': 15, 'wrap_text': False},
+                          {'name': 'created_at', 'max_width': 15, 'wrap_text': False},
+                          'action',
+                          {'name':'link_to_pce','max_width': 15, 'wrap_text': False, 'link_text': 'See in PCE', 'is_url': True},
+                          {'name':'href', 'max_width': 15, 'wrap_text': False}]
+    csv_report = pylo.ArraysToExcel()
+    sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
+
+
+    filter_labels: List[pylo.Label] = []  # the list of labels to filter the workloads against
+    if args['filter_label'] is not None:
+        for label_name in args['filter_label']:
+            label = org.LabelStore.find_label_by_name(label_name)
+            if label is None:
+                raise pylo.PyloEx("Cannot find label '{}' in the PCE".format(label_name))
+            filter_labels.append(label)
+
+    # <editor-fold desc="Download workloads from PCE">
+    if not pce_cache_was_used:
+        print("* Downloading Workloads data from the PCE... ", flush=True)
+        if args['filter_label'] is None:
+            workloads_json = org.connector.objects_workload_get(async_mode=True, max_results=1000000)
+        else:
+            filter_labels_list_of_list: List[List[pylo.Label]] = []
+            # convert filter_labels dict to an array of arrays
+            for label_type, label_list in org.LabelStore.Utils.list_to_dict_by_type(filter_labels).items():
+                filter_labels_list_of_list.append(label_list)
+
+            # convert filter_labels_list_of_list to a matrix of all possibilities
+            # example: [[a,b],[c,d]] becomes [[a,c],[a,d],[b,c],[b,d]]
+            filter_labels_matrix = [[]]
+            for label_list in filter_labels_list_of_list:
+                new_matrix = []
+                for label in label_list:
+                    for row in filter_labels_matrix:
+                        new_row = row.copy()
+                        new_row.append(label.href)
+                        new_matrix.append(new_row)
+                filter_labels_matrix = new_matrix
+
+            workloads_json = org.connector.objects_workload_get(async_mode=False, max_results=1000000, filter_by_label=filter_labels_matrix)
+
+        org.WorkloadStore.load_workloads_from_json(workloads_json)
+
+    print("OK! {} workloads loaded".format(org.WorkloadStore.count_workloads()))
+    # </editor-fold>
+
+    all_workloads: List[pylo.Workload]  # the list of all workloads to be processed
+
+    if pce_cache_was_used:
+        # if some filters were used, let's apply them now
+        print("* Filtering workloads loaded from cache based on their labels... ", end='', flush=True)
+        # if some label filters were used, we will apply them at later stage
+        all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
+        print("OK! {} workloads left after filtering".format(len(all_workloads)))
+    else:
+        # filter was already applied during the download from the PCE
+        all_workloads = org.WorkloadStore.workloads
+
+    def add_workload_to_report(workload: pylo.Workload, action: str):
+        url_link_to_pce = workload.get_pce_ui_url()
+        new_row = {
+                'hostname': workload.hostname,
+                'online': workload.online,
+                'last_heartbeat': workload.ven_agent.get_last_heartbeat_date().strftime('%Y-%m-%d %H:%M'),
+                'href': workload.href,
+                'link_to_pce': url_link_to_pce,
+                'action': action
+        }
+
+        for label_type in org.LabelStore.label_types:
+            new_row['label_'+label_type] = workload.get_label_name(label_type, '')
+
+        sheet.add_line_from_object(new_row)
+
+    duplicated_hostnames = DuplicateRecordManager()
+
+    print(" * Looking for VEN with duplicated hostname(s)")
+
+    for workload in all_workloads:
+        if workload.deleted:
+            continue
+        if workload.unmanaged and arg_ignore_unmanaged_workloads:
+            continue
+
+        duplicated_hostnames.add_workload(workload)
+
+    print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
+
+    delete_tracker = org.connector.new_tracker_workload_multi_delete()
+
+    for dup_hostname, dup_record in duplicated_hostnames._records.items():
+        if not dup_record.has_duplicates():
+            continue
+
+        print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
+                                                                                         len(dup_record.online),
+                                                                                         len(dup_record.offline),
+                                                                                         len(dup_record.unmanaged)))
+
+        latest_created_workload = dup_record.find_latest_created_at()
+        latest_heartbeat_workload = dup_record.find_latest_heartbeat()
+        print("     - Latest created at {} and latest heartbeat at {}".format(latest_created_workload.created_at, latest_heartbeat_workload.ven_agent.get_last_heartbeat_date()))
+
+        if dup_record.count_online() == 0:
+            print("     - IGNORED: there is no VEN online")
+            for wkl in dup_record.offline:
+                add_workload_to_report(wkl, "ignored (no VEN online)")
+            continue
+
+        if dup_record.count_online() > 1:
+            print("     - WARNING: there are more than 1 VEN online")
+
+        # Don't delete online workloads but still show them in the report
+        for wkl in dup_record.online:
+            add_workload_to_report(wkl, "ignored (VEN is online)")
+
+        for wkl in dup_record.offline:
+            if arg_do_not_delete_the_most_recent_workload and  wkl is latest_created_workload:
+                print("    - IGNORED: wkl {}/{} is the most recent".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                add_workload_to_report(wkl, "ignored (it is the most recently created)")
+            elif arg_do_not_delete_the_most_recently_heartbeating_workload and wkl is latest_heartbeat_workload:
+                print("    - IGNORED: wkl {}/{} is the most recently heartbeating".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                add_workload_to_report(wkl, "ignored (it is the most recently heartbeating)")
+            elif arg_do_not_delete_if_last_heartbeat_is_more_recent_than is not None and wkl.ven_agent.get_last_heartbeat_date() > datetime.datetime.now() - datetime.timedelta(days=arg_do_not_delete_if_last_heartbeat_is_more_recent_than):
+                print("    - IGNORED: wkl {}/{} has a last heartbeat more recent than {} days".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
+                add_workload_to_report(wkl, "ignored (last heartbeat is more recent than {} days)".format(arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
+            else:
+                delete_tracker.add_workload(wkl)
+                print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+
+
+        for wkl in dup_record.unmanaged:
+            delete_tracker.add_workload(wkl)
+            # deleteTracker.add_href('nope')
+            print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+
+    print()
+
+    if delete_tracker.count_entries() < 1:
+        print(" * No duplicate found!")
+
+    elif arg_confirm:
+        print(" * Found {} workloads to be deleted".format(delete_tracker.count_entries()))
+        print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
+        delete_tracker.execute(unpair_agents=True)
+        print("DONE")
+
+        for wkl in delete_tracker.workloads:
+            error_msg = delete_tracker.get_error_by_href(wkl.href)
+            if error_msg is None:
+                add_workload_to_report(wkl, "deleted")
+            else:
+                print("    - an error occurred when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
+                add_workload_to_report(wkl, "API error: " + error_msg)
+
+        print()
+        print(" * {} workloads deleted / {} with errors".format(delete_tracker.count_entries()-delete_tracker.count_errors(), delete_tracker.count_errors()))
+        print()
+    else:
+        print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(delete_tracker.count_entries()))
+        for wkl in delete_tracker.workloads:
+            add_workload_to_report(wkl, "TO BE DELETED (no confirm option used)")
+
+    if sheet.lines_count() >= 1:
+        if len(report_wanted_format) < 1:
+            print(" * No report format was specified, no report will be generated")
+        else:
+            sheet.reorder_lines(['hostname']) # sort by hostname for better readability
+            for report_format in report_wanted_format:
+                output_filename = output_file_prefix + '.' + report_format
+                print(" * Writing report file '{}' ... ".format(output_filename), end='', flush=True)
+                if report_format == 'csv':
+                    sheet.write_to_csv(output_filename)
+                elif report_format == 'xlsx':
+                    csv_report.write_to_excel(output_filename)
+                else:
+                    raise pylo.PyloEx("Unknown format for report: '{}'".format(report_format))
+                print("DONE")
+
+    else:
+        print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
+
+
+# make this command available to the CLI system
+command_object = Command(command_name, __main, fill_parser, objects_load_filter)
 
 class DuplicateRecordManager:
     class DuplicatedRecord:
@@ -24,8 +251,10 @@ class DuplicateRecordManager:
             self.offline = []
             self.online = []
             self.unmanaged= []
+            self.all: List[pylo.Workload] = []
 
         def add_workload(self, workload: 'pylo.Workload'):
+            self.all.append(workload)
             if workload.unmanaged:
                 self.unmanaged.append(workload)
                 return
@@ -50,6 +279,24 @@ class DuplicateRecordManager:
             if len(self.offline) + len(self.online) + len(self.unmanaged) > 1:
                 return True
             return False
+
+        def find_latest_created_at(self)-> 'pylo.Workload':
+            latest: Optional[pylo.Workload] = None
+            for wkl in self.all:
+                if wkl.unmanaged:
+                    continue
+                if latest is None or wkl.created_at > latest.created_at:
+                    latest = wkl
+            return latest
+
+        def find_latest_heartbeat(self)-> 'pylo.Workload':
+            latest: Optional[pylo.Workload] = None
+            for wkl in self.all:
+                if wkl.unmanaged:
+                    continue
+                if latest is None or wkl.ven_agent.get_last_heartbeat_date() > latest.ven_agent.get_last_heartbeat_date():
+                    latest = wkl
+            return latest
 
     def __init__(self):
         self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}
@@ -79,161 +326,3 @@ class DuplicateRecordManager:
             self._records[lower_hostname] = self.DuplicatedRecord()
         record = self._records[lower_hostname]
         record.add_workload(workload)
-
-
-def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
-    verbose = args['verbose']
-    argument_confirm = args['confirm']
-    arg_ignore_unmanaged_workloads = args['ignore_unmanaged_workloads'] is True
-
-    output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_')
-    output_file_csv = output_file_prefix + '.csv'
-    output_file_excel = output_file_prefix + '.xlsx'
-
-    csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'href', 'action']
-    csv_report = pylo.ArrayToExport(csv_report_headers)
-
-    # <editor-fold desc="Download workloads from PCE">
-    filter_labels: Dict[str, List[pylo.Label]] = {}
-    if args['filter_label'] is not None:
-        for label_name in args['filter_label']:
-            label = org.LabelStore.find_label_by_name(label_name)
-            if label is None:
-                raise pylo.PyloEx("Cannot find label '{}' in the PCE".format(label_name))
-            if label.type_string() in filter_labels:
-                filter_labels[label.type_string()].append(label)
-            else:
-                filter_labels[label.type_string()] = [label]
-    if pce_cache_was_used:
-        print("* Skipping Workloads download as it was loaded from cache file")
-    else:
-        print("* Downloading Workloads data from the PCE... ", flush=True)
-        if args['filter_label'] is None:
-            workloads_json = org.connector.objects_workload_get(async_mode=True, max_results=1000000)
-        else:
-            filter_labels_list_of_list: List[List[pylo.Label]] = []
-            # convert filter_labels dict to an array of arrays
-            for label_type, label_list in filter_labels.items():
-                filter_labels_list_of_list.append(label_list)
-
-            # convert filter_labels_list_of_list to a matrix of all possibilities
-            # example: [[a,b],[c,d]] becomes [[a,c],[a,d],[b,c],[b,d]]
-            filter_labels_matrix = [[]]
-            for label_list in filter_labels_list_of_list:
-                new_matrix = []
-                for label in label_list:
-                    for row in filter_labels_matrix:
-                        new_row = row.copy()
-                        new_row.append(label.href)
-                        new_matrix.append(new_row)
-                filter_labels_matrix = new_matrix
-            print(filter_labels_matrix)
-
-            workloads_json = org.connector.objects_workload_get(async_mode=False, max_results=1000000, filter_by_label=filter_labels_matrix)
-
-        org.WorkloadStore.load_workloads_from_json(workloads_json)
-
-    print("OK!")
-    # </editor-fold>
-
-    print(org.stats_to_str())
-
-    all_workloads = org.WorkloadStore.itemsByHRef.copy()
-
-    def add_workload_to_report(wkl: pylo.Workload, action: str):
-        labels = workload.get_labels_str_list()
-        new_row = {
-                'hostname': wkl.hostname,
-                'role': labels[0],
-                'app': labels[1],
-                'env': labels[2],
-                'loc': labels[3],
-                'online': wkl.online,
-                'href': wkl.href,
-                'action': action
-        }
-
-        csv_report.add_line_from_object(new_row)
-
-    duplicated_hostnames = DuplicateRecordManager()
-
-    print(" * Looking for VEN with duplicated hostname(s)")
-
-    for workload in all_workloads.values():
-        if workload.deleted:
-            continue
-        if workload.unmanaged and arg_ignore_unmanaged_workloads:
-            continue
-
-        duplicated_hostnames.add_workload(workload)
-
-    print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
-
-    delete_tracker = org.connector.new_tracker_workload_multi_delete()
-
-    for dup_hostname, dup_record in duplicated_hostnames._records.items():
-        if not dup_record.has_duplicates():
-            continue
-
-        print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
-                                                                                         len(dup_record.online),
-                                                                                         len(dup_record.offline),
-                                                                                         len(dup_record.unmanaged)))
-
-        if dup_record.count_online() == 0:
-            print("     - IGNORED: there is no VEN online")
-            continue
-
-        if dup_record.count_online() > 1:
-            print("     - WARNING: there are more than 1 VEN online")
-
-        for wkl in dup_record.offline:
-            delete_tracker.add_workload(wkl)
-            print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
-
-        for wkl in dup_record.unmanaged:
-            delete_tracker.add_workload(wkl)
-            # deleteTracker.add_href('nope')
-            print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
-
-    print()
-
-    if delete_tracker.count_entries() < 1:
-        print(" * No duplicate found!")
-
-    elif argument_confirm:
-        print(" * Found {} workloads to be deleted".format(delete_tracker.count_entries()))
-        print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
-        delete_tracker.execute(unpair_agents=True)
-        print("DONE")
-
-        for wkl in delete_tracker.workloads:
-            error_msg = delete_tracker.get_error_by_href(wkl.href)
-            if error_msg is None:
-                add_workload_to_report(wkl, "deleted")
-            else:
-                print("    - an error occurred when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
-                add_workload_to_report(wkl, "API error: " + error_msg)
-
-        print()
-        print(" * {} workloads deleted / {} with errors".format(delete_tracker.count_entries()-delete_tracker.count_errors(), delete_tracker.count_errors()))
-        print()
-    else:
-        print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(delete_tracker.count_entries()))
-        for wkl in delete_tracker.workloads:
-            add_workload_to_report(wkl, "DELETE (no confirm option used)")
-
-    if csv_report.lines_count() >= 1:
-        print()
-        print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
-        csv_report.write_to_csv(output_file_csv)
-        print("DONE")
-        print(" * Writing report file '{}' ... ".format(output_file_excel), end='', flush=True)
-        csv_report.write_to_excel(output_file_excel)
-        print("DONE")
-
-    else:
-        print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
-
-
-command_object = Command(command_name, __main, fill_parser, objects_load_filter)
