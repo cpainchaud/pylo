@@ -101,9 +101,9 @@ class APIConnector:
         credentials = pylo.get_credentials_from_file(hostname_or_profile_name, credential_file)
 
         if credentials is not None:
-            return APIConnector(credentials['hostname'], credentials['port'], credentials['api_user'],
-                                credentials['api_key'], skip_ssl_cert_check=not credentials['verify_ssl'],
-                                org_id=credentials['org_id'], name=credentials['name'])
+            return APIConnector(credentials.hostname, credentials.port, credentials.api_user,
+                                credentials.api_key, skip_ssl_cert_check=not credentials.verify_ssl,
+                                org_id=credentials.org_id, name=credentials.name)
 
         if not request_if_missing:
             return None

@@ -70,10 +70,10 @@ class Organization:
         """
         credentials = get_credentials_from_file(hostname_or_profile_name, credential_file)
 
-        connector = pylo.APIConnector(hostname=credentials['hostname'], port=credentials['port'],
-                                      apiuser=credentials['api_user'], apikey=credentials['api_key'],
-                                      org_id=credentials['org_id'],
-                                      skip_ssl_cert_check=not credentials['verify_ssl'], name=hostname_or_profile_name)
+        connector = pylo.APIConnector(hostname=credentials.hostname, port=credentials.port,
+                                      apiuser=credentials.api_user, apikey=credentials.api_key,
+                                      org_id=credentials.org_id,
+                                      skip_ssl_cert_check=not credentials.verify_ssl, name=hostname_or_profile_name)
 
         objects = connector.get_pce_objects(list_of_objects_to_load=list_of_objects_to_load,
                                             include_deleted_workloads=include_deleted_workloads)

@@ -21,10 +21,12 @@ setup(
     license=setup_license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
-        'requests<=2.28.1',
-        'openpyxl~=3.0.6',
-        'xlsxwriter~=1.3.7',
+        'click~=8.1.7',
         'colorama~=0.4.4',
+        'openpyxl~=3.0.10',
+        'paramiko~=3.4.0',
+        'requests~=2.31.0',
+        'xlsxwriter~=1.3.7',
     ],
     entry_points={
         'console_scripts': ['pylo-cli=pylo.cli:run'],
