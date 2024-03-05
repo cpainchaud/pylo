@@ -22,9 +22,9 @@ class Organization:
         self.SecurityPrincipalStore: 'pylo.SecurityPrincipalStore' = pylo.SecurityPrincipalStore(self)
         self.pce_version: Optional['pylo.SoftwareVersion'] = None
 
-    def load_from_cached_file(self, hostname: str, no_exception_if_file_does_not_exist=False) -> bool:
+    def load_from_cached_file(self, fqdn: str, no_exception_if_file_does_not_exist=False) -> bool:
         # filename should be like 'cache_xxx.yyy.zzz.json'
-        filename = 'cache_' + hostname + '.json'
+        filename = 'cache_' + fqdn + '.json'
 
         if os.path.isfile(filename):
             # now we try to open that JSON file
@@ -44,13 +44,13 @@ class Organization:
         raise pylo.PyloEx("Cache file '%s' was not found!" % filename)
 
     @staticmethod
-    def get_from_cache_file(hostname: str) -> 'pylo.Organization':
+    def get_from_cache_file(fqdn: str) -> 'pylo.Organization':
         org = pylo.Organization(1)
-        org.load_from_cached_file(hostname)
+        org.load_from_cached_file(fqdn)
         return org
 
     @staticmethod
-    def get_from_api_using_credential_file(hostname_or_profile_name: str = None,
+    def get_from_api_using_credential_file(fqdn_or_profile_name: str = None,
                                            credential_file: str = None,
                                            list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
                                            include_deleted_workloads: bool = False,
@@ -61,19 +61,19 @@ class Organization:
         2. The path provided in the PYLO_CREDENTIAL_FILE environment variable
         3. The path ~/.pylo/credentials.json
         4. Current working directory credentials.json
-        :param hostname_or_profile_name:
+        :param fqdn_or_profile_name:
         :param credential_file:
         :param list_of_objects_to_load:
         :param include_deleted_workloads:
         :param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects
         :return:
         """
-        credentials = get_credentials_from_file(hostname_or_profile_name, credential_file)
+        credentials = get_credentials_from_file(fqdn_or_profile_name, credential_file)
 
-        connector = pylo.APIConnector(hostname=credentials.hostname, port=credentials.port,
+        connector = pylo.APIConnector(fqdn=credentials.fqdn, port=credentials.port,
                                       apiuser=credentials.api_user, apikey=credentials.api_key,
                                       org_id=credentials.org_id,
-                                      skip_ssl_cert_check=not credentials.verify_ssl, name=hostname_or_profile_name)
+                                      skip_ssl_cert_check=not credentials.verify_ssl, name=fqdn_or_profile_name)
 
         objects = connector.get_pce_objects(list_of_objects_to_load=list_of_objects_to_load,
                                             include_deleted_workloads=include_deleted_workloads)
@@ -86,34 +86,34 @@ class Organization:
 
         return org
 
-    def load_from_cache_or_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
+    def load_from_cache_or_saved_credentials(self, fqdn: str, include_deleted_workloads=False, prompt_for_api_key_if_missing=True):
         """
         Load the organization from a cache file on disk or default to the API
-        :param hostname: the hostname of the PCE
+        :param fqdn: the hostname of the PCE
         :param include_deleted_workloads: if True, deleted workloads will be loaded from the API
         :param prompt_for_api_key_if_missing: if True, the user will be prompted for an API key if it's unknown
         :return:
         """
-        if not self.load_from_cached_file(hostname, no_exception_if_file_does_not_exist=True):
-            self.load_from_saved_credentials(hostname, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
+        if not self.load_from_cached_file(fqdn, no_exception_if_file_does_not_exist=True):
+            self.load_from_saved_credentials(fqdn, include_deleted_workloads=include_deleted_workloads, prompt_for_api_key=prompt_for_api_key_if_missing)
 
-    def load_from_saved_credentials(self, hostname: str, include_deleted_workloads=False, prompt_for_api_key=False,
+    def load_from_saved_credentials(self, fqdn: str, include_deleted_workloads=False, prompt_for_api_key=False,
                                     list_of_objects_to_load: Optional[List[str]] = None):
-        separator_pos = hostname.find(':')
+        separator_pos = fqdn.find(':')
         port = 8443
 
         if separator_pos > 0:
-            port = hostname[separator_pos+1:]
-            hostname = hostname[0:separator_pos]
+            port = fqdn[separator_pos + 1:]
+            fqdn = fqdn[0:separator_pos]
 
-        connector = pylo.APIConnector.create_from_credentials_in_file(hostname)
+        connector = pylo.APIConnector.create_from_credentials_in_file(fqdn)
         if connector is None:
             if not prompt_for_api_key:
-                raise pylo.PyloEx('Cannot find credentials for host {}'.format(hostname))
-            print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname), end='')
+                raise pylo.PyloEx('Cannot find credentials for host {}'.format(fqdn))
+            print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(fqdn), end='')
             user = input()
             password = getpass.getpass()
-            connector = pylo.APIConnector(hostname, port, user, password, skip_ssl_cert_check=True, org_id=self.id)
+            connector = pylo.APIConnector(fqdn, port, user, password, skip_ssl_cert_check=True, org_id=self.id)
 
         self.load_from_api(connector, include_deleted_workloads=include_deleted_workloads,
                            list_of_objects_to_load=list_of_objects_to_load)

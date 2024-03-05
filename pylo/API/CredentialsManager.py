@@ -14,7 +14,7 @@ except ImportError:
 
 class CredentialFileEntry(TypedDict):
     name: str
-    hostname: str
+    fqdn: str
     port: int
     api_user: str
     api_key: str
@@ -24,16 +24,16 @@ class CredentialFileEntry(TypedDict):
 
 class CredentialProfile:
     name: str
-    hostname: str
+    fqdn: str
     port: int
     api_user: str
     api_key: str
     org_id: int
     verify_ssl: bool
 
-    def __init__(self, name: str, hostname: str, port: int, api_user: str, api_key: str, org_id: int, verify_ssl: bool, originating_file: Optional[str] = None):
+    def __init__(self, name: str, fqdn: str, port: int, api_user: str, api_key: str, org_id: int, verify_ssl: bool, originating_file: Optional[str] = None):
         self.name = name
-        self.hostname = hostname
+        self.fqdn = fqdn
         self.port = port
         self.api_user = api_user
         self.api_key = api_key
@@ -47,7 +47,7 @@ class CredentialProfile:
     @staticmethod
     def from_credentials_file_entry(credential_file_entry: CredentialFileEntry, originating_file: Optional[str] = None):
         return CredentialProfile(credential_file_entry['name'],
-                                 credential_file_entry['hostname'],
+                                 credential_file_entry['fqdn'],
                                  credential_file_entry['port'],
                                  credential_file_entry['api_user'],
                                  credential_file_entry['api_key'],
@@ -63,8 +63,8 @@ def check_profile_json_structure(profile: Dict) -> None:
     # ensure all fields from CredentialFileEntry are present
     if "name" not in profile or type(profile["name"]) != str:
         raise PyloEx("The profile {} does not contain a name".format(profile))
-    if "hostname" not in profile:
-        raise PyloEx("The profile {} does not contain a hostname".format(profile))
+    if "fqdn" not in profile:
+        raise PyloEx("The profile {} does not contain a fqdn".format(profile))
     if "port" not in profile:
         raise PyloEx("The profile {} does not contain a port".format(profile))
     if "api_user" not in profile:
@@ -93,12 +93,12 @@ def get_all_credentials_from_file(credential_file: str ) -> List[CredentialProfi
         return profiles
 
 
-def get_credentials_from_file(hostname_or_profile_name: str = None,
+def get_credentials_from_file(fqdn_or_profile_name: str = None,
                               credential_file: str = None) -> CredentialProfile:
 
-    if hostname_or_profile_name is None:
-        log.debug("No hostname_or_profile_name provided, profile_name=default will be used")
-        hostname_or_profile_name = "default"
+    if fqdn_or_profile_name is None:
+        log.debug("No fqdn_or_profile_name provided, profile_name=default will be used")
+        fqdn_or_profile_name = "default"
 
     credential_files: List[str] = []
     if credential_file is not None:
@@ -113,13 +113,13 @@ def get_credentials_from_file(hostname_or_profile_name: str = None,
         credentials.extend(get_all_credentials_from_file(file))
 
     for credential_profile in credentials:
-        if credential_profile.name.lower() == hostname_or_profile_name.lower():
+        if credential_profile.name.lower() == fqdn_or_profile_name.lower():
             return credential_profile
-        if credential_profile.hostname.lower() == hostname_or_profile_name.lower():
+        if credential_profile.fqdn.lower() == fqdn_or_profile_name.lower():
             return credential_profile
 
-    raise PyloEx("No profile found in credential file '{}' with hostname: {}".
-                    format(credential_file, hostname_or_profile_name))
+    raise PyloEx("No profile found in credential file '{}' with fqdn: {}".
+                    format(credential_file, fqdn_or_profile_name))
 
 
 def list_potential_credential_files() -> List[str]:

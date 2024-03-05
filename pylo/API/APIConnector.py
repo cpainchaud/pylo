@@ -59,9 +59,9 @@ all_object_types: Dict[ObjectTypes, ObjectTypes] = {
 class APIConnector:
     """docstring for APIConnector."""
 
-    def __init__(self, hostname: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, org_id=1, name='unnamed'):
+    def __init__(self, fqdn: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, org_id=1, name='unnamed'):
         self.name = name
-        self.hostname: str = hostname
+        self.fqdn: str = fqdn
         if type(port) is int:
             port = str(port)
         self.port: int = port
@@ -95,20 +95,20 @@ class APIConnector:
         return all_object_types.copy()
 
     @staticmethod
-    def create_from_credentials_in_file(hostname_or_profile_name: str, request_if_missing: bool = False,
+    def create_from_credentials_in_file(fqdn_or_profile_name: str, request_if_missing: bool = False,
                                         credential_file: Optional[str] = None) -> Optional['APIConnector']:
 
-        credentials = pylo.get_credentials_from_file(hostname_or_profile_name, credential_file)
+        credentials = pylo.get_credentials_from_file(fqdn_or_profile_name, credential_file)
 
         if credentials is not None:
-            return APIConnector(credentials.hostname, credentials.port, credentials.api_user,
+            return APIConnector(credentials.fqdn, credentials.port, credentials.api_user,
                                 credentials.api_key, skip_ssl_cert_check=not credentials.verify_ssl,
                                 org_id=credentials.org_id, name=credentials.name)
 
         if not request_if_missing:
             return None
 
-        print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(hostname_or_profile_name), end='')
+        print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(fqdn_or_profile_name), end='')
         user = input()
         print('API password:', end='')
         password = getpass.getpass()
@@ -117,14 +117,14 @@ class APIConnector:
         print('A name for this connection (ie: MyCompany PROD')
         name = input()
 
-        connector = pylo.APIConnector(hostname_or_profile_name, port, user, password, skip_ssl_cert_check=True, name=name)
+        connector = pylo.APIConnector(fqdn_or_profile_name, port, user, password, skip_ssl_cert_check=True, name=name)
         return connector
 
     def _make_base_url(self, path: str='') -> str:
         # remove leading '/' from path if exists
         if len(path) > 0 and path[0] == '/':
             path = path[1:]
-        url = "https://{0}:{1}/{2}".format(self.hostname, self.port, path)
+        url = "https://{0}:{1}/{2}".format(self.fqdn, self.port, path)
         return url
 
     def _make_api_url(self, path: str = '', include_org_id=False) -> str:

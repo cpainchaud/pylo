@@ -33,14 +33,14 @@ from .Organization import Organization
 from .Query import Query
 
 
-def get_organization(hostname: str, port: int, api_user: str, api_key: str,
+def get_organization(fqdn: str, port: int, api_user: str, api_key: str,
                      organization_id: int, verify_ssl: bool = True,
                      list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
                      include_deleted_workloads: bool = False) -> Organization:
     """
     Load an organization from the API with parameters provided as arguments.
     """
-    api = APIConnector(hostname=hostname, port=port, apiuser=api_user, apikey=api_key, org_id=organization_id,
+    api = APIConnector(fqdn=fqdn, port=port, apiuser=api_user, apikey=api_key, org_id=organization_id,
                        skip_ssl_cert_check=not verify_ssl)
     org = Organization(1)
     org.load_from_api(api, include_deleted_workloads=include_deleted_workloads,
@@ -49,7 +49,7 @@ def get_organization(hostname: str, port: int, api_user: str, api_key: str,
     return org
 
 
-def get_organization_using_credential_file(hostname_or_profile_name: str = None,
+def get_organization_using_credential_file(fqdn_or_profile_name: str = None,
                                            credential_file: str = None,
                                            list_of_objects_to_load: Optional[List['pylo.ObjectTypes']] = None,
                                            include_deleted_workloads: bool = False,
@@ -60,14 +60,14 @@ def get_organization_using_credential_file(hostname_or_profile_name: str = None,
     2. The path provided in the PYLO_CREDENTIAL_FILE environment variable
     3. The path ~/.pylo/credentials.json
     4. Current working directory credentials.json
-    :param hostname_or_profile_name:
+    :param fqdn_or_profile_name:
     :param credential_file:
     :param list_of_objects_to_load:
     :param include_deleted_workloads:
     :param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects
     :return:
     """
-    return Organization.get_from_api_using_credential_file(hostname_or_profile_name=hostname_or_profile_name,
+    return Organization.get_from_api_using_credential_file(fqdn_or_profile_name=fqdn_or_profile_name,
                                                            credential_file=credential_file,
                                                            list_of_objects_to_load=list_of_objects_to_load,
                                                            include_deleted_workloads=include_deleted_workloads,

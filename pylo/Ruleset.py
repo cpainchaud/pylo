@@ -283,15 +283,15 @@ class Ruleset:
 
         return int(match.group("id"))
 
-    def get_ruleset_url(self, pce_hostname: str = None, pce_port: int = None) -> str:
-        if pce_hostname is None or pce_port is None:
+    def get_ruleset_url(self, pce_fqdn: str = None, pce_port: int = None) -> str:
+        if pce_fqdn is None or pce_port is None:
             connector = pylo.find_connector_or_die(self)
-            if pce_hostname is None:
-                pce_hostname = connector.hostname
+            if pce_fqdn is None:
+                pce_fqdn = connector.hostname
             if pce_port is None:
                 pce_port = connector.port
 
-        return 'https://{}:{}/#/rulesets/{}/draft/rules/'.format(pce_hostname, pce_port, self.extract_id_from_href())
+        return 'https://{}:{}/#/rulesets/{}/draft/rules/'.format(pce_fqdn, pce_port, self.extract_id_from_href())
 
     def api_set_name(self, new_name: str):
         find_collision = self.owner.find_ruleset_by_name(new_name)

@@ -46,7 +46,7 @@ def __main(args, **kwargs):
 
         for credential in credentials:
             print(table_template.format(credential.name,
-                                        credential.hostname + ':' + str(credential.port),
+                                        credential.fqdn + ':' + str(credential.port),
                                         credential.api_user,
                                         credential.originating_file)
                   )
@@ -73,7 +73,7 @@ def __main(args, **kwargs):
 
         credentials_data: CredentialFileEntry = {
             "name": args['name'],
-            "hostname": args['fqdn'],
+            "fqdn": args['fqdn'],
             "port": args['port'],
             "org_id": args['org'],
             "api_user": args['api_user'],
