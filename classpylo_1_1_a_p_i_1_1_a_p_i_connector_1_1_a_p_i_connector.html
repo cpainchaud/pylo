@@ -590,9 +590,9 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  101</span>        credentials = pylo.get_credentials_from_file(hostname_or_profile_name, credential_file)</div>
 <div class="line"><span class="lineno">  102</span> </div>
 <div class="line"><span class="lineno">  103</span>        <span class="keywordflow">if</span> credentials <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  104</span>            <span class="keywordflow">return</span> APIConnector(credentials[<span class="stringliteral">&#39;hostname&#39;</span>], credentials[<span class="stringliteral">&#39;port&#39;</span>], credentials[<span class="stringliteral">&#39;api_user&#39;</span>],</div>
-<div class="line"><span class="lineno">  105</span>                                credentials[<span class="stringliteral">&#39;api_key&#39;</span>], skip_ssl_cert_check=<span class="keywordflow">not</span> credentials[<span class="stringliteral">&#39;verify_ssl&#39;</span>],</div>
-<div class="line"><span class="lineno">  106</span>                                org_id=credentials[<span class="stringliteral">&#39;org_id&#39;</span>], name=credentials[<span class="stringliteral">&#39;name&#39;</span>])</div>
+<div class="line"><span class="lineno">  104</span>            <span class="keywordflow">return</span> APIConnector(credentials.hostname, credentials.port, credentials.api_user,</div>
+<div class="line"><span class="lineno">  105</span>                                credentials.api_key, skip_ssl_cert_check=<span class="keywordflow">not</span> credentials.verify_ssl,</div>
+<div class="line"><span class="lineno">  106</span>                                org_id=credentials.org_id, name=credentials.name)</div>
 <div class="line"><span class="lineno">  107</span> </div>
 <div class="line"><span class="lineno">  108</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> request_if_missing:</div>
 <div class="line"><span class="lineno">  109</span>            <span class="keywordflow">return</span> <span class="keywordtype">None</span></div>
@@ -4075,7 +4075,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 5 2024 14:12:51 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Tue Mar 5 2024 14:22:33 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

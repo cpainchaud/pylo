@@ -340,10 +340,10 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   70</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">   71</span><span class="stringliteral">        credentials = get_credentials_from_file(hostname_or_profile_name, credential_file)</span></div>
 <div class="line"><span class="lineno">   72</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">   73</span><span class="stringliteral">        connector = <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html">pylo.APIConnector</a>(hostname=credentials[&#39;hostname&#39;</span>], port=credentials[<span class="stringliteral">&#39;port&#39;</span>],</div>
-<div class="line"><span class="lineno">   74</span>                                      apiuser=credentials[<span class="stringliteral">&#39;api_user&#39;</span>], apikey=credentials[<span class="stringliteral">&#39;api_key&#39;</span>],</div>
-<div class="line"><span class="lineno">   75</span>                                      org_id=credentials[<span class="stringliteral">&#39;org_id&#39;</span>],</div>
-<div class="line"><span class="lineno">   76</span>                                      skip_ssl_cert_check=<span class="keywordflow">not</span> credentials[<span class="stringliteral">&#39;verify_ssl&#39;</span>], name=hostname_or_profile_name)</div>
+<div class="line"><span class="lineno">   73</span><span class="stringliteral">        connector = <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html">pylo.APIConnector</a>(hostname=credentials.hostname, port=credentials.port,</span></div>
+<div class="line"><span class="lineno">   74</span><span class="stringliteral">                                      apiuser=credentials.api_user, apikey=credentials.api_key,</span></div>
+<div class="line"><span class="lineno">   75</span><span class="stringliteral">                                      org_id=credentials.org_id,</span></div>
+<div class="line"><span class="lineno">   76</span><span class="stringliteral">                                      skip_ssl_cert_check=</span><span class="keywordflow">not</span> credentials.verify_ssl, name=hostname_or_profile_name)</div>
 <div class="line"><span class="lineno">   77</span> </div>
 <div class="line"><span class="lineno">   78</span>        objects = connector.get_pce_objects(list_of_objects_to_load=list_of_objects_to_load,</div>
 <div class="line"><span class="lineno">   79</span>                                            include_deleted_workloads=include_deleted_workloads)</div>
@@ -853,7 +853,7 @@ Example:
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 5 2024 14:12:51 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Tue Mar 5 2024 14:22:33 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

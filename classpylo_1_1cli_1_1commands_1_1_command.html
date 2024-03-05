@@ -83,8 +83,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae521f0a8214239556e685c7858d1984e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#ae521f0a8214239556e685c7858d1984e">__init__</a> (self, str name, main_func, parser_func, Optional[List[str]] load_specific_objects_only=None, bool <a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#a8d610c320678e34a3290775239dd4f5a">skip_pce_config_loading</a>=False, Optional native_parsers_as_class=None)</td></tr>
-<tr class="separator:ae521f0a8214239556e685c7858d1984e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5f65cc6e83cad38b5ed05bc00835691"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#ac5f65cc6e83cad38b5ed05bc00835691">__init__</a> (self, str name, main_func, parser_func, Optional[List[str]] load_specific_objects_only=None, bool <a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#a8d610c320678e34a3290775239dd4f5a">skip_pce_config_loading</a>=False, Optional native_parsers_as_class=None, bool <a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#a85ff3b4afc3bdb97405c57284cd183db">credentials_manager_mode</a>=False)</td></tr>
+<tr class="separator:ac5f65cc6e83cad38b5ed05bc00835691"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -96,10 +96,12 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a8d610c320678e34a3290775239dd4f5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65042b75c942394e868290038d3c8ae6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#a65042b75c942394e868290038d3c8ae6">native_parsers</a></td></tr>
 <tr class="separator:a65042b75c942394e868290038d3c8ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85ff3b4afc3bdb97405c57284cd183db"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1cli_1_1commands_1_1_command.html#a85ff3b4afc3bdb97405c57284cd183db">credentials_manager_mode</a></td></tr>
+<tr class="separator:a85ff3b4afc3bdb97405c57284cd183db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae521f0a8214239556e685c7858d1984e" name="ae521f0a8214239556e685c7858d1984e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae521f0a8214239556e685c7858d1984e">&#9670;&#160;</a></span>__init__()</h2>
+<a id="ac5f65cc6e83cad38b5ed05bc00835691" name="ac5f65cc6e83cad38b5ed05bc00835691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5f65cc6e83cad38b5ed05bc00835691">&#9670;&#160;</a></span>__init__()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -144,7 +146,13 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Optional &#160;</td>
-          <td class="paramname"><em>native_parsers_as_class</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>native_parsers_as_class</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &#160;</td>
+          <td class="paramname"><em>credentials_manager_mode</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -153,20 +161,35 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    7</span>                 native_parsers_as_class: Optional = <span class="keywordtype">None</span>):</div>
-<div class="line"><span class="lineno">    8</span>        self.name: str = name</div>
-<div class="line"><span class="lineno">    9</span>        self.main = main_func</div>
-<div class="line"><span class="lineno">   10</span>        self.fill_parser = parser_func</div>
-<div class="line"><span class="lineno">   11</span>        self.load_specific_objects_only: Optional[List[str]] = load_specific_objects_only</div>
-<div class="line"><span class="lineno">   12</span>        self.skip_pce_config_loading = skip_pce_config_loading</div>
-<div class="line"><span class="lineno">   13</span>        self.native_parsers = native_parsers_as_class</div>
-<div class="line"><span class="lineno">   14</span>        available_commands[name] = self</div>
-<div class="line"><span class="lineno">   15</span> </div>
-<div class="line"><span class="lineno">   16</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>                 credentials_manager_mode: bool = <span class="keyword">False</span>):</div>
+<div class="line"><span class="lineno">    9</span>        self.name: str = name</div>
+<div class="line"><span class="lineno">   10</span>        self.main = main_func</div>
+<div class="line"><span class="lineno">   11</span>        self.fill_parser = parser_func</div>
+<div class="line"><span class="lineno">   12</span>        self.load_specific_objects_only: Optional[List[str]] = load_specific_objects_only</div>
+<div class="line"><span class="lineno">   13</span>        self.skip_pce_config_loading = skip_pce_config_loading</div>
+<div class="line"><span class="lineno">   14</span>        self.native_parsers = native_parsers_as_class</div>
+<div class="line"><span class="lineno">   15</span>        self.credentials_manager_mode = credentials_manager_mode</div>
+<div class="line"><span class="lineno">   16</span>        available_commands[name] = self</div>
+<div class="line"><span class="lineno">   17</span> </div>
+<div class="line"><span class="lineno">   18</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a85ff3b4afc3bdb97405c57284cd183db" name="a85ff3b4afc3bdb97405c57284cd183db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85ff3b4afc3bdb97405c57284cd183db">&#9670;&#160;</a></span>credentials_manager_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pylo.cli.commands.Command.credentials_manager_mode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a4db63981ddfb91689bafe9ca18eef976" name="a4db63981ddfb91689bafe9ca18eef976"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4db63981ddfb91689bafe9ca18eef976">&#9670;&#160;</a></span>fill_parser</h2>
 
@@ -229,7 +252,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 5 2024 14:12:51 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Tue Mar 5 2024 14:22:33 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
