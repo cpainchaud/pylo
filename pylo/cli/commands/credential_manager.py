@@ -1,11 +1,13 @@
-import logging
+from prettytable import PrettyTable
 import argparse
 import os
+
+import paramiko
 
 import pylo
 import click
 from pylo.API.CredentialsManager import get_all_credentials, create_credential_in_file, CredentialFileEntry, \
-    create_credential_in_default_file
+    create_credential_in_default_file, encrypt_api_key_with_paramiko_key, decrypt_api_key_with_paramiko_key
 
 from pylo import log
 from . import Command
@@ -81,25 +83,81 @@ def __main(args, **kwargs):
             "api_key": api_key
         }
 
+        encrypt_api_key = click.prompt('> Encrypt API? Y/N', type=bool)
+        if encrypt_api_key:
+            print("Available keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
+            ssh_keys = paramiko.Agent().get_keys()
+            # filter out ECDSA NISTPXXX and sk-ssh-ed25519@openssh.com
+            ssh_keys = [key for key in ssh_keys if not (key.get_name().startswith("ecdsa-sha2-nistp") or
+                                                        key.get_name().startswith("sk-ssh-ed25519@openssh.com"))
+                                                        ]
+
+
+            # display a table of keys
+            print_keys(keys=ssh_keys, display_index=True)
+            print()
+
+            index_of_selected_key = click.prompt('> Select key by ID#', type=click.IntRange(0, len(ssh_keys)-1))
+            selected_ssh_key = ssh_keys[index_of_selected_key]
+            print("Selected key: {} | {} | {}".format(selected_ssh_key.get_name(),
+                                                      selected_ssh_key.get_fingerprint().hex(),
+                                                      selected_ssh_key.comment))
+            print(" * encrypting API key with selected key...", flush=True, end="")
+            encrypted_api_key = encrypt_api_key_with_paramiko_key(ssh_key=selected_ssh_key, api_key=api_key)
+            print("OK!")
+            print(" * trying to decrypt the encrypted API key...", flush=True, end="")
+            decrypted_api_key = decrypt_api_key_with_paramiko_key(encrypted_api_key_payload=encrypted_api_key)
+            if decrypted_api_key != api_key:
+                raise pylo.PyloEx("Decrypted API key does not match original API key")
+            print("OK!")
+            credentials_data["api_key"] = encrypted_api_key
+
+
         cwd = os.getcwd()
-        create_in_current_workdir = click.prompt('> Create in current workdir? Y/N ({})'.format(cwd), type=bool)
+        create_in_current_workdir = click.prompt('> Create in current workdir ({})? If not then user homedir will be used.   Y/N '.format(cwd), type=bool)
 
 
         print("* Creating credential...", flush=True, end="")
         if create_in_current_workdir:
-            create_credential_in_file(file_full_path=cwd, data=credentials_data)
+            file_path = create_credential_in_file(file_full_path=cwd, data=credentials_data)
         else:
-            create_credential_in_default_file(data=credentials_data)
+            file_path = create_credential_in_default_file(data=credentials_data)
 
-        print("OK!")
-
-
-
-
-
-
-
+        print("OK! ({})".format(file_path))
 
 
 command_object = Command(command_name, __main, fill_parser, credentials_manager_mode=True)
+
+def print_keys(keys: list[paramiko.AgentKey], display_index = True) -> None:
+
+    args_for_print = []
+
+    column_properties = [  # (name, width)
+        ("ID#", 4),
+        ("Type", 20),
+        ("Fingerprint", 40),
+        ("Comment", 48)
+    ]
+
+    if not display_index:
+        # remove tuple with name "ID#"
+        column_properties = [item for item in column_properties if item[0] != "ID#"]
+
+
+    table = PrettyTable()
+    table.field_names = [item[0] for item in column_properties]
+
+
+    for i, key in enumerate(keys):
+        display_values = []
+        if display_index:
+            display_values.append(i)
+        display_values.append(key.get_name())
+        display_values.append(key.get_fingerprint().hex())
+        display_values.append(key.comment)
+
+        table.add_row(display_values)
+
+    print(table)
+
 

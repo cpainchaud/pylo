@@ -1,6 +1,9 @@
+import base64
+from hashlib import sha256
 from typing import Dict, TypedDict, Union, List, Optional
 import json
 import os
+from cryptography.fernet import Fernet
 from ..Exception import PyloEx
 from .. import log
 
@@ -148,7 +151,14 @@ def get_all_credentials() -> List[CredentialProfile]:
     return credentials
 
 
-def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, overwrite_existing_profile = False) -> None:
+def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, overwrite_existing_profile = False) -> str:
+    """
+    Create a credential in a file and return the full path to the file
+    :param file_full_path:
+    :param data:
+    :param overwrite_existing_profile:
+    :return:
+    """
     # if file already exists, load it and append the new credential to it
     if os.path.isdir(file_full_path):
         file_full_path = os.path.join(file_full_path, "credentials.json")
@@ -181,5 +191,96 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
     with open(file_full_path, 'w') as f:
         json.dump(credentials, f, indent=4)
 
-def create_credential_in_default_file(data: CredentialFileEntry) -> None:
-    create_credential_in_file(os.path.expanduser("~/.pylo/credentials.json"), data)
+    return file_full_path
+
+def create_credential_in_default_file(data: CredentialFileEntry) -> str:
+    """
+    Create a credential in the default credential file and return the full path to the file
+    :param data:
+    :return:
+    """
+    file_path = os.path.expanduser("~/.pylo/credentials.json")
+    create_credential_in_file(os.path.expanduser(file_path), data)
+    return file_path
+
+
+def encrypt_api_key_with_paramiko_key(ssh_key: paramiko.AgentKey, api_key: str) -> str:
+
+
+    def encrypt(raw: str, key: bytes) -> bytes:
+        """
+
+        :param raw:
+        :param key:
+        :return: base64 encoded encrypted string
+        """
+        f = Fernet(base64.urlsafe_b64encode(key))
+        token = f.encrypt(bytes(raw, 'utf-8'))
+        return token
+
+
+    # generate a random 128bit key
+    session_key_to_sign = os.urandom(16)
+
+    signed_message = ssh_key.sign_ssh_data(session_key_to_sign)
+
+    # use SHA256 to hash the signed message and use it as final AES 256 key
+    encryption_key = sha256(signed_message).digest()
+    #print("Encryption key: {}".format(encryption_key.hex()))
+    encrypted_text = encrypt(api_key, encryption_key)
+
+    api_key = "$encrypted$:ssh-Fernet:{}:{}:{}".format(base64.urlsafe_b64encode(ssh_key.get_fingerprint()).decode('utf-8'),
+                                                       base64.urlsafe_b64encode(session_key_to_sign).decode('utf-8'),
+                                                       encrypted_text.decode('utf-8'))
+
+    return api_key
+
+
+def decrypt_api_key_with_paramiko_key(encrypted_api_key_payload: str) -> str:
+    def decrypt(token_b64_encoded: str, key: bytes):
+        f = Fernet(base64.urlsafe_b64encode(key))
+        return f.decrypt(token_b64_encoded).decode('utf-8')
+
+    # split the api_key into its components
+    api_key_parts = encrypted_api_key_payload.split(":")
+    if len(api_key_parts) != 5:
+        raise PyloEx("Invalid encrypted API key format")
+
+    # get the fingerprint and the session key
+    fingerprint = base64.urlsafe_b64decode(api_key_parts[2])
+    session_key = base64.urlsafe_b64decode(api_key_parts[3])
+    encrypted_api_key = api_key_parts[4]
+
+    # find the key in the agent
+    keys = paramiko.Agent().get_keys()
+    found_key = None
+    for key in keys:
+        if key.get_fingerprint() == fingerprint:
+            found_key = key
+            break
+
+    if found_key is None:
+        raise PyloEx("No key found in the agent with fingerprint {}".format(fingerprint.hex()))
+
+    # sign the session key
+    signed_session_key = found_key.sign_ssh_data(session_key)
+    encryption_key = sha256(signed_session_key).digest()
+    #print("Encryption key: {}".format(encryption_key.hex()))
+    #print("Encrypted from KEY fingerprint: {}".format(fingerprint.hex()))
+
+    return decrypt(token_b64_encoded=encrypted_api_key,
+                   key=encryption_key
+                   )
+
+def decrypt_api_key(encrypted_api_key_payload: str) -> str:
+    # detect the encryption method
+    if not encrypted_api_key_payload.startswith("$encrypted$:"):
+        raise PyloEx("Invalid encrypted API key format")
+    if encrypted_api_key_payload.startswith("$encrypted$:ssh-Fernet:"):
+        return decrypt_api_key_with_paramiko_key(encrypted_api_key_payload)
+
+    raise PyloEx("Unsupported encryption method: {}".format(encrypted_api_key_payload.split(":")[1]))
+
+
+def is_api_key_encrypted(encrypted_api_key_payload: str) -> bool:
+    return encrypted_api_key_payload.startswith("$encrypted$:")

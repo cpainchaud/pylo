@@ -23,8 +23,10 @@ setup(
     install_requires=[
         'click~=8.1.7',
         'colorama~=0.4.4',
+        'cryptography~=42.0.5',
         'openpyxl~=3.0.10',
         'paramiko~=3.4.0',
+        'prettytable~=3.10.0'
         'requests~=2.31.0',
         'xlsxwriter~=1.3.7',
     ],

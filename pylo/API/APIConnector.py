@@ -2,6 +2,7 @@ import json
 import time
 import getpass
 
+from .CredentialsManager import is_api_key_encrypted, decrypt_api_key
 from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
@@ -65,13 +66,24 @@ class APIConnector:
         if type(port) is int:
             port = str(port)
         self.port: int = port
-        self.api_key: str = apikey
+        self._api_key: str = apikey
+        self._decrypted_api_key: str = None
         self.api_user: str = apiuser
         self.orgID: int = org_id
         self.skipSSLCertCheck: bool = skip_ssl_cert_check
         self.version: Optional['pylo.SoftwareVersion'] = None
         self.version_string: str = "Not Defined"
         self._cached_session = requests.session()
+
+    @property
+    def api_key(self):
+        if self._decrypted_api_key is not None:
+            return self._decrypted_api_key
+        if is_api_key_encrypted(self._api_key):
+            self._decrypted_api_key = decrypt_api_key(self._api_key)
+            return self._decrypted_api_key
+        return self._api_key
+
 
     @staticmethod
     def get_all_object_types_names_except(exception_list: List[ObjectTypes]):
