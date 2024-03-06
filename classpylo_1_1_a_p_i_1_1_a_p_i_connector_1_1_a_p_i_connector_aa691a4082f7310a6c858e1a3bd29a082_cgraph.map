@@ -1,8 +1,9 @@
 <map id="pylo.API.APIConnector.APIConnector.objects_ruleset_delete" name="pylo.API.APIConnector.APIConnector.objects_ruleset_delete">
-<area shape="rect" id="node1" title=" " alt="" coords="5,69,288,109"/>
-<area shape="rect" id="node2" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#aba77f08650513bd392db82d5f7643c13" title=" " alt="" coords="336,69,591,109"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a7dcd6d5b8c8efcfaf98262f27df73c09" title=" " alt="" coords="1268,41,1509,81"/>
-<area shape="rect" id="node4" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a27fe38144390126c9227e52715540f1b" title=" " alt="" coords="657,37,899,77"/>
-<area shape="rect" id="node5" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2916f3bac48585f7c014016cbe2dfc50" title=" " alt="" coords="639,101,917,141"/>
-<area shape="rect" id="node6" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab2f988ffe4e8f58cfd93e02513b950ac" title=" " alt="" coords="965,101,1220,141"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,99,288,139"/>
+<area shape="rect" id="node2" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#aba77f08650513bd392db82d5f7643c13" title=" " alt="" coords="336,99,591,139"/>
+<area shape="rect" id="node3" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a7dcd6d5b8c8efcfaf98262f27df73c09" title=" " alt="" coords="1275,71,1516,111"/>
+<area shape="rect" id="node4" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a27fe38144390126c9227e52715540f1b" title=" " alt="" coords="661,42,902,82"/>
+<area shape="rect" id="node5" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ad510baa122bf42b2c06dbaa5a77b5184" title=" " alt="" coords="639,107,924,132"/>
+<area shape="rect" id="node6" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2916f3bac48585f7c014016cbe2dfc50" title=" " alt="" coords="642,157,921,197"/>
+<area shape="rect" id="node7" href="$classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab2f988ffe4e8f58cfd93e02513b950ac" title=" " alt="" coords="972,157,1227,197"/>
 </map>

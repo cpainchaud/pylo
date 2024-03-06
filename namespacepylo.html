@@ -136,10 +136,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a72c451c5855e19ace0d1887d2cbf93fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a72c451c5855e19ace0d1887d2cbf93fb">get_organization</a> (str hostname, int port, str api_user, str api_key, int organization_id, bool verify_ssl=True, Optional[List['pylo.ObjectTypes']] list_of_objects_to_load=None, bool include_deleted_workloads=False)</td></tr>
-<tr class="separator:a72c451c5855e19ace0d1887d2cbf93fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91e5bb9e630937c49423051730715102"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#a91e5bb9e630937c49423051730715102">get_organization_using_credential_file</a> (str hostname_or_profile_name=None, str credential_file=None, Optional[List['pylo.ObjectTypes']] list_of_objects_to_load=None, bool include_deleted_workloads=False, Callable callback_api_objects_downloaded=None)</td></tr>
-<tr class="separator:a91e5bb9e630937c49423051730715102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe991a6ade85128a816a61d6736b7189"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#afe991a6ade85128a816a61d6736b7189">get_organization</a> (str fqdn, int port, str api_user, str api_key, int organization_id, bool verify_ssl=True, Optional[List['pylo.ObjectTypes']] list_of_objects_to_load=None, bool include_deleted_workloads=False)</td></tr>
+<tr class="separator:afe991a6ade85128a816a61d6736b7189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa60d055359cc68f181d01ff5da3e8682"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepylo.html#aa60d055359cc68f181d01ff5da3e8682">get_organization_using_credential_file</a> (str fqdn_or_profile_name=None, str credential_file=None, Optional[List['pylo.ObjectTypes']] list_of_objects_to_load=None, bool include_deleted_workloads=False, Callable callback_api_objects_downloaded=None)</td></tr>
+<tr class="separator:aa60d055359cc68f181d01ff5da3e8682"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -149,8 +149,8 @@ Variables</h2></td></tr>
 <tr class="separator:a211e3953f0fbfce2a249909b98c67e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a72c451c5855e19ace0d1887d2cbf93fb" name="a72c451c5855e19ace0d1887d2cbf93fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72c451c5855e19ace0d1887d2cbf93fb">&#9670;&#160;</a></span>get_organization()</h2>
+<a id="afe991a6ade85128a816a61d6736b7189" name="afe991a6ade85128a816a61d6736b7189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe991a6ade85128a816a61d6736b7189">&#9670;&#160;</a></span>get_organization()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -159,7 +159,7 @@ Variables</h2></td></tr>
           <td class="memname"> <a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a> pylo.get_organization </td>
           <td>(</td>
           <td class="paramtype">str&#160;</td>
-          <td class="paramname"><em>hostname</em>, </td>
+          <td class="paramname"><em>fqdn</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -215,7 +215,7 @@ Variables</h2></td></tr>
 <div class="line"><span class="lineno">   40</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">   41</span><span class="stringliteral">    Load an organization </span><span class="keyword">from</span> the API <span class="keyword">with</span> parameters provided <span class="keyword">as</span> arguments.</div>
 <div class="line"><span class="lineno">   42</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">   43</span><span class="stringliteral">    api = APIConnector(hostname=hostname, port=port, apiuser=api_user, apikey=api_key, org_id=organization_id,</span></div>
+<div class="line"><span class="lineno">   43</span><span class="stringliteral">    api = APIConnector(fqdn=fqdn, port=port, apiuser=api_user, apikey=api_key, org_id=organization_id,</span></div>
 <div class="line"><span class="lineno">   44</span><span class="stringliteral">                       skip_ssl_cert_check=</span><span class="keywordflow">not</span> verify_ssl)</div>
 <div class="line"><span class="lineno">   45</span>    org = Organization(1)</div>
 <div class="line"><span class="lineno">   46</span>    org.load_from_api(api, include_deleted_workloads=include_deleted_workloads,</div>
@@ -227,8 +227,8 @@ Variables</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a91e5bb9e630937c49423051730715102" name="a91e5bb9e630937c49423051730715102"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91e5bb9e630937c49423051730715102">&#9670;&#160;</a></span>get_organization_using_credential_file()</h2>
+<a id="aa60d055359cc68f181d01ff5da3e8682" name="aa60d055359cc68f181d01ff5da3e8682"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa60d055359cc68f181d01ff5da3e8682">&#9670;&#160;</a></span>get_organization_using_credential_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -237,7 +237,7 @@ Variables</h2></td></tr>
           <td class="memname"> <a class="el" href="classpylo_1_1_organization_1_1_organization.html">Organization</a> pylo.get_organization_using_credential_file </td>
           <td>(</td>
           <td class="paramtype">str &#160;</td>
-          <td class="paramname"><em>hostname_or_profile_name</em> = <code>None</code>, </td>
+          <td class="paramname"><em>fqdn_or_profile_name</em> = <code>None</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -275,7 +275,7 @@ Variables</h2></td></tr>
 2. The path provided in the PYLO_CREDENTIAL_FILE environment variable
 3. The path ~/.pylo/credentials.json
 4. Current working directory credentials.json
-:param hostname_or_profile_name:
+:param fqdn_or_profile_name:
 :param credential_file:
 :param list_of_objects_to_load:
 :param include_deleted_workloads:
@@ -288,14 +288,14 @@ Variables</h2></td></tr>
 <div class="line"><span class="lineno">   60</span>    2. The path provided <span class="keywordflow">in</span> the PYLO_CREDENTIAL_FILE environment variable</div>
 <div class="line"><span class="lineno">   61</span>    3. The path ~/.pylo/credentials.json</div>
 <div class="line"><span class="lineno">   62</span>    4. Current working directory credentials.json</div>
-<div class="line"><span class="lineno">   63</span>    :param hostname_or_profile_name:</div>
+<div class="line"><span class="lineno">   63</span>    :param fqdn_or_profile_name:</div>
 <div class="line"><span class="lineno">   64</span>    :param credential_file:</div>
 <div class="line"><span class="lineno">   65</span>    :param list_of_objects_to_load:</div>
 <div class="line"><span class="lineno">   66</span>    :param include_deleted_workloads:</div>
 <div class="line"><span class="lineno">   67</span>    :param callback_api_objects_downloaded: callback function that will be called after each API has finished downloading all objects</div>
 <div class="line"><span class="lineno">   68</span>    :<span class="keywordflow">return</span>:</div>
 <div class="line"><span class="lineno">   69</span>    <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">   70</span><span class="stringliteral">    </span><span class="keywordflow">return</span> Organization.get_from_api_using_credential_file(hostname_or_profile_name=hostname_or_profile_name,</div>
+<div class="line"><span class="lineno">   70</span><span class="stringliteral">    </span><span class="keywordflow">return</span> Organization.get_from_api_using_credential_file(fqdn_or_profile_name=fqdn_or_profile_name,</div>
 <div class="line"><span class="lineno">   71</span>                                                           credential_file=credential_file,</div>
 <div class="line"><span class="lineno">   72</span>                                                           list_of_objects_to_load=list_of_objects_to_load,</div>
 <div class="line"><span class="lineno">   73</span>                                                           include_deleted_workloads=include_deleted_workloads,</div>
@@ -338,7 +338,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 5 2024 14:22:33 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Wed Mar 6 2024 09:27:51 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
