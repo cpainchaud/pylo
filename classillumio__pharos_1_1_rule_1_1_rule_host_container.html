@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Rule.RuleHostContainer Class Reference</title>
+<title>Pharos: illumio_pharos.Rule.RuleHostContainer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -638,28 +638,28 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  378</span>            <span class="keywordflow">if</span> <span class="stringliteral">&#39;label&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  379</span>                href = host_data[<span class="stringliteral">&#39;label&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  380</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  381</span>                    PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
+<div class="line"><span class="lineno">  381</span>                    PharosEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
 <div class="line"><span class="lineno">  382</span>                find_object = label_store.find_by_href(href)</div>
 <div class="line"><span class="lineno">  383</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  384</span>                    <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find Label with HREF {} in Rule {}&#39;</span>.format(href, self.owner.href))</div>
 <div class="line"><span class="lineno">  385</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;label_group&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  386</span>                href = host_data[<span class="stringliteral">&#39;label_group&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  387</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  388</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
+<div class="line"><span class="lineno">  388</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
 <div class="line"><span class="lineno">  389</span>                find_object = label_store.find_by_href(href)</div>
 <div class="line"><span class="lineno">  390</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  391</span>                    <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find LabelGroup with HREF {} in Rule {}&#39;</span>.format(href, self.owner.href))</div>
 <div class="line"><span class="lineno">  392</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;ip_list&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  393</span>                href = host_data[<span class="stringliteral">&#39;ip_list&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  394</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  395</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
+<div class="line"><span class="lineno">  395</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
 <div class="line"><span class="lineno">  396</span>                find_object = iplist_store.items_by_href.get(href)</div>
 <div class="line"><span class="lineno">  397</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  398</span>                    <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&#39;Cannot find IPList with HREF {} in Rule {}&#39;</span>.format(href, self.owner.href))</div>
 <div class="line"><span class="lineno">  399</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;workload&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  400</span>                href = host_data[<span class="stringliteral">&#39;workload&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  401</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  402</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
+<div class="line"><span class="lineno">  402</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
 <div class="line"><span class="lineno">  403</span>                <span class="comment"># @TODO : better handling of temporary objects</span></div>
 <div class="line"><span class="lineno">  404</span>                find_object = workload_store.itemsByHRef.get(href)</div>
 <div class="line"><span class="lineno">  405</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
@@ -668,7 +668,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  408</span>            <span class="keywordflow">elif</span> <span class="stringliteral">&#39;virtual_service&#39;</span> <span class="keywordflow">in</span> host_data:</div>
 <div class="line"><span class="lineno">  409</span>                href = host_data[<span class="stringliteral">&#39;virtual_service&#39;</span>].get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  410</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  411</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
+<div class="line"><span class="lineno">  411</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&#39;Cannot find object HREF &#39;</span>, host_data)</div>
 <div class="line"><span class="lineno">  412</span>                <span class="comment"># @TODO : better handling of temporary objects</span></div>
 <div class="line"><span class="lineno">  413</span>                find_object = virtual_service_store.items_by_href.get(href)</div>
 <div class="line"><span class="lineno">  414</span>                <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
@@ -682,9 +682,9 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  422</span>                    self._hasAllWorkloads = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  423</span>                    <span class="keywordflow">continue</span></div>
 <div class="line"><span class="lineno">  424</span>                <span class="comment"># TODO implement actors</span></div>
-<div class="line"><span class="lineno">  425</span>                <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;An actor that is not &#39;ams&#39; was detected but this library doesn&#39;t support it yet&quot;</span>, host_data)</div>
+<div class="line"><span class="lineno">  425</span>                <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;An actor that is not &#39;ams&#39; was detected but this library doesn&#39;t support it yet&quot;</span>, host_data)</div>
 <div class="line"><span class="lineno">  426</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  427</span>                <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Unsupported reference type&quot;</span>, host_data)</div>
+<div class="line"><span class="lineno">  427</span>                <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Unsupported reference type&quot;</span>, host_data)</div>
 <div class="line"><span class="lineno">  428</span> </div>
 <div class="line"><span class="lineno">  429</span>            <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  430</span>                self._items[find_object] = find_object</div>
@@ -892,7 +892,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

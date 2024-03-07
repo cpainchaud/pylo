@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.SecurityPrincipal.SecurityPrincipalStore Class Reference</title>
+<title>Pharos: illumio_pharos.SecurityPrincipal.SecurityPrincipalStore Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -193,7 +193,7 @@ Public Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   32</span>    <span class="keyword">def </span>load_principals_from_json(self, json_list):</div>
 <div class="line"><span class="lineno">   33</span>        <span class="keywordflow">for</span> json_item <span class="keywordflow">in</span> json_list:</div>
 <div class="line"><span class="lineno">   34</span>            <span class="keywordflow">if</span> <span class="stringliteral">&#39;name&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_item <span class="keywordflow">or</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_item:</div>
-<div class="line"><span class="lineno">   35</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/name or href for SecurityPrincipal in JSON:\n&quot;</span> + nice_json(json_item))</div>
+<div class="line"><span class="lineno">   35</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/name or href for SecurityPrincipal in JSON:\n&quot;</span> + nice_json(json_item))</div>
 <div class="line"><span class="lineno">   36</span> </div>
 <div class="line"><span class="lineno">   37</span>            new_item_name = json_item[<span class="stringliteral">&#39;name&#39;</span>]</div>
 <div class="line"><span class="lineno">   38</span>            new_item_href = json_item[<span class="stringliteral">&#39;href&#39;</span>]</div>
@@ -202,14 +202,14 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   41</span>            <span class="comment"># (eventually) by someone. In such a case, you need to use hostname instead</span></div>
 <div class="line"><span class="lineno">   42</span>            <span class="keywordflow">if</span> new_item_name <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">   43</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;hostname&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_item:</div>
-<div class="line"><span class="lineno">   44</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/hostname in JSON:\n&quot;</span> + nice_json(json_item))</div>
+<div class="line"><span class="lineno">   44</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/hostname in JSON:\n&quot;</span> + nice_json(json_item))</div>
 <div class="line"><span class="lineno">   45</span>                new_item_name = json_item[<span class="stringliteral">&#39;hostname&#39;</span>]</div>
 <div class="line"><span class="lineno">   46</span> </div>
 <div class="line"><span class="lineno">   47</span>            new_item = pharos.SecurityPrincipal(new_item_name, new_item_href, self)</div>
 <div class="line"><span class="lineno">   48</span>            new_item.load_from_json(json_item)</div>
 <div class="line"><span class="lineno">   49</span> </div>
 <div class="line"><span class="lineno">   50</span>            <span class="keywordflow">if</span> new_item_href <span class="keywordflow">in</span> self.itemsByHRef:</div>
-<div class="line"><span class="lineno">   51</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;A SecurityPrincipal with href &#39;%s&#39; already exists in the table&quot;</span>, new_item_href)</div>
+<div class="line"><span class="lineno">   51</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;A SecurityPrincipal with href &#39;%s&#39; already exists in the table&quot;</span>, new_item_href)</div>
 <div class="line"><span class="lineno">   52</span> </div>
 <div class="line"><span class="lineno">   53</span>            self.itemsByHRef[new_item_href] = new_item</div>
 <div class="line"><span class="lineno">   54</span> </div>
@@ -253,7 +253,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

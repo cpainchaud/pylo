@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.LabelGroup.LabelGroup Class Reference</title>
+<title>Pharos: illumio_pharos.LabelGroup.LabelGroup Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -233,7 +233,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   36</span>                <span class="keywordflow">for</span> nested_label <span class="keywordflow">in</span> label.expand_nested_to_dict_by_href().values():</div>
 <div class="line"><span class="lineno">   37</span>                    results[nested_label.href] = nested_label</div>
 <div class="line"><span class="lineno">   38</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">   39</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unsupported object type {}&quot;</span>.format(type(label)))</div>
+<div class="line"><span class="lineno">   39</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unsupported object type {}&quot;</span>.format(type(label)))</div>
 <div class="line"><span class="lineno">   40</span>        <span class="keywordflow">return</span> results</div>
 <div class="line"><span class="lineno">   41</span> </div>
 </div><!-- fragment -->
@@ -431,11 +431,11 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   21</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">in</span> href_record:</div>
 <div class="line"><span class="lineno">   22</span>                    find_label = self.owner.find_by_href(href_record[<span class="stringliteral">&#39;href&#39;</span>])</div>
 <div class="line"><span class="lineno">   23</span>                    <span class="keywordflow">if</span> find_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   24</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(f<span class="stringliteral">&quot;LabelGroup named &#39;{self.name}&#39; has member with href &#39;{href_record[&#39;href&#39;]}&#39; not found&quot;</span>)</div>
+<div class="line"><span class="lineno">   24</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(f<span class="stringliteral">&quot;LabelGroup named &#39;{self.name}&#39; has member with href &#39;{href_record[&#39;href&#39;]}&#39; not found&quot;</span>)</div>
 <div class="line"><span class="lineno">   25</span>                    find_label.add_reference(self)</div>
 <div class="line"><span class="lineno">   26</span>                    self._members_by_href[find_label.href] = find_label</div>
 <div class="line"><span class="lineno">   27</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">   28</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;LabelGroup member has no HREF&#39;</span>)</div>
+<div class="line"><span class="lineno">   28</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;LabelGroup member has no HREF&#39;</span>)</div>
 <div class="line"><span class="lineno">   29</span> </div>
 </div><!-- fragment -->
 </div>
@@ -446,7 +446,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

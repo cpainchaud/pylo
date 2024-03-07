@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.APIConnector.APIConnector.WorkloadMultiDeleteTracker Class Reference</title>
+<title>Pharos: illumio_pharos.API.APIConnector.APIConnector.WorkloadMultiDeleteTracker Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -320,7 +320,7 @@ Public Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">  745</span>        <span class="keyword">def </span>execute(self, unpair_agents=False):</div>
 <div class="line"><span class="lineno">  746</span> </div>
 <div class="line"><span class="lineno">  747</span>            <span class="keywordflow">if</span> len(self._hrefs) &lt; 1:</div>
-<div class="line"><span class="lineno">  748</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;WorkloadMultiDeleteTracker is empty&quot;</span>)</div>
+<div class="line"><span class="lineno">  748</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;WorkloadMultiDeleteTracker is empty&quot;</span>)</div>
 <div class="line"><span class="lineno">  749</span> </div>
 <div class="line"><span class="lineno">  750</span>            <span class="keywordflow">try</span>:</div>
 <div class="line"><span class="lineno">  751</span>                result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))</div>
@@ -332,16 +332,16 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  757</span> </div>
 <div class="line"><span class="lineno">  758</span>            <span class="comment"># print(pharos.nice_json(result))</span></div>
 <div class="line"><span class="lineno">  759</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> type(result) <span class="keywordflow">is</span> list:</div>
-<div class="line"><span class="lineno">  760</span>                <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;API didnt return expected JSON format&quot;</span>, result)</div>
+<div class="line"><span class="lineno">  760</span>                <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;API didnt return expected JSON format&quot;</span>, result)</div>
 <div class="line"><span class="lineno">  761</span> </div>
 <div class="line"><span class="lineno">  762</span>            agents_to_unpair = []</div>
 <div class="line"><span class="lineno">  763</span> </div>
 <div class="line"><span class="lineno">  764</span>            <span class="keywordflow">for</span> entry <span class="keywordflow">in</span> result:</div>
 <div class="line"><span class="lineno">  765</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> type(entry) <span class="keywordflow">is</span> dict:</div>
-<div class="line"><span class="lineno">  766</span>                    <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;API didnt return expected JSON format&quot;</span>, entry)</div>
+<div class="line"><span class="lineno">  766</span>                    <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;API didnt return expected JSON format&quot;</span>, entry)</div>
 <div class="line"><span class="lineno">  767</span>                href = entry.get(<span class="stringliteral">&quot;href&quot;</span>)</div>
 <div class="line"><span class="lineno">  768</span>                <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> type(href) <span class="keywordflow">is</span> <span class="keywordflow">not</span> str:</div>
-<div class="line"><span class="lineno">  769</span>                    <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;API didnt return expected JSON format&quot;</span>, entry)</div>
+<div class="line"><span class="lineno">  769</span>                    <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;API didnt return expected JSON format&quot;</span>, entry)</div>
 <div class="line"><span class="lineno">  770</span> </div>
 <div class="line"><span class="lineno">  771</span>                error = entry.get(<span class="stringliteral">&quot;errors&quot;</span>)</div>
 <div class="line"><span class="lineno">  772</span>                error_string = json.dumps(error)</div>
@@ -536,7 +536,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:46 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

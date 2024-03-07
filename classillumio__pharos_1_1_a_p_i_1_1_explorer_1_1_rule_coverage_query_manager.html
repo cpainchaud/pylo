@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.Explorer.RuleCoverageQueryManager Class Reference</title>
+<title>Pharos: illumio_pharos.API.Explorer.RuleCoverageQueryManager Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -161,7 +161,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  545</span>        self.count_invalid_records = 0</div>
 <div class="line"><span class="lineno">  546</span>        self.any_iplist_href = self.owner.objects_iplists_get_default_any()</div>
 <div class="line"><span class="lineno">  547</span>        <span class="keywordflow">if</span> self.any_iplist_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  548</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;No &quot;any&quot; iplist found&#39;</span>)</div>
+<div class="line"><span class="lineno">  548</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;No &quot;any&quot; iplist found&#39;</span>)</div>
 <div class="line"><span class="lineno">  549</span> </div>
 </div><!-- fragment -->
 </div>
@@ -300,7 +300,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  641</span>                <span class="comment">#     decision = &#39;blocked&#39;</span></div>
 <div class="line"><span class="lineno">  642</span>                <span class="comment"># else:</span></div>
 <div class="line"><span class="lineno">  643</span>                pharos.log.error(pharos.nice_json(log.raw_json))</div>
-<div class="line"><span class="lineno">  644</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;No decision found for log_id {}&#39;</span>.format(log_id), log.raw_json)</div>
+<div class="line"><span class="lineno">  644</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;No decision found for log_id {}&#39;</span>.format(log_id), log.raw_json)</div>
 <div class="line"><span class="lineno">  645</span> </div>
 <div class="line"><span class="lineno">  646</span>            log.set_draft_mode_policy_decision(decision)</div>
 <div class="line"><span class="lineno">  647</span> </div>
@@ -517,7 +517,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

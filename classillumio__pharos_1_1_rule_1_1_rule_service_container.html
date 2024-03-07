@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Rule.RuleServiceContainer Class Reference</title>
+<title>Pharos: illumio_pharos.Rule.RuleServiceContainer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -355,10 +355,10 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  261</span>                data = typing.cast(RuleDirectServiceReferenceObjectJsonStructure, data)</div>
 <div class="line"><span class="lineno">  262</span>                port = data.get(<span class="stringliteral">&#39;port&#39;</span>)</div>
 <div class="line"><span class="lineno">  263</span>                <span class="keywordflow">if</span> port <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  264</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;unsupported service type in rule: {}&quot;</span>.format(nice_json(data)))</div>
+<div class="line"><span class="lineno">  264</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;unsupported service type in rule: {}&quot;</span>.format(nice_json(data)))</div>
 <div class="line"><span class="lineno">  265</span>                protocol = data.get(<span class="stringliteral">&#39;proto&#39;</span>)</div>
 <div class="line"><span class="lineno">  266</span>                <span class="keywordflow">if</span> protocol <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  267</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Protocol not found in direct service use: {}&quot;</span>.format(nice_json(data)))</div>
+<div class="line"><span class="lineno">  267</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Protocol not found in direct service use: {}&quot;</span>.format(nice_json(data)))</div>
 <div class="line"><span class="lineno">  268</span> </div>
 <div class="line"><span class="lineno">  269</span>                to_port = data.get(<span class="stringliteral">&#39;to_port&#39;</span>)</div>
 <div class="line"><span class="lineno">  270</span>                direct_port = DirectServiceInRule(protocol, port, to_port)</div>
@@ -484,7 +484,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

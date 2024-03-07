@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.LabelStore.LabelStore Class Reference</title>
+<title>Pharos: illumio_pharos.LabelStore.LabelStore Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -238,7 +238,7 @@ Static Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  381</span>        json_label = connector.objects_label_create(name, label_type)</div>
 <div class="line"><span class="lineno">  382</span> </div>
 <div class="line"><span class="lineno">  383</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;value&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_label <span class="keywordflow">or</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_label <span class="keywordflow">or</span> <span class="stringliteral">&#39;key&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_label:</div>
-<div class="line"><span class="lineno">  384</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/name or href for Label in JSON:\n&quot;</span> + nice_json(json_label))</div>
+<div class="line"><span class="lineno">  384</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/name or href for Label in JSON:\n&quot;</span> + nice_json(json_label))</div>
 <div class="line"><span class="lineno">  385</span>        new_label_name = json_label[<span class="stringliteral">&#39;value&#39;</span>]</div>
 <div class="line"><span class="lineno">  386</span>        new_label_href = json_label[<span class="stringliteral">&#39;href&#39;</span>]</div>
 <div class="line"><span class="lineno">  387</span>        new_label_type = json_label[<span class="stringliteral">&#39;key&#39;</span>]</div>
@@ -991,7 +991,7 @@ If a label is not found, None will be returned in the list.
 <div class="line"><span class="lineno">  224</span>                        <span class="keywordflow">if</span> label.name.lower() == name.lower():</div>
 <div class="line"><span class="lineno">  225</span>                            <span class="keywordflow">return</span> label</div>
 <div class="line"><span class="lineno">  226</span>            <span class="keywordflow">if</span> raise_exception_if_not_found:</div>
-<div class="line"><span class="lineno">  227</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Label/group &#39;%s&#39; not found&quot;</span>, name)</div>
+<div class="line"><span class="lineno">  227</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Label/group &#39;%s&#39; not found&quot;</span>, name)</div>
 <div class="line"><span class="lineno">  228</span>            <span class="keywordflow">if</span> missing_labels_names <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  229</span>                missing_labels_names.append(name)</div>
 <div class="line"><span class="lineno">  230</span>            <span class="keywordflow">return</span> <span class="keywordtype">None</span></div>
@@ -1006,7 +1006,7 @@ If a label is not found, None will be returned in the list.
 <div class="line"><span class="lineno">  239</span>                <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  240</span>                    results.append(result)</div>
 <div class="line"><span class="lineno">  241</span>            <span class="keywordflow">if</span> raise_exception_if_not_found <span class="keywordflow">and</span> len(local_notfound_labels) &gt; 0:</div>
-<div class="line"><span class="lineno">  242</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Some labels not found: {}&quot;</span>.format(local_notfound_labels))</div>
+<div class="line"><span class="lineno">  242</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Some labels not found: {}&quot;</span>.format(local_notfound_labels))</div>
 <div class="line"><span class="lineno">  243</span>            <span class="keywordflow">if</span> missing_labels_names <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  244</span>                missing_labels_names.extend(local_notfound_labels)</div>
 <div class="line"><span class="lineno">  245</span>            <span class="keywordflow">return</span> results</div>
@@ -1127,7 +1127,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  182</span>        data = []</div>
 <div class="line"><span class="lineno">  183</span>        <span class="keywordflow">if</span> label_type <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  184</span>            <span class="keywordflow">if</span> label_type <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.label_types_as_set:</div>
-<div class="line"><span class="lineno">  185</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Invalid label type &#39;%s&#39;. Valid types are: %s&quot;</span> % (label_type, self.label_types_as_set))</div>
+<div class="line"><span class="lineno">  185</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Invalid label type &#39;%s&#39;. Valid types are: %s&quot;</span> % (label_type, self.label_types_as_set))</div>
 <div class="line"><span class="lineno">  186</span> </div>
 <div class="line"><span class="lineno">  187</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._items_by_href.values():</div>
 <div class="line"><span class="lineno">  188</span>            <span class="keywordflow">if</span> label_type <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> label.type == label_type:</div>
@@ -1207,7 +1207,7 @@ Here is the call graph for this function:</div>
 <div class="fragment"><div class="line"><span class="lineno">  165</span>    <span class="keyword">def </span>get_label_groups(self, label_type: Optional[str] = <span class="keywordtype">None</span>) -&gt; List[<span class="stringliteral">&#39;pharos.LabelGroup&#39;</span>]:</div>
 <div class="line"><span class="lineno">  166</span>        <span class="keywordflow">if</span> label_type <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:  <span class="comment"># label_type must be a valid type</span></div>
 <div class="line"><span class="lineno">  167</span>            <span class="keywordflow">if</span> label_type <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.label_types_as_set:</div>
-<div class="line"><span class="lineno">  168</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Invalid label type &#39;%s&#39;. Valid types are: %s&quot;</span> % (label_type, self.label_types_as_set))</div>
+<div class="line"><span class="lineno">  168</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Invalid label type &#39;%s&#39;. Valid types are: %s&quot;</span> % (label_type, self.label_types_as_set))</div>
 <div class="line"><span class="lineno">  169</span>        data = []</div>
 <div class="line"><span class="lineno">  170</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._items_by_href.values():</div>
 <div class="line"><span class="lineno">  171</span>            <span class="keywordflow">if</span> label.is_group() <span class="keywordflow">and</span> (label_type <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> label.type == label_type):</div>
@@ -1288,7 +1288,7 @@ Here is the call graph for this function:</div>
 <div class="fragment"><div class="line"><span class="lineno">  151</span>    <span class="keyword">def </span>get_labels(self, label_type: Optional[str] = <span class="keywordtype">None</span>) -&gt; List[<span class="stringliteral">&#39;pharos.Label&#39;</span>]:</div>
 <div class="line"><span class="lineno">  152</span>        <span class="keywordflow">if</span> label_type <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:  <span class="comment"># label_type must be a valid type</span></div>
 <div class="line"><span class="lineno">  153</span>            <span class="keywordflow">if</span> label_type <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.label_types_as_set:</div>
-<div class="line"><span class="lineno">  154</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Invalid label type &#39;%s&#39;. Valid types are: %s&quot;</span> % (label_type, self.label_types_as_set))</div>
+<div class="line"><span class="lineno">  154</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Invalid label type &#39;%s&#39;. Valid types are: %s&quot;</span> % (label_type, self.label_types_as_set))</div>
 <div class="line"><span class="lineno">  155</span>        data = []</div>
 <div class="line"><span class="lineno">  156</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> self._items_by_href.values():</div>
 <div class="line"><span class="lineno">  157</span>            <span class="keywordflow">if</span> label.is_label() <span class="keywordflow">and</span> (label_type <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> label.type == label_type):</div>
@@ -1561,7 +1561,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   81</span>            new_label_type = json_label[<span class="stringliteral">&#39;key&#39;</span>]</div>
 <div class="line"><span class="lineno">   82</span> </div>
 <div class="line"><span class="lineno">   83</span>            <span class="keywordflow">if</span> new_label_type <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.label_types_as_set:</div>
-<div class="line"><span class="lineno">   84</span>                <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Label type &#39;%s&#39; is not a valid type for Label &#39;%s&#39; (href: %s)&quot;</span> % (new_label_type, new_label_name, new_label_href))</div>
+<div class="line"><span class="lineno">   84</span>                <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Label type &#39;%s&#39; is not a valid type for Label &#39;%s&#39; (href: %s)&quot;</span> % (new_label_type, new_label_name, new_label_href))</div>
 <div class="line"><span class="lineno">   85</span> </div>
 <div class="line"><span class="lineno">   86</span>            new_label = pharos.Label(new_label_name, new_label_href, new_label_type, self)</div>
 <div class="line"><span class="lineno">   87</span> </div>
@@ -1640,7 +1640,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

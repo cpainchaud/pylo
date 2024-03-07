@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.Explorer.RuleCoverageQueryManager.QueryManager Class Reference</title>
+<title>Pharos: illumio_pharos.API.Explorer.RuleCoverageQueryManager.QueryManager Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -261,14 +261,14 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  481</span> </div>
 <div class="line"><span class="lineno">  482</span>                edges = api_response.get(<span class="stringliteral">&#39;edges&#39;</span>)</div>
 <div class="line"><span class="lineno">  483</span>                <span class="keywordflow">if</span> edges <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  484</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;edges&quot;&#39;</span>, api_response)</div>
+<div class="line"><span class="lineno">  484</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;edges&quot;&#39;</span>, api_response)</div>
 <div class="line"><span class="lineno">  485</span> </div>
 <div class="line"><span class="lineno">  486</span>                rules = api_response.get(<span class="stringliteral">&#39;rules&#39;</span>)</div>
 <div class="line"><span class="lineno">  487</span>                <span class="keywordflow">if</span> rules <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  488</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;rules&quot;&#39;</span>, api_response)</div>
+<div class="line"><span class="lineno">  488</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;rules&quot;&#39;</span>, api_response)</div>
 <div class="line"><span class="lineno">  489</span> </div>
 <div class="line"><span class="lineno">  490</span>                <span class="keywordflow">if</span> len(edges) != len(query_batch):</div>
-<div class="line"><span class="lineno">  491</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;rule_coverage has returned {} records while {} where requested&quot;</span>.format(len(edges), len(query_batch)))</div>
+<div class="line"><span class="lineno">  491</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;rule_coverage has returned {} records while {} where requested&quot;</span>.format(len(edges), len(query_batch)))</div>
 <div class="line"><span class="lineno">  492</span> </div>
 <div class="line"><span class="lineno">  493</span>                <span class="keywordflow">for</span> response_index, edge <span class="keywordflow">in</span> enumerate(edges):</div>
 <div class="line"><span class="lineno">  494</span>                    query = query_batch[response_index]</div>
@@ -278,13 +278,13 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  498</span>                <span class="keywordflow">if</span> self.include_boundary_rules:</div>
 <div class="line"><span class="lineno">  499</span>                    deny_edges = api_response.get(<span class="stringliteral">&#39;deny_edges&#39;</span>)</div>
 <div class="line"><span class="lineno">  500</span>                    <span class="keywordflow">if</span> deny_edges <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  501</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;deny_edges&quot;&#39;</span>, api_response)</div>
+<div class="line"><span class="lineno">  501</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;deny_edges&quot;&#39;</span>, api_response)</div>
 <div class="line"><span class="lineno">  502</span>                    <span class="keywordflow">if</span> len(deny_edges) != len(query_batch):</div>
-<div class="line"><span class="lineno">  503</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;rule_coverage has returned {} deny_edges while {} where requested&quot;</span>.format(len(deny_edges), len(query_batch)))</div>
+<div class="line"><span class="lineno">  503</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;rule_coverage has returned {} deny_edges while {} where requested&quot;</span>.format(len(deny_edges), len(query_batch)))</div>
 <div class="line"><span class="lineno">  504</span> </div>
 <div class="line"><span class="lineno">  505</span>                    deny_rules = api_response.get(<span class="stringliteral">&#39;deny_rules&#39;</span>)</div>
 <div class="line"><span class="lineno">  506</span>                    <span class="keywordflow">if</span> deny_rules <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  507</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;deny_rules&quot;&#39;</span>, api_response)</div>
+<div class="line"><span class="lineno">  507</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;rule_coverage request has returned no &quot;deny_rules&quot;&#39;</span>, api_response)</div>
 <div class="line"><span class="lineno">  508</span> </div>
 <div class="line"><span class="lineno">  509</span>                    <span class="keywordflow">for</span> response_index, edge <span class="keywordflow">in</span> enumerate(deny_edges):</div>
 <div class="line"><span class="lineno">  510</span>                        query = query_batch[response_index]</div>
@@ -387,7 +387,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

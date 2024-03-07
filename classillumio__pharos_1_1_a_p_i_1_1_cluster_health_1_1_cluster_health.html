@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.ClusterHealth.ClusterHealth Class Reference</title>
+<title>Pharos: illumio_pharos.API.ClusterHealth.ClusterHealth Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -151,7 +151,7 @@ Static Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  106</span>        self.type = get_field_or_die(<span class="stringliteral">&#39;type&#39;</span>, json_data)  <span class="comment"># type: str</span></div>
 <div class="line"><span class="lineno">  107</span> </div>
 <div class="line"><span class="lineno">  108</span>        <span class="keywordflow">if</span> self._status <span class="keywordflow">not</span> <span class="keywordflow">in</span> ClusterHealth.allowed_status_list:</div>
-<div class="line"><span class="lineno">  109</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ClusterHealth has unsupported status &#39;{}&#39;&quot;</span>.format(self._status))</div>
+<div class="line"><span class="lineno">  109</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;ClusterHealth has unsupported status &#39;{}&#39;&quot;</span>.format(self._status))</div>
 <div class="line"><span class="lineno">  110</span> </div>
 <div class="line"><span class="lineno">  111</span>        nodes_list = get_field_or_die(<span class="stringliteral">&#39;nodes&#39;</span>, json_data)</div>
 <div class="line"><span class="lineno">  112</span>        self.nodes_dict = {}</div>
@@ -340,7 +340,7 @@ Static Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:46 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

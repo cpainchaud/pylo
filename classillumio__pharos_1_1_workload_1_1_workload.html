@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Workload.Workload Class Reference</title>
+<title>Pharos: illumio_pharos.Workload.Workload Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -306,7 +306,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  307</span>        :<span class="keywordflow">return</span>:</div>
 <div class="line"><span class="lineno">  308</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">  309</span><span class="stringliteral">        </span><span class="keywordflow">if</span> self._batch_update_stack <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  310</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Workload was not in &#39;update stacking&#39; mode&quot;</span>)</div>
+<div class="line"><span class="lineno">  310</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Workload was not in &#39;update stacking&#39; mode&quot;</span>)</div>
 <div class="line"><span class="lineno">  311</span>        <span class="keywordflow">return</span> self._batch_update_stack.count_payloads()</div>
 <div class="line"><span class="lineno">  312</span> </div>
 </div><!-- fragment -->
@@ -333,7 +333,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  295</span><span class="stringliteral">        Push all stacked changed to API </span><span class="keywordflow">and</span> turns off <span class="stringliteral">&#39;updates stacking&#39;</span> mode</div>
 <div class="line"><span class="lineno">  296</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">  297</span><span class="stringliteral">        </span><span class="keywordflow">if</span> self._batch_update_stack <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  298</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Workload was not in &#39;update stacking&#39; mode&quot;</span>)</div>
+<div class="line"><span class="lineno">  298</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Workload was not in &#39;update stacking&#39; mode&quot;</span>)</div>
 <div class="line"><span class="lineno">  299</span> </div>
 <div class="line"><span class="lineno">  300</span>        connector = pharos.find_connector_or_die(self.owner)</div>
 <div class="line"><span class="lineno">  301</span>        connector.objects_workload_update(self.href, self._batch_update_stack.get_payload_and_reset())</div>
@@ -1161,7 +1161,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  109</span>        agent_json = data.get(<span class="stringliteral">&#39;agent&#39;</span>)</div>
 <div class="line"><span class="lineno">  110</span> </div>
 <div class="line"><span class="lineno">  111</span>        <span class="keywordflow">if</span> agent_json <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  112</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Workload named &#39;%s&#39; has no Agent record:\n%s&quot;</span> % (</div>
+<div class="line"><span class="lineno">  112</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Workload named &#39;%s&#39; has no Agent record:\n%s&quot;</span> % (</div>
 <div class="line"><span class="lineno">  113</span>                self.name, nice_json(data)))</div>
 <div class="line"><span class="lineno">  114</span> </div>
 <div class="line"><span class="lineno">  115</span>        agent_href = agent_json.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
@@ -1173,10 +1173,10 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  121</span>            self.online = data[<span class="stringliteral">&#39;online&#39;</span>]</div>
 <div class="line"><span class="lineno">  122</span>            self.os_id = data.get(<span class="stringliteral">&#39;os_id&#39;</span>)</div>
 <div class="line"><span class="lineno">  123</span>            <span class="comment">#if self.os_id is None:</span></div>
-<div class="line"><span class="lineno">  124</span>            <span class="comment">#    raise PyloEx(&quot;Workload named &#39;{}&#39; has no os_id record:\n%s&quot;.format(self.name), data)</span></div>
+<div class="line"><span class="lineno">  124</span>            <span class="comment">#    raise PharosEx(&quot;Workload named &#39;{}&#39; has no os_id record:\n%s&quot;.format(self.name), data)</span></div>
 <div class="line"><span class="lineno">  125</span>            self.os_detail = data.get(<span class="stringliteral">&#39;os_detail&#39;</span>)</div>
 <div class="line"><span class="lineno">  126</span>            <span class="comment">#if self.os_detail is None:</span></div>
-<div class="line"><span class="lineno">  127</span>            <span class="comment">#    raise PyloEx(&quot;Workload named &#39;{}&#39; has no os_detail record:\n%s&quot;.format(self.name), data)</span></div>
+<div class="line"><span class="lineno">  127</span>            <span class="comment">#    raise PharosEx(&quot;Workload named &#39;{}&#39; has no os_detail record:\n%s&quot;.format(self.name), data)</span></div>
 <div class="line"><span class="lineno">  128</span> </div>
 <div class="line"><span class="lineno">  129</span>        self.description = data.get(<span class="stringliteral">&#39;description&#39;</span>)</div>
 <div class="line"><span class="lineno">  130</span> </div>
@@ -1199,13 +1199,13 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  147</span>            labels = data[<span class="stringliteral">&#39;labels&#39;</span>]</div>
 <div class="line"><span class="lineno">  148</span>            <span class="keywordflow">for</span> label <span class="keywordflow">in</span> labels:</div>
 <div class="line"><span class="lineno">  149</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> label:</div>
-<div class="line"><span class="lineno">  150</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Workload named &#39;%s&#39; has labels in JSON but without any HREF:\n%s&quot;</span> % (</div>
+<div class="line"><span class="lineno">  150</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Workload named &#39;%s&#39; has labels in JSON but without any HREF:\n%s&quot;</span> % (</div>
 <div class="line"><span class="lineno">  151</span>                        self.get_name(), nice_json(labels)))</div>
 <div class="line"><span class="lineno">  152</span>                href = label[<span class="stringliteral">&#39;href&#39;</span>]</div>
 <div class="line"><span class="lineno">  153</span>                label_object = label_store.find_by_href(href)</div>
 <div class="line"><span class="lineno">  154</span>                <span class="keywordflow">if</span> label_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  155</span>                    <span class="keywordflow">if</span> <span class="keywordflow">not</span> self.deleted:</div>
-<div class="line"><span class="lineno">  156</span>                        <span class="keywordflow">raise</span> pharos.PyloObjectNotFound(</div>
+<div class="line"><span class="lineno">  156</span>                        <span class="keywordflow">raise</span> pharos.PharosObjectNotFound(</div>
 <div class="line"><span class="lineno">  157</span>                            <span class="stringliteral">&quot;Workload &#39;%s&#39;/&#39;%s&#39; is referencing label href &#39;%s&#39; which does not exist&quot;</span> % (</div>
 <div class="line"><span class="lineno">  158</span>                            self.name, self.href, href))</div>
 <div class="line"><span class="lineno">  159</span> </div>
@@ -1360,24 +1360,24 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  424</span>        loc_label: Optional[Label] = <span class="keywordtype">None</span></div>
 <div class="line"><span class="lineno">  425</span> </div>
 <div class="line"><span class="lineno">  426</span>        <span class="keywordflow">if</span> len(list_of_labels) &gt; 4:</div>
-<div class="line"><span class="lineno">  427</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;More than 4 labels provided&quot;</span>)</div>
+<div class="line"><span class="lineno">  427</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;More than 4 labels provided&quot;</span>)</div>
 <div class="line"><span class="lineno">  428</span> </div>
 <div class="line"><span class="lineno">  429</span>        <span class="keywordflow">for</span> label <span class="keywordflow">in</span> list_of_labels:</div>
 <div class="line"><span class="lineno">  430</span>            <span class="keywordflow">if</span> label.type_is_role():</div>
 <div class="line"><span class="lineno">  431</span>                <span class="keywordflow">if</span> role_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  432</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ROLE label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(role_label.name, label.name))</div>
+<div class="line"><span class="lineno">  432</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;ROLE label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(role_label.name, label.name))</div>
 <div class="line"><span class="lineno">  433</span>                role_label = label</div>
 <div class="line"><span class="lineno">  434</span>            <span class="keywordflow">elif</span> label.type_is_application():</div>
 <div class="line"><span class="lineno">  435</span>                <span class="keywordflow">if</span> app_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  436</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;APP label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(app_label.name, label.name))</div>
+<div class="line"><span class="lineno">  436</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;APP label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(app_label.name, label.name))</div>
 <div class="line"><span class="lineno">  437</span>                app_label = label</div>
 <div class="line"><span class="lineno">  438</span>            <span class="keywordflow">elif</span> label.type_is_environment():</div>
 <div class="line"><span class="lineno">  439</span>                <span class="keywordflow">if</span> env_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  440</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;ENV label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(env_label.name, label.name))</div>
+<div class="line"><span class="lineno">  440</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;ENV label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(env_label.name, label.name))</div>
 <div class="line"><span class="lineno">  441</span>                env_label = label</div>
 <div class="line"><span class="lineno">  442</span>            <span class="keywordflow">elif</span> label.type_is_location():</div>
 <div class="line"><span class="lineno">  443</span>                <span class="keywordflow">if</span> loc_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  444</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;LOC label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(loc_label.name, label.name))</div>
+<div class="line"><span class="lineno">  444</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;LOC label specified more than once (&#39;{}&#39; vs &#39;{}&#39;)&quot;</span>.format(loc_label.name, label.name))</div>
 <div class="line"><span class="lineno">  445</span>                loc_label = label</div>
 <div class="line"><span class="lineno">  446</span> </div>
 <div class="line"><span class="lineno">  447</span>        <span class="keywordflow">if</span> role_label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
@@ -1668,7 +1668,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Rule.RuleSecurityPrincipalContainer Class Reference</title>
+<title>Pharos: illumio_pharos.Rule.RuleSecurityPrincipalContainer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -177,7 +177,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  134</span>            wanted_href = item_data[<span class="stringliteral">&#39;href&#39;</span>]</div>
 <div class="line"><span class="lineno">  135</span>            found_object = ss_store.find_by_href(wanted_href)</div>
 <div class="line"><span class="lineno">  136</span>            <span class="keywordflow">if</span> found_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  137</span>                <span class="keywordflow">raise</span> pharos.PyloEx(f<span class="stringliteral">&quot;Could not find SecurityPrincipal with href &#39;{wanted_href}&#39; inside rule href &#39;{self.owner.href}&#39; and Ruleset named &#39;{self.owner.owner.name}&#39;&quot;</span>)</div>
+<div class="line"><span class="lineno">  137</span>                <span class="keywordflow">raise</span> pharos.PharosEx(f<span class="stringliteral">&quot;Could not find SecurityPrincipal with href &#39;{wanted_href}&#39; inside rule href &#39;{self.owner.href}&#39; and Ruleset named &#39;{self.owner.owner.name}&#39;&quot;</span>)</div>
 <div class="line"><span class="lineno">  138</span>            found_object.add_reference(self)</div>
 <div class="line"><span class="lineno">  139</span>            self._items[found_object] = found_object</div>
 <div class="line"><span class="lineno">  140</span> </div>
@@ -206,7 +206,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

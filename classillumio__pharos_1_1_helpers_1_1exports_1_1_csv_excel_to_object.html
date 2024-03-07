@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Helpers.exports.CsvExcelToObject Class Reference</title>
+<title>Pharos: illumio_pharos.Helpers.exports.CsvExcelToObject Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -162,10 +162,10 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  336</span>        self._empty_lines_count = 0</div>
 <div class="line"><span class="lineno">  337</span> </div>
 <div class="line"><span class="lineno">  338</span>        <span class="keywordflow">if</span> strict_headers <span class="keywordflow">and</span> expected_headers <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  339</span>            pharos.PyloEx(<span class="stringliteral">&quot;CSV/Excel file cannot use strict_headers mode without specifying expected_headers&quot;</span>)</div>
+<div class="line"><span class="lineno">  339</span>            pharos.PharosEx(<span class="stringliteral">&quot;CSV/Excel file cannot use strict_headers mode without specifying expected_headers&quot;</span>)</div>
 <div class="line"><span class="lineno">  340</span> </div>
 <div class="line"><span class="lineno">  341</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> os.path.exists(filename):</div>
-<div class="line"><span class="lineno">  342</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;File &#39;{}&#39; does not exist&quot;</span>.format(filename))</div>
+<div class="line"><span class="lineno">  342</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;File &#39;{}&#39; does not exist&quot;</span>.format(filename))</div>
 <div class="line"><span class="lineno">  343</span> </div>
 <div class="line"><span class="lineno">  344</span>        optional_headers = []</div>
 <div class="line"><span class="lineno">  345</span>        mandatory_headers_dict = {}</div>
@@ -189,10 +189,10 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  363</span>                    <span class="keywordflow">if</span> row_count == 0:</div>
 <div class="line"><span class="lineno">  364</span>                        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> row:</div>
 <div class="line"><span class="lineno">  365</span>                            <span class="keywordflow">if</span> item <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> len(item) &lt; 1:</div>
-<div class="line"><span class="lineno">  366</span>                                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;CSV headers has blank fields, this is not supported&#39;</span>)</div>
+<div class="line"><span class="lineno">  366</span>                                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;CSV headers has blank fields, this is not supported&#39;</span>)</div>
 <div class="line"><span class="lineno">  367</span>                            self._detected_headers.append(item.lower())</div>
 <div class="line"><span class="lineno">  368</span>                            <span class="keywordflow">if</span> strict_headers <span class="keywordflow">and</span> item.lower() <span class="keywordflow">not</span> <span class="keywordflow">in</span> mandatory_headers_dict:</div>
-<div class="line"><span class="lineno">  369</span>                                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;CSV/Excel headers have an unexpected header named &#39;{}&#39;&quot;</span>.format(item))</div>
+<div class="line"><span class="lineno">  369</span>                                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;CSV/Excel headers have an unexpected header named &#39;{}&#39;&quot;</span>.format(item))</div>
 <div class="line"><span class="lineno">  370</span> </div>
 <div class="line"><span class="lineno">  371</span>                        missing_headers = mandatory_headers_dict.copy()</div>
 <div class="line"><span class="lineno">  372</span>                        <span class="keywordflow">for</span> header_name <span class="keywordflow">in</span> self._detected_headers:</div>
@@ -200,12 +200,12 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  374</span>                            <span class="keywordflow">if</span> header_name <span class="keywordflow">in</span> missing_headers:</div>
 <div class="line"><span class="lineno">  375</span>                                del missing_headers[header_name]</div>
 <div class="line"><span class="lineno">  376</span>                        <span class="keywordflow">if</span> len(missing_headers) &gt; 0:</div>
-<div class="line"><span class="lineno">  377</span>                            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;CSV is missing the following mandatory headers: {}&#39;</span>.format(pharos.string_list_to_text(missing_headers.keys())))</div>
+<div class="line"><span class="lineno">  377</span>                            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;CSV is missing the following mandatory headers: {}&#39;</span>.format(pharos.string_list_to_text(missing_headers.keys())))</div>
 <div class="line"><span class="lineno">  378</span> </div>
 <div class="line"><span class="lineno">  379</span>                    <span class="comment"># this is DATA</span></div>
 <div class="line"><span class="lineno">  380</span>                    <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  381</span>                        <span class="keywordflow">if</span> len(self._detected_headers) != len(row):</div>
-<div class="line"><span class="lineno">  382</span>                            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;CSV line #{} doesnt have the same fields ({}) count than the headers ({}), is it empty?&#39;</span>.format(row_count+1,</div>
+<div class="line"><span class="lineno">  382</span>                            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;CSV line #{} doesnt have the same fields ({}) count than the headers ({}), is it empty?&#39;</span>.format(row_count+1,</div>
 <div class="line"><span class="lineno">  383</span>                                                                                                                            len(self._detected_headers),</div>
 <div class="line"><span class="lineno">  384</span>                                                                                                                     len(row)))</div>
 <div class="line"><span class="lineno">  385</span> </div>
@@ -231,14 +231,14 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  405</span>            workbook = openpyxl.load_workbook(filename)</div>
 <div class="line"><span class="lineno">  406</span>            <span class="comment"># print(&quot;workbook has {} worksheets&quot;.format(len(workbook.worksheets)))</span></div>
 <div class="line"><span class="lineno">  407</span>            <span class="keywordflow">if</span> len(workbook.worksheets) &lt; 1:</div>
-<div class="line"><span class="lineno">  408</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Excel file has no Worksheet&quot;</span>)</div>
+<div class="line"><span class="lineno">  408</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Excel file has no Worksheet&quot;</span>)</div>
 <div class="line"><span class="lineno">  409</span> </div>
 <div class="line"><span class="lineno">  410</span>            source_worksheet = workbook.worksheets[0]</div>
 <div class="line"><span class="lineno">  411</span> </div>
 <div class="line"><span class="lineno">  412</span>            <span class="keywordflow">if</span> excel_sheet_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">  413</span>                source_worksheet = workbook.get_sheet_by_name(excel_sheet_name)</div>
 <div class="line"><span class="lineno">  414</span>                <span class="keywordflow">if</span> source_worksheet <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  415</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find a Worksheet named &#39;{}&#39; in Excel file &#39;{}&#39;&quot;</span>.format(excel_sheet_name, filename))</div>
+<div class="line"><span class="lineno">  415</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find a Worksheet named &#39;{}&#39; in Excel file &#39;{}&#39;&quot;</span>.format(excel_sheet_name, filename))</div>
 <div class="line"><span class="lineno">  416</span> </div>
 <div class="line"><span class="lineno">  417</span>            <span class="comment"># print(&quot;\n\nmax_col {} max_row {}\n\n&quot;.format(source_worksheet.max_column,source_worksheet.max_row))</span></div>
 <div class="line"><span class="lineno">  418</span> </div>
@@ -248,10 +248,10 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  422</span>                    <span class="keywordflow">for</span> col_index <span class="keywordflow">in</span> range(1, source_worksheet.max_column+1):</div>
 <div class="line"><span class="lineno">  423</span>                        item = source_worksheet.cell(row_count, col_index).value</div>
 <div class="line"><span class="lineno">  424</span>                        <span class="keywordflow">if</span> item <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> len(item) &lt; 1:</div>
-<div class="line"><span class="lineno">  425</span>                            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Excel headers has blank fields, this is not supported&#39;</span>)</div>
+<div class="line"><span class="lineno">  425</span>                            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Excel headers has blank fields, this is not supported&#39;</span>)</div>
 <div class="line"><span class="lineno">  426</span>                        self._detected_headers.append(item.lower())</div>
 <div class="line"><span class="lineno">  427</span>                        <span class="keywordflow">if</span> strict_headers <span class="keywordflow">and</span> item.lower() <span class="keywordflow">not</span> <span class="keywordflow">in</span> mandatory_headers_dict:</div>
-<div class="line"><span class="lineno">  428</span>                            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;CSV/Excel headers have an unexpected header named &#39;{}&#39;&quot;</span>.format(item))</div>
+<div class="line"><span class="lineno">  428</span>                            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;CSV/Excel headers have an unexpected header named &#39;{}&#39;&quot;</span>.format(item))</div>
 <div class="line"><span class="lineno">  429</span> </div>
 <div class="line"><span class="lineno">  430</span>                    missing_headers = mandatory_headers_dict.copy()</div>
 <div class="line"><span class="lineno">  431</span>                    <span class="keywordflow">for</span> header_name <span class="keywordflow">in</span> self._detected_headers:</div>
@@ -259,7 +259,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  433</span>                        <span class="keywordflow">if</span> header_name <span class="keywordflow">in</span> missing_headers:</div>
 <div class="line"><span class="lineno">  434</span>                            del missing_headers[header_name]</div>
 <div class="line"><span class="lineno">  435</span>                    <span class="keywordflow">if</span> len(missing_headers) &gt; 0:</div>
-<div class="line"><span class="lineno">  436</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Excel file is missing the following mandatory headers: {}&#39;</span>.format(pharos.string_list_to_text(missing_headers.keys())))</div>
+<div class="line"><span class="lineno">  436</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Excel file is missing the following mandatory headers: {}&#39;</span>.format(pharos.string_list_to_text(missing_headers.keys())))</div>
 <div class="line"><span class="lineno">  437</span> </div>
 <div class="line"><span class="lineno">  438</span>                <span class="comment"># This is DATA</span></div>
 <div class="line"><span class="lineno">  439</span>                <span class="keywordflow">else</span>:</div>
@@ -287,7 +287,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  461</span>                                new_object[opt_header[<span class="stringliteral">&#39;name&#39;</span>]] = <span class="stringliteral">&#39;&#39;</span></div>
 <div class="line"><span class="lineno">  462</span> </div>
 <div class="line"><span class="lineno">  463</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  464</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unsupported file extension &#39;{}&#39; in filename {}&quot;</span>.format(file_extension, filename))</div>
+<div class="line"><span class="lineno">  464</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unsupported file extension &#39;{}&#39; in filename {}&quot;</span>.format(file_extension, filename))</div>
 <div class="line"><span class="lineno">  465</span> </div>
 <div class="line"><span class="lineno">  466</span> </div>
 </div><!-- fragment -->
@@ -482,7 +482,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

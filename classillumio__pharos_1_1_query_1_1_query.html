@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Query.Query Class Reference</title>
+<title>Pharos: illumio_pharos.Query.Query Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -211,7 +211,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   97</span>            find_punctuation = find_first_punctuation(data, cursor)</div>
 <div class="line"><span class="lineno">   98</span>            <span class="keywordflow">if</span> find_punctuation[<span class="stringliteral">&#39;notfound&#39;</span>]:</div>
 <div class="line"><span class="lineno">   99</span>                <span class="keywordflow">if</span> len(parenthesis_opened) &gt; 0:</div>
-<div class="line"><span class="lineno">  100</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Reached the end of string before closing parenthesis in block: {}&quot;</span>.format(data[current_block_start-1:]))</div>
+<div class="line"><span class="lineno">  100</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Reached the end of string before closing parenthesis in block: {}&quot;</span>.format(data[current_block_start-1:]))</div>
 <div class="line"><span class="lineno">  101</span>                blocks.append({<span class="stringliteral">&#39;type&#39;</span>: <span class="stringliteral">&#39;text&#39;</span>, <span class="stringliteral">&#39;text&#39;</span>: data[current_block_start:]})</div>
 <div class="line"><span class="lineno">  102</span>                reached_end = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  103</span>                print(padding + <span class="stringliteral">&quot;{}-{} REACHED END OF STRING&quot;</span>.format(self.level, len(blocks)))</div>
@@ -223,14 +223,14 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  109</span>            <span class="keywordflow">if</span> found_character == <span class="stringliteral">&quot;&#39;&quot;</span>:</div>
 <div class="line"><span class="lineno">  110</span>                find_next_quote = data.find(<span class="stringliteral">&quot;&#39;&quot;</span>, found_character_position+1)</div>
 <div class="line"><span class="lineno">  111</span>                <span class="keywordflow">if</span> find_next_quote == -1:</div>
-<div class="line"><span class="lineno">  112</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find a matching closing quote from position {} in text: {}&quot;</span>.format(found_character_position, data[current_block_start:]))</div>
+<div class="line"><span class="lineno">  112</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find a matching closing quote from position {} in text: {}&quot;</span>.format(found_character_position, data[current_block_start:]))</div>
 <div class="line"><span class="lineno">  113</span>                cursor = find_next_quote+1</div>
 <div class="line"><span class="lineno">  114</span>                <span class="keywordflow">if</span> cursor &gt;= len(data):</div>
 <div class="line"><span class="lineno">  115</span>                    blocks.append({<span class="stringliteral">&#39;type&#39;</span>: <span class="stringliteral">&#39;text&#39;</span>, <span class="stringliteral">&#39;text&#39;</span>: data[current_block_start:]})</div>
 <div class="line"><span class="lineno">  116</span>                <span class="keywordflow">continue</span></div>
 <div class="line"><span class="lineno">  117</span>            <span class="keywordflow">elif</span> found_character == <span class="stringliteral">&quot;)&quot;</span>:</div>
 <div class="line"><span class="lineno">  118</span>                <span class="keywordflow">if</span> len(parenthesis_opened) &lt; 1:</div>
-<div class="line"><span class="lineno">  119</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find a matching opening parenthesis at position #{} in text: {}&quot;</span>.format(found_character_position, data[current_block_start:]))</div>
+<div class="line"><span class="lineno">  119</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find a matching opening parenthesis at position #{} in text: {}&quot;</span>.format(found_character_position, data[current_block_start:]))</div>
 <div class="line"><span class="lineno">  120</span>                <span class="keywordflow">elif</span> len(parenthesis_opened) == 1:</div>
 <div class="line"><span class="lineno">  121</span>                    parenthesis_opened.pop()</div>
 <div class="line"><span class="lineno">  122</span>                    blocks.append({<span class="stringliteral">&#39;type&#39;</span>: <span class="stringliteral">&#39;sub&#39;</span>, <span class="stringliteral">&#39;text&#39;</span>: data[current_block_start:found_character_position]})</div>
@@ -263,7 +263,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  149</span>            cursor += 1</div>
 <div class="line"><span class="lineno">  150</span> </div>
 <div class="line"><span class="lineno">  151</span>        <span class="keywordflow">if</span> len(parenthesis_opened) &gt; 0:</div>
-<div class="line"><span class="lineno">  152</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Reached the end of string before closing parenthesis in block: {}&quot;</span>.format(</div>
+<div class="line"><span class="lineno">  152</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Reached the end of string before closing parenthesis in block: {}&quot;</span>.format(</div>
 <div class="line"><span class="lineno">  153</span>                data[current_block_start-1:]))</div>
 <div class="line"><span class="lineno">  154</span> </div>
 <div class="line"><span class="lineno">  155</span>        print(padding + <span class="stringliteral">&quot;* Query Level {} blocks:&quot;</span>.format(self.level))</div>
@@ -318,9 +318,9 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  204</span>                <span class="keywordflow">if</span> first_word_lower == <span class="stringliteral">&#39;or&#39;</span> <span class="keywordflow">or</span> first_word_lower == <span class="stringliteral">&#39;and&#39;</span>:</div>
 <div class="line"><span class="lineno">  205</span>                    <span class="keywordflow">if</span> found_filter_name:</div>
 <div class="line"><span class="lineno">  206</span>                        <span class="keywordflow">if</span> <span class="keywordflow">not</span> found_filter_operator:</div>
-<div class="line"><span class="lineno">  207</span>                            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Found binary operator &#39;{}&#39; while filter &#39;{}&#39; was found but no operator provided in expression &#39;{}&#39;&quot;</span>.format(first_word, filter_name, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
+<div class="line"><span class="lineno">  207</span>                            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Found binary operator &#39;{}&#39; while filter &#39;{}&#39; was found but no operator provided in expression &#39;{}&#39;&quot;</span>.format(first_word, filter_name, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
 <div class="line"><span class="lineno">  208</span>                        <span class="keywordflow">if</span> find_filter_in_collection.arguments <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  209</span>                            <span class="keywordflow">raise</span> pharos.PyloEx(</div>
+<div class="line"><span class="lineno">  209</span>                            <span class="keywordflow">raise</span> pharos.PharosEx(</div>
 <div class="line"><span class="lineno">  210</span>                                <span class="stringliteral">&quot;Found binary operator &#39;{}&#39; while filter &#39;{}&#39; with operator &#39;{}&#39; requires arguments in expression &#39;{}&#39;&quot;</span>.format(</div>
 <div class="line"><span class="lineno">  211</span>                                    first_word, filter_name, filter_operator, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
 <div class="line"><span class="lineno">  212</span>                        new_block = {<span class="stringliteral">&#39;type&#39;</span>: <span class="stringliteral">&#39;filter&#39;</span>, <span class="stringliteral">&#39;filter&#39;</span>: find_filter_in_collection, <span class="stringliteral">&#39;raw_arguments&#39;</span>: <span class="keywordtype">None</span>}</div>
@@ -333,13 +333,13 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  219</span>                <span class="keywordflow">elif</span> found_filter_name <span class="keywordflow">and</span> found_filter_operator:</div>
 <div class="line"><span class="lineno">  220</span>                    block_info = get_block_until_binary_ops_quotes_enabled(text)</div>
 <div class="line"><span class="lineno">  221</span>                    <span class="keywordflow">if</span> block_info.error <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  222</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(block_info.error)</div>
+<div class="line"><span class="lineno">  222</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(block_info.error)</div>
 <div class="line"><span class="lineno">  223</span> </div>
 <div class="line"><span class="lineno">  224</span>                    <span class="keywordflow">if</span> block_info.length == 0:</div>
 <div class="line"><span class="lineno">  225</span>                        new_block = {<span class="stringliteral">&#39;type&#39;</span>: <span class="stringliteral">&#39;filter&#39;</span>, <span class="stringliteral">&#39;filter&#39;</span>: find_filter_in_collection, <span class="stringliteral">&#39;raw_arguments&#39;</span>: <span class="keywordtype">None</span>}</div>
 <div class="line"><span class="lineno">  226</span>                        operator_blocks.append(new_block)</div>
 <div class="line"><span class="lineno">  227</span>                        print(padding+<span class="stringliteral">&quot;   - Found no argument (or empty)&quot;</span>)</div>
-<div class="line"><span class="lineno">  228</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;This should never happen&quot;</span>)</div>
+<div class="line"><span class="lineno">  228</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;This should never happen&quot;</span>)</div>
 <div class="line"><span class="lineno">  229</span>                    <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  230</span>                        new_block = {<span class="stringliteral">&#39;type&#39;</span>: <span class="stringliteral">&#39;filter&#39;</span>, <span class="stringliteral">&#39;filter&#39;</span>: find_filter_in_collection, <span class="stringliteral">&#39;raw_arguments&#39;</span>: text[0:block_info.length].strip()}</div>
 <div class="line"><span class="lineno">  231</span>                        operator_blocks.append(new_block)</div>
@@ -355,13 +355,13 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  241</span>                    found_filter_name = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  242</span>                    find_filter_in_collection = FilterCollections.workload_filters.get(filter_name)</div>
 <div class="line"><span class="lineno">  243</span>                    <span class="keywordflow">if</span> find_filter_in_collection <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  244</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find a filter named &#39;{}&#39; in expression &#39;{}&#39;&quot;</span>.format(filter_name, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
+<div class="line"><span class="lineno">  244</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find a filter named &#39;{}&#39; in expression &#39;{}&#39;&quot;</span>.format(filter_name, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
 <div class="line"><span class="lineno">  245</span>                <span class="keywordflow">elif</span> found_filter_name <span class="keywordflow">and</span> <span class="keywordflow">not</span> found_filter_operator:</div>
 <div class="line"><span class="lineno">  246</span>                    filter_operator = first_word</div>
 <div class="line"><span class="lineno">  247</span>                    found_filter_operator = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  248</span>                    find_filter_in_collection = find_filter_in_collection.get(filter_operator)</div>
 <div class="line"><span class="lineno">  249</span>                    <span class="keywordflow">if</span> find_filter_in_collection <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  250</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find a filter operator &#39;{}&#39; for filter named &#39;{}&#39; in expression &#39;{}&#39;&quot;</span>.format(filter_operator, filter_name, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
+<div class="line"><span class="lineno">  250</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find a filter operator &#39;{}&#39; for filter named &#39;{}&#39; in expression &#39;{}&#39;&quot;</span>.format(filter_operator, filter_name, block[<span class="stringliteral">&#39;text&#39;</span>]))</div>
 <div class="line"><span class="lineno">  251</span> </div>
 <div class="line"><span class="lineno">  252</span>                <span class="keywordflow">if</span> first_word_end &gt;= text_len:</div>
 <div class="line"><span class="lineno">  253</span>                    <span class="keywordflow">break</span></div>
@@ -435,7 +435,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

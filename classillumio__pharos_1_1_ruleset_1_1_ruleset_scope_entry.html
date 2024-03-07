@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.Ruleset.RulesetScopeEntry Class Reference</title>
+<title>Pharos: illumio_pharos.Ruleset.RulesetScopeEntry Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -353,19 +353,19 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">   51</span>            <span class="keywordflow">if</span> label_entry <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">   52</span>                label_entry = label_json.get(<span class="stringliteral">&#39;label_group&#39;</span>)</div>
 <div class="line"><span class="lineno">   53</span>                <span class="keywordflow">if</span> label_entry <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   54</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find &#39;label&#39; or &#39;label_group&#39; entry in scope: {}&quot;</span>.format(pharos.nice_json(label_json)))</div>
+<div class="line"><span class="lineno">   54</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find &#39;label&#39; or &#39;label_group&#39; entry in scope: {}&quot;</span>.format(pharos.nice_json(label_json)))</div>
 <div class="line"><span class="lineno">   55</span>            href_entry = label_entry.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">   56</span>            <span class="keywordflow">if</span> href_entry <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   57</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find &#39;href&#39; entry in scope: {}&quot;</span>.format(pharos.nice_json(data)))</div>
+<div class="line"><span class="lineno">   57</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find &#39;href&#39; entry in scope: {}&quot;</span>.format(pharos.nice_json(data)))</div>
 <div class="line"><span class="lineno">   58</span> </div>
 <div class="line"><span class="lineno">   59</span>            label = l_store.find_by_href(href_entry)</div>
 <div class="line"><span class="lineno">   60</span>            <span class="keywordflow">if</span> label <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   61</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find label with href &#39;{}&#39; in Ruleset &#39;{}&#39; scope: {}&quot;</span>.format(href_entry,</div>
+<div class="line"><span class="lineno">   61</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find label with href &#39;{}&#39; in Ruleset &#39;{}&#39; scope: {}&quot;</span>.format(href_entry,</div>
 <div class="line"><span class="lineno">   62</span>                                                                                                      self.owner.owner.name,</div>
 <div class="line"><span class="lineno">   63</span>                                                                                      pharos.nice_json(data)))</div>
 <div class="line"><span class="lineno">   64</span> </div>
 <div class="line"><span class="lineno">   65</span>            <span class="keywordflow">if</span> label.type <span class="keywordflow">not</span> <span class="keywordflow">in</span> self.owner.owner.owner.owner.LabelStore.label_types_as_set:</div>
-<div class="line"><span class="lineno">   66</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unsupported label type &#39;{}&#39; named &#39;{}&#39; in scope of ruleset &#39;{}&#39;/&#39;{}&#39;&quot;</span>.format(label.type_string(),</div>
+<div class="line"><span class="lineno">   66</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unsupported label type &#39;{}&#39; named &#39;{}&#39; in scope of ruleset &#39;{}&#39;/&#39;{}&#39;&quot;</span>.format(label.type_string(),</div>
 <div class="line"><span class="lineno">   67</span>                                                                                                                label.name,</div>
 <div class="line"><span class="lineno">   68</span>                                                                                                                self.owner.owner.href,</div>
 <div class="line"><span class="lineno">   69</span>                                                                                                                self.owner.owner.name))</div>
@@ -478,7 +478,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.AgentStore.VENAgent Class Reference</title>
+<title>Pharos: illumio_pharos.AgentStore.VENAgent Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -298,11 +298,11 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   50</span> </div>
 <div class="line"><span class="lineno">   51</span>        status_json = data.get(<span class="stringliteral">&#39;status&#39;</span>)</div>
 <div class="line"><span class="lineno">   52</span>        <span class="keywordflow">if</span> status_json <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   53</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find VENAgent status in JSON from &#39;{}&#39;&quot;</span>.format(self.href))</div>
+<div class="line"><span class="lineno">   53</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find VENAgent status in JSON from &#39;{}&#39;&quot;</span>.format(self.href))</div>
 <div class="line"><span class="lineno">   54</span> </div>
 <div class="line"><span class="lineno">   55</span>        version_string = status_json.get(<span class="stringliteral">&#39;agent_version&#39;</span>)</div>
 <div class="line"><span class="lineno">   56</span>        <span class="keywordflow">if</span> version_string <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   57</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find VENAgent version from &#39;{}&#39;&quot;</span>.format(self.href))</div>
+<div class="line"><span class="lineno">   57</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find VENAgent version from &#39;{}&#39;&quot;</span>.format(self.href))</div>
 <div class="line"><span class="lineno">   58</span>        self.software_version = pharos.SoftwareVersion(version_string)</div>
 <div class="line"><span class="lineno">   59</span>        <span class="keywordflow">if</span> self.software_version.is_unknown:</div>
 <div class="line"><span class="lineno">   60</span>            pharos.log.warn(<span class="stringliteral">&quot;Agent {} from Workload {}/{} has unknown software version: {}&quot;</span>.format(</div>
@@ -315,15 +315,15 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   67</span> </div>
 <div class="line"><span class="lineno">   68</span>        self._status_rule_count = status_json.get(<span class="stringliteral">&#39;firewall_rule_count&#39;</span>)</div>
 <div class="line"><span class="lineno">   69</span>        <span class="comment"># if self._status_rule_count is None:</span></div>
-<div class="line"><span class="lineno">   70</span>        <span class="comment">#    raise pharos.PyloEx(&quot;Cannot find firewall_rule_count VENAgent &#39;{}&#39; rule count &quot;.format(self.href), status_json)</span></div>
+<div class="line"><span class="lineno">   70</span>        <span class="comment">#    raise pharos.PharosEx(&quot;Cannot find firewall_rule_count VENAgent &#39;{}&#39; rule count &quot;.format(self.href), status_json)</span></div>
 <div class="line"><span class="lineno">   71</span> </div>
 <div class="line"><span class="lineno">   72</span>        config_json = data.get(<span class="stringliteral">&#39;config&#39;</span>)</div>
 <div class="line"><span class="lineno">   73</span>        <span class="keywordflow">if</span> config_json <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   74</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find Agent&#39;s config in JSON&quot;</span>, data)</div>
+<div class="line"><span class="lineno">   74</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find Agent&#39;s config in JSON&quot;</span>, data)</div>
 <div class="line"><span class="lineno">   75</span> </div>
 <div class="line"><span class="lineno">   76</span>        self.mode = config_json.get(<span class="stringliteral">&#39;mode&#39;</span>)</div>
 <div class="line"><span class="lineno">   77</span>        <span class="keywordflow">if</span> self.mode <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   78</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find Agent&#39;s mode in config JSON&quot;</span>, config_json)</div>
+<div class="line"><span class="lineno">   78</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find Agent&#39;s mode in config JSON&quot;</span>, config_json)</div>
 <div class="line"><span class="lineno">   79</span> </div>
 <div class="line"><span class="lineno">   80</span>        <span class="keywordflow">if</span> self.mode == <span class="stringliteral">&#39;illuminated&#39;</span>:</div>
 <div class="line"><span class="lineno">   81</span>            log_traffic = config_json.get(<span class="stringliteral">&#39;log_traffic&#39;</span>)</div>
@@ -405,7 +405,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:46 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.RuleSearchQuery.RuleSearchQueryResolvedResultSet Class Reference</title>
+<title>Pharos: illumio_pharos.API.RuleSearchQuery.RuleSearchQueryResolvedResultSet Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -135,10 +135,10 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   17</span>        <span class="keywordflow">for</span> rule_data <span class="keywordflow">in</span> raw_json_data:</div>
 <div class="line"><span class="lineno">   18</span>            rule_href = rule_data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">   19</span>            <span class="keywordflow">if</span> rule_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   20</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Cannot find rule HREF in RuleSearchQuery response&#39;</span>, rule_data)</div>
+<div class="line"><span class="lineno">   20</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Cannot find rule HREF in RuleSearchQuery response&#39;</span>, rule_data)</div>
 <div class="line"><span class="lineno">   21</span>            rule_found = organization.RulesetStore.find_rule_by_href(rule_href)</div>
 <div class="line"><span class="lineno">   22</span>            <span class="keywordflow">if</span> rule_found <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   23</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Cannot find rule with HREF &#39;{}&#39; in Organization&quot;</span>.format(rule_href), rule_data)</div>
+<div class="line"><span class="lineno">   23</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Cannot find rule with HREF &#39;{}&#39; in Organization&quot;</span>.format(rule_href), rule_data)</div>
 <div class="line"><span class="lineno">   24</span> </div>
 <div class="line"><span class="lineno">   25</span>            self.rules[rule_found.href] = rule_found</div>
 <div class="line"><span class="lineno">   26</span>            ruleset_found = self.rules_per_ruleset.get(rule_found.owner)</div>
@@ -219,7 +219,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

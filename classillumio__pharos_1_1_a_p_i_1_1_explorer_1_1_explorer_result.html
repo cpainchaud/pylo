@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.Explorer.ExplorerResult Class Reference</title>
+<title>Pharos: illumio_pharos.API.Explorer.ExplorerResult Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -202,7 +202,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   34</span>        <span class="keywordflow">if</span> workload_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">   35</span>            self.source_workload_href: Optional[str] = workload_data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">   36</span>            <span class="keywordflow">if</span> self.source_workload_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   37</span>                <span class="keywordflow">raise</span> pharos.PyloApiUnexpectedSyntax(<span class="stringliteral">&quot;Explorer API has return a record referring to a Workload with no HREF given:&quot;</span>, data)</div>
+<div class="line"><span class="lineno">   37</span>                <span class="keywordflow">raise</span> pharos.PharosApiUnexpectedSyntax(<span class="stringliteral">&quot;Explorer API has return a record referring to a Workload with no HREF given:&quot;</span>, data)</div>
 <div class="line"><span class="lineno">   38</span> </div>
 <div class="line"><span class="lineno">   39</span>            self.source_workload_labels_href: Optional[List[str]] = []</div>
 <div class="line"><span class="lineno">   40</span>            workload_labels_data = workload_data.get(<span class="stringliteral">&#39;labels&#39;</span>)</div>
@@ -224,7 +224,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   56</span>        <span class="keywordflow">if</span> workload_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">   57</span>            self.destination_workload_href = workload_data.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">   58</span>            <span class="keywordflow">if</span> self.destination_workload_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   59</span>                <span class="keywordflow">raise</span> pharos.PyloApiUnexpectedSyntax(<span class="stringliteral">&quot;Explorer API has return a record referring to a Workload with no HREF given:&quot;</span>, data)</div>
+<div class="line"><span class="lineno">   59</span>                <span class="keywordflow">raise</span> pharos.PharosApiUnexpectedSyntax(<span class="stringliteral">&quot;Explorer API has return a record referring to a Workload with no HREF given:&quot;</span>, data)</div>
 <div class="line"><span class="lineno">   60</span> </div>
 <div class="line"><span class="lineno">   61</span>            self.destination_workload_labels_href: Optional[List[str]] = []</div>
 <div class="line"><span class="lineno">   62</span>            workload_labels_data = workload_data.get(<span class="stringliteral">&#39;labels&#39;</span>)</div>
@@ -488,10 +488,10 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  183</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._destination_iplists:</div>
 <div class="line"><span class="lineno">  184</span>            href = record.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  185</span>            <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  186</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
+<div class="line"><span class="lineno">  186</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
 <div class="line"><span class="lineno">  187</span>            iplist = org_for_resolution.IPListStore.find_by_href(href)</div>
 <div class="line"><span class="lineno">  188</span>            <span class="keywordflow">if</span> iplist <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  189</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
+<div class="line"><span class="lineno">  189</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
 <div class="line"><span class="lineno">  190</span> </div>
 <div class="line"><span class="lineno">  191</span>            result[href] = iplist</div>
 <div class="line"><span class="lineno">  192</span> </div>
@@ -655,10 +655,10 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  150</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._source_iplists:</div>
 <div class="line"><span class="lineno">  151</span>            href = record.get(<span class="stringliteral">&#39;href&#39;</span>)</div>
 <div class="line"><span class="lineno">  152</span>            <span class="keywordflow">if</span> href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  153</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
+<div class="line"><span class="lineno">  153</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
 <div class="line"><span class="lineno">  154</span>            iplist = org_for_resolution.IPListStore.find_by_href(href)</div>
 <div class="line"><span class="lineno">  155</span>            <span class="keywordflow">if</span> iplist <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  156</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
+<div class="line"><span class="lineno">  156</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;Cannot find HREF for IPList in Explorer result json&#39;</span>, record)</div>
 <div class="line"><span class="lineno">  157</span> </div>
 <div class="line"><span class="lineno">  158</span>            result[href] = iplist</div>
 <div class="line"><span class="lineno">  159</span> </div>
@@ -1057,7 +1057,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

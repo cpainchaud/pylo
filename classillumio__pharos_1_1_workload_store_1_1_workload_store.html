@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.WorkloadStore.WorkloadStore Class Reference</title>
+<title>Pharos: illumio_pharos.WorkloadStore.WorkloadStore Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -434,7 +434,7 @@ Public Member Functions</h2></td></tr>
 :param href: the HREF you are looking for
 :return:
 :raises:
-    PyloEx: if no Workload matching provided HREF
+    PharosEx: if no Workload matching provided HREF
 </pre> <div class="fragment"><div class="line"><span class="lineno">   38</span>    <span class="keyword">def </span>find_by_href_or_die(self, href: str) -&gt; <span class="stringliteral">&#39;Workload&#39;</span>:</div>
 <div class="line"><span class="lineno">   39</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">   40</span><span class="stringliteral">        Find a Workload </span><span class="keyword">from</span> its HREF, throw an Exception <span class="keywordflow">if</span> <span class="keywordflow">not</span> found</div>
@@ -442,11 +442,11 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">   42</span>        :param href: the HREF you are looking <span class="keywordflow">for</span></div>
 <div class="line"><span class="lineno">   43</span>        :<span class="keywordflow">return</span>:</div>
 <div class="line"><span class="lineno">   44</span>        :raises:</div>
-<div class="line"><span class="lineno">   45</span>            PyloEx: <span class="keywordflow">if</span> no Workload matching provided HREF</div>
+<div class="line"><span class="lineno">   45</span>            PharosEx: <span class="keywordflow">if</span> no Workload matching provided HREF</div>
 <div class="line"><span class="lineno">   46</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="lineno">   47</span><span class="stringliteral">        find_object = self.itemsByHRef.get(href)</span></div>
 <div class="line"><span class="lineno">   48</span><span class="stringliteral">        </span><span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   49</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Workload with HREF &#39;%s&#39; was not found&quot;</span> % href)</div>
+<div class="line"><span class="lineno">   49</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Workload with HREF &#39;%s&#39; was not found&quot;</span> % href)</div>
 <div class="line"><span class="lineno">   50</span> </div>
 <div class="line"><span class="lineno">   51</span>        <span class="keywordflow">return</span> find_object</div>
 <div class="line"><span class="lineno">   52</span> </div>
@@ -830,7 +830,7 @@ If one of the labels is None, it will be ignored
 <div class="fragment"><div class="line"><span class="lineno">   13</span>    <span class="keyword">def </span>load_workloads_from_json(self, json_list):</div>
 <div class="line"><span class="lineno">   14</span>        <span class="keywordflow">for</span> json_item <span class="keywordflow">in</span> json_list:</div>
 <div class="line"><span class="lineno">   15</span>            <span class="keywordflow">if</span> <span class="stringliteral">&#39;name&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_item <span class="keywordflow">or</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_item:</div>
-<div class="line"><span class="lineno">   16</span>                <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/name or href for Workload in JSON:\n&quot;</span> + nice_json(json_item))</div>
+<div class="line"><span class="lineno">   16</span>                <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/name or href for Workload in JSON:\n&quot;</span> + nice_json(json_item))</div>
 <div class="line"><span class="lineno">   17</span> </div>
 <div class="line"><span class="lineno">   18</span>            new_item_name = json_item[<span class="stringliteral">&#39;name&#39;</span>]</div>
 <div class="line"><span class="lineno">   19</span>            new_item_href = json_item[<span class="stringliteral">&#39;href&#39;</span>]</div>
@@ -839,14 +839,14 @@ If one of the labels is None, it will be ignored
 <div class="line"><span class="lineno">   22</span>            <span class="comment"># (eventually) by someone. In such a case, you need to use hostname instead</span></div>
 <div class="line"><span class="lineno">   23</span>            <span class="keywordflow">if</span> new_item_name <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno">   24</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39;hostname&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> json_item:</div>
-<div class="line"><span class="lineno">   25</span>                    <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/hostname in JSON:\n&quot;</span> + nice_json(json_item))</div>
+<div class="line"><span class="lineno">   25</span>                    <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Cannot find &#39;value&#39;/hostname in JSON:\n&quot;</span> + nice_json(json_item))</div>
 <div class="line"><span class="lineno">   26</span>                new_item_name = json_item[<span class="stringliteral">&#39;hostname&#39;</span>]</div>
 <div class="line"><span class="lineno">   27</span> </div>
 <div class="line"><span class="lineno">   28</span>            new_item = Workload(new_item_name, new_item_href, self)</div>
 <div class="line"><span class="lineno">   29</span>            new_item.load_from_json(json_item)</div>
 <div class="line"><span class="lineno">   30</span> </div>
 <div class="line"><span class="lineno">   31</span>            <span class="keywordflow">if</span> new_item_href <span class="keywordflow">in</span> self.itemsByHRef:</div>
-<div class="line"><span class="lineno">   32</span>                <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;A Workload with href &#39;%s&#39; already exists in the table&quot;</span>, new_item_href)</div>
+<div class="line"><span class="lineno">   32</span>                <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;A Workload with href &#39;%s&#39; already exists in the table&quot;</span>, new_item_href)</div>
 <div class="line"><span class="lineno">   33</span> </div>
 <div class="line"><span class="lineno">   34</span>            self.itemsByHRef[new_item_href] = new_item</div>
 <div class="line"><span class="lineno">   35</span> </div>
@@ -889,7 +889,7 @@ If one of the labels is None, it will be ignored
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

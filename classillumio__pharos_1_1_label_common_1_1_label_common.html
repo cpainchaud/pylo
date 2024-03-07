@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.LabelCommon.LabelCommon Class Reference</title>
+<title>Pharos: illumio_pharos.LabelCommon.LabelCommon Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -204,7 +204,7 @@ Public Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   38</span>    <span class="keyword">def </span>api_set_name(self, new_name: str):</div>
 <div class="line"><span class="lineno">   39</span>        find_collision = self.owner.find_label_by_name_and_type(new_name, self.type)</div>
 <div class="line"><span class="lineno">   40</span>        <span class="keywordflow">if</span> find_collision <span class="keywordflow">is</span> <span class="keywordflow">not</span> self:</div>
-<div class="line"><span class="lineno">   41</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;A Label/LabelGroup with name &#39;{}&#39; already exists&quot;</span>.format(new_name))</div>
+<div class="line"><span class="lineno">   41</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;A Label/LabelGroup with name &#39;{}&#39; already exists&quot;</span>.format(new_name))</div>
 <div class="line"><span class="lineno">   42</span> </div>
 <div class="line"><span class="lineno">   43</span>        <span class="keywordflow">if</span> self.is_group():</div>
 <div class="line"><span class="lineno">   44</span>            self.owner.owner.connector.objects_labelgroup_update(self.href, data={<span class="stringliteral">&#39;name&#39;</span>: new_name})</div>
@@ -244,7 +244,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classillumio__pharos_1_1_label_1_1_label.html#a9fc75c5cdc457893d1a910b8fa8bcb00">illumio_pharos.Label.Label</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   17</span>    <span class="keyword">def </span>is_group(self) -&gt; bool:</div>
-<div class="line"><span class="lineno">   18</span>        <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;not implemented&quot;</span>)</div>
+<div class="line"><span class="lineno">   18</span>        <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;not implemented&quot;</span>)</div>
 <div class="line"><span class="lineno">   19</span> </div>
 </div><!-- fragment -->
 </div>
@@ -267,7 +267,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classillumio__pharos_1_1_label_1_1_label.html#abe3928688261b179818bea62ffd8d3c4">illumio_pharos.Label.Label</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   14</span>    <span class="keyword">def </span>is_label(self) -&gt; bool:</div>
-<div class="line"><span class="lineno">   15</span>        <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;not implemented&quot;</span>)</div>
+<div class="line"><span class="lineno">   15</span>        <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;not implemented&quot;</span>)</div>
 <div class="line"><span class="lineno">   16</span> </div>
 </div><!-- fragment -->
 </div>
@@ -433,7 +433,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

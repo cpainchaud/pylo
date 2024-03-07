@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.API.APIConnector.APIConnector Class Reference</title>
+<title>Pharos: illumio_pharos.API.APIConnector.APIConnector Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -354,9 +354,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <div class="fragment"><div class="line"><span class="lineno"> 1128</span>            -&gt; Union[<span class="stringliteral">&#39;pharos.APIConnector.ApiAgentCompatibilityReport&#39;</span>, Dict[str, Any]]:</div>
 <div class="line"><span class="lineno"> 1129</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> agent_id <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1130</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;you need to provide a HREF or an ID&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1130</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;you need to provide a HREF or an ID&#39;</span>)</div>
 <div class="line"><span class="lineno"> 1131</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> agent_id <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1132</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;you need to provide a HREF or an ID but not BOTH&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1132</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;you need to provide a HREF or an ID but not BOTH&#39;</span>)</div>
 <div class="line"><span class="lineno"> 1133</span> </div>
 <div class="line"><span class="lineno"> 1134</span>        include_org_id_in_api_query = <span class="keyword">False</span></div>
 <div class="line"><span class="lineno"> 1135</span> </div>
@@ -378,7 +378,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno"> 1151</span>                api_result = self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)</div>
 <div class="line"><span class="lineno"> 1152</span>                <span class="keywordflow">break</span></div>
 <div class="line"><span class="lineno"> 1153</span> </div>
-<div class="line"><span class="lineno"> 1154</span>            <span class="keywordflow">except</span> pharos.PyloApiTooManyRequestsEx <span class="keyword">as</span> ex:</div>
+<div class="line"><span class="lineno"> 1154</span>            <span class="keywordflow">except</span> pharos.PharosApiTooManyRequestsEx <span class="keyword">as</span> ex:</div>
 <div class="line"><span class="lineno"> 1155</span>                <span class="keywordflow">if</span> retry_count &lt;= 0:</div>
 <div class="line"><span class="lineno"> 1156</span>                    <span class="keywordflow">raise</span> ex</div>
 <div class="line"><span class="lineno"> 1157</span>                time.sleep(6)</div>
@@ -512,7 +512,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1268</span>        <span class="comment"># cluster_health list</span></div>
 <div class="line"><span class="lineno"> 1269</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
 <div class="line"><span class="lineno"> 1270</span>        <span class="keywordflow">if</span> type(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
-<div class="line"><span class="lineno"> 1271</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(type(json_output)))</div>
+<div class="line"><span class="lineno"> 1271</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(type(json_output)))</div>
 <div class="line"><span class="lineno"> 1272</span> </div>
 <div class="line"><span class="lineno"> 1273</span>        dict_of_health_reports = {}</div>
 <div class="line"><span class="lineno"> 1274</span> </div>
@@ -1074,7 +1074,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1199</span>            <span class="keywordflow">if</span> status[<span class="stringliteral">&#39;href&#39;</span>] == request_href:</div>
 <div class="line"><span class="lineno"> 1200</span>                <span class="keywordflow">return</span> status</div>
 <div class="line"><span class="lineno"> 1201</span> </div>
-<div class="line"><span class="lineno"> 1202</span>        <span class="keywordflow">raise</span> pharos.PyloObjectNotFound(<span class="stringliteral">&quot;Request with ID {} not found&quot;</span>.format(request_href))</div>
+<div class="line"><span class="lineno"> 1202</span>        <span class="keywordflow">raise</span> pharos.PharosObjectNotFound(<span class="stringliteral">&quot;Request with ID {} not found&quot;</span>.format(request_href))</div>
 <div class="line"><span class="lineno"> 1203</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1138,18 +1138,18 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1214</span>                                                       json_output_expected=<span class="keyword">True</span>)</div>
 <div class="line"><span class="lineno"> 1215</span> </div>
 <div class="line"><span class="lineno"> 1216</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;status&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> query_queued_json_response:</div>
-<div class="line"><span class="lineno"> 1217</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Invalid response from API, missing &#39;status&#39; property&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1217</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Invalid response from API, missing &#39;status&#39; property&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1218</span> </div>
 <div class="line"><span class="lineno"> 1219</span>        <span class="keywordflow">if</span> query_queued_json_response[<span class="stringliteral">&#39;status&#39;</span>] != <span class="stringliteral">&quot;queued&quot;</span>:</div>
-<div class="line"><span class="lineno"> 1220</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Invalid response from API, &#39;status&#39; property is not &#39;QUEUED&#39;&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1220</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Invalid response from API, &#39;status&#39; property is not &#39;QUEUED&#39;&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1221</span> </div>
 <div class="line"><span class="lineno"> 1222</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> query_queued_json_response:</div>
-<div class="line"><span class="lineno"> 1223</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Invalid response from API, missing &#39;href&#39; property&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1223</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Invalid response from API, missing &#39;href&#39; property&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1224</span> </div>
 <div class="line"><span class="lineno"> 1225</span>        query_href = query_queued_json_response[<span class="stringliteral">&#39;href&#39;</span>]</div>
 <div class="line"><span class="lineno"> 1226</span>        <span class="comment"># check that query_href is a string</span></div>
 <div class="line"><span class="lineno"> 1227</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> isinstance(query_href, str):</div>
-<div class="line"><span class="lineno"> 1228</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Invalid response from API, &#39;href&#39; property is not a string&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1228</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Invalid response from API, &#39;href&#39; property is not a string&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1229</span> </div>
 <div class="line"><span class="lineno"> 1230</span>        <span class="comment"># get current timestamp to ensure we don&#39;t wait too long</span></div>
 <div class="line"><span class="lineno"> 1231</span>        start_time = time.time()</div>
@@ -1159,7 +1159,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1235</span>        <span class="keywordflow">while</span> <span class="keyword">True</span>:</div>
 <div class="line"><span class="lineno"> 1236</span>            <span class="comment"># check that we don&#39;t wait too long</span></div>
 <div class="line"><span class="lineno"> 1237</span>            <span class="keywordflow">if</span> time.time() - start_time &gt; max_running_time_seconds:</div>
-<div class="line"><span class="lineno"> 1238</span>                <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Timeout while waiting for query to complete&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1238</span>                <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Timeout while waiting for query to complete&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1239</span> </div>
 <div class="line"><span class="lineno"> 1240</span>            queries_status_json_response = self.explorer_async_query_get_specific_request_status(query_href)</div>
 <div class="line"><span class="lineno"> 1241</span>            <span class="keywordflow">if</span> queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>] == <span class="stringliteral">&quot;completed&quot;</span>:</div>
@@ -1167,13 +1167,13 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1243</span>                <span class="keywordflow">break</span></div>
 <div class="line"><span class="lineno"> 1244</span> </div>
 <div class="line"><span class="lineno"> 1245</span>            <span class="keywordflow">if</span> queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>] <span class="keywordflow">not</span> <span class="keywordflow">in</span> [<span class="stringliteral">&quot;queued&quot;</span>, <span class="stringliteral">&quot;working&quot;</span>]:</div>
-<div class="line"><span class="lineno"> 1246</span>                <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;Query failed with status {}&quot;</span>.format(queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>]),</div>
+<div class="line"><span class="lineno"> 1246</span>                <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;Query failed with status {}&quot;</span>.format(queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>]),</div>
 <div class="line"><span class="lineno"> 1247</span>                                     queries_status_json_response)</div>
 <div class="line"><span class="lineno"> 1248</span> </div>
 <div class="line"><span class="lineno"> 1249</span>            time.sleep(check_for_update_interval_seconds)</div>
 <div class="line"><span class="lineno"> 1250</span> </div>
 <div class="line"><span class="lineno"> 1251</span>        <span class="keywordflow">if</span> query_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1252</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unexpected logic where query_status is None&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1252</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unexpected logic where query_status is None&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1253</span> </div>
 <div class="line"><span class="lineno"> 1254</span>        query_json_response = self.do_get_call(query_href + <span class="stringliteral">&quot;/download&quot;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
 <div class="line"><span class="lineno"> 1255</span> </div>
@@ -1258,7 +1258,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   94</span>        <span class="comment"># first let&#39;s check that all names in exception_list are valid (case mismatches and typos...)</span></div>
 <div class="line"><span class="lineno">   95</span>        <span class="keywordflow">for</span> name <span class="keywordflow">in</span> exception_list:</div>
 <div class="line"><span class="lineno">   96</span>            <span class="keywordflow">if</span> name <span class="keywordflow">not</span> <span class="keywordflow">in</span> all_object_types:</div>
-<div class="line"><span class="lineno">   97</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;object type named &#39;{}&#39; doesn&#39;t exist. The list of supported objects names is: {}&quot;</span>.</div>
+<div class="line"><span class="lineno">   97</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;object type named &#39;{}&#39; doesn&#39;t exist. The list of supported objects names is: {}&quot;</span>.</div>
 <div class="line"><span class="lineno">   98</span>                                  format(name, pharos.string_list_to_text(all_object_types.values())))</div>
 <div class="line"><span class="lineno">   99</span> </div>
 <div class="line"><span class="lineno">  100</span>        object_names_list: List[str] = []</div>
@@ -1299,7 +1299,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  335</span>        <span class="keyword">def </span>extract_count(headers):</div>
 <div class="line"><span class="lineno">  336</span>            count = headers.get(<span class="stringliteral">&#39;x-total-count&#39;</span>)</div>
 <div class="line"><span class="lineno">  337</span>            <span class="keywordflow">if</span> count <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  338</span>                <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&#39;API didnt provide field &quot;x-total-count&quot;&#39;</span>)</div>
+<div class="line"><span class="lineno">  338</span>                <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&#39;API didnt provide field &quot;x-total-count&quot;&#39;</span>)</div>
 <div class="line"><span class="lineno">  339</span> </div>
 <div class="line"><span class="lineno">  340</span>            <span class="keywordflow">return</span> int(count)</div>
 <div class="line"><span class="lineno">  341</span> </div>
@@ -1322,7 +1322,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  358</span>        <span class="keywordflow">elif</span> object_type == <span class="stringliteral">&#39;label_dimensions&#39;</span>:</div>
 <div class="line"><span class="lineno">  359</span>            <span class="keywordflow">return</span> extract_count(self.do_get_call(<span class="stringliteral">&#39;/label_dimensions&#39;</span>, async_call=<span class="keyword">False</span>, return_headers=<span class="keyword">True</span>))</div>
 <div class="line"><span class="lineno">  360</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  361</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unsupported object type &#39;{}&#39;&quot;</span>.format(object_type))</div>
+<div class="line"><span class="lineno">  361</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unsupported object type &#39;{}&#39;&quot;</span>.format(object_type))</div>
 <div class="line"><span class="lineno">  362</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1375,7 +1375,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  367</span>            all_types = pharos.APIConnector.get_all_object_types()</div>
 <div class="line"><span class="lineno">  368</span>            <span class="keywordflow">for</span> object_type <span class="keywordflow">in</span> list_of_objects_to_load:</div>
 <div class="line"><span class="lineno">  369</span>                <span class="keywordflow">if</span> object_type <span class="keywordflow">not</span> <span class="keywordflow">in</span> all_types:</div>
-<div class="line"><span class="lineno">  370</span>                    <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unknown object type &#39;{}&#39;&quot;</span>.format(object_type))</div>
+<div class="line"><span class="lineno">  370</span>                    <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unknown object type &#39;{}&#39;&quot;</span>.format(object_type))</div>
 <div class="line"><span class="lineno">  371</span>                objects_to_load[object_type] = <span class="keyword">True</span></div>
 <div class="line"><span class="lineno">  372</span>        <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  373</span>            objects_to_load = pharos.APIConnector.get_all_object_types()</div>
@@ -1455,7 +1455,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  447</span>                        <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  448</span>                            data[<span class="stringliteral">&#39;label_dimensions&#39;</span>] = self.objects_label_dimension_get(async_mode=<span class="keyword">False</span>, max_results=default_max_objects_for_sync_calls)</div>
 <div class="line"><span class="lineno">  449</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  450</span>                        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unsupported object type &#39;{}&#39;&quot;</span>.format(object_type))</div>
+<div class="line"><span class="lineno">  450</span>                        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unsupported object type &#39;{}&#39;&quot;</span>.format(object_type))</div>
 <div class="line"><span class="lineno">  451</span>                <span class="keywordflow">except</span> Exception <span class="keyword">as</span> e:</div>
 <div class="line"><span class="lineno">  452</span>                    errors.append(e)</div>
 <div class="line"><span class="lineno">  453</span> </div>
@@ -1930,7 +1930,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1162</span>        path = agent_href</div>
 <div class="line"><span class="lineno"> 1163</span> </div>
 <div class="line"><span class="lineno"> 1164</span>        <span class="keywordflow">if</span> mode != <span class="stringliteral">&#39;build&#39;</span> <span class="keywordflow">and</span> mode != <span class="stringliteral">&#39;idle&#39;</span> <span class="keywordflow">and</span> mode != <span class="stringliteral">&#39;test&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1165</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;unsupported mode {}&quot;</span>.format(mode))</div>
+<div class="line"><span class="lineno"> 1165</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;unsupported mode {}&quot;</span>.format(mode))</div>
 <div class="line"><span class="lineno"> 1166</span> </div>
 <div class="line"><span class="lineno"> 1167</span>        log_traffic = <span class="keyword">False</span></div>
 <div class="line"><span class="lineno"> 1168</span> </div>
@@ -2110,7 +2110,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  601</span>        <span class="keywordflow">if</span> type(results) <span class="keywordflow">is</span> list:</div>
 <div class="line"><span class="lineno">  602</span>            <span class="keywordflow">return</span> results</div>
 <div class="line"><span class="lineno">  603</span> </div>
-<div class="line"><span class="lineno">  604</span>        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unexpected result type &#39;{}&#39; while expecting an array of IP List objects&quot;</span>.format(type(results)), results)</div>
+<div class="line"><span class="lineno">  604</span>        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unexpected result type &#39;{}&#39; while expecting an array of IP List objects&quot;</span>.format(type(results)), results)</div>
 <div class="line"><span class="lineno">  605</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -3141,15 +3141,15 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno"> 1059</span><span class="stringliteral">        path = &#39;/security_principals&#39;</span></div>
 <div class="line"><span class="lineno"> 1060</span> </div>
 <div class="line"><span class="lineno"> 1061</span>        <span class="keywordflow">if</span> json_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1062</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;You must either use json_data or name but you cannot use both they are mutually exclusive&quot;</span>)</div>
+<div class="line"><span class="lineno"> 1062</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;You must either use json_data or name but you cannot use both they are mutually exclusive&quot;</span>)</div>
 <div class="line"><span class="lineno"> 1063</span> </div>
 <div class="line"><span class="lineno"> 1064</span>        <span class="keywordflow">if</span> json_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
 <div class="line"><span class="lineno"> 1065</span>            <span class="keywordflow">return</span> get_field_or_die(<span class="stringliteral">&#39;href&#39;</span>, self.do_post_call(path=path, json_arguments=json_data))</div>
 <div class="line"><span class="lineno"> 1066</span> </div>
 <div class="line"><span class="lineno"> 1067</span>        <span class="keywordflow">if</span> name <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1068</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;You need to provide a group name&quot;</span>)</div>
+<div class="line"><span class="lineno"> 1068</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;You need to provide a group name&quot;</span>)</div>
 <div class="line"><span class="lineno"> 1069</span>        <span class="keywordflow">if</span> sid <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1070</span>            <span class="keywordflow">raise</span> pharos.PyloApiEx(<span class="stringliteral">&quot;You need to provide a SID&quot;</span>)</div>
+<div class="line"><span class="lineno"> 1070</span>            <span class="keywordflow">raise</span> pharos.PharosApiEx(<span class="stringliteral">&quot;You need to provide a SID&quot;</span>)</div>
 <div class="line"><span class="lineno"> 1071</span> </div>
 <div class="line"><span class="lineno"> 1072</span>        <span class="keywordflow">return</span> get_field_or_die(<span class="stringliteral">&#39;href&#39;</span>, self.do_post_call(path=path, json_arguments={<span class="stringliteral">&#39;name&#39;</span>: name, <span class="stringliteral">&#39;sid&#39;</span>: sid}))</div>
 <div class="line"><span class="lineno"> 1073</span> </div>
@@ -3368,7 +3368,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  584</span>        <span class="comment"># check type</span></div>
 <div class="line"><span class="lineno">  585</span>        <span class="keywordflow">if</span> type(results) <span class="keywordflow">is</span> list:</div>
 <div class="line"><span class="lineno">  586</span>            <span class="keywordflow">return</span> results</div>
-<div class="line"><span class="lineno">  587</span>        <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unexpected result type &#39;{}&#39; while expecting an array of Virtual Service objects&quot;</span>.format(type(results)), results)</div>
+<div class="line"><span class="lineno">  587</span>        <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unexpected result type &#39;{}&#39; while expecting an array of Virtual Service objects&quot;</span>.format(type(results)), results)</div>
 <div class="line"><span class="lineno">  588</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -3971,12 +3971,12 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  488</span>            <span class="keywordflow">elif</span> lower == <span class="stringliteral">&#39;tcp&#39;</span>:</div>
 <div class="line"><span class="lineno">  489</span>                protocol = 6</div>
 <div class="line"><span class="lineno">  490</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  491</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;Unsupported protocol &#39;{}&#39;&quot;</span>.format(protocol))</div>
+<div class="line"><span class="lineno">  491</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;Unsupported protocol &#39;{}&#39;&quot;</span>.format(protocol))</div>
 <div class="line"><span class="lineno">  492</span> </div>
 <div class="line"><span class="lineno">  493</span>        <span class="keywordflow">if</span> src_ip <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> src_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  494</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;src_ip and src_href cannot be both null&#39;</span>)</div>
+<div class="line"><span class="lineno">  494</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;src_ip and src_href cannot be both null&#39;</span>)</div>
 <div class="line"><span class="lineno">  495</span>        <span class="keywordflow">if</span> dst_ip <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> dst_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  496</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&#39;dst_ip and dst_href cannot be both null&#39;</span>)</div>
+<div class="line"><span class="lineno">  496</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&#39;dst_ip and dst_href cannot be both null&#39;</span>)</div>
 <div class="line"><span class="lineno">  497</span> </div>
 <div class="line"><span class="lineno">  498</span>        path = <span class="stringliteral">&quot;/sec_policy/draft/allow?protocol={}&quot;</span>.format(protocol)</div>
 <div class="line"><span class="lineno">  499</span> </div>
@@ -4114,7 +4114,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:46 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.cli.NativeParsers.LabelParser Class Reference</title>
+<title>Pharos: illumio_pharos.cli.NativeParsers.LabelParser Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -260,7 +260,7 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   65</span> </div>
 <div class="line"><span class="lineno">   66</span>        label_objects = org.LabelStore.find_label_by_name(label_names, label_type=self.label_type, missing_labels_names=missing_labels)</div>
 <div class="line"><span class="lineno">   67</span>        <span class="keywordflow">if</span> len(missing_labels) &gt; 0:</div>
-<div class="line"><span class="lineno">   68</span>            <span class="keywordflow">raise</span> pharos.PyloEx(f<span class="stringliteral">&quot;Could not find labels: {pharos.string_list_to_text(missing_labels)}, please check their spelling, case and type.&quot;</span>)</div>
+<div class="line"><span class="lineno">   68</span>            <span class="keywordflow">raise</span> pharos.PharosEx(f<span class="stringliteral">&quot;Could not find labels: {pharos.string_list_to_text(missing_labels)}, please check their spelling, case and type.&quot;</span>)</div>
 <div class="line"><span class="lineno">   69</span> </div>
 <div class="line"><span class="lineno">   70</span>        <span class="comment"># just in case make sure it&#39;s a list of unique labels</span></div>
 <div class="line"><span class="lineno">   71</span>        self.results = list(set(label_objects))</div>
@@ -491,7 +491,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

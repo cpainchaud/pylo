@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.IPList.IPList Class Reference</title>
+<title>Pharos: illumio_pharos.IPList.IPList Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -331,12 +331,12 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   38</span> </div>
 <div class="line"><span class="lineno">   39</span>        ip_ranges_array = json_input.get(<span class="stringliteral">&quot;ip_ranges&quot;</span>)</div>
 <div class="line"><span class="lineno">   40</span>        <span class="keywordflow">if</span> ip_ranges_array <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   41</span>            <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;cannot find &#39;ip_ranges&#39; in IPList JSON:\n&quot;</span> + nice_json(json_input))</div>
+<div class="line"><span class="lineno">   41</span>            <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;cannot find &#39;ip_ranges&#39; in IPList JSON:\n&quot;</span> + nice_json(json_input))</div>
 <div class="line"><span class="lineno">   42</span> </div>
 <div class="line"><span class="lineno">   43</span>        <span class="keywordflow">for</span> ip_range <span class="keywordflow">in</span> ip_ranges_array:</div>
 <div class="line"><span class="lineno">   44</span>            from_ip = ip_range.get(<span class="stringliteral">&quot;from_ip&quot;</span>)</div>
 <div class="line"><span class="lineno">   45</span>            <span class="keywordflow">if</span> from_ip <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   46</span>                <span class="keywordflow">raise</span> pharos.PyloEx(<span class="stringliteral">&quot;cannot find &#39;from_ip&#39; in IPList JSON:\n&quot;</span> + nice_json(ip_range))</div>
+<div class="line"><span class="lineno">   46</span>                <span class="keywordflow">raise</span> pharos.PharosEx(<span class="stringliteral">&quot;cannot find &#39;from_ip&#39; in IPList JSON:\n&quot;</span> + nice_json(ip_range))</div>
 <div class="line"><span class="lineno">   47</span> </div>
 <div class="line"><span class="lineno">   48</span>            slash_pos = from_ip.find(<span class="stringliteral">&#39;/&#39;</span>)</div>
 <div class="line"><span class="lineno">   49</span>            <span class="keywordflow">if</span> slash_pos &lt; 0:</div>
@@ -451,7 +451,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pylo: illumio_pharos.RulesetStore.RulesetStore Class Reference</title>
+<title>Pharos: illumio_pharos.RulesetStore.RulesetStore Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Pylo
+   <div id="projectname">Pharos
    </div>
   </td>
  </tr>
@@ -249,7 +249,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   95</span> </div>
 <div class="line"><span class="lineno">   96</span>        find_object = self._items_by_href.get(href)</div>
 <div class="line"><span class="lineno">   97</span>        <span class="keywordflow">if</span> find_object <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   98</span>            <span class="keywordflow">raise</span> PyloEx(<span class="stringliteral">&quot;Cannot delete a Ruleset with href={} which is not part of this RulesetStore&quot;</span>.format(href))</div>
+<div class="line"><span class="lineno">   98</span>            <span class="keywordflow">raise</span> PharosEx(<span class="stringliteral">&quot;Cannot delete a Ruleset with href={} which is not part of this RulesetStore&quot;</span>.format(href))</div>
 <div class="line"><span class="lineno">   99</span> </div>
 <div class="line"><span class="lineno">  100</span>        self.owner.connector.objects_ruleset_delete(href)</div>
 <div class="line"><span class="lineno">  101</span>        del self._items_by_href[href]</div>
@@ -454,7 +454,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">   45</span>        new_item.load_from_json(json_item)</div>
 <div class="line"><span class="lineno">   46</span> </div>
 <div class="line"><span class="lineno">   47</span>        <span class="keywordflow">if</span> new_item.href <span class="keywordflow">in</span> self._items_by_href:</div>
-<div class="line"><span class="lineno">   48</span>            <span class="keywordflow">raise</span> PyloEx(</div>
+<div class="line"><span class="lineno">   48</span>            <span class="keywordflow">raise</span> PharosEx(</div>
 <div class="line"><span class="lineno">   49</span>                <span class="stringliteral">&quot;A Ruleset with href &#39;%s&#39; already exists in the table, please check your JSON data for consistency. JSON:\n%s&quot;</span></div>
 <div class="line"><span class="lineno">   50</span>                % (new_item.href, nice_json(json_item)))</div>
 <div class="line"><span class="lineno">   51</span> </div>
@@ -525,7 +525,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 16:55:47 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 17:00:08 for Pharos by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
