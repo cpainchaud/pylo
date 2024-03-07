@@ -1,0 +1,8 @@
+<map id="illumio_pylo.Exception.PyloApiEx" name="illumio_pylo.Exception.PyloApiEx">
+<area shape="rect" id="node1" title=" " alt="" coords="371,69,547,109"/>
+<area shape="rect" id="node4" href="$classillumio__pylo_1_1_exception_1_1_pylo_api_request_forbidden_ex.html" title=" " alt="" coords="595,5,771,45"/>
+<area shape="rect" id="node5" href="$classillumio__pylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html" title=" " alt="" coords="595,69,771,109"/>
+<area shape="rect" id="node6" href="$classillumio__pylo_1_1_exception_1_1_pylo_api_unexpected_syntax.html" title=" " alt="" coords="595,133,771,173"/>
+<area shape="rect" id="node2" href="$classillumio__pylo_1_1_exception_1_1_pylo_ex.html" title=" " alt="" coords="132,77,323,102"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,77,84,102"/>
+</map>
