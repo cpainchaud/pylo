@@ -1,9 +1,0 @@
-<map id="pylo.VirtualServiceStore.VirtualServiceStore.find_by_href_or_create_tmp" name="pylo.VirtualServiceStore.VirtualServiceStore.find_by_href_or_create_tmp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,158,168,213"/>
-<area shape="rect" id="node2" href="$classpylo_1_1_agent_store_1_1_agent_store.html#a19fb469a1eb7dd28004a90d00d3c64b7" title=" " alt="" coords="216,5,420,45"/>
-<area shape="rect" id="node3" href="$classpylo_1_1_i_p_list_1_1_i_p_list_store.html#a49be4340caed4bab67647e585b3b6fe3" title=" " alt="" coords="231,69,405,109"/>
-<area shape="rect" id="node4" href="$classpylo_1_1_label_store_1_1_label_store.html#af1ddf653d61c01e41442073432cf1915" title=" " alt="" coords="218,133,418,173"/>
-<area shape="rect" id="node5" href="$classpylo_1_1_security_principal_1_1_security_principal_store.html#a91d06543d8a6a093bf0bdd8329056d68" title=" " alt="" coords="221,197,415,237"/>
-<area shape="rect" id="node6" href="$classpylo_1_1_service_1_1_service_store.html#a59e6b6ecca8c82422501a9c0d8a58bbe" title=" " alt="" coords="221,261,415,301"/>
-<area shape="rect" id="node7" href="$classpylo_1_1_virtual_service_store_1_1_virtual_service_store.html#a277883b2007088db1f7a73c1009288bc" title=" " alt="" coords="237,326,399,381"/>
-</map>
