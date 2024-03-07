@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 __version__ = "0.2.5"
 
 
-setup_readme = "TODO"
-setup_license = "TODO"
+setup_readme = "README.md"
+setup_license = "LICENSE"
 
 #setup get dependencies from requirements.txt
 with open('requirements.txt') as f:
@@ -17,7 +17,7 @@ setup(
     long_description=setup_readme,
     author='Christophe Painchaud',
     author_email='shellescape@gmail.com',
-    url='https://github.com/cpainchaud/illumio_pylo',
+    url='https://github.com/cpainchaud/pylo',
     license=setup_license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=required,

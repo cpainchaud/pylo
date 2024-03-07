@@ -14,5 +14,5 @@ version = {attr = "setup.__version__"}
 dependencies = {file = "requirements.txt"}
 
 [project.urls]
-Homepage = "https://github.com/cpainchaud/illumio_pylo"
-Issues = "https://github.com/cpainchaud/illumio_pylo/issues"
+Homepage = "https://github.com/cpainchaud/pylo"
+Issues = "https://github.com/cpainchaud/pylo/issues"
