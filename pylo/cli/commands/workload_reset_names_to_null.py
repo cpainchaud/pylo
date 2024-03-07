@@ -38,17 +38,21 @@ def __main(args, org: pylo.Organization, **kwargs):
         count_managed_workloads += 1
         if wkl.forced_name is not None:
             workloads_with_forced_names.append(wkl)
-            short_forced_name = wkl.static_name_stripped_fqdn(wkl.forced_name)
-            short_hostname = wkl.static_name_stripped_fqdn(wkl.hostname)
+            short_forced_name = wkl.static_name_stripped_fqdn(wkl.forced_name).lower()
+            short_hostname = wkl.static_name_stripped_fqdn(wkl.hostname).lower()
             if short_forced_name != short_hostname:
                 workloads_with_mismatching_names.append(wkl)
-                print(f"Found mismatching forced name for {wkl.hostname} ({wkl.forced_name})")
+                print(f"Found mismatching forced name for {wkl.hostname} (hostname={wkl.forced_name})")
 
-    print(f"Found {count_managed_workloads} Managed Workloads")
-    print(f"Found {len(workloads_with_forced_names)} Workloads with Forced Names")
-    print(f"Found {len(workloads_with_mismatching_names)} Workloads with Mismatching Forced Names")
+    print()
+    print(" * Summary of Analysis:")
+
+    print(f" - Found {count_managed_workloads} Managed Workloads")
+    print(f" - Found {len(workloads_with_forced_names)} Workloads with Forced Names")
+    print(f" - Found {len(workloads_with_mismatching_names)} Workloads with Mismatching Forced Names")
 
     # <editor-fold desc="JSON Payloads generation">
+
     #for each batch of workloads, generate a JSON payload to send to the PCE to reset name to null
     #the payload will be a list of objects with the following structure:
     # {

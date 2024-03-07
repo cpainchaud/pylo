@@ -116,10 +116,10 @@ def __main(args, org: pylo.Organization, **kwargs):
                 record['new_loc'] = unchanged_str
 
         else:
-            record['new_role'] = '*unchanged*'
-            record['new_app'] = '*unchanged*'
-            record['new_env'] = '*unchanged*'
-            record['new_loc'] = '*unchanged*'
+            record['new_role'] = unchanged_str
+            record['new_app'] = unchanged_str
+            record['new_env'] = unchanged_str
+            record['new_loc'] = unchanged_str
 
         return record
 
