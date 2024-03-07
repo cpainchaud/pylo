@@ -140,8 +140,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad873aaaad21d776f76e12c9384c3ce7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a649e3af6d4c8183a13ab264d87414788"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a649e3af6d4c8183a13ab264d87414788">objects_iplists_get_default_any</a> (self)</td></tr>
 <tr class="separator:a649e3af6d4c8183a13ab264d87414788"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f5dd4115b38514de92dfd70574184b4"><td class="memItemLeft" align="right" valign="top">List[<a class="el" href="classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html">WorkloadObjectJsonStructure</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a1f5dd4115b38514de92dfd70574184b4">objects_workload_get</a> (self, include_deleted=False, str filter_by_ip=None, WorkloadsGetQueryLabelFilterJsonStructure filter_by_label=None, str filter_by_name=None, int max_results=None, async_mode=True)</td></tr>
-<tr class="separator:a1f5dd4115b38514de92dfd70574184b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6153af2c8ec35aecb3d43cfa8023ec0a"><td class="memItemLeft" align="right" valign="top">List[<a class="el" href="classpylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html">WorkloadObjectJsonStructure</a>]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a6153af2c8ec35aecb3d43cfa8023ec0a">objects_workload_get</a> (self, include_deleted=False, str filter_by_ip=None, WorkloadsGetQueryLabelFilterJsonStructure filter_by_label=None, str filter_by_name=None, bool filter_by_managed=None, Literal['active', 'warning', 'error'] filer_by_policy_health=None, int max_results=None, async_mode=True)</td></tr>
+<tr class="separator:a6153af2c8ec35aecb3d43cfa8023ec0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a669c04180e089aea458c4ced66aa47fd"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a669c04180e089aea458c4ced66aa47fd">objects_workload_agent_upgrade</a> (self, str workload_href, str target_version)</td></tr>
 <tr class="separator:a669c04180e089aea458c4ced66aa47fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1795ae71bcd93fae1427d6de2d6c2439"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a1795ae71bcd93fae1427d6de2d6c2439">objects_workload_update</a> (self, str href, data)</td></tr>
@@ -352,39 +352,39 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1120</span>            -&gt; Union[<span class="stringliteral">&#39;pylo.APIConnector.ApiAgentCompatibilityReport&#39;</span>, Dict[str, Any]]:</div>
-<div class="line"><span class="lineno"> 1121</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> agent_id <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1122</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;you need to provide a HREF or an ID&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1123</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> agent_id <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1124</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;you need to provide a HREF or an ID but not BOTH&#39;</span>)</div>
-<div class="line"><span class="lineno"> 1125</span> </div>
-<div class="line"><span class="lineno"> 1126</span>        include_org_id_in_api_query = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1127</span> </div>
-<div class="line"><span class="lineno"> 1128</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1129</span>            path = <span class="stringliteral">&#39;/agents/{}/compatibility_report&#39;</span>.format(agent_id)</div>
-<div class="line"><span class="lineno"> 1130</span>            include_org_id_in_api_query = <span class="keyword">True</span></div>
-<div class="line"><span class="lineno"> 1131</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1132</span>            path = <span class="stringliteral">&#39;{}/compatibility_report&#39;</span>.format(agent_href)</div>
+<div class="fragment"><div class="line"><span class="lineno"> 1128</span>            -&gt; Union[<span class="stringliteral">&#39;pylo.APIConnector.ApiAgentCompatibilityReport&#39;</span>, Dict[str, Any]]:</div>
+<div class="line"><span class="lineno"> 1129</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> agent_id <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1130</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;you need to provide a HREF or an ID&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1131</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> agent_id <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1132</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&#39;you need to provide a HREF or an ID but not BOTH&#39;</span>)</div>
 <div class="line"><span class="lineno"> 1133</span> </div>
-<div class="line"><span class="lineno"> 1134</span>        <span class="keywordflow">if</span> return_raw_json:</div>
-<div class="line"><span class="lineno"> 1135</span>            <span class="keywordflow">return</span> self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)</div>
-<div class="line"><span class="lineno"> 1136</span> </div>
-<div class="line"><span class="lineno"> 1137</span>        retry_count = 5</div>
-<div class="line"><span class="lineno"> 1138</span>        api_result = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno"> 1139</span> </div>
-<div class="line"><span class="lineno"> 1140</span>        <span class="keywordflow">while</span> retry_count &gt;= 0:</div>
-<div class="line"><span class="lineno"> 1141</span>            retry_count -= 1</div>
-<div class="line"><span class="lineno"> 1142</span>            <span class="keywordflow">try</span>:</div>
-<div class="line"><span class="lineno"> 1143</span>                api_result = self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)</div>
-<div class="line"><span class="lineno"> 1144</span>                <span class="keywordflow">break</span></div>
-<div class="line"><span class="lineno"> 1145</span> </div>
-<div class="line"><span class="lineno"> 1146</span>            <span class="keywordflow">except</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html">pylo.PyloApiTooManyRequestsEx</a> <span class="keyword">as</span> ex:</div>
-<div class="line"><span class="lineno"> 1147</span>                <span class="keywordflow">if</span> retry_count &lt;= 0:</div>
-<div class="line"><span class="lineno"> 1148</span>                    <span class="keywordflow">raise</span> ex</div>
-<div class="line"><span class="lineno"> 1149</span>                time.sleep(6)</div>
-<div class="line"><span class="lineno"> 1150</span> </div>
-<div class="line"><span class="lineno"> 1151</span>        <span class="keywordflow">return</span> APIConnector.ApiAgentCompatibilityReport(api_result)</div>
-<div class="line"><span class="lineno"> 1152</span> </div>
+<div class="line"><span class="lineno"> 1134</span>        include_org_id_in_api_query = <span class="keyword">False</span></div>
+<div class="line"><span class="lineno"> 1135</span> </div>
+<div class="line"><span class="lineno"> 1136</span>        <span class="keywordflow">if</span> agent_href <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1137</span>            path = <span class="stringliteral">&#39;/agents/{}/compatibility_report&#39;</span>.format(agent_id)</div>
+<div class="line"><span class="lineno"> 1138</span>            include_org_id_in_api_query = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1139</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1140</span>            path = <span class="stringliteral">&#39;{}/compatibility_report&#39;</span>.format(agent_href)</div>
+<div class="line"><span class="lineno"> 1141</span> </div>
+<div class="line"><span class="lineno"> 1142</span>        <span class="keywordflow">if</span> return_raw_json:</div>
+<div class="line"><span class="lineno"> 1143</span>            <span class="keywordflow">return</span> self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)</div>
+<div class="line"><span class="lineno"> 1144</span> </div>
+<div class="line"><span class="lineno"> 1145</span>        retry_count = 5</div>
+<div class="line"><span class="lineno"> 1146</span>        api_result = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno"> 1147</span> </div>
+<div class="line"><span class="lineno"> 1148</span>        <span class="keywordflow">while</span> retry_count &gt;= 0:</div>
+<div class="line"><span class="lineno"> 1149</span>            retry_count -= 1</div>
+<div class="line"><span class="lineno"> 1150</span>            <span class="keywordflow">try</span>:</div>
+<div class="line"><span class="lineno"> 1151</span>                api_result = self.do_get_call(path=path, include_org_id=include_org_id_in_api_query)</div>
+<div class="line"><span class="lineno"> 1152</span>                <span class="keywordflow">break</span></div>
+<div class="line"><span class="lineno"> 1153</span> </div>
+<div class="line"><span class="lineno"> 1154</span>            <span class="keywordflow">except</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html">pylo.PyloApiTooManyRequestsEx</a> <span class="keyword">as</span> ex:</div>
+<div class="line"><span class="lineno"> 1155</span>                <span class="keywordflow">if</span> retry_count &lt;= 0:</div>
+<div class="line"><span class="lineno"> 1156</span>                    <span class="keywordflow">raise</span> ex</div>
+<div class="line"><span class="lineno"> 1157</span>                time.sleep(6)</div>
+<div class="line"><span class="lineno"> 1158</span> </div>
+<div class="line"><span class="lineno"> 1159</span>        <span class="keywordflow">return</span> APIConnector.ApiAgentCompatibilityReport(api_result)</div>
+<div class="line"><span class="lineno"> 1160</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_api_too_many_requests_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_api_too_many_requests_ex.html">pylo.Exception.PyloApiTooManyRequestsEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:30</div></div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.Exception.PyloEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:4</div></div>
 </div><!-- fragment --><div class="dynheader">
@@ -458,15 +458,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1285</span>    <span class="keyword">def </span>audit_log_query(self, max_results = 1000, event_type: Optional[str] = <span class="keywordtype">None</span>) -&gt; List[AuditLogApiReplyEventJsonStructure]:</div>
-<div class="line"><span class="lineno"> 1286</span>        url = <span class="stringliteral">&#39;/events&#39;</span></div>
-<div class="line"><span class="lineno"> 1287</span>        args = {<span class="stringliteral">&#39;max_results&#39;</span>: max_results}</div>
-<div class="line"><span class="lineno"> 1288</span>        <span class="keywordflow">if</span> event_type <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1289</span>            args[<span class="stringliteral">&#39;event_type&#39;</span>] = event_type</div>
-<div class="line"><span class="lineno"> 1290</span> </div>
-<div class="line"><span class="lineno"> 1291</span>        <span class="keywordflow">return</span> self.do_get_call(path=url, params=args)</div>
-<div class="line"><span class="lineno"> 1292</span> </div>
-<div class="line"><span class="lineno"> 1293</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1293</span>    <span class="keyword">def </span>audit_log_query(self, max_results = 1000, event_type: Optional[str] = <span class="keywordtype">None</span>) -&gt; List[AuditLogApiReplyEventJsonStructure]:</div>
+<div class="line"><span class="lineno"> 1294</span>        url = <span class="stringliteral">&#39;/events&#39;</span></div>
+<div class="line"><span class="lineno"> 1295</span>        args = {<span class="stringliteral">&#39;max_results&#39;</span>: max_results}</div>
+<div class="line"><span class="lineno"> 1296</span>        <span class="keywordflow">if</span> event_type <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1297</span>            args[<span class="stringliteral">&#39;event_type&#39;</span>] = event_type</div>
+<div class="line"><span class="lineno"> 1298</span> </div>
+<div class="line"><span class="lineno"> 1299</span>        <span class="keywordflow">return</span> self.do_get_call(path=url, params=args)</div>
+<div class="line"><span class="lineno"> 1300</span> </div>
+<div class="line"><span class="lineno"> 1301</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -505,25 +505,25 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1254</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
-<div class="line"><span class="lineno"> 1255</span>        path = <span class="stringliteral">&#39;/health&#39;</span></div>
-<div class="line"><span class="lineno"> 1256</span> </div>
-<div class="line"><span class="lineno"> 1257</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> return_object:</div>
-<div class="line"><span class="lineno"> 1258</span>            <span class="keywordflow">return</span> self.do_get_call(path)</div>
-<div class="line"><span class="lineno"> 1259</span> </div>
-<div class="line"><span class="lineno"> 1260</span>        <span class="comment"># cluster_health list</span></div>
-<div class="line"><span class="lineno"> 1261</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1262</span>        <span class="keywordflow">if</span> type(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
-<div class="line"><span class="lineno"> 1263</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(type(json_output)))</div>
+<div class="fragment"><div class="line"><span class="lineno"> 1262</span>    <span class="keyword">def </span>cluster_health_get(self, return_object=False):</div>
+<div class="line"><span class="lineno"> 1263</span>        path = <span class="stringliteral">&#39;/health&#39;</span></div>
 <div class="line"><span class="lineno"> 1264</span> </div>
-<div class="line"><span class="lineno"> 1265</span>        dict_of_health_reports = {}</div>
-<div class="line"><span class="lineno"> 1266</span> </div>
-<div class="line"><span class="lineno"> 1267</span>        <span class="keywordflow">for</span> single_output <span class="keywordflow">in</span> json_output:</div>
-<div class="line"><span class="lineno"> 1268</span>            new_report = <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html">pylo.ClusterHealth</a>(single_output)</div>
-<div class="line"><span class="lineno"> 1269</span>            dict_of_health_reports[new_report.fqdn] = new_report</div>
-<div class="line"><span class="lineno"> 1270</span> </div>
-<div class="line"><span class="lineno"> 1271</span>        <span class="keywordflow">return</span> dict_of_health_reports</div>
+<div class="line"><span class="lineno"> 1265</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> return_object:</div>
+<div class="line"><span class="lineno"> 1266</span>            <span class="keywordflow">return</span> self.do_get_call(path)</div>
+<div class="line"><span class="lineno"> 1267</span> </div>
+<div class="line"><span class="lineno"> 1268</span>        <span class="comment"># cluster_health list</span></div>
+<div class="line"><span class="lineno"> 1269</span>        json_output = self.do_get_call(path, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1270</span>        <span class="keywordflow">if</span> type(json_output) <span class="keywordflow">is</span> <span class="keywordflow">not</span> list:</div>
+<div class="line"><span class="lineno"> 1271</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;A list object was expected but we received a &#39;{}&#39; instead&quot;</span>.format(type(json_output)))</div>
 <div class="line"><span class="lineno"> 1272</span> </div>
+<div class="line"><span class="lineno"> 1273</span>        dict_of_health_reports = {}</div>
+<div class="line"><span class="lineno"> 1274</span> </div>
+<div class="line"><span class="lineno"> 1275</span>        <span class="keywordflow">for</span> single_output <span class="keywordflow">in</span> json_output:</div>
+<div class="line"><span class="lineno"> 1276</span>            new_report = <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html">pylo.ClusterHealth</a>(single_output)</div>
+<div class="line"><span class="lineno"> 1277</span>            dict_of_health_reports[new_report.fqdn] = new_report</div>
+<div class="line"><span class="lineno"> 1278</span> </div>
+<div class="line"><span class="lineno"> 1279</span>        <span class="keywordflow">return</span> dict_of_health_reports</div>
+<div class="line"><span class="lineno"> 1280</span> </div>
 <div class="ttc" id="aclasspylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health_html"><div class="ttname"><a href="classpylo_1_1_a_p_i_1_1_cluster_health_1_1_cluster_health.html">pylo.API.ClusterHealth.ClusterHealth</a></div><div class="ttdef"><b>Definition:</b> ClusterHealth.py:5</div></div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1029,12 +1029,12 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">Get the status of all async queries
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1182</span>    <span class="keyword">def </span>explorer_async_queries_all_status_get(self):</div>
-<div class="line"><span class="lineno"> 1183</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1184</span><span class="stringliteral">        Get the status of all </span><span class="keyword">async</span> queries</div>
-<div class="line"><span class="lineno"> 1185</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1186</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self.do_get_call(<span class="stringliteral">&#39;/traffic_flows/async_queries&#39;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">True</span>)</div>
-<div class="line"><span class="lineno"> 1187</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1190</span>    <span class="keyword">def </span>explorer_async_queries_all_status_get(self):</div>
+<div class="line"><span class="lineno"> 1191</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1192</span><span class="stringliteral">        Get the status of all </span><span class="keyword">async</span> queries</div>
+<div class="line"><span class="lineno"> 1193</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1194</span><span class="stringliteral">        </span><span class="keywordflow">return</span> self.do_get_call(<span class="stringliteral">&#39;/traffic_flows/async_queries&#39;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">True</span>)</div>
+<div class="line"><span class="lineno"> 1195</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1073,14 +1073,14 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1188</span>    <span class="keyword">def </span>explorer_async_query_get_specific_request_status(self, request_href: str):</div>
-<div class="line"><span class="lineno"> 1189</span>        all_statuses = self.explorer_async_queries_all_status_get()</div>
-<div class="line"><span class="lineno"> 1190</span>        <span class="keywordflow">for</span> status <span class="keywordflow">in</span> all_statuses:</div>
-<div class="line"><span class="lineno"> 1191</span>            <span class="keywordflow">if</span> status[<span class="stringliteral">&#39;href&#39;</span>] == request_href:</div>
-<div class="line"><span class="lineno"> 1192</span>                <span class="keywordflow">return</span> status</div>
-<div class="line"><span class="lineno"> 1193</span> </div>
-<div class="line"><span class="lineno"> 1194</span>        <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_object_not_found.html">pylo.PyloObjectNotFound</a>(<span class="stringliteral">&quot;Request with ID {} not found&quot;</span>.format(request_href))</div>
-<div class="line"><span class="lineno"> 1195</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1196</span>    <span class="keyword">def </span>explorer_async_query_get_specific_request_status(self, request_href: str):</div>
+<div class="line"><span class="lineno"> 1197</span>        all_statuses = self.explorer_async_queries_all_status_get()</div>
+<div class="line"><span class="lineno"> 1198</span>        <span class="keywordflow">for</span> status <span class="keywordflow">in</span> all_statuses:</div>
+<div class="line"><span class="lineno"> 1199</span>            <span class="keywordflow">if</span> status[<span class="stringliteral">&#39;href&#39;</span>] == request_href:</div>
+<div class="line"><span class="lineno"> 1200</span>                <span class="keywordflow">return</span> status</div>
+<div class="line"><span class="lineno"> 1201</span> </div>
+<div class="line"><span class="lineno"> 1202</span>        <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_object_not_found.html">pylo.PyloObjectNotFound</a>(<span class="stringliteral">&quot;Request with ID {} not found&quot;</span>.format(request_href))</div>
+<div class="line"><span class="lineno"> 1203</span> </div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_object_not_found_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_object_not_found.html">pylo.Exception.PyloObjectNotFound</a></div><div class="ttdef"><b>Definition:</b> Exception.py:17</div></div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1133,62 +1133,62 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1198</span>                        check_for_update_interval_seconds=10) -&gt; <span class="stringliteral">&#39;pylo.ExplorerResultSetV1&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1199</span>        path = <span class="stringliteral">&quot;/traffic_flows/async_queries&quot;</span></div>
-<div class="line"><span class="lineno"> 1200</span>        <span class="keywordflow">if</span> isinstance(filters, <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_filter_set_v1.html">pylo.ExplorerFilterSetV1</a>):</div>
-<div class="line"><span class="lineno"> 1201</span>            data = filters.generate_json_query()</div>
-<div class="line"><span class="lineno"> 1202</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1203</span>            data = filters</div>
-<div class="line"><span class="lineno"> 1204</span> </div>
-<div class="line"><span class="lineno"> 1205</span>        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=<span class="keyword">True</span>,</div>
-<div class="line"><span class="lineno"> 1206</span>                                                       json_output_expected=<span class="keyword">True</span>)</div>
-<div class="line"><span class="lineno"> 1207</span> </div>
-<div class="line"><span class="lineno"> 1208</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;status&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> query_queued_json_response:</div>
-<div class="line"><span class="lineno"> 1209</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, missing &#39;status&#39; property&quot;</span>, query_queued_json_response)</div>
-<div class="line"><span class="lineno"> 1210</span> </div>
-<div class="line"><span class="lineno"> 1211</span>        <span class="keywordflow">if</span> query_queued_json_response[<span class="stringliteral">&#39;status&#39;</span>] != <span class="stringliteral">&quot;queued&quot;</span>:</div>
-<div class="line"><span class="lineno"> 1212</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, &#39;status&#39; property is not &#39;QUEUED&#39;&quot;</span>, query_queued_json_response)</div>
-<div class="line"><span class="lineno"> 1213</span> </div>
-<div class="line"><span class="lineno"> 1214</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> query_queued_json_response:</div>
-<div class="line"><span class="lineno"> 1215</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, missing &#39;href&#39; property&quot;</span>, query_queued_json_response)</div>
-<div class="line"><span class="lineno"> 1216</span> </div>
-<div class="line"><span class="lineno"> 1217</span>        query_href = query_queued_json_response[<span class="stringliteral">&#39;href&#39;</span>]</div>
-<div class="line"><span class="lineno"> 1218</span>        <span class="comment"># check that query_href is a string</span></div>
-<div class="line"><span class="lineno"> 1219</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> isinstance(query_href, str):</div>
-<div class="line"><span class="lineno"> 1220</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, &#39;href&#39; property is not a string&quot;</span>, query_queued_json_response)</div>
+<div class="fragment"><div class="line"><span class="lineno"> 1206</span>                        check_for_update_interval_seconds=10) -&gt; <span class="stringliteral">&#39;pylo.ExplorerResultSetV1&#39;</span>:</div>
+<div class="line"><span class="lineno"> 1207</span>        path = <span class="stringliteral">&quot;/traffic_flows/async_queries&quot;</span></div>
+<div class="line"><span class="lineno"> 1208</span>        <span class="keywordflow">if</span> isinstance(filters, <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_filter_set_v1.html">pylo.ExplorerFilterSetV1</a>):</div>
+<div class="line"><span class="lineno"> 1209</span>            data = filters.generate_json_query()</div>
+<div class="line"><span class="lineno"> 1210</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1211</span>            data = filters</div>
+<div class="line"><span class="lineno"> 1212</span> </div>
+<div class="line"><span class="lineno"> 1213</span>        query_queued_json_response = self.do_post_call(path, json_arguments=data, include_org_id=<span class="keyword">True</span>,</div>
+<div class="line"><span class="lineno"> 1214</span>                                                       json_output_expected=<span class="keyword">True</span>)</div>
+<div class="line"><span class="lineno"> 1215</span> </div>
+<div class="line"><span class="lineno"> 1216</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;status&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> query_queued_json_response:</div>
+<div class="line"><span class="lineno"> 1217</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, missing &#39;status&#39; property&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1218</span> </div>
+<div class="line"><span class="lineno"> 1219</span>        <span class="keywordflow">if</span> query_queued_json_response[<span class="stringliteral">&#39;status&#39;</span>] != <span class="stringliteral">&quot;queued&quot;</span>:</div>
+<div class="line"><span class="lineno"> 1220</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, &#39;status&#39; property is not &#39;QUEUED&#39;&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1221</span> </div>
-<div class="line"><span class="lineno"> 1222</span>        <span class="comment"># get current timestamp to ensure we don&#39;t wait too long</span></div>
-<div class="line"><span class="lineno"> 1223</span>        start_time = time.time()</div>
+<div class="line"><span class="lineno"> 1222</span>        <span class="keywordflow">if</span> <span class="stringliteral">&#39;href&#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> query_queued_json_response:</div>
+<div class="line"><span class="lineno"> 1223</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, missing &#39;href&#39; property&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1224</span> </div>
-<div class="line"><span class="lineno"> 1225</span>        query_status = <span class="keywordtype">None</span> <span class="comment"># Json response from API for specific query</span></div>
-<div class="line"><span class="lineno"> 1226</span> </div>
-<div class="line"><span class="lineno"> 1227</span>        <span class="keywordflow">while</span> <span class="keyword">True</span>:</div>
-<div class="line"><span class="lineno"> 1228</span>            <span class="comment"># check that we don&#39;t wait too long</span></div>
-<div class="line"><span class="lineno"> 1229</span>            <span class="keywordflow">if</span> time.time() - start_time &gt; max_running_time_seconds:</div>
-<div class="line"><span class="lineno"> 1230</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Timeout while waiting for query to complete&quot;</span>, query_queued_json_response)</div>
-<div class="line"><span class="lineno"> 1231</span> </div>
-<div class="line"><span class="lineno"> 1232</span>            queries_status_json_response = self.explorer_async_query_get_specific_request_status(query_href)</div>
-<div class="line"><span class="lineno"> 1233</span>            <span class="keywordflow">if</span> queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>] == <span class="stringliteral">&quot;completed&quot;</span>:</div>
-<div class="line"><span class="lineno"> 1234</span>                query_status = queries_status_json_response</div>
-<div class="line"><span class="lineno"> 1235</span>                <span class="keywordflow">break</span></div>
-<div class="line"><span class="lineno"> 1236</span> </div>
-<div class="line"><span class="lineno"> 1237</span>            <span class="keywordflow">if</span> queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>] <span class="keywordflow">not</span> <span class="keywordflow">in</span> [<span class="stringliteral">&quot;queued&quot;</span>, <span class="stringliteral">&quot;working&quot;</span>]:</div>
-<div class="line"><span class="lineno"> 1238</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Query failed with status {}&quot;</span>.format(queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>]),</div>
-<div class="line"><span class="lineno"> 1239</span>                                     queries_status_json_response)</div>
-<div class="line"><span class="lineno"> 1240</span> </div>
-<div class="line"><span class="lineno"> 1241</span>            time.sleep(check_for_update_interval_seconds)</div>
-<div class="line"><span class="lineno"> 1242</span> </div>
-<div class="line"><span class="lineno"> 1243</span>        <span class="keywordflow">if</span> query_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1244</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unexpected logic where query_status is None&quot;</span>, query_queued_json_response)</div>
-<div class="line"><span class="lineno"> 1245</span> </div>
-<div class="line"><span class="lineno"> 1246</span>        query_json_response = self.do_get_call(query_href + <span class="stringliteral">&quot;/download&quot;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1247</span> </div>
-<div class="line"><span class="lineno"> 1248</span>        result = <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.ExplorerResultSetV1</a>(query_json_response,</div>
-<div class="line"><span class="lineno"> 1249</span>                                          owner=self,</div>
-<div class="line"><span class="lineno"> 1250</span>                                          emulated_process_exclusion=filters.exclude_processes_emulate)</div>
-<div class="line"><span class="lineno"> 1251</span> </div>
-<div class="line"><span class="lineno"> 1252</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno"> 1225</span>        query_href = query_queued_json_response[<span class="stringliteral">&#39;href&#39;</span>]</div>
+<div class="line"><span class="lineno"> 1226</span>        <span class="comment"># check that query_href is a string</span></div>
+<div class="line"><span class="lineno"> 1227</span>        <span class="keywordflow">if</span> <span class="keywordflow">not</span> isinstance(query_href, str):</div>
+<div class="line"><span class="lineno"> 1228</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Invalid response from API, &#39;href&#39; property is not a string&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1229</span> </div>
+<div class="line"><span class="lineno"> 1230</span>        <span class="comment"># get current timestamp to ensure we don&#39;t wait too long</span></div>
+<div class="line"><span class="lineno"> 1231</span>        start_time = time.time()</div>
+<div class="line"><span class="lineno"> 1232</span> </div>
+<div class="line"><span class="lineno"> 1233</span>        query_status = <span class="keywordtype">None</span> <span class="comment"># Json response from API for specific query</span></div>
+<div class="line"><span class="lineno"> 1234</span> </div>
+<div class="line"><span class="lineno"> 1235</span>        <span class="keywordflow">while</span> <span class="keyword">True</span>:</div>
+<div class="line"><span class="lineno"> 1236</span>            <span class="comment"># check that we don&#39;t wait too long</span></div>
+<div class="line"><span class="lineno"> 1237</span>            <span class="keywordflow">if</span> time.time() - start_time &gt; max_running_time_seconds:</div>
+<div class="line"><span class="lineno"> 1238</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Timeout while waiting for query to complete&quot;</span>, query_queued_json_response)</div>
+<div class="line"><span class="lineno"> 1239</span> </div>
+<div class="line"><span class="lineno"> 1240</span>            queries_status_json_response = self.explorer_async_query_get_specific_request_status(query_href)</div>
+<div class="line"><span class="lineno"> 1241</span>            <span class="keywordflow">if</span> queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>] == <span class="stringliteral">&quot;completed&quot;</span>:</div>
+<div class="line"><span class="lineno"> 1242</span>                query_status = queries_status_json_response</div>
+<div class="line"><span class="lineno"> 1243</span>                <span class="keywordflow">break</span></div>
+<div class="line"><span class="lineno"> 1244</span> </div>
+<div class="line"><span class="lineno"> 1245</span>            <span class="keywordflow">if</span> queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>] <span class="keywordflow">not</span> <span class="keywordflow">in</span> [<span class="stringliteral">&quot;queued&quot;</span>, <span class="stringliteral">&quot;working&quot;</span>]:</div>
+<div class="line"><span class="lineno"> 1246</span>                <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;Query failed with status {}&quot;</span>.format(queries_status_json_response[<span class="stringliteral">&#39;status&#39;</span>]),</div>
+<div class="line"><span class="lineno"> 1247</span>                                     queries_status_json_response)</div>
+<div class="line"><span class="lineno"> 1248</span> </div>
+<div class="line"><span class="lineno"> 1249</span>            time.sleep(check_for_update_interval_seconds)</div>
+<div class="line"><span class="lineno"> 1250</span> </div>
+<div class="line"><span class="lineno"> 1251</span>        <span class="keywordflow">if</span> query_status <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1252</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;Unexpected logic where query_status is None&quot;</span>, query_queued_json_response)</div>
 <div class="line"><span class="lineno"> 1253</span> </div>
+<div class="line"><span class="lineno"> 1254</span>        query_json_response = self.do_get_call(query_href + <span class="stringliteral">&quot;/download&quot;</span>, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1255</span> </div>
+<div class="line"><span class="lineno"> 1256</span>        result = <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.ExplorerResultSetV1</a>(query_json_response,</div>
+<div class="line"><span class="lineno"> 1257</span>                                          owner=self,</div>
+<div class="line"><span class="lineno"> 1258</span>                                          emulated_process_exclusion=filters.exclude_processes_emulate)</div>
+<div class="line"><span class="lineno"> 1259</span> </div>
+<div class="line"><span class="lineno"> 1260</span>        <span class="keywordflow">return</span> result</div>
+<div class="line"><span class="lineno"> 1261</span> </div>
 <div class="ttc" id="aclasspylo_1_1_a_p_i_1_1_explorer_1_1_explorer_filter_set_v1_html"><div class="ttname"><a href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_filter_set_v1.html">pylo.API.Explorer.ExplorerFilterSetV1</a></div><div class="ttdef"><b>Definition:</b> Explorer.py:656</div></div>
 <div class="ttc" id="aclasspylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1_html"><div class="ttname"><a href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_result_set_v1.html">pylo.API.Explorer.ExplorerResultSetV1</a></div><div class="ttdef"><b>Definition:</b> Explorer.py:238</div></div>
 <div class="ttc" id="aclasspylo_1_1_exception_1_1_pylo_api_ex_html"><div class="ttname"><a href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.Exception.PyloApiEx</a></div><div class="ttdef"><b>Definition:</b> Exception.py:22</div></div>
@@ -1501,7 +1501,7 @@ Here is the call graph for this function:</div>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2ec5b643b969abbda175bede4cc4d422" title=" " alt="" coords="312,429,595,469"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a1f8cf0bcf4b8149fbb772f60e120d684" title=" " alt="" coords="312,493,595,533"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a8f325fd78a9c7104596016796dc8b8f6" title=" " alt="" coords="643,534,925,574"/>
-<area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a1f5dd4115b38514de92dfd70574184b4" title=" " alt="" coords="643,599,925,639"/>
+<area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a6153af2c8ec35aecb3d43cfa8023ec0a" title=" " alt="" coords="643,599,925,639"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab2f988ffe4e8f58cfd93e02513b950ac" title=" " alt="" coords="973,314,1228,354"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a7dcd6d5b8c8efcfaf98262f27df73c09" title=" " alt="" coords="1276,314,1517,354"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a2916f3bac48585f7c014016cbe2dfc50" title=" " alt="" coords="645,78,923,118"/>
@@ -1535,13 +1535,13 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1294</span>    <span class="keyword">def </span>get_pce_ui_workload_url(self, href: str) -&gt; str:</div>
-<div class="line"><span class="lineno"> 1295</span>        <span class="comment"># extract UUID from workload HREF:</span></div>
-<div class="line"><span class="lineno"> 1296</span>        uuid = href.split(<span class="stringliteral">&#39;/&#39;</span>)[-1]</div>
-<div class="line"><span class="lineno"> 1297</span>        <span class="keywordflow">return</span> self._make_base_url(<span class="stringliteral">&#39;/#/workloads/&#39;</span> + uuid )</div>
-<div class="line"><span class="lineno"> 1298</span> </div>
-<div class="line"><span class="lineno"> 1299</span> </div>
-<div class="line"><span class="lineno"> 1300</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1302</span>    <span class="keyword">def </span>get_pce_ui_workload_url(self, href: str) -&gt; str:</div>
+<div class="line"><span class="lineno"> 1303</span>        <span class="comment"># extract UUID from workload HREF:</span></div>
+<div class="line"><span class="lineno"> 1304</span>        uuid = href.split(<span class="stringliteral">&#39;/&#39;</span>)[-1]</div>
+<div class="line"><span class="lineno"> 1305</span>        <span class="keywordflow">return</span> self._make_base_url(<span class="stringliteral">&#39;/#/workloads/&#39;</span> + uuid )</div>
+<div class="line"><span class="lineno"> 1306</span> </div>
+<div class="line"><span class="lineno"> 1307</span> </div>
+<div class="line"><span class="lineno"> 1308</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1657,9 +1657,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1282</span>                            check_for_update_interval_seconds: int = 10) -&gt; <span class="stringliteral">&#39;pylo.AuditLogQuery&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1283</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_audit_log_1_1_audit_log_query.html">pylo.AuditLogQuery</a>(self, max_results, max_running_time_seconds )</div>
-<div class="line"><span class="lineno"> 1284</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1290</span>                            check_for_update_interval_seconds: int = 10) -&gt; <span class="stringliteral">&#39;pylo.AuditLogQuery&#39;</span>:</div>
+<div class="line"><span class="lineno"> 1291</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_audit_log_1_1_audit_log_query.html">pylo.AuditLogQuery</a>(self, max_results, max_running_time_seconds )</div>
+<div class="line"><span class="lineno"> 1292</span> </div>
 <div class="ttc" id="aclasspylo_1_1_a_p_i_1_1_audit_log_1_1_audit_log_query_html"><div class="ttname"><a href="classpylo_1_1_a_p_i_1_1_audit_log_1_1_audit_log_query.html">pylo.API.AuditLog.AuditLogQuery</a></div><div class="ttdef"><b>Definition:</b> AuditLog.py:31</div></div>
 </div><!-- fragment -->
 </div>
@@ -1701,10 +1701,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1277</span>                           check_for_update_interval_seconds: int = 10) -&gt; <span class="stringliteral">&#39;pylo.ExplorerQuery&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1278</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_query.html">pylo.ExplorerQuery</a>(self, max_results, max_running_time_seconds, check_for_update_interval_seconds)</div>
-<div class="line"><span class="lineno"> 1279</span> </div>
-<div class="line"><span class="lineno"> 1280</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1285</span>                           check_for_update_interval_seconds: int = 10) -&gt; <span class="stringliteral">&#39;pylo.ExplorerQuery&#39;</span>:</div>
+<div class="line"><span class="lineno"> 1286</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_query.html">pylo.ExplorerQuery</a>(self, max_results, max_running_time_seconds, check_for_update_interval_seconds)</div>
+<div class="line"><span class="lineno"> 1287</span> </div>
+<div class="line"><span class="lineno"> 1288</span> </div>
 <div class="ttc" id="aclasspylo_1_1_a_p_i_1_1_explorer_1_1_explorer_query_html"><div class="ttname"><a href="classpylo_1_1_a_p_i_1_1_explorer_1_1_explorer_query.html">pylo.API.Explorer.ExplorerQuery</a></div><div class="ttdef"><b>Definition:</b> Explorer.py:1054</div></div>
 </div><!-- fragment -->
 </div>
@@ -1724,9 +1724,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1273</span>    <span class="keyword">def </span>new_rule_search_query(self) -&gt; &#39;pylo.RuleSearchQuery&#39;:</div>
-<div class="line"><span class="lineno"> 1274</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query.html">pylo.RuleSearchQuery</a>(self)</div>
-<div class="line"><span class="lineno"> 1275</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1281</span>    <span class="keyword">def </span>new_rule_search_query(self) -&gt; &#39;pylo.RuleSearchQuery&#39;:</div>
+<div class="line"><span class="lineno"> 1282</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classpylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query.html">pylo.RuleSearchQuery</a>(self)</div>
+<div class="line"><span class="lineno"> 1283</span> </div>
 <div class="ttc" id="aclasspylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query_html"><div class="ttname"><a href="classpylo_1_1_a_p_i_1_1_rule_search_query_1_1_rule_search_query.html">pylo.API.RuleSearchQuery.RuleSearchQuery</a></div><div class="ttdef"><b>Definition:</b> RuleSearchQuery.py:35</div></div>
 </div><!-- fragment -->
 </div>
@@ -1746,9 +1746,9 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  801</span>    <span class="keyword">def </span>new_tracker_workload_multi_delete(self):</div>
-<div class="line"><span class="lineno">  802</span>        <span class="keywordflow">return</span> APIConnector.WorkloadMultiDeleteTracker(self)</div>
-<div class="line"><span class="lineno">  803</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  809</span>    <span class="keyword">def </span>new_tracker_workload_multi_delete(self):</div>
+<div class="line"><span class="lineno">  810</span>        <span class="keywordflow">return</span> APIConnector.WorkloadMultiDeleteTracker(self)</div>
+<div class="line"><span class="lineno">  811</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1795,18 +1795,18 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  896</span>    <span class="keyword">def </span>object_network_device_endpoint_create(self, network_device_href: str, name: str, endpoint_type: Literal[<span class="stringliteral">&#39;switch_port&#39;</span>], workloads_href: List[str]) -&gt; List[NetworkDeviceEndpointObjectJsonStructure]:</div>
-<div class="line"><span class="lineno">  897</span>        path = <span class="stringliteral">&#39;{}/network_endpoints&#39;</span>.format(network_device_href)</div>
-<div class="line"><span class="lineno">  898</span> </div>
-<div class="line"><span class="lineno">  899</span>        worklaods_href_objects = []</div>
-<div class="line"><span class="lineno">  900</span>        <span class="keywordflow">for</span> workload_href <span class="keywordflow">in</span> workloads_href:</div>
-<div class="line"><span class="lineno">  901</span>            worklaods_href_objects.append({<span class="stringliteral">&#39;href&#39;</span>: workload_href})</div>
-<div class="line"><span class="lineno">  902</span> </div>
-<div class="line"><span class="lineno">  903</span>        data = { <span class="stringliteral">&#39;config&#39;</span>: { <span class="stringliteral">&#39;name&#39;</span>: name, <span class="stringliteral">&#39;endpoint_type&#39;</span>: endpoint_type }, <span class="stringliteral">&#39;workloads&#39;</span>: worklaods_href_objects}</div>
-<div class="line"><span class="lineno">  904</span> </div>
-<div class="line"><span class="lineno">  905</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, async_call=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>, json_arguments=data, json_output_expected=<span class="keyword">True</span>)</div>
+<div class="fragment"><div class="line"><span class="lineno">  904</span>    <span class="keyword">def </span>object_network_device_endpoint_create(self, network_device_href: str, name: str, endpoint_type: Literal[<span class="stringliteral">&#39;switch_port&#39;</span>], workloads_href: List[str]) -&gt; List[NetworkDeviceEndpointObjectJsonStructure]:</div>
+<div class="line"><span class="lineno">  905</span>        path = <span class="stringliteral">&#39;{}/network_endpoints&#39;</span>.format(network_device_href)</div>
 <div class="line"><span class="lineno">  906</span> </div>
-<div class="line"><span class="lineno">  907</span> </div>
+<div class="line"><span class="lineno">  907</span>        worklaods_href_objects = []</div>
+<div class="line"><span class="lineno">  908</span>        <span class="keywordflow">for</span> workload_href <span class="keywordflow">in</span> workloads_href:</div>
+<div class="line"><span class="lineno">  909</span>            worklaods_href_objects.append({<span class="stringliteral">&#39;href&#39;</span>: workload_href})</div>
+<div class="line"><span class="lineno">  910</span> </div>
+<div class="line"><span class="lineno">  911</span>        data = { <span class="stringliteral">&#39;config&#39;</span>: { <span class="stringliteral">&#39;name&#39;</span>: name, <span class="stringliteral">&#39;endpoint_type&#39;</span>: endpoint_type }, <span class="stringliteral">&#39;workloads&#39;</span>: worklaods_href_objects}</div>
+<div class="line"><span class="lineno">  912</span> </div>
+<div class="line"><span class="lineno">  913</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, async_call=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>, json_arguments=data, json_output_expected=<span class="keyword">True</span>)</div>
+<div class="line"><span class="lineno">  914</span> </div>
+<div class="line"><span class="lineno">  915</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1845,12 +1845,12 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  890</span>    <span class="keyword">def </span>object_network_device_endpoints_get(self, network_device_href: str) -&gt; List[NetworkDeviceEndpointObjectJsonStructure]:</div>
-<div class="line"><span class="lineno">  891</span>        path = <span class="stringliteral">&#39;{}/network_endpoints&#39;</span>.format(network_device_href)</div>
-<div class="line"><span class="lineno">  892</span>        data = {}</div>
-<div class="line"><span class="lineno">  893</span> </div>
-<div class="line"><span class="lineno">  894</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span> )</div>
-<div class="line"><span class="lineno">  895</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  898</span>    <span class="keyword">def </span>object_network_device_endpoints_get(self, network_device_href: str) -&gt; List[NetworkDeviceEndpointObjectJsonStructure]:</div>
+<div class="line"><span class="lineno">  899</span>        path = <span class="stringliteral">&#39;{}/network_endpoints&#39;</span>.format(network_device_href)</div>
+<div class="line"><span class="lineno">  900</span>        data = {}</div>
+<div class="line"><span class="lineno">  901</span> </div>
+<div class="line"><span class="lineno">  902</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span> )</div>
+<div class="line"><span class="lineno">  903</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1889,11 +1889,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  677</span>    <span class="keyword">def </span>object_workload_get_active_policies(self, workload_href: str):</div>
-<div class="line"><span class="lineno">  678</span>        path = <span class="stringliteral">&#39;/sec_policy/active/policy_view&#39;</span></div>
-<div class="line"><span class="lineno">  679</span>        data = {<span class="stringliteral">&#39;workload&#39;</span>: workload_href}</div>
-<div class="line"><span class="lineno">  680</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=<span class="keyword">False</span>, params=data, include_org_id=<span class="keyword">True</span>, json_output_expected=<span class="keyword">True</span>)</div>
-<div class="line"><span class="lineno">  681</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  685</span>    <span class="keyword">def </span>object_workload_get_active_policies(self, workload_href: str):</div>
+<div class="line"><span class="lineno">  686</span>        path = <span class="stringliteral">&#39;/sec_policy/active/policy_view&#39;</span></div>
+<div class="line"><span class="lineno">  687</span>        data = {<span class="stringliteral">&#39;workload&#39;</span>: workload_href}</div>
+<div class="line"><span class="lineno">  688</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=<span class="keyword">False</span>, params=data, include_org_id=<span class="keyword">True</span>, json_output_expected=<span class="keyword">True</span>)</div>
+<div class="line"><span class="lineno">  689</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1938,24 +1938,24 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1153</span>    <span class="keyword">def </span>objects_agent_change_mode(self, agent_href: str, mode: str):</div>
-<div class="line"><span class="lineno"> 1154</span>        path = agent_href</div>
-<div class="line"><span class="lineno"> 1155</span> </div>
-<div class="line"><span class="lineno"> 1156</span>        <span class="keywordflow">if</span> mode != <span class="stringliteral">&#39;build&#39;</span> <span class="keywordflow">and</span> mode != <span class="stringliteral">&#39;idle&#39;</span> <span class="keywordflow">and</span> mode != <span class="stringliteral">&#39;test&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1157</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;unsupported mode {}&quot;</span>.format(mode))</div>
-<div class="line"><span class="lineno"> 1158</span> </div>
-<div class="line"><span class="lineno"> 1159</span>        log_traffic = <span class="keyword">False</span></div>
-<div class="line"><span class="lineno"> 1160</span> </div>
-<div class="line"><span class="lineno"> 1161</span>        <span class="keywordflow">if</span> mode == <span class="stringliteral">&#39;build&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1162</span>            mode = <span class="stringliteral">&#39;illuminated&#39;</span></div>
-<div class="line"><span class="lineno"> 1163</span>        <span class="keywordflow">elif</span> mode == <span class="stringliteral">&#39;test&#39;</span>:</div>
-<div class="line"><span class="lineno"> 1164</span>            mode = <span class="stringliteral">&#39;illuminated&#39;</span></div>
-<div class="line"><span class="lineno"> 1165</span>            log_traffic = <span class="keyword">True</span></div>
+<div class="fragment"><div class="line"><span class="lineno"> 1161</span>    <span class="keyword">def </span>objects_agent_change_mode(self, agent_href: str, mode: str):</div>
+<div class="line"><span class="lineno"> 1162</span>        path = agent_href</div>
+<div class="line"><span class="lineno"> 1163</span> </div>
+<div class="line"><span class="lineno"> 1164</span>        <span class="keywordflow">if</span> mode != <span class="stringliteral">&#39;build&#39;</span> <span class="keywordflow">and</span> mode != <span class="stringliteral">&#39;idle&#39;</span> <span class="keywordflow">and</span> mode != <span class="stringliteral">&#39;test&#39;</span>:</div>
+<div class="line"><span class="lineno"> 1165</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_ex.html">pylo.PyloEx</a>(<span class="stringliteral">&quot;unsupported mode {}&quot;</span>.format(mode))</div>
 <div class="line"><span class="lineno"> 1166</span> </div>
-<div class="line"><span class="lineno"> 1167</span>        data = {<span class="stringliteral">&quot;agent&quot;</span>: {<span class="stringliteral">&quot;config&quot;</span>: {<span class="stringliteral">&quot;mode&quot;</span>: mode, <span class="stringliteral">&#39;log_traffic&#39;</span>: log_traffic}}}</div>
+<div class="line"><span class="lineno"> 1167</span>        log_traffic = <span class="keyword">False</span></div>
 <div class="line"><span class="lineno"> 1168</span> </div>
-<div class="line"><span class="lineno"> 1169</span>        <span class="keywordflow">return</span> self.do_put_call(path, json_arguments=data, include_org_id=<span class="keyword">False</span>, json_output_expected=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1170</span> </div>
+<div class="line"><span class="lineno"> 1169</span>        <span class="keywordflow">if</span> mode == <span class="stringliteral">&#39;build&#39;</span>:</div>
+<div class="line"><span class="lineno"> 1170</span>            mode = <span class="stringliteral">&#39;illuminated&#39;</span></div>
+<div class="line"><span class="lineno"> 1171</span>        <span class="keywordflow">elif</span> mode == <span class="stringliteral">&#39;test&#39;</span>:</div>
+<div class="line"><span class="lineno"> 1172</span>            mode = <span class="stringliteral">&#39;illuminated&#39;</span></div>
+<div class="line"><span class="lineno"> 1173</span>            log_traffic = <span class="keyword">True</span></div>
+<div class="line"><span class="lineno"> 1174</span> </div>
+<div class="line"><span class="lineno"> 1175</span>        data = {<span class="stringliteral">&quot;agent&quot;</span>: {<span class="stringliteral">&quot;config&quot;</span>: {<span class="stringliteral">&quot;mode&quot;</span>: mode, <span class="stringliteral">&#39;log_traffic&#39;</span>: log_traffic}}}</div>
+<div class="line"><span class="lineno"> 1176</span> </div>
+<div class="line"><span class="lineno"> 1177</span>        <span class="keywordflow">return</span> self.do_put_call(path, json_arguments=data, include_org_id=<span class="keyword">False</span>, json_output_expected=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1178</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2004,17 +2004,17 @@ Here is the call graph for this function:</div>
 :param agent_href:
 :param target_pce:
 :return:
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1171</span>    <span class="keyword">def </span>objects_agent_reassign_pce(self, agent_href: str, target_pce: str):</div>
-<div class="line"><span class="lineno"> 1172</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1173</span><span class="stringliteral">        Reassign an agent to a different PCE</span></div>
-<div class="line"><span class="lineno"> 1174</span><span class="stringliteral">        :param agent_href:</span></div>
-<div class="line"><span class="lineno"> 1175</span><span class="stringliteral">        :param target_pce:</span></div>
-<div class="line"><span class="lineno"> 1176</span><span class="stringliteral">        :</span><span class="keywordflow">return</span>:</div>
-<div class="line"><span class="lineno"> 1177</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1178</span><span class="stringliteral">        path = agent_href + &#39;/update&#39;</span></div>
-<div class="line"><span class="lineno"> 1179</span>        data = {<span class="stringliteral">&quot;target_pce_fqdn&quot;</span>: target_pce}</div>
-<div class="line"><span class="lineno"> 1180</span>        <span class="keywordflow">return</span> self.do_put_call(path, json_arguments=data, include_org_id=<span class="keyword">False</span>, json_output_expected=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1181</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1179</span>    <span class="keyword">def </span>objects_agent_reassign_pce(self, agent_href: str, target_pce: str):</div>
+<div class="line"><span class="lineno"> 1180</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1181</span><span class="stringliteral">        Reassign an agent to a different PCE</span></div>
+<div class="line"><span class="lineno"> 1182</span><span class="stringliteral">        :param agent_href:</span></div>
+<div class="line"><span class="lineno"> 1183</span><span class="stringliteral">        :param target_pce:</span></div>
+<div class="line"><span class="lineno"> 1184</span><span class="stringliteral">        :</span><span class="keywordflow">return</span>:</div>
+<div class="line"><span class="lineno"> 1185</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1186</span><span class="stringliteral">        path = agent_href + &#39;/update&#39;</span></div>
+<div class="line"><span class="lineno"> 1187</span>        data = {<span class="stringliteral">&quot;target_pce_fqdn&quot;</span>: target_pce}</div>
+<div class="line"><span class="lineno"> 1188</span>        <span class="keywordflow">return</span> self.do_put_call(path, json_arguments=data, include_org_id=<span class="keyword">False</span>, json_output_expected=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1189</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2561,15 +2561,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  881</span>                                       max_results: int = <span class="keywordtype">None</span>) -&gt; List[NetworkDeviceObjectJsonStructure]:</div>
-<div class="line"><span class="lineno">  882</span>        path = <span class="stringliteral">&#39;/network_devices&#39;</span></div>
-<div class="line"><span class="lineno">  883</span>        data = {}</div>
-<div class="line"><span class="lineno">  884</span> </div>
-<div class="line"><span class="lineno">  885</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  886</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
-<div class="line"><span class="lineno">  887</span> </div>
-<div class="line"><span class="lineno">  888</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=<span class="keyword">False</span>, params=data)</div>
-<div class="line"><span class="lineno">  889</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  889</span>                                       max_results: int = <span class="keywordtype">None</span>) -&gt; List[NetworkDeviceObjectJsonStructure]:</div>
+<div class="line"><span class="lineno">  890</span>        path = <span class="stringliteral">&#39;/network_devices&#39;</span></div>
+<div class="line"><span class="lineno">  891</span>        data = {}</div>
+<div class="line"><span class="lineno">  892</span> </div>
+<div class="line"><span class="lineno">  893</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  894</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
+<div class="line"><span class="lineno">  895</span> </div>
+<div class="line"><span class="lineno">  896</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=<span class="keyword">False</span>, params=data)</div>
+<div class="line"><span class="lineno">  897</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2692,64 +2692,64 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  976</span>            -&gt; Dict[str, Any]:</div>
-<div class="line"><span class="lineno">  977</span> </div>
-<div class="line"><span class="lineno">  978</span>        <span class="keywordflow">if</span> consuming_security_principals <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  979</span>            consuming_security_principals = []</div>
-<div class="line"><span class="lineno">  980</span> </div>
-<div class="line"><span class="lineno">  981</span>        resolve_consumers = []</div>
-<div class="line"><span class="lineno">  982</span>        <span class="keywordflow">if</span> resolve_consumers_as_virtual_services:</div>
-<div class="line"><span class="lineno">  983</span>            resolve_consumers.append(<span class="stringliteral">&#39;virtual_services&#39;</span>)</div>
-<div class="line"><span class="lineno">  984</span>        <span class="keywordflow">if</span> resolve_consumers_as_workloads:</div>
-<div class="line"><span class="lineno">  985</span>            resolve_consumers.append(<span class="stringliteral">&#39;workloads&#39;</span>)</div>
-<div class="line"><span class="lineno">  986</span> </div>
-<div class="line"><span class="lineno">  987</span>        resolve_providers = []</div>
-<div class="line"><span class="lineno">  988</span>        <span class="keywordflow">if</span> resolve_providers_as_virtual_services:</div>
-<div class="line"><span class="lineno">  989</span>            resolve_providers.append(<span class="stringliteral">&#39;virtual_services&#39;</span>)</div>
-<div class="line"><span class="lineno">  990</span>        <span class="keywordflow">if</span> resolve_providers_as_workloads:</div>
-<div class="line"><span class="lineno">  991</span>            resolve_providers.append(<span class="stringliteral">&#39;workloads&#39;</span>)</div>
-<div class="line"><span class="lineno">  992</span> </div>
-<div class="line"><span class="lineno">  993</span>        consumers_json = []</div>
-<div class="line"><span class="lineno">  994</span>        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> consumers:</div>
-<div class="line"><span class="lineno">  995</span>            <span class="keywordflow">if</span> type(item) <span class="keywordflow">is</span> dict:</div>
-<div class="line"><span class="lineno">  996</span>                consumers_json.append(item)</div>
-<div class="line"><span class="lineno">  997</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  998</span>                consumers_json.append(item.get_api_reference_json())</div>
-<div class="line"><span class="lineno">  999</span> </div>
-<div class="line"><span class="lineno"> 1000</span>        providers_json = []</div>
-<div class="line"><span class="lineno"> 1001</span>        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> providers:</div>
-<div class="line"><span class="lineno"> 1002</span>            <span class="keywordflow">if</span> type(item) <span class="keywordflow">is</span> dict:</div>
-<div class="line"><span class="lineno"> 1003</span>                providers_json.append(item)</div>
-<div class="line"><span class="lineno"> 1004</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1005</span>                providers_json.append(item.get_api_reference_json())</div>
-<div class="line"><span class="lineno"> 1006</span> </div>
-<div class="line"><span class="lineno"> 1007</span>        services_json = []</div>
-<div class="line"><span class="lineno"> 1008</span>        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> services:</div>
-<div class="line"><span class="lineno"> 1009</span>            <span class="keywordflow">if</span> type(item) <span class="keywordflow">is</span> dict:</div>
-<div class="line"><span class="lineno"> 1010</span>                services_json.append(item)</div>
-<div class="line"><span class="lineno"> 1011</span>            <span class="keywordflow">elif</span> type(item) <span class="keywordflow">is</span> <a class="code hl_class" href="classpylo_1_1_rule_1_1_direct_service_in_rule.html">pylo.DirectServiceInRule</a>:</div>
-<div class="line"><span class="lineno"> 1012</span>                services_json.append(item.get_api_json())</div>
-<div class="line"><span class="lineno"> 1013</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno"> 1014</span>                services_json.append(item.get_api_reference_json())</div>
-<div class="line"><span class="lineno"> 1015</span> </div>
-<div class="line"><span class="lineno"> 1016</span>        data = {</div>
-<div class="line"><span class="lineno"> 1017</span>            <span class="stringliteral">&#39;unscoped_consumers&#39;</span>: <span class="keywordflow">not</span> intra_scope,</div>
-<div class="line"><span class="lineno"> 1018</span>            <span class="stringliteral">&#39;description&#39;</span>: description,</div>
-<div class="line"><span class="lineno"> 1019</span>            <span class="stringliteral">&#39;machine_auth&#39;</span>:  machine_auth,</div>
-<div class="line"><span class="lineno"> 1020</span>            <span class="stringliteral">&#39;sec_connect&#39;</span>: secure_connect,</div>
-<div class="line"><span class="lineno"> 1021</span>            <span class="stringliteral">&#39;enabled&#39;</span>: enabled,</div>
-<div class="line"><span class="lineno"> 1022</span>            <span class="stringliteral">&#39;stateless&#39;</span>: stateless,</div>
-<div class="line"><span class="lineno"> 1023</span>            <span class="stringliteral">&#39;consuming_security_principals&#39;</span>: consuming_security_principals,</div>
-<div class="line"><span class="lineno"> 1024</span>            <span class="stringliteral">&#39;resolve_labels_as&#39;</span>: {<span class="stringliteral">&#39;providers&#39;</span>: resolve_providers, <span class="stringliteral">&#39;consumers&#39;</span>: resolve_consumers,},</div>
-<div class="line"><span class="lineno"> 1025</span>            <span class="stringliteral">&#39;consumers&#39;</span>: consumers_json,</div>
-<div class="line"><span class="lineno"> 1026</span>            <span class="stringliteral">&#39;providers&#39;</span>: providers_json,</div>
-<div class="line"><span class="lineno"> 1027</span>            <span class="stringliteral">&#39;ingress_services&#39;</span>: services_json</div>
-<div class="line"><span class="lineno"> 1028</span>        }</div>
-<div class="line"><span class="lineno"> 1029</span> </div>
-<div class="line"><span class="lineno"> 1030</span>        path = ruleset_href+<span class="stringliteral">&#39;/sec_rules&#39;</span></div>
-<div class="line"><span class="lineno"> 1031</span> </div>
-<div class="line"><span class="lineno"> 1032</span>        <span class="keywordflow">return</span> self.do_post_call(path, json_arguments=data, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno"> 1033</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  984</span>            -&gt; Dict[str, Any]:</div>
+<div class="line"><span class="lineno">  985</span> </div>
+<div class="line"><span class="lineno">  986</span>        <span class="keywordflow">if</span> consuming_security_principals <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  987</span>            consuming_security_principals = []</div>
+<div class="line"><span class="lineno">  988</span> </div>
+<div class="line"><span class="lineno">  989</span>        resolve_consumers = []</div>
+<div class="line"><span class="lineno">  990</span>        <span class="keywordflow">if</span> resolve_consumers_as_virtual_services:</div>
+<div class="line"><span class="lineno">  991</span>            resolve_consumers.append(<span class="stringliteral">&#39;virtual_services&#39;</span>)</div>
+<div class="line"><span class="lineno">  992</span>        <span class="keywordflow">if</span> resolve_consumers_as_workloads:</div>
+<div class="line"><span class="lineno">  993</span>            resolve_consumers.append(<span class="stringliteral">&#39;workloads&#39;</span>)</div>
+<div class="line"><span class="lineno">  994</span> </div>
+<div class="line"><span class="lineno">  995</span>        resolve_providers = []</div>
+<div class="line"><span class="lineno">  996</span>        <span class="keywordflow">if</span> resolve_providers_as_virtual_services:</div>
+<div class="line"><span class="lineno">  997</span>            resolve_providers.append(<span class="stringliteral">&#39;virtual_services&#39;</span>)</div>
+<div class="line"><span class="lineno">  998</span>        <span class="keywordflow">if</span> resolve_providers_as_workloads:</div>
+<div class="line"><span class="lineno">  999</span>            resolve_providers.append(<span class="stringliteral">&#39;workloads&#39;</span>)</div>
+<div class="line"><span class="lineno"> 1000</span> </div>
+<div class="line"><span class="lineno"> 1001</span>        consumers_json = []</div>
+<div class="line"><span class="lineno"> 1002</span>        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> consumers:</div>
+<div class="line"><span class="lineno"> 1003</span>            <span class="keywordflow">if</span> type(item) <span class="keywordflow">is</span> dict:</div>
+<div class="line"><span class="lineno"> 1004</span>                consumers_json.append(item)</div>
+<div class="line"><span class="lineno"> 1005</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1006</span>                consumers_json.append(item.get_api_reference_json())</div>
+<div class="line"><span class="lineno"> 1007</span> </div>
+<div class="line"><span class="lineno"> 1008</span>        providers_json = []</div>
+<div class="line"><span class="lineno"> 1009</span>        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> providers:</div>
+<div class="line"><span class="lineno"> 1010</span>            <span class="keywordflow">if</span> type(item) <span class="keywordflow">is</span> dict:</div>
+<div class="line"><span class="lineno"> 1011</span>                providers_json.append(item)</div>
+<div class="line"><span class="lineno"> 1012</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1013</span>                providers_json.append(item.get_api_reference_json())</div>
+<div class="line"><span class="lineno"> 1014</span> </div>
+<div class="line"><span class="lineno"> 1015</span>        services_json = []</div>
+<div class="line"><span class="lineno"> 1016</span>        <span class="keywordflow">for</span> item <span class="keywordflow">in</span> services:</div>
+<div class="line"><span class="lineno"> 1017</span>            <span class="keywordflow">if</span> type(item) <span class="keywordflow">is</span> dict:</div>
+<div class="line"><span class="lineno"> 1018</span>                services_json.append(item)</div>
+<div class="line"><span class="lineno"> 1019</span>            <span class="keywordflow">elif</span> type(item) <span class="keywordflow">is</span> <a class="code hl_class" href="classpylo_1_1_rule_1_1_direct_service_in_rule.html">pylo.DirectServiceInRule</a>:</div>
+<div class="line"><span class="lineno"> 1020</span>                services_json.append(item.get_api_json())</div>
+<div class="line"><span class="lineno"> 1021</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno"> 1022</span>                services_json.append(item.get_api_reference_json())</div>
+<div class="line"><span class="lineno"> 1023</span> </div>
+<div class="line"><span class="lineno"> 1024</span>        data = {</div>
+<div class="line"><span class="lineno"> 1025</span>            <span class="stringliteral">&#39;unscoped_consumers&#39;</span>: <span class="keywordflow">not</span> intra_scope,</div>
+<div class="line"><span class="lineno"> 1026</span>            <span class="stringliteral">&#39;description&#39;</span>: description,</div>
+<div class="line"><span class="lineno"> 1027</span>            <span class="stringliteral">&#39;machine_auth&#39;</span>:  machine_auth,</div>
+<div class="line"><span class="lineno"> 1028</span>            <span class="stringliteral">&#39;sec_connect&#39;</span>: secure_connect,</div>
+<div class="line"><span class="lineno"> 1029</span>            <span class="stringliteral">&#39;enabled&#39;</span>: enabled,</div>
+<div class="line"><span class="lineno"> 1030</span>            <span class="stringliteral">&#39;stateless&#39;</span>: stateless,</div>
+<div class="line"><span class="lineno"> 1031</span>            <span class="stringliteral">&#39;consuming_security_principals&#39;</span>: consuming_security_principals,</div>
+<div class="line"><span class="lineno"> 1032</span>            <span class="stringliteral">&#39;resolve_labels_as&#39;</span>: {<span class="stringliteral">&#39;providers&#39;</span>: resolve_providers, <span class="stringliteral">&#39;consumers&#39;</span>: resolve_consumers,},</div>
+<div class="line"><span class="lineno"> 1033</span>            <span class="stringliteral">&#39;consumers&#39;</span>: consumers_json,</div>
+<div class="line"><span class="lineno"> 1034</span>            <span class="stringliteral">&#39;providers&#39;</span>: providers_json,</div>
+<div class="line"><span class="lineno"> 1035</span>            <span class="stringliteral">&#39;ingress_services&#39;</span>: services_json</div>
+<div class="line"><span class="lineno"> 1036</span>        }</div>
+<div class="line"><span class="lineno"> 1037</span> </div>
+<div class="line"><span class="lineno"> 1038</span>        path = ruleset_href+<span class="stringliteral">&#39;/sec_rules&#39;</span></div>
+<div class="line"><span class="lineno"> 1039</span> </div>
+<div class="line"><span class="lineno"> 1040</span>        <span class="keywordflow">return</span> self.do_post_call(path, json_arguments=data, json_output_expected=<span class="keyword">True</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno"> 1041</span> </div>
 <div class="ttc" id="aclasspylo_1_1_rule_1_1_direct_service_in_rule_html"><div class="ttname"><a href="classpylo_1_1_rule_1_1_direct_service_in_rule.html">pylo.Rule.DirectServiceInRule</a></div><div class="ttdef"><b>Definition:</b> Rule.py:142</div></div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -2789,12 +2789,12 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  961</span>    <span class="keyword">def </span>objects_rule_delete(self, rule_href: str):</div>
-<div class="line"><span class="lineno">  962</span>        <span class="keywordflow">return</span> self.do_delete_call(path=rule_href,</div>
-<div class="line"><span class="lineno">  963</span>                                   include_org_id=<span class="keyword">False</span>,</div>
-<div class="line"><span class="lineno">  964</span>                                   json_output_expected=<span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  965</span>                                   )</div>
-<div class="line"><span class="lineno">  966</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  969</span>    <span class="keyword">def </span>objects_rule_delete(self, rule_href: str):</div>
+<div class="line"><span class="lineno">  970</span>        <span class="keywordflow">return</span> self.do_delete_call(path=rule_href,</div>
+<div class="line"><span class="lineno">  971</span>                                   include_org_id=<span class="keyword">False</span>,</div>
+<div class="line"><span class="lineno">  972</span>                                   json_output_expected=<span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  973</span>                                   )</div>
+<div class="line"><span class="lineno">  974</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2843,13 +2843,13 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  954</span>    <span class="keyword">def </span>objects_rule_update(self, rule_href: str, update_data):</div>
-<div class="line"><span class="lineno">  955</span>        <span class="keywordflow">return</span> self.do_put_call(path=rule_href,</div>
-<div class="line"><span class="lineno">  956</span>                                json_arguments=update_data,</div>
-<div class="line"><span class="lineno">  957</span>                                include_org_id=<span class="keyword">False</span>,</div>
-<div class="line"><span class="lineno">  958</span>                                json_output_expected=<span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  959</span>                                )</div>
-<div class="line"><span class="lineno">  960</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  962</span>    <span class="keyword">def </span>objects_rule_update(self, rule_href: str, update_data):</div>
+<div class="line"><span class="lineno">  963</span>        <span class="keywordflow">return</span> self.do_put_call(path=rule_href,</div>
+<div class="line"><span class="lineno">  964</span>                                json_arguments=update_data,</div>
+<div class="line"><span class="lineno">  965</span>                                include_org_id=<span class="keyword">False</span>,</div>
+<div class="line"><span class="lineno">  966</span>                                json_output_expected=<span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  967</span>                                )</div>
+<div class="line"><span class="lineno">  968</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2918,26 +2918,26 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  921</span>                               description: str = <span class="stringliteral">&#39;&#39;</span>, enabled: bool = <span class="keyword">True</span>) -&gt; Dict:</div>
-<div class="line"><span class="lineno">  922</span>        path = <span class="stringliteral">&#39;/sec_policy/draft/rule_sets&#39;</span></div>
-<div class="line"><span class="lineno">  923</span> </div>
-<div class="line"><span class="lineno">  924</span>        scope = []</div>
-<div class="line"><span class="lineno">  925</span>        <span class="keywordflow">if</span> scope_app <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  926</span>            scope.append(scope_app.get_api_reference_json())</div>
-<div class="line"><span class="lineno">  927</span>        <span class="keywordflow">if</span> scope_env <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  928</span>            scope.append(scope_env.get_api_reference_json())</div>
-<div class="line"><span class="lineno">  929</span>        <span class="keywordflow">if</span> scope_app <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  930</span>            scope.append(scope_loc.get_api_reference_json())</div>
+<div class="fragment"><div class="line"><span class="lineno">  929</span>                               description: str = <span class="stringliteral">&#39;&#39;</span>, enabled: bool = <span class="keyword">True</span>) -&gt; Dict:</div>
+<div class="line"><span class="lineno">  930</span>        path = <span class="stringliteral">&#39;/sec_policy/draft/rule_sets&#39;</span></div>
 <div class="line"><span class="lineno">  931</span> </div>
-<div class="line"><span class="lineno">  932</span>        data = {</div>
-<div class="line"><span class="lineno">  933</span>            <span class="stringliteral">&#39;name&#39;</span>: name,</div>
-<div class="line"><span class="lineno">  934</span>            <span class="stringliteral">&#39;enabled&#39;</span>: enabled,</div>
-<div class="line"><span class="lineno">  935</span>            <span class="stringliteral">&#39;description&#39;</span>: description,</div>
-<div class="line"><span class="lineno">  936</span>            <span class="stringliteral">&#39;scopes&#39;</span>: [scope]</div>
-<div class="line"><span class="lineno">  937</span>        }</div>
-<div class="line"><span class="lineno">  938</span> </div>
-<div class="line"><span class="lineno">  939</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, json_arguments=data, json_output_expected=<span class="keyword">True</span>)</div>
-<div class="line"><span class="lineno">  940</span> </div>
+<div class="line"><span class="lineno">  932</span>        scope = []</div>
+<div class="line"><span class="lineno">  933</span>        <span class="keywordflow">if</span> scope_app <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  934</span>            scope.append(scope_app.get_api_reference_json())</div>
+<div class="line"><span class="lineno">  935</span>        <span class="keywordflow">if</span> scope_env <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  936</span>            scope.append(scope_env.get_api_reference_json())</div>
+<div class="line"><span class="lineno">  937</span>        <span class="keywordflow">if</span> scope_app <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  938</span>            scope.append(scope_loc.get_api_reference_json())</div>
+<div class="line"><span class="lineno">  939</span> </div>
+<div class="line"><span class="lineno">  940</span>        data = {</div>
+<div class="line"><span class="lineno">  941</span>            <span class="stringliteral">&#39;name&#39;</span>: name,</div>
+<div class="line"><span class="lineno">  942</span>            <span class="stringliteral">&#39;enabled&#39;</span>: enabled,</div>
+<div class="line"><span class="lineno">  943</span>            <span class="stringliteral">&#39;description&#39;</span>: description,</div>
+<div class="line"><span class="lineno">  944</span>            <span class="stringliteral">&#39;scopes&#39;</span>: [scope]</div>
+<div class="line"><span class="lineno">  945</span>        }</div>
+<div class="line"><span class="lineno">  946</span> </div>
+<div class="line"><span class="lineno">  947</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, json_arguments=data, json_output_expected=<span class="keyword">True</span>)</div>
+<div class="line"><span class="lineno">  948</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2976,12 +2976,12 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  948</span>    <span class="keyword">def </span>objects_ruleset_delete(self, ruleset_href: str):</div>
-<div class="line"><span class="lineno">  949</span>        <span class="keywordflow">return</span> self.do_delete_call(path=ruleset_href,</div>
-<div class="line"><span class="lineno">  950</span>                                   include_org_id=<span class="keyword">False</span>,</div>
-<div class="line"><span class="lineno">  951</span>                                   json_output_expected=<span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  952</span>                                   )</div>
-<div class="line"><span class="lineno">  953</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  956</span>    <span class="keyword">def </span>objects_ruleset_delete(self, ruleset_href: str):</div>
+<div class="line"><span class="lineno">  957</span>        <span class="keywordflow">return</span> self.do_delete_call(path=ruleset_href,</div>
+<div class="line"><span class="lineno">  958</span>                                   include_org_id=<span class="keyword">False</span>,</div>
+<div class="line"><span class="lineno">  959</span>                                   json_output_expected=<span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  960</span>                                   )</div>
+<div class="line"><span class="lineno">  961</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3030,15 +3030,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  908</span>    <span class="keyword">def </span>objects_ruleset_get(self, max_results: int = <span class="keywordtype">None</span>, async_mode=<span class="keyword">True</span>) -&gt; List[RulesetObjectJsonStructure]:</div>
-<div class="line"><span class="lineno">  909</span>        path = <span class="stringliteral">&#39;/sec_policy/draft/rule_sets&#39;</span></div>
-<div class="line"><span class="lineno">  910</span>        data = {}</div>
-<div class="line"><span class="lineno">  911</span> </div>
-<div class="line"><span class="lineno">  912</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  913</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
-<div class="line"><span class="lineno">  914</span> </div>
-<div class="line"><span class="lineno">  915</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
-<div class="line"><span class="lineno">  916</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  916</span>    <span class="keyword">def </span>objects_ruleset_get(self, max_results: int = <span class="keywordtype">None</span>, async_mode=<span class="keyword">True</span>) -&gt; List[RulesetObjectJsonStructure]:</div>
+<div class="line"><span class="lineno">  917</span>        path = <span class="stringliteral">&#39;/sec_policy/draft/rule_sets&#39;</span></div>
+<div class="line"><span class="lineno">  918</span>        data = {}</div>
+<div class="line"><span class="lineno">  919</span> </div>
+<div class="line"><span class="lineno">  920</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  921</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
+<div class="line"><span class="lineno">  922</span> </div>
+<div class="line"><span class="lineno">  923</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
+<div class="line"><span class="lineno">  924</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3083,13 +3083,13 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  941</span>    <span class="keyword">def </span>objects_ruleset_update(self, ruleset_href: str, update_data: RulesetObjectUpdateStructure):</div>
-<div class="line"><span class="lineno">  942</span>        <span class="keywordflow">return</span> self.do_put_call(path=ruleset_href,</div>
-<div class="line"><span class="lineno">  943</span>                                json_arguments=update_data,</div>
-<div class="line"><span class="lineno">  944</span>                                include_org_id=<span class="keyword">False</span>,</div>
-<div class="line"><span class="lineno">  945</span>                                json_output_expected=<span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  946</span>                                )</div>
-<div class="line"><span class="lineno">  947</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  949</span>    <span class="keyword">def </span>objects_ruleset_update(self, ruleset_href: str, update_data: RulesetObjectUpdateStructure):</div>
+<div class="line"><span class="lineno">  950</span>        <span class="keywordflow">return</span> self.do_put_call(path=ruleset_href,</div>
+<div class="line"><span class="lineno">  951</span>                                json_arguments=update_data,</div>
+<div class="line"><span class="lineno">  952</span>                                include_org_id=<span class="keyword">False</span>,</div>
+<div class="line"><span class="lineno">  953</span>                                json_output_expected=<span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  954</span>                                )</div>
+<div class="line"><span class="lineno">  955</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3144,29 +3144,29 @@ Here is the call graph for this function:</div>
 :param sid: Windows SID for that Group
 :param json_data:
 :return: HREF of the created Security Principal
-</pre> <div class="fragment"><div class="line"><span class="lineno"> 1043</span>    <span class="keyword">def </span>objects_securityprincipal_create(self, name: str = <span class="keywordtype">None</span>, sid: str = <span class="keywordtype">None</span>, json_data=<span class="keywordtype">None</span>) -&gt; str:</div>
-<div class="line"><span class="lineno"> 1044</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1045</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno"> 1046</span><span class="stringliteral">        :param name: friendly name </span><span class="keywordflow">for</span> this object</div>
-<div class="line"><span class="lineno"> 1047</span>        :param sid: Windows SID <span class="keywordflow">for</span> that Group</div>
-<div class="line"><span class="lineno"> 1048</span>        :param json_data:</div>
-<div class="line"><span class="lineno"> 1049</span>        :<span class="keywordflow">return</span>: HREF of the created Security Principal</div>
-<div class="line"><span class="lineno"> 1050</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno"> 1051</span><span class="stringliteral">        path = &#39;/security_principals&#39;</span></div>
-<div class="line"><span class="lineno"> 1052</span> </div>
-<div class="line"><span class="lineno"> 1053</span>        <span class="keywordflow">if</span> json_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1054</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;You must either use json_data or name but you cannot use both they are mutually exclusive&quot;</span>)</div>
-<div class="line"><span class="lineno"> 1055</span> </div>
-<div class="line"><span class="lineno"> 1056</span>        <span class="keywordflow">if</span> json_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1057</span>            <span class="keywordflow">return</span> get_field_or_die(<span class="stringliteral">&#39;href&#39;</span>, self.do_post_call(path=path, json_arguments=json_data))</div>
-<div class="line"><span class="lineno"> 1058</span> </div>
-<div class="line"><span class="lineno"> 1059</span>        <span class="keywordflow">if</span> name <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1060</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;You need to provide a group name&quot;</span>)</div>
-<div class="line"><span class="lineno"> 1061</span>        <span class="keywordflow">if</span> sid <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1062</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;You need to provide a SID&quot;</span>)</div>
+</pre> <div class="fragment"><div class="line"><span class="lineno"> 1051</span>    <span class="keyword">def </span>objects_securityprincipal_create(self, name: str = <span class="keywordtype">None</span>, sid: str = <span class="keywordtype">None</span>, json_data=<span class="keywordtype">None</span>) -&gt; str:</div>
+<div class="line"><span class="lineno"> 1052</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1053</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno"> 1054</span><span class="stringliteral">        :param name: friendly name </span><span class="keywordflow">for</span> this object</div>
+<div class="line"><span class="lineno"> 1055</span>        :param sid: Windows SID <span class="keywordflow">for</span> that Group</div>
+<div class="line"><span class="lineno"> 1056</span>        :param json_data:</div>
+<div class="line"><span class="lineno"> 1057</span>        :<span class="keywordflow">return</span>: HREF of the created Security Principal</div>
+<div class="line"><span class="lineno"> 1058</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno"> 1059</span><span class="stringliteral">        path = &#39;/security_principals&#39;</span></div>
+<div class="line"><span class="lineno"> 1060</span> </div>
+<div class="line"><span class="lineno"> 1061</span>        <span class="keywordflow">if</span> json_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span> <span class="keywordflow">and</span> name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1062</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;You must either use json_data or name but you cannot use both they are mutually exclusive&quot;</span>)</div>
 <div class="line"><span class="lineno"> 1063</span> </div>
-<div class="line"><span class="lineno"> 1064</span>        <span class="keywordflow">return</span> get_field_or_die(<span class="stringliteral">&#39;href&#39;</span>, self.do_post_call(path=path, json_arguments={<span class="stringliteral">&#39;name&#39;</span>: name, <span class="stringliteral">&#39;sid&#39;</span>: sid}))</div>
-<div class="line"><span class="lineno"> 1065</span> </div>
+<div class="line"><span class="lineno"> 1064</span>        <span class="keywordflow">if</span> json_data <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1065</span>            <span class="keywordflow">return</span> get_field_or_die(<span class="stringliteral">&#39;href&#39;</span>, self.do_post_call(path=path, json_arguments=json_data))</div>
+<div class="line"><span class="lineno"> 1066</span> </div>
+<div class="line"><span class="lineno"> 1067</span>        <span class="keywordflow">if</span> name <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1068</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;You need to provide a group name&quot;</span>)</div>
+<div class="line"><span class="lineno"> 1069</span>        <span class="keywordflow">if</span> sid <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1070</span>            <span class="keywordflow">raise</span> <a class="code hl_class" href="classpylo_1_1_exception_1_1_pylo_api_ex.html">pylo.PyloApiEx</a>(<span class="stringliteral">&quot;You need to provide a SID&quot;</span>)</div>
+<div class="line"><span class="lineno"> 1071</span> </div>
+<div class="line"><span class="lineno"> 1072</span>        <span class="keywordflow">return</span> get_field_or_die(<span class="stringliteral">&#39;href&#39;</span>, self.do_post_call(path=path, json_arguments={<span class="stringliteral">&#39;name&#39;</span>: name, <span class="stringliteral">&#39;sid&#39;</span>: sid}))</div>
+<div class="line"><span class="lineno"> 1073</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3211,15 +3211,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno"> 1034</span>    <span class="keyword">def </span>objects_securityprincipal_get(self, max_results: int = <span class="keywordtype">None</span>, async_mode=<span class="keyword">True</span>) -&gt; List[SecurityPrincipalObjectJsonStructure]:</div>
-<div class="line"><span class="lineno"> 1035</span>        path = <span class="stringliteral">&#39;/security_principals&#39;</span></div>
-<div class="line"><span class="lineno"> 1036</span>        data = {}</div>
-<div class="line"><span class="lineno"> 1037</span> </div>
-<div class="line"><span class="lineno"> 1038</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno"> 1039</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
-<div class="line"><span class="lineno"> 1040</span> </div>
-<div class="line"><span class="lineno"> 1041</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
-<div class="line"><span class="lineno"> 1042</span> </div>
+<div class="fragment"><div class="line"><span class="lineno"> 1042</span>    <span class="keyword">def </span>objects_securityprincipal_get(self, max_results: int = <span class="keywordtype">None</span>, async_mode=<span class="keyword">True</span>) -&gt; List[SecurityPrincipalObjectJsonStructure]:</div>
+<div class="line"><span class="lineno"> 1043</span>        path = <span class="stringliteral">&#39;/security_principals&#39;</span></div>
+<div class="line"><span class="lineno"> 1044</span>        data = {}</div>
+<div class="line"><span class="lineno"> 1045</span> </div>
+<div class="line"><span class="lineno"> 1046</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno"> 1047</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
+<div class="line"><span class="lineno"> 1048</span> </div>
+<div class="line"><span class="lineno"> 1049</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
+<div class="line"><span class="lineno"> 1050</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3259,17 +3259,17 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">:type href: str|pylo.Workload
-</pre> <div class="fragment"><div class="line"><span class="lineno">  869</span>    <span class="keyword">def </span>objects_service_delete(self, href):</div>
-<div class="line"><span class="lineno">  870</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  871</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">  872</span><span class="stringliteral">        :type href: str|<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a></span></div>
-<div class="line"><span class="lineno">  873</span><span class="stringliteral">        &quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  874</span><span class="stringliteral">        path = href</span></div>
-<div class="line"><span class="lineno">  875</span><span class="stringliteral">        </span><span class="keywordflow">if</span> type(href) <span class="keywordflow">is</span> <a class="code hl_class" href="classpylo_1_1_service_1_1_service.html">pylo.Service</a>:</div>
-<div class="line"><span class="lineno">  876</span>            path = href.href</div>
-<div class="line"><span class="lineno">  877</span> </div>
-<div class="line"><span class="lineno">  878</span>        <span class="keywordflow">return</span> self.do_delete_call(path=path, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno">  879</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  877</span>    <span class="keyword">def </span>objects_service_delete(self, href):</div>
+<div class="line"><span class="lineno">  878</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  879</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">  880</span><span class="stringliteral">        :type href: str|<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a></span></div>
+<div class="line"><span class="lineno">  881</span><span class="stringliteral">        &quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  882</span><span class="stringliteral">        path = href</span></div>
+<div class="line"><span class="lineno">  883</span><span class="stringliteral">        </span><span class="keywordflow">if</span> type(href) <span class="keywordflow">is</span> <a class="code hl_class" href="classpylo_1_1_service_1_1_service.html">pylo.Service</a>:</div>
+<div class="line"><span class="lineno">  884</span>            path = href.href</div>
+<div class="line"><span class="lineno">  885</span> </div>
+<div class="line"><span class="lineno">  886</span>        <span class="keywordflow">return</span> self.do_delete_call(path=path, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno">  887</span> </div>
 <div class="ttc" id="aclasspylo_1_1_service_1_1_service_html"><div class="ttname"><a href="classpylo_1_1_service_1_1_service.html">pylo.Service.Service</a></div><div class="ttdef"><b>Definition:</b> Service.py:164</div></div>
 <div class="ttc" id="aclasspylo_1_1_workload_1_1_workload_html"><div class="ttname"><a href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload.Workload</a></div><div class="ttdef"><b>Definition:</b> Workload.py:44</div></div>
 </div><!-- fragment --><div class="dynheader">
@@ -3320,15 +3320,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  860</span>    <span class="keyword">def </span>objects_service_get(self, max_results: int = <span class="keywordtype">None</span>, async_mode=<span class="keyword">True</span>):</div>
-<div class="line"><span class="lineno">  861</span>        path = <span class="stringliteral">&#39;/sec_policy/draft/services&#39;</span></div>
-<div class="line"><span class="lineno">  862</span>        data = {}</div>
-<div class="line"><span class="lineno">  863</span> </div>
-<div class="line"><span class="lineno">  864</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  865</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
-<div class="line"><span class="lineno">  866</span> </div>
-<div class="line"><span class="lineno">  867</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
-<div class="line"><span class="lineno">  868</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  868</span>    <span class="keyword">def </span>objects_service_get(self, max_results: int = <span class="keywordtype">None</span>, async_mode=<span class="keyword">True</span>):</div>
+<div class="line"><span class="lineno">  869</span>        path = <span class="stringliteral">&#39;/sec_policy/draft/services&#39;</span></div>
+<div class="line"><span class="lineno">  870</span>        data = {}</div>
+<div class="line"><span class="lineno">  871</span> </div>
+<div class="line"><span class="lineno">  872</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  873</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
+<div class="line"><span class="lineno">  874</span> </div>
+<div class="line"><span class="lineno">  875</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
+<div class="line"><span class="lineno">  876</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3430,12 +3430,12 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  651</span>    <span class="keyword">def </span>objects_workload_agent_upgrade(self, workload_href: str, target_version: str):</div>
-<div class="line"><span class="lineno">  652</span>        path = <span class="stringliteral">&#39;{}/upgrade&#39;</span>.format(workload_href)</div>
-<div class="line"><span class="lineno">  653</span>        data = {<span class="stringliteral">&quot;release&quot;</span>: target_version}</div>
-<div class="line"><span class="lineno">  654</span> </div>
-<div class="line"><span class="lineno">  655</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, json_arguments=data, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno">  656</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  659</span>    <span class="keyword">def </span>objects_workload_agent_upgrade(self, workload_href: str, target_version: str):</div>
+<div class="line"><span class="lineno">  660</span>        path = <span class="stringliteral">&#39;{}/upgrade&#39;</span>.format(workload_href)</div>
+<div class="line"><span class="lineno">  661</span>        data = {<span class="stringliteral">&quot;release&quot;</span>: target_version}</div>
+<div class="line"><span class="lineno">  662</span> </div>
+<div class="line"><span class="lineno">  663</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, json_arguments=data, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno">  664</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3474,10 +3474,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  856</span>    <span class="keyword">def </span>objects_workload_create_bulk_unmanaged(self, json_object):</div>
-<div class="line"><span class="lineno">  857</span>        path = <span class="stringliteral">&#39;/workloads/bulk_create&#39;</span></div>
-<div class="line"><span class="lineno">  858</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_object)</div>
-<div class="line"><span class="lineno">  859</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  864</span>    <span class="keyword">def </span>objects_workload_create_bulk_unmanaged(self, json_object):</div>
+<div class="line"><span class="lineno">  865</span>        path = <span class="stringliteral">&#39;/workloads/bulk_create&#39;</span></div>
+<div class="line"><span class="lineno">  866</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_object)</div>
+<div class="line"><span class="lineno">  867</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3516,10 +3516,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  852</span>    <span class="keyword">def </span>objects_workload_create_single_unmanaged(self, json_object):</div>
-<div class="line"><span class="lineno">  853</span>        path = <span class="stringliteral">&#39;/workloads&#39;</span></div>
-<div class="line"><span class="lineno">  854</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, json_arguments=json_object)</div>
-<div class="line"><span class="lineno">  855</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  860</span>    <span class="keyword">def </span>objects_workload_create_single_unmanaged(self, json_object):</div>
+<div class="line"><span class="lineno">  861</span>        path = <span class="stringliteral">&#39;/workloads&#39;</span></div>
+<div class="line"><span class="lineno">  862</span>        <span class="keywordflow">return</span> self.do_post_call(path=path, json_arguments=json_object)</div>
+<div class="line"><span class="lineno">  863</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3559,17 +3559,17 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">:type href: str|pylo.Workload
-</pre> <div class="fragment"><div class="line"><span class="lineno">  666</span>    <span class="keyword">def </span>objects_workload_delete(self, href):</div>
-<div class="line"><span class="lineno">  667</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  668</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">  669</span><span class="stringliteral">        :type href: str|<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a></span></div>
-<div class="line"><span class="lineno">  670</span><span class="stringliteral">        &quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  671</span><span class="stringliteral">        path = href</span></div>
-<div class="line"><span class="lineno">  672</span><span class="stringliteral">        </span><span class="keywordflow">if</span> type(href) <span class="keywordflow">is</span> <a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>:</div>
-<div class="line"><span class="lineno">  673</span>            path = href.href</div>
-<div class="line"><span class="lineno">  674</span> </div>
-<div class="line"><span class="lineno">  675</span>        <span class="keywordflow">return</span> self.do_delete_call(path=path, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno">  676</span> </div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  674</span>    <span class="keyword">def </span>objects_workload_delete(self, href):</div>
+<div class="line"><span class="lineno">  675</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  676</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">  677</span><span class="stringliteral">        :type href: str|<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a></span></div>
+<div class="line"><span class="lineno">  678</span><span class="stringliteral">        &quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  679</span><span class="stringliteral">        path = href</span></div>
+<div class="line"><span class="lineno">  680</span><span class="stringliteral">        </span><span class="keywordflow">if</span> type(href) <span class="keywordflow">is</span> <a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>:</div>
+<div class="line"><span class="lineno">  681</span>            path = href.href</div>
+<div class="line"><span class="lineno">  682</span> </div>
+<div class="line"><span class="lineno">  683</span>        <span class="keywordflow">return</span> self.do_delete_call(path=path, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno">  684</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3612,26 +3612,26 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  804</span>    <span class="keyword">def </span>objects_workload_delete_multi(self, href_or_workload_array: Union[List[<span class="stringliteral">&#39;pylo.Workload&#39;</span>],List[str]]):</div>
-<div class="line"><span class="lineno">  805</span>        <span class="keywordflow">if</span> len(href_or_workload_array) &lt; 1:</div>
-<div class="line"><span class="lineno">  806</span>            <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">  807</span> </div>
-<div class="line"><span class="lineno">  808</span>        json_data = []</div>
-<div class="line"><span class="lineno">  809</span> </div>
-<div class="line"><span class="lineno">  810</span>        <span class="keywordflow">if</span> type(href_or_workload_array[0]) <span class="keywordflow">is</span> str:</div>
-<div class="line"><span class="lineno">  811</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
-<div class="line"><span class="lineno">  812</span>                json_data.append({<span class="stringliteral">&quot;href&quot;</span>: href})</div>
-<div class="line"><span class="lineno">  813</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  814</span>            href: <span class="stringliteral">&#39;pylo.Workload&#39;</span></div>
-<div class="line"><span class="lineno">  815</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
-<div class="line"><span class="lineno">  816</span>                json_data.append({<span class="stringliteral">&quot;href&quot;</span>: href.href})</div>
+<div class="fragment"><div class="line"><span class="lineno">  812</span>    <span class="keyword">def </span>objects_workload_delete_multi(self, href_or_workload_array: Union[List[<span class="stringliteral">&#39;pylo.Workload&#39;</span>],List[str]]):</div>
+<div class="line"><span class="lineno">  813</span>        <span class="keywordflow">if</span> len(href_or_workload_array) &lt; 1:</div>
+<div class="line"><span class="lineno">  814</span>            <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">  815</span> </div>
+<div class="line"><span class="lineno">  816</span>        json_data = []</div>
 <div class="line"><span class="lineno">  817</span> </div>
-<div class="line"><span class="lineno">  818</span>        <span class="comment"># print(json_data)</span></div>
-<div class="line"><span class="lineno">  819</span> </div>
-<div class="line"><span class="lineno">  820</span>        path = <span class="stringliteral">&quot;/workloads/bulk_delete&quot;</span></div>
-<div class="line"><span class="lineno">  821</span> </div>
-<div class="line"><span class="lineno">  822</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_data, json_output_expected=<span class="keyword">True</span>)</div>
-<div class="line"><span class="lineno">  823</span> </div>
+<div class="line"><span class="lineno">  818</span>        <span class="keywordflow">if</span> type(href_or_workload_array[0]) <span class="keywordflow">is</span> str:</div>
+<div class="line"><span class="lineno">  819</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
+<div class="line"><span class="lineno">  820</span>                json_data.append({<span class="stringliteral">&quot;href&quot;</span>: href})</div>
+<div class="line"><span class="lineno">  821</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  822</span>            href: <span class="stringliteral">&#39;pylo.Workload&#39;</span></div>
+<div class="line"><span class="lineno">  823</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
+<div class="line"><span class="lineno">  824</span>                json_data.append({<span class="stringliteral">&quot;href&quot;</span>: href.href})</div>
+<div class="line"><span class="lineno">  825</span> </div>
+<div class="line"><span class="lineno">  826</span>        <span class="comment"># print(json_data)</span></div>
+<div class="line"><span class="lineno">  827</span> </div>
+<div class="line"><span class="lineno">  828</span>        path = <span class="stringliteral">&quot;/workloads/bulk_delete&quot;</span></div>
+<div class="line"><span class="lineno">  829</span> </div>
+<div class="line"><span class="lineno">  830</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_data, json_output_expected=<span class="keyword">True</span>)</div>
+<div class="line"><span class="lineno">  831</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3645,8 +3645,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a1f5dd4115b38514de92dfd70574184b4" name="a1f5dd4115b38514de92dfd70574184b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f5dd4115b38514de92dfd70574184b4">&#9670;&#160;</a></span>objects_workload_get()</h2>
+<a id="a6153af2c8ec35aecb3d43cfa8023ec0a" name="a6153af2c8ec35aecb3d43cfa8023ec0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6153af2c8ec35aecb3d43cfa8023ec0a">&#9670;&#160;</a></span>objects_workload_get()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3684,6 +3684,18 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool &#160;</td>
+          <td class="paramname"><em>filter_by_managed</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Literal['active', 'warning', 'error'] &#160;</td>
+          <td class="paramname"><em>filer_by_policy_health</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int &#160;</td>
           <td class="paramname"><em>max_results</em> = <code>None</code>, </td>
         </tr>
@@ -3700,33 +3712,39 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  629</span>                             async_mode=<span class="keyword">True</span>) -&gt; List[WorkloadObjectJsonStructure]:</div>
-<div class="line"><span class="lineno">  630</span>        path = <span class="stringliteral">&#39;/workloads&#39;</span></div>
-<div class="line"><span class="lineno">  631</span>        data = {}</div>
-<div class="line"><span class="lineno">  632</span> </div>
-<div class="line"><span class="lineno">  633</span>        <span class="keywordflow">if</span> include_deleted:</div>
-<div class="line"><span class="lineno">  634</span>            data[<span class="stringliteral">&#39;include_deleted&#39;</span>] = <span class="stringliteral">&#39;yes&#39;</span></div>
-<div class="line"><span class="lineno">  635</span> </div>
-<div class="line"><span class="lineno">  636</span>        <span class="keywordflow">if</span> filter_by_ip <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  637</span>            data[<span class="stringliteral">&#39;ip_address&#39;</span>] = filter_by_ip</div>
-<div class="line"><span class="lineno">  638</span> </div>
-<div class="line"><span class="lineno">  639</span>        <span class="keywordflow">if</span> filter_by_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  640</span>            <span class="comment"># filter_by_label must be converted to json text</span></div>
-<div class="line"><span class="lineno">  641</span>            data[<span class="stringliteral">&#39;labels&#39;</span>] = json.dumps(filter_by_label)</div>
-<div class="line"><span class="lineno">  642</span> </div>
-<div class="line"><span class="lineno">  643</span>        <span class="keywordflow">if</span> filter_by_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  644</span>            data[<span class="stringliteral">&#39;name&#39;</span>] = filter_by_name</div>
-<div class="line"><span class="lineno">  645</span> </div>
-<div class="line"><span class="lineno">  646</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  647</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
-<div class="line"><span class="lineno">  648</span> </div>
-<div class="line"><span class="lineno">  649</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
+<div class="fragment"><div class="line"><span class="lineno">  631</span>                             async_mode=<span class="keyword">True</span>) -&gt; List[WorkloadObjectJsonStructure]:</div>
+<div class="line"><span class="lineno">  632</span>        path = <span class="stringliteral">&#39;/workloads&#39;</span></div>
+<div class="line"><span class="lineno">  633</span>        data = {}</div>
+<div class="line"><span class="lineno">  634</span> </div>
+<div class="line"><span class="lineno">  635</span>        <span class="keywordflow">if</span> include_deleted:</div>
+<div class="line"><span class="lineno">  636</span>            data[<span class="stringliteral">&#39;include_deleted&#39;</span>] = <span class="stringliteral">&#39;yes&#39;</span></div>
+<div class="line"><span class="lineno">  637</span> </div>
+<div class="line"><span class="lineno">  638</span>        <span class="keywordflow">if</span> filter_by_ip <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  639</span>            data[<span class="stringliteral">&#39;ip_address&#39;</span>] = filter_by_ip</div>
+<div class="line"><span class="lineno">  640</span> </div>
+<div class="line"><span class="lineno">  641</span>        <span class="keywordflow">if</span> filter_by_label <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  642</span>            <span class="comment"># filter_by_label must be converted to json text</span></div>
+<div class="line"><span class="lineno">  643</span>            data[<span class="stringliteral">&#39;labels&#39;</span>] = json.dumps(filter_by_label)</div>
+<div class="line"><span class="lineno">  644</span> </div>
+<div class="line"><span class="lineno">  645</span>        <span class="keywordflow">if</span> filter_by_name <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  646</span>            data[<span class="stringliteral">&#39;name&#39;</span>] = filter_by_name</div>
+<div class="line"><span class="lineno">  647</span> </div>
+<div class="line"><span class="lineno">  648</span>        <span class="keywordflow">if</span> filter_by_managed <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  649</span>            data[<span class="stringliteral">&#39;managed&#39;</span>] = <span class="stringliteral">&#39;true&#39;</span> <span class="keywordflow">if</span> filter_by_managed <span class="keywordflow">else</span> <span class="stringliteral">&#39;false&#39;</span></div>
 <div class="line"><span class="lineno">  650</span> </div>
+<div class="line"><span class="lineno">  651</span>        <span class="keywordflow">if</span> filer_by_policy_health <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  652</span>            data[<span class="stringliteral">&#39;policy_health&#39;</span>] = filer_by_policy_health</div>
+<div class="line"><span class="lineno">  653</span> </div>
+<div class="line"><span class="lineno">  654</span>        <span class="keywordflow">if</span> max_results <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  655</span>            data[<span class="stringliteral">&#39;max_results&#39;</span>] = max_results</div>
+<div class="line"><span class="lineno">  656</span> </div>
+<div class="line"><span class="lineno">  657</span>        <span class="keywordflow">return</span> self.do_get_call(path=path, async_call=async_mode, params=data)</div>
+<div class="line"><span class="lineno">  658</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a1f5dd4115b38514de92dfd70574184b4_cgraph.png" border="0" usemap="#aclasspylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a1f5dd4115b38514de92dfd70574184b4_cgraph" alt=""/></div>
-<map name="aclasspylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a1f5dd4115b38514de92dfd70574184b4_cgraph" id="aclasspylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a1f5dd4115b38514de92dfd70574184b4_cgraph">
+<div class="center"><img src="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a6153af2c8ec35aecb3d43cfa8023ec0a_cgraph.png" border="0" usemap="#aclasspylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a6153af2c8ec35aecb3d43cfa8023ec0a_cgraph" alt=""/></div>
+<map name="aclasspylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a6153af2c8ec35aecb3d43cfa8023ec0a_cgraph" id="aclasspylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_a6153af2c8ec35aecb3d43cfa8023ec0a_cgraph">
 <area shape="rect" title=" " alt="" coords="5,5,288,45"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#ab2f988ffe4e8f58cfd93e02513b950ac" title=" " alt="" coords="336,5,591,45"/>
 <area shape="rect" href="classpylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector.html#a7dcd6d5b8c8efcfaf98262f27df73c09" title=" " alt="" coords="639,5,880,45"/>
@@ -3761,34 +3779,34 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">:type href_or_workload_array: list[str]|list[pylo.Workload]
-</pre> <div class="fragment"><div class="line"><span class="lineno">  824</span>    <span class="keyword">def </span>objects_workload_unpair_multi(self, href_or_workload_array):</div>
-<div class="line"><span class="lineno">  825</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  826</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">  827</span><span class="stringliteral">        :type href_or_workload_array: list[str]|list[<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>]</span></div>
-<div class="line"><span class="lineno">  828</span><span class="stringliteral">        &quot;&quot;&quot;</span></div>
-<div class="line"><span class="lineno">  829</span><span class="stringliteral"></span> </div>
-<div class="line"><span class="lineno">  830</span><span class="stringliteral">        </span><span class="keywordflow">if</span> len(href_or_workload_array) &lt; 1:</div>
-<div class="line"><span class="lineno">  831</span>            <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">  832</span> </div>
-<div class="line"><span class="lineno">  833</span>        json_data = {</div>
-<div class="line"><span class="lineno">  834</span>            <span class="stringliteral">&quot;ip_table_restore&quot;</span>: <span class="stringliteral">&quot;disable&quot;</span>,</div>
-<div class="line"><span class="lineno">  835</span>            <span class="stringliteral">&quot;workloads&quot;</span>: []</div>
-<div class="line"><span class="lineno">  836</span>        }</div>
-<div class="line"><span class="lineno">  837</span> </div>
-<div class="line"><span class="lineno">  838</span>        <span class="keywordflow">if</span> type(href_or_workload_array[0]) <span class="keywordflow">is</span> str:</div>
-<div class="line"><span class="lineno">  839</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
-<div class="line"><span class="lineno">  840</span>                json_data[<span class="stringliteral">&#39;workloads&#39;</span>].append({<span class="stringliteral">&quot;href&quot;</span>: href})</div>
-<div class="line"><span class="lineno">  841</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  842</span>            href: <span class="stringliteral">&#39;pylo.Workload&#39;</span></div>
-<div class="line"><span class="lineno">  843</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
-<div class="line"><span class="lineno">  844</span>                json_data[<span class="stringliteral">&#39;workloads&#39;</span>].append({<span class="stringliteral">&quot;href&quot;</span>: href.href})</div>
+</pre> <div class="fragment"><div class="line"><span class="lineno">  832</span>    <span class="keyword">def </span>objects_workload_unpair_multi(self, href_or_workload_array):</div>
+<div class="line"><span class="lineno">  833</span>        <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  834</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">  835</span><span class="stringliteral">        :type href_or_workload_array: list[str]|list[<a class="code hl_class" href="classpylo_1_1_workload_1_1_workload.html">pylo.Workload</a>]</span></div>
+<div class="line"><span class="lineno">  836</span><span class="stringliteral">        &quot;&quot;&quot;</span></div>
+<div class="line"><span class="lineno">  837</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">  838</span><span class="stringliteral">        </span><span class="keywordflow">if</span> len(href_or_workload_array) &lt; 1:</div>
+<div class="line"><span class="lineno">  839</span>            <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">  840</span> </div>
+<div class="line"><span class="lineno">  841</span>        json_data = {</div>
+<div class="line"><span class="lineno">  842</span>            <span class="stringliteral">&quot;ip_table_restore&quot;</span>: <span class="stringliteral">&quot;disable&quot;</span>,</div>
+<div class="line"><span class="lineno">  843</span>            <span class="stringliteral">&quot;workloads&quot;</span>: []</div>
+<div class="line"><span class="lineno">  844</span>        }</div>
 <div class="line"><span class="lineno">  845</span> </div>
-<div class="line"><span class="lineno">  846</span>        <span class="comment"># print(json_data)</span></div>
-<div class="line"><span class="lineno">  847</span> </div>
-<div class="line"><span class="lineno">  848</span>        path = <span class="stringliteral">&quot;/workloads/unpair&quot;</span></div>
-<div class="line"><span class="lineno">  849</span> </div>
-<div class="line"><span class="lineno">  850</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_data, json_output_expected=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno">  851</span> </div>
+<div class="line"><span class="lineno">  846</span>        <span class="keywordflow">if</span> type(href_or_workload_array[0]) <span class="keywordflow">is</span> str:</div>
+<div class="line"><span class="lineno">  847</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
+<div class="line"><span class="lineno">  848</span>                json_data[<span class="stringliteral">&#39;workloads&#39;</span>].append({<span class="stringliteral">&quot;href&quot;</span>: href})</div>
+<div class="line"><span class="lineno">  849</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  850</span>            href: <span class="stringliteral">&#39;pylo.Workload&#39;</span></div>
+<div class="line"><span class="lineno">  851</span>            <span class="keywordflow">for</span> href <span class="keywordflow">in</span> href_or_workload_array:</div>
+<div class="line"><span class="lineno">  852</span>                json_data[<span class="stringliteral">&#39;workloads&#39;</span>].append({<span class="stringliteral">&quot;href&quot;</span>: href.href})</div>
+<div class="line"><span class="lineno">  853</span> </div>
+<div class="line"><span class="lineno">  854</span>        <span class="comment"># print(json_data)</span></div>
+<div class="line"><span class="lineno">  855</span> </div>
+<div class="line"><span class="lineno">  856</span>        path = <span class="stringliteral">&quot;/workloads/unpair&quot;</span></div>
+<div class="line"><span class="lineno">  857</span> </div>
+<div class="line"><span class="lineno">  858</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_data, json_output_expected=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno">  859</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3833,11 +3851,11 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  657</span>    <span class="keyword">def </span>objects_workload_update(self, href: str, data):</div>
-<div class="line"><span class="lineno">  658</span>        path = href</div>
-<div class="line"><span class="lineno">  659</span> </div>
-<div class="line"><span class="lineno">  660</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=data, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
-<div class="line"><span class="lineno">  661</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  665</span>    <span class="keyword">def </span>objects_workload_update(self, href: str, data):</div>
+<div class="line"><span class="lineno">  666</span>        path = href</div>
+<div class="line"><span class="lineno">  667</span> </div>
+<div class="line"><span class="lineno">  668</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=data, json_output_expected=<span class="keyword">False</span>, include_org_id=<span class="keyword">False</span>)</div>
+<div class="line"><span class="lineno">  669</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3876,10 +3894,10 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  662</span>    <span class="keyword">def </span>objects_workload_update_bulk(self, json_object):</div>
-<div class="line"><span class="lineno">  663</span>        path = <span class="stringliteral">&#39;/workloads/bulk_update&#39;</span></div>
-<div class="line"><span class="lineno">  664</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_object)</div>
-<div class="line"><span class="lineno">  665</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  670</span>    <span class="keyword">def </span>objects_workload_update_bulk(self, json_object):</div>
+<div class="line"><span class="lineno">  671</span>        path = <span class="stringliteral">&#39;/workloads/bulk_update&#39;</span></div>
+<div class="line"><span class="lineno">  672</span>        <span class="keywordflow">return</span> self.do_put_call(path=path, json_arguments=json_object)</div>
+<div class="line"><span class="lineno">  673</span> </div>
 </div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -4112,7 +4130,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 7 2024 12:56:48 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Thu Mar 7 2024 15:45:22 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
