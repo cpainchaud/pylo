@@ -78,6 +78,9 @@ def run(forced_command_name: Optional[str] = None):
     config_data = None
 
     if not selected_command.credentials_manager_mode:
+        # credential_profile_name is required for all commands except the credential manager
+        if credential_profile_name is None:
+            raise pylo.PyloEx("The --pce argument is required for this command")
         if settings_use_cache:
             print(" * Loading objects from cached PCE '{}' data... ".format(credential_profile_name), end="", flush=True)
             org = pylo.Organization.get_from_cache_file(credential_profile_name)

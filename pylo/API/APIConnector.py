@@ -297,6 +297,10 @@ class APIConnector:
                                 time.sleep(retry_wait_time_if_api_call_limit_reached)
                                 continue
 
+                if req.status_code == 403:
+                    raise pylo.PyloApiRequestForbiddenEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
+                                                        + '" and error message: ' + req.text)
+
                 raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
                                 + '" and error message: ' + req.text)
 
@@ -735,7 +739,14 @@ class APIConnector:
             if len(self._hrefs) < 1:
                 raise pylo.PyloEx("WorkloadMultiDeleteTracker is empty")
 
-            result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))
+            try:
+                result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))
+            except Exception as ex:  #global exception means something really bad happened we log errors for all workloads
+                for href in self._hrefs.keys():
+                    self._errors[href] = str(ex)
+                return
+
+
             # print(pylo.nice_json(result))
             if not type(result) is list:
                 raise pylo.PyloApiEx("API didnt return expected JSON format", result)
@@ -751,11 +762,10 @@ class APIConnector:
 
                 error = entry.get("errors")
                 error_string = json.dumps(error)
-                if unpair_agents and error_string.find("method_not_allowed_error") > -1:
+                if unpair_agents and error is not None and error_string.find("method_not_allowed_error") > -1:
                     agents_to_unpair.append(href)
-                else:
-                    if href is not None:
-                        self._errors[href] = error_string
+                elif error is not None and len(error) > 0:
+                    self._errors[href] = error_string
 
             if len(agents_to_unpair) > 0:
                 self._unpair_agents(agents_to_unpair)
@@ -780,6 +790,7 @@ class APIConnector:
                     except pylo.PyloApiEx as ex:
                         self._errors[href] = str(ex)
                         break
+
 
         def count_entries(self):
             return len(self._hrefs)

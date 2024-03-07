@@ -1,5 +1,7 @@
 import datetime
 
+import click
+
 import pylo
 import argparse
 from typing import Dict, List, Literal, Optional
@@ -12,8 +14,10 @@ objects_load_filter = ['labels']
 def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='')
-    parser.add_argument('--confirm', '-c', action='store_true',
-                        help='actually operate deletions')
+    parser.add_argument('--proceed-with-deletion', action='store_true',
+                        help='Actually operate deletions. Considered as a dry-run if not specified.')
+    parser.add_argument('--do-not-require-deletion-confirmation', action='store_true',
+                        help='Ask for confirmation for each deletion')
     parser.add_argument('--filter-label', '-fl', action='append',
                         help='Only look at workloads matching specified labels')
     parser.add_argument('--ignore-unmanaged-workloads', '-iuw', action='store_true',
@@ -26,6 +30,10 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Workload which was heartbeating the last will not be deleted')
     parser.add_argument('--do-not-delete-if-last-heartbeat-is-more-recent-than', type=int, default=None,
                         help='Workload which was heartbeating the last will not be deleted if the last heartbeat is more recent than the specified number of days')
+    parser.add_argument('--override-pce-offline-timer-to', type=int, default=None,
+                        help='Override the PCE offline timer to the specified number of days')
+    parser.add_argument('--limit-number-of-deleted-workloads', '-l', type=int, default=None,
+                        help='Limit the number of workloads to be deleted, for a limited test run for example.')
 
 
 
@@ -37,11 +45,14 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
 
     arg_verbose = args['verbose']
-    arg_confirm = args['confirm']
+    arg_proceed_with_deletion = args['proceed_with_deletion'] is True
+    arg_do_not_require_deletion_confirmation = args['do_not_require_deletion_confirmation'] is True
     arg_ignore_unmanaged_workloads = args['ignore_unmanaged_workloads'] is True
     arg_do_not_delete_the_most_recent_workload = args['do_not_delete_the_most_recent_workload'] is True
     arg_do_not_delete_the_most_recently_heartbeating_workload = args['do_not_delete_the_most_recently_heartbeating_workload'] is True
     arg_do_not_delete_if_last_heartbeat_is_more_recent_than = args['do_not_delete_if_last_heartbeat_is_more_recent_than']
+    arg_override_pce_offline_timer_to = args['override_pce_offline_timer_to']
+    arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
 
     output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_')
     output_file_csv = output_file_prefix + '.csv'
@@ -133,7 +144,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
         sheet.add_line_from_object(new_row)
 
-    duplicated_hostnames = DuplicateRecordManager()
+    duplicated_hostnames = DuplicateRecordManager(arg_override_pce_offline_timer_to)
 
     print(" * Looking for VEN with duplicated hostname(s)")
 
@@ -186,22 +197,42 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                 print("    - IGNORED: wkl {}/{} has a last heartbeat more recent than {} days".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
                 add_workload_to_report(wkl, "ignored (last heartbeat is more recent than {} days)".format(arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
             else:
-                delete_tracker.add_workload(wkl)
-                print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
+                    print("    - IGNORED: wkl {}/{} because the limit of {} workloads to be deleted was reached".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_limit_number_of_deleted_workloads))
+                    add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
+                else:
+                    delete_tracker.add_workload(wkl)
+                    print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
 
         for wkl in dup_record.unmanaged:
-            delete_tracker.add_workload(wkl)
-            # deleteTracker.add_href('nope')
-            print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+            if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
+                print("    - IGNORED: wkl {}/{} because the limit of {} workloads to be deleted was reached".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_limit_number_of_deleted_workloads))
+                add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
+            else:
+                delete_tracker.add_workload(wkl)
+                print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
     print()
 
     if delete_tracker.count_entries() < 1:
-        print(" * No duplicate found!")
+        print(" * No workloads to be deleted")
 
-    elif arg_confirm:
-        print(" * Found {} workloads to be deleted".format(delete_tracker.count_entries()))
+    elif arg_proceed_with_deletion:
+        print(" * Found {} workloads to be deleted. Listing:".format(delete_tracker.count_entries()))
+        for wkl in delete_tracker.workloads:
+            print("    - {} (href: {} url: {})".format(wkl.get_name_stripped_fqdn(), wkl.href, wkl.get_pce_ui_url()))
+
+        print()
+
+        if arg_do_not_require_deletion_confirmation:
+            print(" * '--do-not-require-deletion-confirmation' option was used, no confirmation will be asked")
+        else:
+            confirm = click.confirm(" * Are you sure you want to proceed with the deletion of {} workloads?".format(delete_tracker.count_entries()), abort=True)
+            if not confirm:
+                print(" * Aborted by user")
+                return
+
         print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
         delete_tracker.execute(unpair_agents=True)
         print("DONE")
@@ -218,7 +249,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         print(" * {} workloads deleted / {} with errors".format(delete_tracker.count_entries()-delete_tracker.count_errors(), delete_tracker.count_errors()))
         print()
     else:
-        print(" * Found {} workloads to be deleted BUT NO 'CONFIRM' OPTION WAS USED".format(delete_tracker.count_entries()))
+        print(" * Found {} workloads to be deleted BUT NO '--proceed-with-deletion' OPTION WAS USED".format(delete_tracker.count_entries()))
         for wkl in delete_tracker.workloads:
             add_workload_to_report(wkl, "TO BE DELETED (no confirm option used)")
 
@@ -247,21 +278,27 @@ command_object = Command(command_name, __main, fill_parser, objects_load_filter)
 
 class DuplicateRecordManager:
     class DuplicatedRecord:
-        def __init__(self):
+        def __init__(self, pce_offline_timer_override: Optional[int] = None):
             self.offline = []
             self.online = []
             self.unmanaged= []
             self.all: List[pylo.Workload] = []
+            self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override
 
         def add_workload(self, workload: 'pylo.Workload'):
             self.all.append(workload)
             if workload.unmanaged:
                 self.unmanaged.append(workload)
-                return
-            if workload.online:
-                self.online.append(workload)
-                return
-            self.offline.append(workload)
+            elif self._pce_offline_timer_override is None:
+                if workload.online:
+                    self.online.append(workload)
+                else:
+                    self.offline.append(workload)
+            else:
+                if workload.ven_agent.get_last_heartbeat_date() > datetime.datetime.now() - datetime.timedelta(days=self._pce_offline_timer_override):
+                    self.online.append(workload)
+                else:
+                    self.offline.append(workload)
 
         def count_workloads(self):
             return len(self.unmanaged) + len(self.online) + len(self.offline)
@@ -298,8 +335,9 @@ class DuplicateRecordManager:
                     latest = wkl
             return latest
 
-    def __init__(self):
+    def __init__(self, pce_offline_timer_override: Optional[int] = None):
         self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}
+        self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override
 
     def count_record(self):
         return len(self._records)
@@ -323,6 +361,6 @@ class DuplicateRecordManager:
         lower_hostname = workload.get_name_stripped_fqdn().lower()
 
         if lower_hostname not in self._records:
-            self._records[lower_hostname] = self.DuplicatedRecord()
+            self._records[lower_hostname] = self.DuplicatedRecord(self._pce_offline_timer_override)
         record = self._records[lower_hostname]
         record.add_workload(workload)

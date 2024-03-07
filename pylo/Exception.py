@@ -36,5 +36,9 @@ class PyloApiUnexpectedSyntax(PyloApiEx):
     def __init__(self, arg, json_object=None):
         PyloApiEx(arg, json_object)
 
+class PyloApiRequestForbiddenEx(PyloApiEx):
+    def __init__(self, arg, json_object=None):
+        PyloApiEx(arg, json_object)
+
 
 

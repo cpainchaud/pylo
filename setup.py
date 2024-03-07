@@ -28,7 +28,7 @@ setup(
         'paramiko~=3.4.0',
         'prettytable~=3.10.0'
         'requests~=2.31.0',
-        'xlsxwriter~=1.3.7',
+        'xlsxwriter~=3.2.0',
     ],
     entry_points={
         'console_scripts': ['pylo-cli=pylo.cli:run'],

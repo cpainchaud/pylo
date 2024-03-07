@@ -5,7 +5,7 @@ from typing import Callable
 from .tmp import *
 from .Helpers import *
 
-from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexpectedSyntax, PyloObjectNotFound
+from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexpectedSyntax, PyloObjectNotFound, PyloApiRequestForbiddenEx
 from .SoftwareVersion import SoftwareVersion
 from .IPMap import IP4Map
 from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
@@ -13,6 +13,7 @@ from .API.APIConnector import APIConnector, ObjectTypes
 from .API.RuleSearchQuery import RuleSearchQuery, RuleSearchQueryResolvedResultSet
 from .API.ClusterHealth import ClusterHealth
 from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager, ExplorerFilterSetV1, ExplorerQuery
+from .API.AuditLog import AuditLogQuery, AuditLogQueryResultSet, AuditLogFilterSet
 from .API.CredentialsManager import get_credentials_from_file
 from .LabelCommon import LabelCommon
 from .Label import Label
