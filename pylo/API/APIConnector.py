@@ -625,6 +625,8 @@ class APIConnector:
                              filter_by_ip: str = None,
                              filter_by_label: WorkloadsGetQueryLabelFilterJsonStructure=None,
                              filter_by_name: str = None,
+                             filter_by_managed: bool = None,
+                             filer_by_policy_health: Literal['active', 'warning', 'error'] = None,
                              max_results: int = None,
                              async_mode=True) -> List[WorkloadObjectJsonStructure]:
         path = '/workloads'
@@ -642,6 +644,12 @@ class APIConnector:
 
         if filter_by_name is not None:
             data['name'] = filter_by_name
+
+        if filter_by_managed is not None:
+            data['managed'] = 'true' if filter_by_managed else 'false'
+
+        if filer_by_policy_health is not None:
+            data['policy_health'] = filer_by_policy_health
 
         if max_results is not None:
             data['max_results'] = max_results
