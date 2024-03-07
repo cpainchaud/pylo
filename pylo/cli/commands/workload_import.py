@@ -64,13 +64,13 @@ def __main(args, org: pylo.Organization, **kwargs):
     csv_expected_fields: List[Dict] = [
         {'name': 'name', 'optional': True, 'default': ''},
         {'name': 'hostname', 'optional': False},
-        {'name': 'role', 'optional': True},
-        {'name': 'app', 'optional': True},
-        {'name': 'env', 'optional': True},
-        {'name': 'loc', 'optional': True},
         {'name': 'ip', 'optional': False},
         {'name': 'description', 'optional': True, 'default': ''}
     ]
+
+    # each label type/dimension is optional
+    for label_type in org.LabelStore.label_types:
+        csv_expected_fields.append({'name': f"label_{label_type}"  , 'optional': True})
 
     csv_filter_fields = [
         {'name': 'ip', 'optional': False},
@@ -254,7 +254,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     print("  *OK")
     # </editor-fold>
 
-    # <editor-fold desc="Label collision detection">
+    # <editor-fold desc="Label collision detection and listing of labels to be created">
     print(" * Checking for Labels case collisions and missing ones to be created:")
     name_cache: Dict[str, Any] = {}
     for label in org.LabelStore.get_labels():
@@ -269,65 +269,31 @@ def __main(args, org: pylo.Organization, **kwargs):
         if '**not_created_reason**' in csv_object:
             continue
 
-        role_label = csv_object['role']
-        if role_label is None:
-            role_label = ''
-        role_label_lower = role_label.lower()
 
-        app_label = csv_object['app']
-        if app_label is None:
-            app_label = ''
-        app_label_lower = app_label.lower()
-
-        env_label = csv_object['env']
-        if env_label is None:
-            env_label = ''
-        env_label_lower = env_label.lower()
-
-        loc_label = csv_object['loc']
-        if loc_label is None:
-            loc_label = ''
-        loc_label_lower = loc_label.lower()
-
-        if len(role_label_lower) == 0:
-            pass
-        elif role_label_lower not in name_cache:
-            name_cache[role_label_lower] = {'csv': True, 'realcase': role_label, 'type': 'role'}
-        elif name_cache[role_label_lower]['realcase'] != role_label:
-            if 'csv' in name_cache[role_label_lower]:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case within the CSV".format(role_label))
+        # each label type/dimension we must check which ones are requested and if they exist
+        for label_type in org.LabelStore.label_types:
+            requested_label_name = csv_object[label_type]
+            if requested_label_name is not None:
+                pass
             else:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(role_label))
+                requested_label_name = str(requested_label_name)
+                requested_label_name_lower = requested_label_name.lower()
+                if requested_label_name not in name_cache:
+                    name_cache[requested_label_name_lower] = {'csv': True, 'realcase': requested_label_name, 'type': label_type}
+                # type collision
+                elif name_cache[requested_label_name_lower]['type'] != label_type:
+                    if 'csv' in name_cache[requested_label_name_lower]:
+                        raise pylo.PyloEx("Found duplicate label with name '{}' but different type within the CSV".format(requested_label_name))
+                    else:
+                        raise pylo.PyloEx("Found duplicate label with name '{}' but different type between CSV and PCE".format(requested_label_name))
+                # case collision
+                elif name_cache[requested_label_name_lower]['realcase'] != requested_label_name:
+                    if 'csv' in name_cache[requested_label_name_lower]:
+                        raise pylo.PyloEx("Found duplicate label with name '{}' but different case within the CSV".format(requested_label_name))
+                    else:
+                        raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(requested_label_name))
 
-        if len(app_label_lower) == 0:
-            pass
-        elif app_label_lower not in name_cache:
-            name_cache[app_label_lower] = {'csv': True, 'realcase': app_label, 'type': 'app'}
-        elif name_cache[app_label_lower]['realcase'] != app_label:
-            if 'csv' in name_cache[app_label_lower]:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case within the CSV".format(app_label))
-            else:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(app_label))
 
-        if len(env_label_lower) == 0:
-            pass
-        elif env_label_lower not in name_cache:
-            name_cache[env_label_lower] = {'csv': True, 'realcase': env_label, 'type': 'env'}
-        elif name_cache[env_label_lower]['realcase'] != env_label:
-            if 'csv' in name_cache[env_label_lower]:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case within the CSV".format(env_label))
-            else:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(env_label))
-
-        if len(loc_label_lower) == 0:
-            pass
-        elif loc_label_lower not in name_cache:
-            name_cache[loc_label_lower] = {'csv': True, 'realcase': loc_label, 'type': 'loc'}
-        elif name_cache[loc_label_lower]['realcase'] != loc_label:
-            if 'csv' in name_cache[loc_label_lower]:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case within the CSV".format(loc_label))
-            else:
-                raise pylo.PyloEx("Found duplicate label with name '{}' but different case between CSV and PCE".format(loc_label))
 
     labels_to_be_created: List[Dict] = []
     for label_entry in name_cache.values():
