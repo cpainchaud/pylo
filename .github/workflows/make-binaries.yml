@@ -21,6 +21,9 @@ jobs:
           spec: pylo/utilities/
           extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
 
+      - name: rename executables
+        run: |
+          mv dist/windows/cli.exe dist/windows/pylo-cli.exe
 
       - name: Publish executables for Master branch
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
