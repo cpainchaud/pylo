@@ -88,10 +88,7 @@ def __main(args, **kwargs):
             print("Available keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
             ssh_keys = paramiko.Agent().get_keys()
             # filter out ECDSA NISTPXXX and sk-ssh-ed25519@openssh.com
-            ssh_keys = [key for key in ssh_keys if not (key.get_name().startswith("ecdsa-sha2-nistp") or
-                                                        key.get_name().startswith("sk-ssh-ed25519@openssh.com"))
-                                                        ]
-
+            ssh_keys = get_supported_keys_from_ssh_agent()
 
             # display a table of keys
             print_keys(keys=ssh_keys, display_index=True)
@@ -102,7 +99,7 @@ def __main(args, **kwargs):
             print("Selected key: {} | {} | {}".format(selected_ssh_key.get_name(),
                                                       selected_ssh_key.get_fingerprint().hex(),
                                                       selected_ssh_key.comment))
-            print(" * encrypting API key with selected key...", flush=True, end="")
+            print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
             encrypted_api_key = encrypt_api_key_with_paramiko_key(ssh_key=selected_ssh_key, api_key=api_key)
             print("OK!")
             print(" * trying to decrypt the encrypted API key...", flush=True, end="")
@@ -127,6 +124,14 @@ def __main(args, **kwargs):
 
 
 command_object = Command(command_name, __main, fill_parser, credentials_manager_mode=True)
+
+
+def get_supported_keys_from_ssh_agent() -> list[paramiko.AgentKey]:
+    keys = paramiko.Agent().get_keys()
+    # filter out ECDSA NISTPXXX and sk-ssh-ed25519
+    # RSA and ED25519 keys are reported to be working
+    return [key for key in keys if not (key.get_name().startswith("ecdsa-sha2-nistp") or
+                                        key.get_name().startswith("sk-ssh-ed25519"))]
 
 def print_keys(keys: list[paramiko.AgentKey], display_index = True) -> None:
 
