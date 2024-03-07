@@ -3,7 +3,7 @@ import sys
 sys.path.append('..')
 
 import argparse
-import pylo
+import illumio_pylo as pylo
 import random
 
 workloadsToCreateQuantity = 10000

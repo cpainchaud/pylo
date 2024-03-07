@@ -7,10 +7,10 @@ from typing import Union, Optional, Dict, List, Any, Set
 # this line is only needed for dev_playground examples as the developer may not have installed the library, remove it in your own code
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-import pylo
-import pylo.cli as cli
-import pylo.cli.commands as commands
-from pylo.cli.NativeParsers import LabelParser
+import illumio_pylo as pylo
+import illumio_pylo.cli as cli
+import illumio_pylo.cli.commands as commands
+from illumio_pylo.cli.NativeParsers import LabelParser
 
 command_name = 'my-first-command-show-workloads'
 
@@ -34,7 +34,7 @@ def __main(args, org: pylo.Organization,
            **kwargs):
     """ This is the main function of the command, it will be called by the CLI when the command is executed
     :param args: the arguments passed to the command, as returned by the argparse parser
-    :param org: the Organization object from pylo library, ready to consume
+    :param org: the Organization object from illumio_pylo library, ready to consume
     :param native_parsers: the native parsers object, if you used them
     """
 
@@ -48,7 +48,7 @@ def __main(args, org: pylo.Organization,
         print(f"  - {workload.name} ({workload.href})")
 
 
-# it's time to inject the properties of your first cli extension to PYLO!
+# it's time to inject the properties of your first cli extension to Pylo!
 command_object = commands.Command(name=command_name, main_func=__main, parser_func=fill_parser,
                                   load_specific_objects_only=objects_load_filter,
                                   skip_pce_config_loading=False,  # if you want to skip the PCE config loading, set this to True and do your own thing!

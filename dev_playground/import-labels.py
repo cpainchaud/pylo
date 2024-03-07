@@ -1,14 +1,14 @@
 import sys
 from typing import List
 
-from pylo import log
+from illumio_pylo import log
 import logging
 #log.setLevel(logging.DEBUG)
 
 sys.path.append('..')
 
 import argparse
-import pylo
+import illumio_pylo as pylo
 
 
 originHostname='10.107.3.2'

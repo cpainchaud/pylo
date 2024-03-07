@@ -3,7 +3,7 @@ import os
 import argparse
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-import pylo
+import illumio_pylo as pylo
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,

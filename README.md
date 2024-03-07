@@ -1,4 +1,4 @@
-# PYLO
+# Pylo
 
 ## Introduction
 A framework and set of utilities to interact with Illumio's PCE (Policy Compute Engine)
@@ -8,7 +8,7 @@ A framework and set of utilities to interact with Illumio's PCE (Policy Compute 
 
 ###  Remove TCP/3389 from all rules using fully object oriented framework
 ```python
-import pylo
+import illumio_pylo as pylo
 
 pce_hostname = 'pce212-beauty-contest.illumio.microsegment.io'
 
@@ -38,7 +38,7 @@ for ruleset in org.RulesetStore.itemsByHRef.values():
 ### Creating an IPList using raw API calls and json payloads
 
 ```python
-import pylo
+import illumio_pylo as pylo
 
 pce_hostname = 'pce212-beauty-contest.illumio.microsegment.io'
 

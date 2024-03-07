@@ -1,12 +1,12 @@
 from typing import Dict
 
-import pylo
+import illumio_pylo as pylo
 import sys
 import os
-from pylo.cli import run
-from pylo.cli.commands.workload_export import ExtraColumn
-from pylo import Organization
-from pylo import string_list_to_text
+from illumio_pylo.cli import run
+from illumio_pylo.cli.commands.workload_export import ExtraColumn
+from illumio_pylo import Organization
+from illumio_pylo import string_list_to_text
 import argparse
 
 

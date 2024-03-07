@@ -1,5 +1,5 @@
-import pylo
-from pylo import log
+import illumio_pylo as pylo
+from illumio_pylo import log
 import logging
 
 

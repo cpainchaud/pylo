@@ -1,5 +1,5 @@
 
-import pylo
+import illumio_pylo as pylo
 import sys
 
 originHostname='10.107.3.2'

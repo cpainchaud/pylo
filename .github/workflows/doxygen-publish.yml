@@ -19,7 +19,7 @@ jobs:
       - name: Build
         uses: mattnotmitt/doxygen-action@v1.9.5
         with:
-          working-directory: 'pylo/'
+          working-directory: 'illumio_pylo/'
           doxyfile-path: 'docs/Doxygen'
 
       - name: Deploy
@@ -27,5 +27,5 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./pylo/html
+          publish_dir: ./illumio_pylo/html
 

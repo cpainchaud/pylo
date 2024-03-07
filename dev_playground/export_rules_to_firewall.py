@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from typing import Dict, Any
 
-import pylo
+import illumio_pylo as pylo
 import argparse
 import time
 import json

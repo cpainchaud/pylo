@@ -1,35 +1,26 @@
 from setuptools import setup, find_packages
 
-#
-# with open('README.rst') as f:
-#     readme = f.read()
-#
-# with open('LICENSE') as f:
-#     license = f.read()
+__version__ = "0.2.5"
+
 
 setup_readme = "TODO"
 setup_license = "TODO"
 
+#setup get dependencies from requirements.txt
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 setup(
-    name='pylo',
-    version='0.2.5',
+    name='illumio_pylo',
+    version=__version__,
     description='API Framework and Utilities for Illumio ASP platform',
     long_description=setup_readme,
     author='Christophe Painchaud',
     author_email='shellescape@gmail.com',
-    url='',
+    url='https://github.com/cpainchaud/illumio_pylo',
     license=setup_license,
     packages=find_packages(exclude=('tests', 'docs')),
-    install_requires=[
-        'click~=8.1.7',
-        'colorama~=0.4.4',
-        'cryptography~=42.0.5',
-        'openpyxl~=3.0.10',
-        'paramiko~=3.4.0',
-        'prettytable~=3.10.0'
-        'requests~=2.31.0',
-        'xlsxwriter~=3.2.0',
-    ],
+    install_requires=required,
     entry_points={
         'console_scripts': ['pylo-cli=pylo.cli:run'],
     },
@@ -37,4 +28,5 @@ setup(
         "": ["*.pem"],
     },
     python_requires='>=3.11',
+    setup_requires=required
 )

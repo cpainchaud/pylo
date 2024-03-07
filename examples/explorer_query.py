@@ -12,7 +12,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # only required if you run this script from the examples folder without installing pylo
-import pylo
+import illumio_pylo as pylo
 
 # PCE connection parameters
 pce_hostname = 'pce1.company.com'

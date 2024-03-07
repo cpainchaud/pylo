@@ -1,12 +1,12 @@
 import sys
 
-from pylo import log
+from illumio_pylo import log
 import logging
 
 sys.path.append('..')
 
 import argparse
-import pylo
+import illumio_pylo as pylo
 
 parser = argparse.ArgumentParser(description='TODO LATER')
 parser.add_argument('--pce', type=str, required=True,

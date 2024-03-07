@@ -1,4 +1,4 @@
-import pylo
+import illumio_pylo as pylo
 import sys
 import copy
 
