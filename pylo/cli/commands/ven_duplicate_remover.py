@@ -88,7 +88,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
     # <editor-fold desc="Download workloads from PCE">
     if not pce_cache_was_used:
-        print("* Downloading Workloads data from the PCE... ", flush=True)
+        print("* Downloading Workloads data from the PCE (it may take moment for large amounts of workloads) ... ", flush=True, end='')
         if args['filter_label'] is None:
             workloads_json = org.connector.objects_workload_get(async_mode=True, max_results=1000000)
         else:
