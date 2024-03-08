@@ -1,3 +1,5 @@
+__version__ = "0.2.7"
+
 import os
 import sys
 from typing import Callable
