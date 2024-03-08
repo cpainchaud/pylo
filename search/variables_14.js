@@ -9,5 +9,6 @@ var searchData=
   ['workload_5fhref_5ffound_6',['workload_href_found',['../namespaceillumio__pylo_1_1utilities_1_1ven__idle__to__illumination.html#a47eb631acfb49a444c4997dda3f3a8cf',1,'illumio_pylo::utilities::ven_idle_to_illumination']]],
   ['workload_5fto_5fiplist_5fquery_5fmanager_7',['workload_to_iplist_query_manager',['../classillumio__pylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#a2c92cb00cbdfc4cc4e7e68090db66523',1,'illumio_pylo::API::Explorer::RuleCoverageQueryManager']]],
   ['workload_5fto_5fworkload_5fquery_5fmanager_8',['workload_to_workload_query_manager',['../classillumio__pylo_1_1_a_p_i_1_1_explorer_1_1_rule_coverage_query_manager.html#a9fa137b09ff896293608f872310742e5',1,'illumio_pylo::API::Explorer::RuleCoverageQueryManager']]],
-  ['workloadsgetquerylabelfilterjsonstructure_9',['WorkloadsGetQueryLabelFilterJsonStructure',['../namespaceillumio__pylo_1_1_a_p_i_1_1_json_payload_types.html#afab1ab83979246c32b040ca876b67abf',1,'illumio_pylo::API::JsonPayloadTypes']]]
+  ['workloadobjectmulticreatejsonrequestpayload_9',['WorkloadObjectMultiCreateJsonRequestPayload',['../namespaceillumio__pylo_1_1_a_p_i_1_1_json_payload_types.html#a7fb7780ba75066ef5faef666bb9c3964',1,'illumio_pylo::API::JsonPayloadTypes']]],
+  ['workloadsgetquerylabelfilterjsonstructure_10',['WorkloadsGetQueryLabelFilterJsonStructure',['../namespaceillumio__pylo_1_1_a_p_i_1_1_json_payload_types.html#afab1ab83979246c32b040ca876b67abf',1,'illumio_pylo::API::JsonPayloadTypes']]]
 ];

@@ -56,8 +56,8 @@ var searchData=
   ['workload_53',['Workload',['../namespaceillumio__pylo_1_1_workload.html',1,'illumio_pylo']]],
   ['workload_5fexport_54',['workload_export',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__export.html',1,'illumio_pylo::cli::commands']]],
   ['workload_5fimport_55',['workload_import',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__import.html',1,'illumio_pylo::cli::commands']]],
-  ['workload_5frelabeler_56',['workload_relabeler',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__relabeler.html',1,'illumio_pylo::cli::commands']]],
-  ['workload_5freset_5fnames_5fto_5fnull_57',['workload_reset_names_to_null',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__reset__names__to__null.html',1,'illumio_pylo::cli::commands']]],
+  ['workload_5freset_5fnames_5fto_5fnull_56',['workload_reset_names_to_null',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__reset__names__to__null.html',1,'illumio_pylo::cli::commands']]],
+  ['workload_5fupdate_57',['workload_update',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__update.html',1,'illumio_pylo::cli::commands']]],
   ['workload_5fused_5fin_5frule_5ffinder_58',['workload_used_in_rule_finder',['../namespaceillumio__pylo_1_1cli_1_1commands_1_1workload__used__in__rule__finder.html',1,'illumio_pylo::cli::commands']]],
   ['workloadstore_59',['WorkloadStore',['../namespaceillumio__pylo_1_1_workload_store.html',1,'illumio_pylo']]]
 ];

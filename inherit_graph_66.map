@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,1321,85,1346"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,1353,85,1378"/>
 <area shape="rect" id="node2" href="$classillumio__pylo_1_1_a_p_i_1_1_credentials_manager_1_1_credential_file_entry.html" title=" " alt="" coords="177,5,360,45"/>
 <area shape="rect" id="node3" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_audit_log_api_reply_event_json_structure.html" title=" " alt="" coords="157,70,381,125"/>
 <area shape="rect" id="node4" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_audit_log_api_request_payload_structure.html" title=" " alt="" coords="156,149,381,203"/>
@@ -37,6 +37,8 @@
 <area shape="rect" id="node36" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_href_ref.html" title=" " alt="" coords="173,2351,364,2391"/>
 <area shape="rect" id="node37" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_interface_object_json_structure.html" title=" " alt="" coords="153,2415,384,2470"/>
 <area shape="rect" id="node38" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_create_json_structure.html" title=" " alt="" coords="133,2495,404,2535"/>
-<area shape="rect" id="node39" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html" title=" " alt="" coords="152,2559,385,2599"/>
-<area shape="rect" id="node40" href="$classillumio__pylo_1_1_helpers_1_1exports_1_1_excel_header.html" title=" " alt="" coords="176,2623,361,2663"/>
+<area shape="rect" id="node40" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html" title=" " alt="" coords="152,2559,385,2599"/>
+<area shape="rect" id="node41" href="$classillumio__pylo_1_1_helpers_1_1exports_1_1_excel_header.html" title=" " alt="" coords="176,2623,361,2663"/>
+<area shape="rect" id="node42" href="$classillumio__pylo_1_1cli_1_1commands_1_1workload__update_1_1_changed_label_record.html" title=" " alt="" coords="155,2687,382,2727"/>
+<area shape="rect" id="node39" href="$classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_multi_create_json_structure.html" title=" " alt="" coords="452,2487,671,2542"/>
 </map>

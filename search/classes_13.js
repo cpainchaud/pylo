@@ -9,5 +9,6 @@ var searchData=
   ['workloadmultideletetracker_6',['WorkloadMultiDeleteTracker',['../classillumio__pylo_1_1_a_p_i_1_1_a_p_i_connector_1_1_a_p_i_connector_1_1_workload_multi_delete_tracker.html',1,'illumio_pylo::API::APIConnector::APIConnector']]],
   ['workloadobjectcreatejsonstructure_7',['WorkloadObjectCreateJsonStructure',['../classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_create_json_structure.html',1,'illumio_pylo::API::JsonPayloadTypes']]],
   ['workloadobjectjsonstructure_8',['WorkloadObjectJsonStructure',['../classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_json_structure.html',1,'illumio_pylo::API::JsonPayloadTypes']]],
-  ['workloadstore_9',['WorkloadStore',['../classillumio__pylo_1_1_workload_store_1_1_workload_store.html',1,'illumio_pylo::WorkloadStore']]]
+  ['workloadobjectmulticreatejsonstructure_9',['WorkloadObjectMultiCreateJsonStructure',['../classillumio__pylo_1_1_a_p_i_1_1_json_payload_types_1_1_workload_object_multi_create_json_structure.html',1,'illumio_pylo::API::JsonPayloadTypes']]],
+  ['workloadstore_10',['WorkloadStore',['../classillumio__pylo_1_1_workload_store_1_1_workload_store.html',1,'illumio_pylo::WorkloadStore']]]
 ];
