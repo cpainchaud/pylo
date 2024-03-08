@@ -1,17 +1,25 @@
+from typing import Dict, TypedDict, Optional
+
+import click
+
 import illumio_pylo as pylo
 import argparse
 import sys
 import math
 from .misc import make_filename_with_timestamp
 from . import Command
+from ...API.JsonPayloadTypes import WorkloadObjectJsonStructure, WorkloadObjectCreateJsonStructure, \
+    WorkloadObjectMultiCreateJsonRequestPayload, WorkloadObjectMultiCreateJsonStructure
 
-command_name = 'workload-relabeler'
+command_name = 'workload-update'
 objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--confirm', action='store_true',
-                        help="No change will be implemented in the PCE until you use this function to confirm you're good with them after review")
+    parser.add_argument('--proceed-with-update', '-p', action='store_true',
+                        help="If this flag is not set, the script will not make any changes to the PCE. Useful for dry-runs")
+    parser.add_argument('--do-not-ask-for-confirmation', '-y', action='store_true',
+                        help="If this flag is not set, the script will ask for confirmation before proceeding. Useful for automations")
 
     parser.add_argument('--input-file', '-i', type=str, required=True,
                         help='CSV or Excel input filename')
@@ -34,6 +42,9 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--filter-role-label', type=str, required=False, default=None,
                         help='Filter workloads by role labels (separated by commas)')
 
+    parser.add_argument('--blank-labels-means-remove', action='store_true',
+                        help="If a label is blank in the CSV, it will be considered as a request to remove the label from the Workload")
+
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to update per API call')
 
@@ -43,7 +54,9 @@ def __main(args, org: pylo.Organization, **kwargs):
     input_file = args['input_file']
     input_file_delimiter = args['input_file_delimiter']
     batch_size = args['batch_size']
-    confirmed_changes = args['confirm']
+    settings_proceed_with_update = args['proceed_with_update']
+    settings_do_not_ask_for_confirmation = args['do_not_ask_for_confirmation']
+    settings_blank_labels_means_remove = args['blank_labels_means_remove']
 
     input_match_on_hostname = args['match_on_hostname']
     input_match_on_ip = args['match_on_ip']
@@ -56,25 +69,33 @@ def __main(args, org: pylo.Organization, **kwargs):
     ignored_workloads_count = 0
 
     csv_expected_fields = [
-        {'name': 'role', 'optional': True},
-        {'name': 'app', 'optional': True},
-        {'name': 'env', 'optional': True},
-        {'name': 'loc', 'optional': True},
         {'name': 'ip', 'optional': not input_match_on_ip},
         {'name': 'hostname', 'optional': not input_match_on_hostname},
         {'name': 'href', 'optional': not input_match_on_href}
     ]
 
+    # Each label type is also an expected field
+    for label_type in org.LabelStore.label_types:
+        csv_expected_fields.append({'name': f'label_{label_type}', 'optional': True})
+
     if not input_match_on_ip and not input_match_on_hostname and not input_match_on_href:
         pylo.log.error('You must specify at least one (or several) property to match on for workloads vs input: href, ip or hostname')
         sys.exit(1)
 
-    csv_report = pylo.ArrayToExport(['name', 'role', 'app', 'env', 'loc', 'new_role', 'new_app', 'new_env', 'new_loc', '**updated**', '**reason**', 'href'])
+
+    csv_report_headers = ['hostname']
+    for label_type in org.LabelStore.label_types:
+        csv_report_headers.append(f'label_{label_type}')
+    for label_type in org.LabelStore.label_types:
+        csv_report_headers.append(f'new_{label_type}')
+    csv_report_headers.extend(['**updated**', '**reason**', 'href'])
+
+    csv_report = pylo.ArrayToExport(csv_report_headers)
 
     print(" * Loading CSV input file '{}'...".format(input_file), flush=True, end='')
-    CsvData = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
+    csv_data = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
     print('OK')
-    print("   - CSV has {} columns and {} lines (headers don't count)".format(CsvData.count_columns(), CsvData.count_lines()))
+    print("   - CSV has {} columns and {} lines (headers don't count)".format(csv_data.count_columns(), csv_data.count_lines()))
     # print(pylo.nice_json(CsvData._objects))
 
     def workload_to_csv_report(workload: pylo.Workload, updated: bool, reason: str = '', new_labels=None):
@@ -84,42 +105,26 @@ def __main(args, org: pylo.Organization, **kwargs):
         record = {
             'name': workload.get_name(),
             'href': workload.href,
-            'role': labels[pylo.label_type_role],
-            'app': labels[pylo.label_type_app],
-            'env': labels[pylo.label_type_env],
-            'loc': labels[pylo.label_type_loc],
             '**updated**': str(updated),
             '**reason**':  reason
         }
 
+        for label_type in org.LabelStore.label_types:
+            current_label = workload.get_label(label_type)
+            record[f'label_{label_type}'] = current_label.name if current_label is not None else ''
+
         unchanged_str = '*unchanged*'
 
         if new_labels is not None:
-            if 'role' in new_labels:
-                record['new_role'] = new_labels['role']['name']
-            else:
-                record['new_role'] = unchanged_str
-
-            if 'app' in new_labels:
-                record['new_app'] = new_labels['app']['name']
-            else:
-                record['new_app'] = unchanged_str
-
-            if 'env' in new_labels:
-                record['new_env'] = new_labels['env']['name']
-            else:
-                record['new_env'] = unchanged_str
-
-            if 'loc' in new_labels:
-                record['new_loc'] = new_labels['loc']['name']
-            else:
-                record['new_loc'] = unchanged_str
+            for label_type in org.LabelStore.label_types:
+                if label_type in new_labels:
+                    record[f'new_{label_type}'] = new_labels[label_type]['name']
+                else:
+                    record[f'new_{label_type}'] = unchanged_str
 
         else:
-            record['new_role'] = unchanged_str
-            record['new_app'] = unchanged_str
-            record['new_env'] = unchanged_str
-            record['new_loc'] = unchanged_str
+            for label_type in org.LabelStore.label_types:
+                record[f'new_{label_type}'] = unchanged_str
 
         return record
 
@@ -131,7 +136,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     csv_check_failed = 0
 
     if input_match_on_ip:
-        for csv_object in CsvData.objects():
+        for csv_object in csv_data.objects():
             ips = csv_object['ip'].rsplit(',')
             csv_object['**ip_array**'] = []
 
@@ -155,7 +160,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                 print("   - ERROR: CSV line #{} has no valid IP address defined".format(csv_object['*line*']), flush=True)
 
     if input_match_on_hostname:
-        for csv_object in CsvData.objects():
+        for csv_object in csv_data.objects():
             name = csv_object['hostname']
             name = pylo.Workload.static_name_stripped_fqdn(name)
             if name is None or len(name) < 1:
@@ -171,7 +176,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             csv_check_failed += 1
 
     if input_match_on_href:
-        for csv_object in CsvData.objects():
+        for csv_object in csv_data.objects():
             href = csv_object['href']
             if href is None or len(href) < 1:
                 print("   - ERROR: CSV line #{} has invalid href defined: '{}'".format(csv_object['*line*'], csv_object['href']), flush=True)
@@ -284,7 +289,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     # <editor-fold desc="Matching between CSV/Excel and Managed Workloads">
     print(" * Matching remaining Managed Workloads with CSV/Excel input:")
     count = 0
-    workloads_to_relabel_match = {}  # type: dict[pylo.Workload,dict]
+    workloads_to_relabel_match: Dict[pylo.Workload,Dict] = {}  # Workloads and CSV data associated to it
 
     for workload_href in list(workloads_to_relabel.keys()):
         count += 1
@@ -327,7 +332,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                 del workloads_to_relabel[workload_href]
                 print("  NOT FOUND")
                 ignored_workloads_count += 1
-                csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'No name match was found in CSV/Excel input'))
+                csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'No hostname match was found in CSV/Excel input'))
                 continue
 
             print(" FOUND")
@@ -372,12 +377,15 @@ def __main(args, org: pylo.Organization, **kwargs):
         def process_label(label_type: str) -> bool:
             change_needed = False
 
-            if csv_object[label_type] is not None and len(csv_object[label_type]) > 0:
-                label_found = org.LabelStore.find_label_by_name(csv_object[label_type], label_type)
-                if label_found is None:
+            if csv_object[f'label_{label_type}'] is not None and len(csv_object[f'label_{label_type}']) > 0:
+                new_label_name = f'label_{label_type}'
+                # look for CSV record's label in the PCE
+                label_found = org.LabelStore.find_label_by_name(csv_object[new_label_name], label_type)
+                if label_found is None:  # label not found in the PCE
                     change_needed = True
-                    temp_label_name = '**{}**{}'.format(label_type, csv_object[label_type].lower())
-                    labels_to_be_created[temp_label_name] = {'name': csv_object[label_type], 'type': label_type}
+                    temp_label_name = '**{}**{}'.format(label_type, csv_object[new_label_name].lower())
+                    # add said label name to be added to the list of labels to be created
+                    labels_to_be_created[temp_label_name] = {'name': csv_object[new_label_name], 'type': label_type}
                 else:
                     if label_found is not workload.get_label(label_type):
                         change_needed = True
@@ -387,13 +395,13 @@ def __main(args, org: pylo.Organization, **kwargs):
 
             return change_needed
 
-        workload_needs_label_change = process_label('role')
-        workload_needs_label_change = process_label('app') or workload_needs_label_change
-        workload_needs_label_change = process_label('env') or workload_needs_label_change
-        workload_needs_label_change = process_label('loc') or workload_needs_label_change
+        workload_needs_label_change = False
+        for label_type in org.LabelStore.label_types:
+            workload_needs_label_change = process_label(label_type) or workload_needs_label_change
 
         if not workload_needs_label_change:
             count_workloads_with_right_labels += 1
+            # delete from the list of workloads to be relabeled and their entry in the match list
             del workloads_to_relabel[workload.href]
             del workloads_to_relabel_match[workload]
             csv_report.add_line_from_object(workload_to_csv_report(workload, False, 'Workload already has the right Labels'))
@@ -407,36 +415,49 @@ def __main(args, org: pylo.Organization, **kwargs):
         for label_to_create in labels_to_be_created.values():
             print("   - '{}' type {}".format(label_to_create['name'], label_to_create['type']))
 
-        if confirmed_changes:
+        if settings_proceed_with_update:
+            if not settings_do_not_ask_for_confirmation:
+                if not click.confirm('Do you want to proceed with the creation of the missing labels?'):
+                    print("   - Aborted by user")
+                    sys.exit(0)
             for label_to_create in labels_to_be_created.values():
                 print("   - Pushing '{}' with type '{}' to the PCE... ".format(label_to_create['name'], label_to_create['type']), end='', flush=True)
                 org.LabelStore.api_create_label(label_to_create['name'], label_to_create['type'])
                 print("OK")
         else:
+            # this is only useful to allow the script to continue despite the fact that no changes will be made
             for label_to_create in labels_to_be_created.values():
                 org.LabelStore.create_label(label_to_create['name'], label_to_create['type'])
 
     # </editor-fold>
 
     # <editor-fold desc="JSON Payloads generation">
-    print(' * Preparing Workloads JSON payloads...', flush=True)
+    workloads_json_data: WorkloadObjectMultiCreateJsonRequestPayload = []
+
+    if len(workloads_to_relabel) > 0:
+        print(' * Preparing Workloads JSON payloads...', flush=True)
     workloads_to_relabel_fixed_index = list(workloads_to_relabel_match.keys())
-    workloads_list_changed_labels_for_report = {}
-    workloads_json_data = []
+    workloads_list_changed_labels_for_report: ChangedLabelRecordCollection = {}
     for workload in workloads_to_relabel_fixed_index:
-        data = workloads_to_relabel_match[workload]
-        new_workload = {'href': workload.href}
+        workload_csv_data = workloads_to_relabel_match[workload]
+        new_workload: WorkloadObjectMultiCreateJsonStructure = {'href': workload.href} # future payload for the API
         workloads_json_data.append(new_workload)
-        changed_labels = {}
+        changed_labels: Dict[str,ChangedLabelRecord] = {}
         workloads_list_changed_labels_for_report[workload] = changed_labels
         new_workload['labels'] = []
 
-        def process_label(label_type: str):
-            if data[label_type] is not None and len(data[label_type]) > 0:
-                # print(data)
-                found_label = org.LabelStore.find_label_by_name(data[label_type], pylo.LabelStore.label_type)
+        def generate_json_payload_for_label_type(label_type: str):
+            csv_label_name = f'label_{label_type}'
+            if csv_label_name not in workload_csv_data:
+                # label not in the CSV, we shall not touch it so original one must be included in the payload
+                current_workload_label = workload.get_label(label_type)
+                if current_workload_label is not None:
+                    new_workload['labels'].append({'href': current_workload_label.href})
+            elif workload_csv_data[csv_label_name] is not None and len(workload_csv_data[csv_label_name]) > 0:
+                found_label = org.LabelStore.find_label_by_name(workload_csv_data[csv_label_name], label_type)
                 if found_label is None:
-                    raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.format(data[label_type], data['*line*']))
+                    raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.
+                                      format(workload_csv_data[csv_label_name], workload_csv_data['*line*']))
                 workload_found_label = workload.get_label(label_type)
                 if workload_found_label is not found_label:
                     new_workload['labels'].append({'href': found_label.href})
@@ -444,60 +465,78 @@ def __main(args, org: pylo.Organization, **kwargs):
                 else:
                     if workload_found_label is not None:
                         new_workload['labels'].append({'href': workload_found_label.href})
+            else:
+                # current label for this type is blank in the CSV
+                if settings_blank_labels_means_remove:
+                    # blank label in the CSV means we want to remove the label from the workload. Nothing to do then.
+                    pass
+                else: # we shall not touch it so original one must be included in the payload
+                    current_workload_label = workload.get_label(label_type)
+                    if current_workload_label is not None:
+                        new_workload['labels'].append({'href': current_workload_label.href})
 
-        process_label('role')
-        process_label('app')
-        process_label('env')
-        process_label('loc')
+        for label_type in org.LabelStore.label_types:
+            generate_json_payload_for_label_type(label_type)
 
-    print("  * DONE")
+        print("  * DONE")
     # </editor-fold>
 
-    if confirmed_changes:
-        # <editor-fold desc="Unmanaged Workloads PUSH to API">
-        print(" * Updating {} Workloads in batches of {}".format(len(workloads_json_data), batch_size), flush=True)
-        batch_cursor = 0
-        total_created_count = 0
-        total_failed_count = 0
-        while batch_cursor <= len(workloads_json_data):
-            print("  - batch #{} of {}".format(math.ceil(batch_cursor/batch_size)+1, math.ceil(len(workloads_json_data)/batch_size)), flush=True)
-            batch_json_data = workloads_json_data[batch_cursor:batch_cursor+batch_size-1]
-            results = org.connector.objects_workload_update_bulk(batch_json_data)
-            created_count = 0
-            failed_count = 0
-
-            # print(results)
-            for i in range(0, batch_size):
-                if i >= len(batch_json_data):
-                    break
-
-                workload = workloads_to_relabel_fixed_index[i + batch_cursor]
-                result = results[i]
-                if result['status'] != 'updated':
-                    csv_report.add_line_from_object(workload_to_csv_report(workload, False, result['message']))
-                    failed_count += 1
-                    total_failed_count += 1
-                else:
-                    csv_report.add_line_from_object(workload_to_csv_report(workload, True, new_labels=workloads_list_changed_labels_for_report[workload]))
-                    created_count += 1
-                    total_created_count += 1
-
-            print("    - {} updated with success, {} failures (read report to get reasons)".format(created_count, failed_count))
-            csv_report.write_to_csv(output_file_csv)
-            csv_report.write_to_excel(output_file_excel)
-
-            batch_cursor += batch_size
-        print("  * DONE - {} workloads labels updated with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_workloads_count, output_file_csv, output_file_excel))
-        # </editor-fold>
+    # <editor-fold desc="Unmanaged Workloads PUSH to API">
+    if len(workloads_to_relabel) == 0:
+        print(" * No Workloads to update")
     else:
-        print("\n*************")
-        print(" WARNING!!! --confirm option was not used so no Workloads were relabeled and no Labels were created")
-        print("- {} Managed Workloads were in the queue for relabeling".format(len(workloads_to_relabel)))
-        print("- {} Managed Workloads were marked as Ignored (read reports for details)".format(csv_report.lines_count()))
-        print("- {} Labels were found to be missing and to be created".format(len(labels_to_be_created)))
-        print("*************")
-        for workload in workloads_to_relabel_fixed_index:
-            csv_report.add_line_from_object(workload_to_csv_report(workload, True, new_labels=workloads_list_changed_labels_for_report[workload]))
+        workload_update_happened = False
+        if settings_proceed_with_update:
+            if not settings_do_not_ask_for_confirmation:
+                if not click.confirm('Do you want to proceed with the Workloads update (count={})?'.format(len(workloads_to_relabel))):
+                    print("   ** Aborted by user **")
+                else:
+                    workload_update_happened = True
+                    print(" * Updating {} Workloads in batches of {}".format(len(workloads_json_data), batch_size), flush=True)
+                    batch_cursor = 0
+                    total_created_count = 0
+                    total_failed_count = 0
+                    while batch_cursor <= len(workloads_json_data):
+                        print("  - batch #{} of {}".format(math.ceil(batch_cursor/batch_size)+1,
+                                                           math.ceil(len(workloads_json_data)/batch_size)), flush=True)
+                        batch_json_data = workloads_json_data[batch_cursor:batch_cursor+batch_size-1]
+                        results = org.connector.objects_workload_update_bulk(batch_json_data)
+                        created_count = 0
+                        failed_count = 0
+
+                        # print(results)
+                        for i in range(0, batch_size):
+                            if i >= len(batch_json_data):
+                                break
+
+                            workload = workloads_to_relabel_fixed_index[i + batch_cursor]
+                            result = results[i]
+                            if result['status'] != 'updated':
+                                csv_report.add_line_from_object(workload_to_csv_report(workload, False, result['message']))
+                                failed_count += 1
+                                total_failed_count += 1
+                            else:
+                                csv_report.add_line_from_object(workload_to_csv_report(workload, True, new_labels=workloads_list_changed_labels_for_report[workload]))
+                                created_count += 1
+                                total_created_count += 1
+
+                        print("    - {} updated with success, {} failures (read report to get reasons)".format(created_count, failed_count))
+                        csv_report.write_to_csv(output_file_csv)
+                        csv_report.write_to_excel(output_file_excel)
+
+                        batch_cursor += batch_size
+                    print("  * DONE - {} workloads labels updated with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_workloads_count, output_file_csv, output_file_excel))
+
+        if not workload_update_happened:
+            print("\n*************")
+            print(" WARNING!!! --proceed option was not used or confirmation was not given no Workloads were relabeled and no Labels were created")
+            print("- {} Managed Workloads were in the queue for relabeling".format(len(workloads_to_relabel)))
+            print("- {} Managed Workloads were marked as Ignored (read reports for details)".format(csv_report.lines_count()))
+            print("- {} Labels were found to be missing and to be created".format(len(labels_to_be_created)))
+            print("*************")
+            for workload in workloads_to_relabel_fixed_index:
+                csv_report.add_line_from_object(workload_to_csv_report(workload, True, new_labels=workloads_list_changed_labels_for_report[workload]))
+    # </editor-fold>
 
     print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
     csv_report.write_to_csv(output_file_csv)
@@ -508,3 +547,10 @@ def __main(args, org: pylo.Organization, **kwargs):
 
 
 command_object = Command(command_name, __main, fill_parser, objects_load_filter)
+
+
+class ChangedLabelRecord(TypedDict):
+    name: Optional[str]
+    href: Optional[str]
+
+ChangedLabelRecordCollection = Dict[pylo.Workload, Dict[str,ChangedLabelRecord]]

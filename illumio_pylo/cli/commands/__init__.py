@@ -20,7 +20,7 @@ available_commands: Dict[str, Command] = {}
 
 from .ruleset_export import command_object
 from .workload_used_in_rule_finder import command_object
-from .workload_relabeler import command_object
+from .workload_update import command_object
 from .ven_duplicate_remover import command_object
 from .workload_export import command_object
 from .iplist_import_from_file import command_object

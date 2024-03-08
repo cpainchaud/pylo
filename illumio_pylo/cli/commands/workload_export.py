@@ -75,9 +75,13 @@ def __main(args, org: pylo.Organization, **kwargs):
     output_file_csv = save_location + '/' + output_file_prefix + '.csv'
     output_file_excel = save_location + '/' + output_file_prefix + '.xlsx'
 
-    csv_report_headers = ['name', 'hostname', 'role', 'app', 'env', 'loc', 'online', 'managed',
-                          'status', 'agent.last_heartbeat', 'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
-                          'href', 'agent.href']
+    csv_report_headers = ['name', 'hostname']
+    for label_type in org.LabelStore.label_types:
+        csv_report_headers.append(f'label_{label_type}')
+
+    csv_report_headers.extend(['online', 'managed', 'status', 'agent.last_heartbeat',
+                               'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
+                          'href', 'agent.href'])
 
     for extra_column in extra_columns:
         csv_report_headers.append(extra_column.column_description().name)
@@ -123,15 +127,14 @@ def __main(args, org: pylo.Organization, **kwargs):
             new_row = {
                 'name': wkl.forced_name,
                 'hostname': wkl.hostname,
-                'role': labels[0],
-                'app': labels[1],
-                'env': labels[2],
-                'loc': labels[3],
                 'href': wkl.href,
                 'online': wkl.online,
                 'managed': not wkl.unmanaged,
                 'status': wkl.get_status_string(),
             }
+            for label_type in org.LabelStore.label_types:
+                new_row[f'label_{label_type}'] = wkl.get_label_name(label_type)
+
             if wkl.ven_agent is not None:
                 new_row['agent.href'] = wkl.ven_agent.href
                 new_row['agent.sec_policy_sync_state'] = wkl.ven_agent.get_status_security_policy_sync_state()

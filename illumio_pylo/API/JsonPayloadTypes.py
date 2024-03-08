@@ -96,12 +96,17 @@ class WorkloadObjectJsonStructure(TypedDict):
     updated_by: Optional[HrefReferenceWithName]
 
 class WorkloadObjectCreateJsonStructure(TypedDict):
-    description: Optional[str]
-    hostname: Optional[str]
+    description:NotRequired[str]
+    hostname: NotRequired[str]
     interfaces: NotRequired[List[WorkloadInterfaceObjectJsonStructure]]
     labels: NotRequired[List[HrefReference]]
-    name: Optional[str]
+    name: NotRequired[str]
     public_ip: NotRequired[Optional[str]]
+
+class WorkloadObjectMultiCreateJsonStructure(WorkloadObjectCreateJsonStructure):
+    href: str
+
+WorkloadObjectMultiCreateJsonRequestPayload = List[WorkloadObjectMultiCreateJsonStructure]
 
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
     href: str
