@@ -137,13 +137,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  281</span>        <span class="keyword">def </span>__init__(self, pce_offline_timer_override: Optional[int] = <span class="keywordtype">None</span>):</div>
-<div class="line"><span class="lineno">  282</span>            self.offline = []</div>
-<div class="line"><span class="lineno">  283</span>            self.online = []</div>
-<div class="line"><span class="lineno">  284</span>            self.unmanaged= []</div>
-<div class="line"><span class="lineno">  285</span>            self.all: List[pylo.Workload] = []</div>
-<div class="line"><span class="lineno">  286</span>            self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override</div>
-<div class="line"><span class="lineno">  287</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  286</span>        <span class="keyword">def </span>__init__(self, pce_offline_timer_override: Optional[int] = <span class="keywordtype">None</span>):</div>
+<div class="line"><span class="lineno">  287</span>            self.offline = []</div>
+<div class="line"><span class="lineno">  288</span>            self.online = []</div>
+<div class="line"><span class="lineno">  289</span>            self.unmanaged= []</div>
+<div class="line"><span class="lineno">  290</span>            self.all: List[pylo.Workload] = []</div>
+<div class="line"><span class="lineno">  291</span>            self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override</div>
+<div class="line"><span class="lineno">  292</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -173,21 +173,21 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  288</span>        <span class="keyword">def </span>add_workload(self, workload: <span class="stringliteral">&#39;pylo.Workload&#39;</span>):</div>
-<div class="line"><span class="lineno">  289</span>            self.all.append(workload)</div>
-<div class="line"><span class="lineno">  290</span>            <span class="keywordflow">if</span> workload.unmanaged:</div>
-<div class="line"><span class="lineno">  291</span>                self.unmanaged.append(workload)</div>
-<div class="line"><span class="lineno">  292</span>            <span class="keywordflow">elif</span> self._pce_offline_timer_override <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">  293</span>                <span class="keywordflow">if</span> workload.online:</div>
-<div class="line"><span class="lineno">  294</span>                    self.online.append(workload)</div>
-<div class="line"><span class="lineno">  295</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  296</span>                    self.offline.append(workload)</div>
-<div class="line"><span class="lineno">  297</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  298</span>                <span class="keywordflow">if</span> workload.ven_agent.get_last_heartbeat_date() &gt; datetime.datetime.now() - datetime.timedelta(days=self._pce_offline_timer_override):</div>
+<div class="fragment"><div class="line"><span class="lineno">  293</span>        <span class="keyword">def </span>add_workload(self, workload: <span class="stringliteral">&#39;pylo.Workload&#39;</span>):</div>
+<div class="line"><span class="lineno">  294</span>            self.all.append(workload)</div>
+<div class="line"><span class="lineno">  295</span>            <span class="keywordflow">if</span> workload.unmanaged:</div>
+<div class="line"><span class="lineno">  296</span>                self.unmanaged.append(workload)</div>
+<div class="line"><span class="lineno">  297</span>            <span class="keywordflow">elif</span> self._pce_offline_timer_override <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">  298</span>                <span class="keywordflow">if</span> workload.online:</div>
 <div class="line"><span class="lineno">  299</span>                    self.online.append(workload)</div>
 <div class="line"><span class="lineno">  300</span>                <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  301</span>                    self.offline.append(workload)</div>
-<div class="line"><span class="lineno">  302</span> </div>
+<div class="line"><span class="lineno">  302</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  303</span>                <span class="keywordflow">if</span> workload.ven_agent.get_last_heartbeat_date() &gt; datetime.datetime.now() - datetime.timedelta(days=self._pce_offline_timer_override):</div>
+<div class="line"><span class="lineno">  304</span>                    self.online.append(workload)</div>
+<div class="line"><span class="lineno">  305</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  306</span>                    self.offline.append(workload)</div>
+<div class="line"><span class="lineno">  307</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -206,9 +206,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  309</span>        <span class="keyword">def </span>count_offline(self):</div>
-<div class="line"><span class="lineno">  310</span>            <span class="keywordflow">return</span> len(self.offline)</div>
-<div class="line"><span class="lineno">  311</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  314</span>        <span class="keyword">def </span>count_offline(self):</div>
+<div class="line"><span class="lineno">  315</span>            <span class="keywordflow">return</span> len(self.offline)</div>
+<div class="line"><span class="lineno">  316</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -227,9 +227,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  306</span>        <span class="keyword">def </span>count_online(self):</div>
-<div class="line"><span class="lineno">  307</span>            <span class="keywordflow">return</span> len(self.online)</div>
-<div class="line"><span class="lineno">  308</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  311</span>        <span class="keyword">def </span>count_online(self):</div>
+<div class="line"><span class="lineno">  312</span>            <span class="keywordflow">return</span> len(self.online)</div>
+<div class="line"><span class="lineno">  313</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -248,9 +248,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  312</span>        <span class="keyword">def </span>count_unmanaged(self):</div>
-<div class="line"><span class="lineno">  313</span>            <span class="keywordflow">return</span> len(self.unmanaged)</div>
-<div class="line"><span class="lineno">  314</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  317</span>        <span class="keyword">def </span>count_unmanaged(self):</div>
+<div class="line"><span class="lineno">  318</span>            <span class="keywordflow">return</span> len(self.unmanaged)</div>
+<div class="line"><span class="lineno">  319</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -269,9 +269,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  303</span>        <span class="keyword">def </span>count_workloads(self):</div>
-<div class="line"><span class="lineno">  304</span>            <span class="keywordflow">return</span> len(self.unmanaged) + len(self.online) + len(self.offline)</div>
-<div class="line"><span class="lineno">  305</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  308</span>        <span class="keyword">def </span>count_workloads(self):</div>
+<div class="line"><span class="lineno">  309</span>            <span class="keywordflow">return</span> len(self.unmanaged) + len(self.online) + len(self.offline)</div>
+<div class="line"><span class="lineno">  310</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -290,15 +290,15 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  320</span>        <span class="keyword">def </span>find_latest_created_at(self)-&gt; &#39;pylo.Workload&#39;:</div>
-<div class="line"><span class="lineno">  321</span>            latest: Optional[pylo.Workload] = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  322</span>            <span class="keywordflow">for</span> wkl <span class="keywordflow">in</span> self.all:</div>
-<div class="line"><span class="lineno">  323</span>                <span class="keywordflow">if</span> wkl.unmanaged:</div>
-<div class="line"><span class="lineno">  324</span>                    <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">  325</span>                <span class="keywordflow">if</span> latest <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> wkl.created_at &gt; latest.created_at:</div>
-<div class="line"><span class="lineno">  326</span>                    latest = wkl</div>
-<div class="line"><span class="lineno">  327</span>            <span class="keywordflow">return</span> latest</div>
-<div class="line"><span class="lineno">  328</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  325</span>        <span class="keyword">def </span>find_latest_created_at(self)-&gt; &#39;pylo.Workload&#39;:</div>
+<div class="line"><span class="lineno">  326</span>            latest: Optional[pylo.Workload] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  327</span>            <span class="keywordflow">for</span> wkl <span class="keywordflow">in</span> self.all:</div>
+<div class="line"><span class="lineno">  328</span>                <span class="keywordflow">if</span> wkl.unmanaged:</div>
+<div class="line"><span class="lineno">  329</span>                    <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">  330</span>                <span class="keywordflow">if</span> latest <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> wkl.created_at &gt; latest.created_at:</div>
+<div class="line"><span class="lineno">  331</span>                    latest = wkl</div>
+<div class="line"><span class="lineno">  332</span>            <span class="keywordflow">return</span> latest</div>
+<div class="line"><span class="lineno">  333</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -317,16 +317,16 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  329</span>        <span class="keyword">def </span>find_latest_heartbeat(self)-&gt; &#39;pylo.Workload&#39;:</div>
-<div class="line"><span class="lineno">  330</span>            latest: Optional[pylo.Workload] = <span class="keywordtype">None</span></div>
-<div class="line"><span class="lineno">  331</span>            <span class="keywordflow">for</span> wkl <span class="keywordflow">in</span> self.all:</div>
-<div class="line"><span class="lineno">  332</span>                <span class="keywordflow">if</span> wkl.unmanaged:</div>
-<div class="line"><span class="lineno">  333</span>                    <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">  334</span>                <span class="keywordflow">if</span> latest <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> wkl.ven_agent.get_last_heartbeat_date() &gt; latest.ven_agent.get_last_heartbeat_date():</div>
-<div class="line"><span class="lineno">  335</span>                    latest = wkl</div>
-<div class="line"><span class="lineno">  336</span>            <span class="keywordflow">return</span> latest</div>
-<div class="line"><span class="lineno">  337</span> </div>
-<div class="line"><span class="lineno">  338</span>    <span class="keyword">def </span>__init__(self, pce_offline_timer_override: Optional[int] = <span class="keywordtype">None</span>):</div>
+<div class="fragment"><div class="line"><span class="lineno">  334</span>        <span class="keyword">def </span>find_latest_heartbeat(self)-&gt; &#39;pylo.Workload&#39;:</div>
+<div class="line"><span class="lineno">  335</span>            latest: Optional[pylo.Workload] = <span class="keywordtype">None</span></div>
+<div class="line"><span class="lineno">  336</span>            <span class="keywordflow">for</span> wkl <span class="keywordflow">in</span> self.all:</div>
+<div class="line"><span class="lineno">  337</span>                <span class="keywordflow">if</span> wkl.unmanaged:</div>
+<div class="line"><span class="lineno">  338</span>                    <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">  339</span>                <span class="keywordflow">if</span> latest <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> wkl.ven_agent.get_last_heartbeat_date() &gt; latest.ven_agent.get_last_heartbeat_date():</div>
+<div class="line"><span class="lineno">  340</span>                    latest = wkl</div>
+<div class="line"><span class="lineno">  341</span>            <span class="keywordflow">return</span> latest</div>
+<div class="line"><span class="lineno">  342</span> </div>
+<div class="line"><span class="lineno">  343</span>    <span class="keyword">def </span>__init__(self, pce_offline_timer_override: Optional[int] = <span class="keywordtype">None</span>):</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -345,11 +345,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  315</span>        <span class="keyword">def </span>has_duplicates(self):</div>
-<div class="line"><span class="lineno">  316</span>            <span class="keywordflow">if</span> len(self.offline) + len(self.online) + len(self.unmanaged) &gt; 1:</div>
-<div class="line"><span class="lineno">  317</span>                <span class="keywordflow">return</span> <span class="keyword">True</span></div>
-<div class="line"><span class="lineno">  318</span>            <span class="keywordflow">return</span> <span class="keyword">False</span></div>
-<div class="line"><span class="lineno">  319</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  320</span>        <span class="keyword">def </span>has_duplicates(self):</div>
+<div class="line"><span class="lineno">  321</span>            <span class="keywordflow">if</span> len(self.offline) + len(self.online) + len(self.unmanaged) &gt; 1:</div>
+<div class="line"><span class="lineno">  322</span>                <span class="keywordflow">return</span> <span class="keyword">True</span></div>
+<div class="line"><span class="lineno">  323</span>            <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><span class="lineno">  324</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -402,7 +402,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 8 2024 08:06:18 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Mar 8 2024 11:19:31 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

@@ -130,13 +130,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   47</span>    <span class="keyword">def </span>__init__(self):</div>
-<div class="line"><span class="lineno">   48</span>        self.OldToNew = {}</div>
-<div class="line"><span class="lineno">   49</span>        self.NewToOld = {}</div>
-<div class="line"><span class="lineno">   50</span> </div>
-<div class="line"><span class="lineno">   51</span>        self.sourcesSorting = {}</div>
-<div class="line"><span class="lineno">   52</span>        self.destSorting = {}</div>
-<div class="line"><span class="lineno">   53</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>    <span class="keyword">def </span>__init__(self):</div>
+<div class="line"><span class="lineno">   50</span>        self.OldToNew = {}</div>
+<div class="line"><span class="lineno">   51</span>        self.NewToOld = {}</div>
+<div class="line"><span class="lineno">   52</span> </div>
+<div class="line"><span class="lineno">   53</span>        self.sourcesSorting = {}</div>
+<div class="line"><span class="lineno">   54</span>        self.destSorting = {}</div>
+<div class="line"><span class="lineno">   55</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -172,18 +172,18 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   66</span>    <span class="keyword">def </span>add_destination(self, key, value):</div>
-<div class="line"><span class="lineno">   67</span>        <span class="keywordflow">if</span> key <span class="keywordflow">in</span> self.destSorting:</div>
-<div class="line"><span class="lineno">   68</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Duplicate key &#39;%s&#39;&quot;</span> % key)</div>
-<div class="line"><span class="lineno">   69</span>        self.destSorting[key] = value</div>
-<div class="line"><span class="lineno">   70</span> </div>
-<div class="line"><span class="lineno">   71</span>        find = self.sourcesSorting.get(key)</div>
-<div class="line"><span class="lineno">   72</span>        <span class="keywordflow">if</span> find <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   73</span>            <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">   74</span> </div>
-<div class="line"><span class="lineno">   75</span>        self.OldToNew[find] = value</div>
-<div class="line"><span class="lineno">   76</span>        self.NewToOld[value] = find</div>
-<div class="line"><span class="lineno">   77</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>    <span class="keyword">def </span>add_destination(self, key, value):</div>
+<div class="line"><span class="lineno">   69</span>        <span class="keywordflow">if</span> key <span class="keywordflow">in</span> self.destSorting:</div>
+<div class="line"><span class="lineno">   70</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Duplicate key &#39;%s&#39;&quot;</span> % key)</div>
+<div class="line"><span class="lineno">   71</span>        self.destSorting[key] = value</div>
+<div class="line"><span class="lineno">   72</span> </div>
+<div class="line"><span class="lineno">   73</span>        find = self.sourcesSorting.get(key)</div>
+<div class="line"><span class="lineno">   74</span>        <span class="keywordflow">if</span> find <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   75</span>            <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">   76</span> </div>
+<div class="line"><span class="lineno">   77</span>        self.OldToNew[find] = value</div>
+<div class="line"><span class="lineno">   78</span>        self.NewToOld[value] = find</div>
+<div class="line"><span class="lineno">   79</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -218,18 +218,18 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   54</span>    <span class="keyword">def </span>add_source(self, key, value):</div>
-<div class="line"><span class="lineno">   55</span>        <span class="keywordflow">if</span> key <span class="keywordflow">in</span> self.sourcesSorting:</div>
-<div class="line"><span class="lineno">   56</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Duplicate key &#39;%s&#39;&quot;</span> % key)</div>
-<div class="line"><span class="lineno">   57</span>        self.sourcesSorting[key] = value</div>
-<div class="line"><span class="lineno">   58</span> </div>
-<div class="line"><span class="lineno">   59</span>        find = self.destSorting.get(key)</div>
-<div class="line"><span class="lineno">   60</span>        <span class="keywordflow">if</span> find <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   61</span>            <span class="keywordflow">return</span></div>
-<div class="line"><span class="lineno">   62</span> </div>
-<div class="line"><span class="lineno">   63</span>        self.OldToNew[value] = find</div>
-<div class="line"><span class="lineno">   64</span>        self.NewToOld[find] = value</div>
-<div class="line"><span class="lineno">   65</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>    <span class="keyword">def </span>add_source(self, key, value):</div>
+<div class="line"><span class="lineno">   57</span>        <span class="keywordflow">if</span> key <span class="keywordflow">in</span> self.sourcesSorting:</div>
+<div class="line"><span class="lineno">   58</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Duplicate key &#39;%s&#39;&quot;</span> % key)</div>
+<div class="line"><span class="lineno">   59</span>        self.sourcesSorting[key] = value</div>
+<div class="line"><span class="lineno">   60</span> </div>
+<div class="line"><span class="lineno">   61</span>        find = self.destSorting.get(key)</div>
+<div class="line"><span class="lineno">   62</span>        <span class="keywordflow">if</span> find <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   63</span>            <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">   64</span> </div>
+<div class="line"><span class="lineno">   65</span>        self.OldToNew[value] = find</div>
+<div class="line"><span class="lineno">   66</span>        self.NewToOld[find] = value</div>
+<div class="line"><span class="lineno">   67</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -258,9 +258,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   78</span>    <span class="keyword">def </span>find_new(self, old):</div>
-<div class="line"><span class="lineno">   79</span>        <span class="keywordflow">return</span> self.OldToNew.get(old)</div>
-<div class="line"><span class="lineno">   80</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>    <span class="keyword">def </span>find_new(self, old):</div>
+<div class="line"><span class="lineno">   81</span>        <span class="keywordflow">return</span> self.OldToNew.get(old)</div>
+<div class="line"><span class="lineno">   82</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -289,12 +289,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   81</span>    <span class="keyword">def </span>find_new_or_die(self, old):</div>
-<div class="line"><span class="lineno">   82</span>        ret = self.OldToNew.get(old)</div>
-<div class="line"><span class="lineno">   83</span>        <span class="keywordflow">if</span> ret <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   84</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Cannot find a match in the table for key &#39;{}&#39;&quot;</span>.format(old))</div>
-<div class="line"><span class="lineno">   85</span>        <span class="keywordflow">return</span> ret</div>
-<div class="line"><span class="lineno">   86</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   83</span>    <span class="keyword">def </span>find_new_or_die(self, old):</div>
+<div class="line"><span class="lineno">   84</span>        ret = self.OldToNew.get(old)</div>
+<div class="line"><span class="lineno">   85</span>        <span class="keywordflow">if</span> ret <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   86</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Cannot find a match in the table for key &#39;{}&#39;&quot;</span>.format(old))</div>
+<div class="line"><span class="lineno">   87</span>        <span class="keywordflow">return</span> ret</div>
+<div class="line"><span class="lineno">   88</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -323,9 +323,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   87</span>    <span class="keyword">def </span>find_old(self, new):</div>
-<div class="line"><span class="lineno">   88</span>        <span class="keywordflow">return</span> self.NewToOld.get(new)</div>
-<div class="line"><span class="lineno">   89</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   89</span>    <span class="keyword">def </span>find_old(self, new):</div>
+<div class="line"><span class="lineno">   90</span>        <span class="keywordflow">return</span> self.NewToOld.get(new)</div>
+<div class="line"><span class="lineno">   91</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -354,12 +354,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   90</span>    <span class="keyword">def </span>find_old_or_die(self, new):</div>
-<div class="line"><span class="lineno">   91</span>        ret = self.NewToOld.get(new)</div>
-<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">if</span> ret <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><span class="lineno">   93</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Cannot find a match in the table for key {]&quot;</span>.format(new))</div>
-<div class="line"><span class="lineno">   94</span>        <span class="keywordflow">return</span> ret</div>
-<div class="line"><span class="lineno">   95</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>    <span class="keyword">def </span>find_old_or_die(self, new):</div>
+<div class="line"><span class="lineno">   93</span>        ret = self.NewToOld.get(new)</div>
+<div class="line"><span class="lineno">   94</span>        <span class="keywordflow">if</span> ret <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><span class="lineno">   95</span>            <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Cannot find a match in the table for key {]&quot;</span>.format(new))</div>
+<div class="line"><span class="lineno">   96</span>        <span class="keywordflow">return</span> ret</div>
+<div class="line"><span class="lineno">   97</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -378,8 +378,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  103</span>    <span class="keyword">def </span>keys_old(self):</div>
-<div class="line"><span class="lineno">  104</span>        <span class="keywordflow">return</span></div>
+<div class="fragment"><div class="line"><span class="lineno">  105</span>    <span class="keyword">def </span>keys_old(self):</div>
+<div class="line"><span class="lineno">  106</span>        <span class="keywordflow">return</span></div>
+<div class="line"><span class="lineno">  107</span> </div>
+<div class="line"><span class="lineno">  108</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -408,13 +410,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   96</span>    <span class="keyword">def </span>stats_to_str(self, padding = &#39;&#39;):</div>
-<div class="line"><span class="lineno">   97</span>        msg = <span class="stringliteral">&#39;{}source entries:{}\n{}destination entries:{}\n{}translation entries:{}&#39;</span>.\</div>
-<div class="line"><span class="lineno">   98</span>            format( padding, len(self.sourcesSorting),</div>
-<div class="line"><span class="lineno">   99</span>                    padding, len(self.destSorting),</div>
-<div class="line"><span class="lineno">  100</span>                    padding, len(self.NewToOld))</div>
-<div class="line"><span class="lineno">  101</span>        <span class="keywordflow">return</span> msg</div>
-<div class="line"><span class="lineno">  102</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">   98</span>    <span class="keyword">def </span>stats_to_str(self, padding = &#39;&#39;):</div>
+<div class="line"><span class="lineno">   99</span>        msg = <span class="stringliteral">&#39;{}source entries:{}\n{}destination entries:{}\n{}translation entries:{}&#39;</span>.\</div>
+<div class="line"><span class="lineno">  100</span>            format( padding, len(self.sourcesSorting),</div>
+<div class="line"><span class="lineno">  101</span>                    padding, len(self.destSorting),</div>
+<div class="line"><span class="lineno">  102</span>                    padding, len(self.NewToOld))</div>
+<div class="line"><span class="lineno">  103</span>        <span class="keywordflow">return</span> msg</div>
+<div class="line"><span class="lineno">  104</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -481,7 +483,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 8 2024 08:06:18 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Mar 8 2024 11:19:31 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>

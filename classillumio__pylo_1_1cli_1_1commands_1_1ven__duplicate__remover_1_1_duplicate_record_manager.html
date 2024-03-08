@@ -127,10 +127,10 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  338</span>    <span class="keyword">def </span>__init__(self, pce_offline_timer_override: Optional[int] = <span class="keywordtype">None</span>):</div>
-<div class="line"><span class="lineno">  339</span>        self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}</div>
-<div class="line"><span class="lineno">  340</span>        self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override</div>
-<div class="line"><span class="lineno">  341</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  343</span>    <span class="keyword">def </span>__init__(self, pce_offline_timer_override: Optional[int] = <span class="keywordtype">None</span>):</div>
+<div class="line"><span class="lineno">  344</span>        self._records: Dict[str, DuplicateRecordManager.DuplicatedRecord] = {}</div>
+<div class="line"><span class="lineno">  345</span>        self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override</div>
+<div class="line"><span class="lineno">  346</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -160,13 +160,13 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  360</span>    <span class="keyword">def </span>add_workload(self, workload: pylo.Workload):</div>
-<div class="line"><span class="lineno">  361</span>        lower_hostname = workload.get_name_stripped_fqdn().lower()</div>
-<div class="line"><span class="lineno">  362</span> </div>
-<div class="line"><span class="lineno">  363</span>        <span class="keywordflow">if</span> lower_hostname <span class="keywordflow">not</span> <span class="keywordflow">in</span> self._records:</div>
-<div class="line"><span class="lineno">  364</span>            self._records[lower_hostname] = self.DuplicatedRecord(self._pce_offline_timer_override)</div>
-<div class="line"><span class="lineno">  365</span>        record = self._records[lower_hostname]</div>
-<div class="line"><span class="lineno">  366</span>        record.add_workload(workload)</div>
+<div class="fragment"><div class="line"><span class="lineno">  365</span>    <span class="keyword">def </span>add_workload(self, workload: pylo.Workload):</div>
+<div class="line"><span class="lineno">  366</span>        lower_hostname = workload.get_name_stripped_fqdn().lower()</div>
+<div class="line"><span class="lineno">  367</span> </div>
+<div class="line"><span class="lineno">  368</span>        <span class="keywordflow">if</span> lower_hostname <span class="keywordflow">not</span> <span class="keywordflow">in</span> self._records:</div>
+<div class="line"><span class="lineno">  369</span>            self._records[lower_hostname] = self.DuplicatedRecord(self._pce_offline_timer_override)</div>
+<div class="line"><span class="lineno">  370</span>        record = self._records[lower_hostname]</div>
+<div class="line"><span class="lineno">  371</span>        record.add_workload(workload)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -185,13 +185,13 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  353</span>    <span class="keyword">def </span>count_duplicates(self):</div>
-<div class="line"><span class="lineno">  354</span>        count = 0</div>
-<div class="line"><span class="lineno">  355</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
-<div class="line"><span class="lineno">  356</span>            <span class="keywordflow">if</span> record.has_duplicates():</div>
-<div class="line"><span class="lineno">  357</span>                count += 1</div>
-<div class="line"><span class="lineno">  358</span>        <span class="keywordflow">return</span> count</div>
-<div class="line"><span class="lineno">  359</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  358</span>    <span class="keyword">def </span>count_duplicates(self):</div>
+<div class="line"><span class="lineno">  359</span>        count = 0</div>
+<div class="line"><span class="lineno">  360</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
+<div class="line"><span class="lineno">  361</span>            <span class="keywordflow">if</span> record.has_duplicates():</div>
+<div class="line"><span class="lineno">  362</span>                count += 1</div>
+<div class="line"><span class="lineno">  363</span>        <span class="keywordflow">return</span> count</div>
+<div class="line"><span class="lineno">  364</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -210,9 +210,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  342</span>    <span class="keyword">def </span>count_record(self):</div>
-<div class="line"><span class="lineno">  343</span>        <span class="keywordflow">return</span> len(self._records)</div>
-<div class="line"><span class="lineno">  344</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  347</span>    <span class="keyword">def </span>count_record(self):</div>
+<div class="line"><span class="lineno">  348</span>        <span class="keywordflow">return</span> len(self._records)</div>
+<div class="line"><span class="lineno">  349</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -231,11 +231,11 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  345</span>    <span class="keyword">def </span>count_workloads(self):</div>
-<div class="line"><span class="lineno">  346</span>        total = 0</div>
-<div class="line"><span class="lineno">  347</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
-<div class="line"><span class="lineno">  348</span>            total += record.count_workloads()</div>
-<div class="line"><span class="lineno">  349</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  350</span>    <span class="keyword">def </span>count_workloads(self):</div>
+<div class="line"><span class="lineno">  351</span>        total = 0</div>
+<div class="line"><span class="lineno">  352</span>        <span class="keywordflow">for</span> record <span class="keywordflow">in</span> self._records.values():</div>
+<div class="line"><span class="lineno">  353</span>            total += record.count_workloads()</div>
+<div class="line"><span class="lineno">  354</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -254,9 +254,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  350</span>    <span class="keyword">def </span>records(self) -&gt; List[&#39;DuplicateRecordManager.DuplicatedRecord&#39;]:</div>
-<div class="line"><span class="lineno">  351</span>        <span class="keywordflow">return</span> list(self._records.values())</div>
-<div class="line"><span class="lineno">  352</span> </div>
+<div class="fragment"><div class="line"><span class="lineno">  355</span>    <span class="keyword">def </span>records(self) -&gt; List[&#39;DuplicateRecordManager.DuplicatedRecord&#39;]:</div>
+<div class="line"><span class="lineno">  356</span>        <span class="keywordflow">return</span> list(self._records.values())</div>
+<div class="line"><span class="lineno">  357</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -266,7 +266,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 8 2024 08:06:18 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
+Generated on Fri Mar 8 2024 11:19:31 for Pylo by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
 </small></address>
 </body>
 </html>
