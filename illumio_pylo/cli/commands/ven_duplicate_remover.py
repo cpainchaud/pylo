@@ -134,6 +134,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                 'hostname': workload.hostname,
                 'online': workload.online,
                 'last_heartbeat': workload.ven_agent.get_last_heartbeat_date().strftime('%Y-%m-%d %H:%M'),
+                'created_at': workload.created_at_datetime().strftime('%Y-%m-%d %H:%M'),
                 'href': workload.href,
                 'link_to_pce': url_link_to_pce,
                 'action': action
@@ -225,29 +226,33 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
         print()
 
+        deletion_confirmed = False
+
         if arg_do_not_require_deletion_confirmation:
             print(" * '--do-not-require-deletion-confirmation' option was used, no confirmation will be asked")
         else:
-            confirm = click.confirm(" * Are you sure you want to proceed with the deletion of {} workloads?".format(delete_tracker.count_entries()), abort=True)
-            if not confirm:
-                print(" * Aborted by user")
-                return
+            deletion_confirmed = click.confirm(" * Are you sure you want to proceed with the deletion of {} workloads?".format(delete_tracker.count_entries()))
 
-        print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
-        delete_tracker.execute(unpair_agents=True)
-        print("DONE")
+        if not deletion_confirmed:
+            print(" * Aborted by user")
+            for wkl in delete_tracker.workloads:
+                add_workload_to_report(wkl, "TO BE DELETED (aborted by user)")
+        else:
+            print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
+            delete_tracker.execute(unpair_agents=True)
+            print("DONE")
 
-        for wkl in delete_tracker.workloads:
-            error_msg = delete_tracker.get_error_by_href(wkl.href)
-            if error_msg is None:
-                add_workload_to_report(wkl, "deleted")
-            else:
-                print("    - an error occurred when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
-                add_workload_to_report(wkl, "API error: " + error_msg)
+            for wkl in delete_tracker.workloads:
+                error_msg = delete_tracker.get_error_by_href(wkl.href)
+                if error_msg is None:
+                    add_workload_to_report(wkl, "deleted")
+                else:
+                    print("    - an error occurred when deleting workload {}/{} : {}".format(wkl.get_name_stripped_fqdn(), wkl.href, error_msg))
+                    add_workload_to_report(wkl, "API error: " + error_msg)
 
-        print()
-        print(" * {} workloads deleted / {} with errors".format(delete_tracker.count_entries()-delete_tracker.count_errors(), delete_tracker.count_errors()))
-        print()
+            print()
+            print(" * {} workloads deleted / {} with errors".format(delete_tracker.count_entries()-delete_tracker.count_errors(), delete_tracker.count_errors()))
+            print()
     else:
         print(" * Found {} workloads to be deleted BUT NO '--proceed-with-deletion' OPTION WAS USED".format(delete_tracker.count_entries()))
         for wkl in delete_tracker.workloads:

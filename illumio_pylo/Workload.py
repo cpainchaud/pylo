@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List, Union
 
 import illumio_pylo as pylo
@@ -198,6 +199,11 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
     @property
     def created_at(self) -> str:
         return self.raw_json['created_at']
+
+
+    def created_at_datetime(self) -> datetime:
+        return pylo.illumio_date_time_string_to_datetime(self.created_at)
+
 
     def is_using_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']) -> bool:
         """

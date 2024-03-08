@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime
+
 import illumio_pylo as pylo
 
 log = logging.getLogger('Pylo')
@@ -102,3 +104,12 @@ class IDTranslationTable:
 
     def keys_old(self):
         return
+
+
+def illumio_date_time_string_to_datetime(date_str):
+    if '.' in date_str:
+        time_found = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    else:
+        time_found = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+
+    return time_found
