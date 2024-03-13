@@ -31,3 +31,4 @@ from .ven_idle_to_visibility import command_object
 from .workload_reset_names_to_null import command_object
 from .credential_manager import command_object
 from .iplist_analyzer import command_object
+from .ven_compatibility_report_export import command_object
