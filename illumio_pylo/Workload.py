@@ -205,24 +205,6 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         return pylo.illumio_date_time_string_to_datetime(self.created_at)
 
 
-    def is_using_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']) -> bool:
-        """
-        Check if a label is used by this Workload
-        :param label: label to check for usage. If it's a label group then it will check that at least one label of the group is used
-        :return: true if label is used by this workload
-        """
-
-        # check for label class
-        if isinstance(label, pylo.Label):
-            if self.loc_label is label or self.env_label is label \
-                or self.app_label is label or self.app_label is label:
-                return True
-        else:
-            for member_label in label.get_members().values():
-                if self.is_using_label(member_label):
-                    return True
-        return False
-
     def api_update_description(self, new_description: str):
         data = {'description': new_description}
         if self._batch_update_stack is None:

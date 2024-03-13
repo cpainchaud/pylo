@@ -1,7 +1,7 @@
 from illumio_pylo import log, IP4Map, PyloEx, Workload, nice_json, Label, LabelGroup
 from .Helpers import *
 from .Organization import Organization
-from typing import Optional, List, Union, Set
+from typing import Optional, List, Union, Set, Iterable
 
 
 class WorkloadStore:
@@ -84,7 +84,7 @@ class WorkloadStore:
 
         return result
 
-    def find_workloads_matching_all_labels(self, labels: Union[List[Label|LabelGroup], Dict[str,Label|LabelGroup]])\
+    def find_workloads_matching_all_labels(self, labels: Union[Iterable[Label|LabelGroup], Dict[str,Label|LabelGroup]])\
             -> Dict[str, 'Workload']:
         """
         Find all Workloads which are using all the Labels from a specified list/dict. Note that labels will be ordered by type
@@ -96,16 +96,7 @@ class WorkloadStore:
         """
         unique_labels: Set[Union[Label, LabelGroup]] = set()
 
-        if isinstance(labels, list):
-            for label in labels:
-                if label is None:
-                    pylo.log.debug("Label is None, skipping")
-                    continue
-                if isinstance(label, LabelGroup):
-                    unique_labels.update(label.expand_nested_to_dict_by_href().values())
-                else:
-                    unique_labels.add(label)
-        else:
+        if isinstance(labels, dict):
             for label in labels.values():
                 if label is None:
                     pylo.log.warn("Label is None, skipping")
@@ -114,19 +105,20 @@ class WorkloadStore:
                     unique_labels.update(label.expand_nested_to_dict_by_href().values())
                 else:
                     unique_labels.add(label)
-
-        labels_by_type = pylo.LabelStore.Utils.list_to_dict_by_type(unique_labels)
+        else:
+            for label in labels:
+                if label is None:
+                    pylo.log.debug("Label is None, skipping")
+                    continue
+                if isinstance(label, LabelGroup):
+                    unique_labels.update(label.expand_nested_to_dict_by_href().values())
+                else:
+                    unique_labels.add(label)
 
         result = {}
 
         for workload in self.itemsByHRef.values():
-            workload_is_a_match = True
-            for label_type, labels_to_find in labels_by_type.items():
-                workload_label = workload.get_label(label_type)
-                if workload_label is None or workload_label not in labels_to_find:
-                    workload_is_a_match = False
-                    break
-            if workload_is_a_match:
+            if workload.uses_all_labels(unique_labels):
                 result[workload.href] = workload
 
         return result
