@@ -1,7 +1,11 @@
+from dataclasses import dataclass
+
 from illumio_pylo import log, IP4Map, PyloEx, Workload, nice_json, Label, LabelGroup
 from .Helpers import *
 from .Organization import Organization
 from typing import Optional, List, Union, Set, Iterable
+
+from .WorkloadStoreSubClasses import UnmanagedWorkloadDraft, UnmanagedWorkloadDraftMultiCreatorManager
 
 
 class WorkloadStore:
@@ -12,28 +16,33 @@ class WorkloadStore:
 
     def load_workloads_from_json(self, json_list):
         for json_item in json_list:
-            if 'name' not in json_item or 'href' not in json_item:
-                raise PyloEx("Cannot find 'value'/name or href for Workload in JSON:\n" + nice_json(json_item))
+            self.add_workload_from_json(json_item)
 
-            new_item_name = json_item['name']
-            new_item_href = json_item['href']
 
-            # Workload's name is None when it's provided by VEN through its hostname until it's manually overwritten
-            # (eventually) by someone. In such a case, you need to use hostname instead
-            if new_item_name is None:
-                if 'hostname' not in json_item:
-                    raise PyloEx("Cannot find 'value'/hostname in JSON:\n" + nice_json(json_item))
-                new_item_name = json_item['hostname']
+    def add_workload_from_json(self, json_item) -> Workload:
+        if 'name' not in json_item or 'href' not in json_item:
+            raise PyloEx("Cannot find 'value'/name or href for Workload in JSON:\n" + nice_json(json_item))
 
-            new_item = Workload(new_item_name, new_item_href, self)
-            new_item.load_from_json(json_item)
+        new_item_name = json_item['name']
+        new_item_href = json_item['href']
 
-            if new_item_href in self.itemsByHRef:
-                raise PyloEx("A Workload with href '%s' already exists in the table", new_item_href)
+        # Workload's name is None when it's provided by VEN through its hostname until it's manually overwritten
+        # (eventually) by someone. In such a case, you need to use hostname instead
+        if new_item_name is None:
+            if 'hostname' not in json_item:
+                raise PyloEx("Cannot find 'value'/hostname in JSON:\n" + nice_json(json_item))
+            new_item_name = json_item['hostname']
 
-            self.itemsByHRef[new_item_href] = new_item
+        new_item = Workload(new_item_name, new_item_href, self)
+        new_item.load_from_json(json_item)
 
-            log.debug("Found Workload '%s' with href '%s'", new_item_name, new_item_href)
+        if new_item_href in self.itemsByHRef:
+            raise PyloEx("A Workload with href '%s' already exists in the table", new_item_href)
+
+        self.itemsByHRef[new_item_href] = new_item
+
+        return new_item
+
 
     def find_by_href_or_die(self, href: str) -> 'Workload':
         """
@@ -277,5 +286,14 @@ class WorkloadStore:
         :return:
         """
         return list(self.itemsByHRef.values())
+
+    UnmanagedWorkloadDraftMultiCreatorManager = UnmanagedWorkloadDraftMultiCreatorManager
+
+    def new_unmanaged_workload_draft(self, name: Optional[str] = None, hostname: Optional[str] = None, description: Optional[str] = None, ip_single_or_list: Optional[str|Iterable[str]] = None) -> UnmanagedWorkloadDraft:
+        return UnmanagedWorkloadDraft(self, name, hostname, description, ip_single_or_list)
+
+    def new_unmanaged_workload_multi_creator_manager(self) -> UnmanagedWorkloadDraftMultiCreatorManager:
+        return UnmanagedWorkloadDraftMultiCreatorManager(self)
+
 
 

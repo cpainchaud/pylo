@@ -476,6 +476,9 @@ class CsvExcelToObject:
     def objects(self):
         return list(self._objects)
 
+    def headers(self):
+        return list(self._detected_headers)
+
     def save_to_csv(self, filename: str, fields_filter: List[Any]):
         headers = []
         for field in fields_filter:

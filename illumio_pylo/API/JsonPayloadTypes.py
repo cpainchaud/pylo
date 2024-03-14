@@ -96,6 +96,9 @@ class WorkloadObjectJsonStructure(TypedDict):
     updated_by: Optional[HrefReferenceWithName]
 
 class WorkloadObjectCreateJsonStructure(TypedDict):
+    """
+    This is the structure of the JSON payload for creating a workload.
+    """
     description:NotRequired[str]
     hostname: NotRequired[str]
     interfaces: NotRequired[List[WorkloadInterfaceObjectJsonStructure]]

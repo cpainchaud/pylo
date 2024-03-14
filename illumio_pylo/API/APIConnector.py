@@ -10,7 +10,8 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
     RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
     LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure, \
-    NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference
+    NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference, \
+    WorkloadObjectCreateJsonStructure
 
 try:
     import requests as requests
@@ -857,13 +858,13 @@ class APIConnector:
 
         return self.do_put_call(path=path, json_arguments=json_data, json_output_expected=False)
 
-    def objects_workload_create_single_unmanaged(self, json_object):
+    def objects_workload_create_single_unmanaged(self, json_object: WorkloadObjectCreateJsonStructure):
         path = '/workloads'
         return self.do_post_call(path=path, json_arguments=json_object)
 
-    def objects_workload_create_bulk_unmanaged(self, json_object):
+    def objects_workload_create_bulk_unmanaged(self, workloads_json_payload: [WorkloadObjectCreateJsonStructure]):
         path = '/workloads/bulk_create'
-        return self.do_put_call(path=path, json_arguments=json_object)
+        return self.do_put_call(path=path, json_arguments=workloads_json_payload)
 
     def objects_service_get(self, max_results: int = None, async_mode=True):
         path = '/sec_policy/draft/services'
