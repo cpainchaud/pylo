@@ -7,7 +7,7 @@ from prettytable import PrettyTable
 
 import illumio_pylo as pylo
 from . import Command
-from .misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp
 
 command_name = "ven-compatibility-report-export"
 objects_load_filter = ['workloads', 'labels']

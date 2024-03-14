@@ -5,7 +5,7 @@ import click
 import illumio_pylo as pylo
 import argparse
 from typing import Dict, List, Literal, Optional
-from .misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'

@@ -2,7 +2,7 @@ from typing import Dict, List, Any
 import sys
 import argparse
 import illumio_pylo as pylo
-from .misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 
