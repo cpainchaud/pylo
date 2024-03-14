@@ -1,5 +1,5 @@
 
-name: github pages
+name: Publish API Docs on GitHub Pages
 
 on:
   release:
