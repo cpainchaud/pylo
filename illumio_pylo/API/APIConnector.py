@@ -11,7 +11,8 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
     LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure, \
     NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference, \
-    WorkloadObjectCreateJsonStructure
+    WorkloadObjectCreateJsonStructure, WorkloadObjectMultiCreateJsonRequestPayload, \
+    WorkloadBulkUpdateEntryJsonStructure, WorkloadBulkUpdateResponseEntry
 
 try:
     import requests as requests
@@ -548,8 +549,6 @@ class APIConnector:
 
     def objects_label_create(self, label_name: str, label_type: str):
         path = '/labels'
-        if label_type != 'app' and label_type != 'env' and label_type != 'role' and label_type != 'loc':
-            raise Exception("Requested to create a Label '%s' with wrong type '%s'" % (label_name, label_type))
         data: LabelObjectCreationJsonStructure = {'key': label_type, 'value': label_name}
         return self.do_post_call(path=path, json_arguments=data)
 
@@ -668,7 +667,8 @@ class APIConnector:
 
         return self.do_put_call(path=path, json_arguments=data, json_output_expected=False, include_org_id=False)
 
-    def objects_workload_update_bulk(self, json_object):
+    def objects_workload_update_bulk(self, json_object: List[WorkloadBulkUpdateEntryJsonStructure]) \
+            -> List[WorkloadBulkUpdateResponseEntry]:
         path = '/workloads/bulk_update'
         return self.do_put_call(path=path, json_arguments=json_object)
 

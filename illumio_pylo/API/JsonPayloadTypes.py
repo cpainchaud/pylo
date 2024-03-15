@@ -111,6 +111,17 @@ class WorkloadObjectMultiCreateJsonStructure(WorkloadObjectCreateJsonStructure):
 
 WorkloadObjectMultiCreateJsonRequestPayload = List[WorkloadObjectMultiCreateJsonStructure]
 
+class WorkloadBulkUpdateEntryJsonStructure(WorkloadObjectCreateJsonStructure):
+    href: str
+
+class WorkloadBulkUpdateResponseEntry(TypedDict):
+    href: str
+    status: Literal['updated', 'error', 'validation_failure']
+    token: NotRequired[str]
+    message: NotRequired[str]
+
+
+
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
     href: str
     name: str
