@@ -40,6 +40,7 @@ def run(forced_command_name: Optional[str] = None):
                         help='Enables extra debugging output in Pylo framework')
     parser.add_argument('--use-cache', action='store_true',
                         help='For developers only')
+    parser.add_argument('--version', action='store_true', help='Prints the version of the Pylo CLI')
 
     selected_command = None
 
@@ -59,6 +60,15 @@ def run(forced_command_name: Optional[str] = None):
                 add_native_parser_to_argparse(parser, command.native_parsers)
             selected_command = command
 
+
+    # version is a special command that does not require a PCE
+    # if first argument is --version, we print the version and exit
+    if len(sys.argv) > 1:
+        arg_lower = sys.argv[1].lower()
+        if arg_lower == '--version' or arg_lower == '-v' or arg_lower == 'version':
+            print("Pylo CLI version {}".format(pylo.__version__))
+            return
+
     args = vars(parser.parse_args())
 
     if args['debug']:
@@ -76,6 +86,8 @@ def run(forced_command_name: Optional[str] = None):
 
     connector: Optional[pylo.APIConnector] = None
     config_data = None
+    
+    print("* Started Pylo CLI version {}".format(pylo.__version__))
 
     if not selected_command.credentials_manager_mode:
         # credential_profile_name is required for all commands except the credential manager

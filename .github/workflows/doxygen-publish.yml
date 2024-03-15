@@ -1,10 +1,11 @@
 
-name: github pages
+name: Publish API Docs on GitHub Pages
 
 on:
-  push:
+  release:
+    types: [published]
     branches:
-      - master  # Set a branch name to trigger deployment
+      - master
 
 
 jobs:

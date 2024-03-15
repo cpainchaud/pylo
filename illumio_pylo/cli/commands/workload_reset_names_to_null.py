@@ -4,7 +4,7 @@ import argparse
 import sys
 import math
 import colorama
-from .misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'workload-reset-ven-names-to-null'

@@ -1,8 +1,9 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, List, Union
 
 import illumio_pylo as pylo
-from illumio_pylo.API.JsonPayloadTypes import WorkloadObjectJsonStructure
+from illumio_pylo.API.JsonPayloadTypes import WorkloadObjectJsonStructure, WorkloadObjectCreateJsonStructure
 from illumio_pylo import log
 from .AgentStore import VENAgent
 from .Helpers import *
@@ -27,9 +28,9 @@ class WorkloadInterface:
 
 class WorkloadApiUpdateStack:
     def __init__(self):
-        self.json_payload = {}
+        self.json_payload: WorkloadObjectCreateJsonStructure = {}
 
-    def add_payload(self, data: Dict[str, Any]):
+    def add_payload(self, data: WorkloadObjectCreateJsonStructure):
         for prop_name, prop_value in data.items():
             self.json_payload[prop_name] = prop_value
 
@@ -40,6 +41,8 @@ class WorkloadApiUpdateStack:
 
     def count_payloads(self) -> int:
         return len(self.json_payload)
+
+
 
 
 class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
@@ -205,34 +208,30 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         return pylo.illumio_date_time_string_to_datetime(self.created_at)
 
 
-    def is_using_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']) -> bool:
-        """
-        Check if a label is used by this Workload
-        :param label: label to check for usage. If it's a label group then it will check that at least one label of the group is used
-        :return: true if label is used by this workload
-        """
-
-        # check for label class
-        if isinstance(label, pylo.Label):
-            if self.loc_label is label or self.env_label is label \
-                or self.app_label is label or self.app_label is label:
-                return True
-        else:
-            for member_label in label.get_members().values():
-                if self.is_using_label(member_label):
-                    return True
-        return False
-
     def api_update_description(self, new_description: str):
+        if new_description is None or len(new_description) == 0:
+            if self.description is None or self.description == '':
+                return
+        elif new_description == self.description:
+            return
+
         data = {'description': new_description}
         if self._batch_update_stack is None:
             connector = pylo.find_connector_or_die(self.owner)
             connector.objects_workload_update(self.href, data=data)
         else:
             self._batch_update_stack.add_payload(data)
+
+        self.raw_json.update(data)
         self.description = new_description
 
     def api_update_hostname(self, new_hostname: str):
+        if new_hostname is None or len(new_hostname) == 0:
+            if self.hostname is None or self.hostname == '':
+                return
+        elif new_hostname == self.hostname:
+            return
+
         data = {'hostname': new_hostname}
         if self._batch_update_stack is None:
             connector = pylo.find_connector_or_die(self.owner)
@@ -244,6 +243,11 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         self.hostname = new_hostname
 
     def api_update_forced_name(self, name: str):
+        if name is None or len(name) == 0:
+            if self.forced_name is None or self.forced_name == '':
+                return
+        elif name == self.forced_name:
+            return
 
         data = {'name': name}
         if self._batch_update_stack is None:
@@ -263,21 +267,16 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         :param missing_label_type_means_no_change: if a label type is missing and this is False then existing label of type in the Workload will be removed
         :return:
         """
-
         if list_of_labels is not None:
             # a list of labels were specified so are first going to change
             if not self.update_labels(list_of_labels, missing_label_type_means_no_change):
                 return
 
         label_data = []
-        if self.loc_label is not None:
-            label_data.append({'href': self.loc_label.href})
-        if self.env_label is not None:
-            label_data.append({'href': self.env_label.href})
-        if self.app_label is not None:
-            label_data.append({'href': self.app_label.href})
-        if self.role_label is not None:
-            label_data.append({'href': self.role_label.href})
+        for label_type in self.owner.owner.LabelStore.label_types:
+            label = self.get_label(label_type)
+            if label is not None:
+                label_data.append({'href': label.href})
 
         data = {'labels': label_data}
 
@@ -306,6 +305,22 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         connector = pylo.find_connector_or_die(self.owner)
         connector.objects_workload_update(self.href, self._batch_update_stack.get_payload_and_reset())
         self._batch_update_stack = None
+
+    def api_stacked_updates_get_json(self) -> Optional[WorkloadObjectCreateJsonStructure]:
+        """
+        Returns the JSON payload of the stacked updates
+        :return:
+        """
+        if self._batch_update_stack is None:
+            raise PyloEx("Workload was not in 'update stacking' mode")
+        return self._batch_update_stack.json_payload
+
+    def api_stacked_updates_started(self) -> bool:
+        """
+        Returns True if 'updates stacking' mode is currently on
+        :return:
+        """
+        return self._batch_update_stack is not None
 
     def api_stacked_updates_count(self) -> int:
         """
@@ -423,86 +438,29 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         :param missing_label_type_means_no_change: if a label type is missing and this is False then existing label of type in the Workload will be removed
         :return:
         """
-        changes_occurred = False
-        role_label: Optional[Label] = None
-        app_label: Optional[Label] = None
-        env_label: Optional[Label] = None
-        loc_label: Optional[Label] = None
 
-        if len(list_of_labels) > 4:
-            raise PyloEx("More than 4 labels provided")
+        if (list_of_labels is None or len(list_of_labels) == 0) and missing_label_type_means_no_change:
+            return False
 
-        for label in list_of_labels:
-            if label.type_is_role():
-                if role_label is not None:
-                    raise PyloEx("ROLE label specified more than once ('{}' vs '{}')".format(role_label.name, label.name))
-                role_label = label
-            elif label.type_is_application():
-                if app_label is not None:
-                    raise PyloEx("APP label specified more than once ('{}' vs '{}')".format(app_label.name, label.name))
-                app_label = label
-            elif label.type_is_environment():
-                if env_label is not None:
-                    raise PyloEx("ENV label specified more than once ('{}' vs '{}')".format(env_label.name, label.name))
-                env_label = label
-            elif label.type_is_location():
-                if loc_label is not None:
-                    raise PyloEx("LOC label specified more than once ('{}' vs '{}')".format(loc_label.name, label.name))
-                loc_label = label
+        original_label_set = set(self._labels.values())
 
-        if role_label is None:
-            if not missing_label_type_means_no_change:
-                if self.role_label is not None:
-                    changes_occurred = True
-                    self.role_label.remove_reference(self)
-                    self.role_label = None
-        elif role_label is not self.role_label:
-            changes_occurred = True
-            if self.role_label is not None:
-                self.role_label.remove_reference(self)
-            role_label.add_reference(self)
-            self.role_label = role_label
+        labels_by_type = pylo.LabelStore.Utils.list_to_dict_by_type(list_of_labels)
 
-        if app_label is None:
-            if not missing_label_type_means_no_change:
-                if self.app_label is not None:
-                    changes_occurred = True
-                    self.app_label.remove_reference(self)
-                    self.app_label = None
-        elif app_label is not self.app_label:
-            changes_occurred = True
-            if self.app_label is not None:
-                self.app_label.remove_reference(self)
-            app_label.add_reference(self)
-            self.app_label = app_label
+        dict_for_replacement = {}
 
-        if env_label is None:
-            if not missing_label_type_means_no_change:
-                if self.env_label is not None:
-                    changes_occurred = True
-                    self.env_label.remove_reference(self)
-                    self.env_label = None
-        elif env_label is not self.env_label:
-            changes_occurred = True
-            if self.env_label is not None:
-                self.env_label.remove_reference(self)
-            env_label.add_reference(self)
-            self.env_label = env_label
+        for label_type in labels_by_type:
+            if len(labels_by_type[label_type]) > 1:
+                raise PyloEx("Workload can't have more than one label of the same type")
+            dict_for_replacement[label_type] = labels_by_type[label_type][0]
 
-        if loc_label is None:
-            if not missing_label_type_means_no_change:
-                if self.loc_label is not None:
-                    changes_occurred = True
-                    self.loc_label.remove_reference(self)
-                    self.loc_label = None
-        elif loc_label is not self.loc_label:
-            changes_occurred = True
-            if self.loc_label is not None:
-                self.loc_label.remove_reference(self)
-            loc_label.add_reference(self)
-            self.loc_label = loc_label
+        new_labels_set = set(list_of_labels)
 
-        return changes_occurred
+        if original_label_set == new_labels_set:
+            return False
+
+        self._labels = dict_for_replacement
+
+        return True
 
     def get_pce_ui_url(self) -> str:
         """
@@ -510,3 +468,71 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
         :return: url string
         """
         return self.owner.owner.connector.get_pce_ui_workload_url(self.href)
+
+
+class WorkloadApiUpdateStackExecutionManager:
+
+    @dataclass
+    class Result:
+        successful: bool
+        message: Optional[str]
+        workload: 'pylo.Workload'
+
+    def __init__(self, org: 'pylo.Organization'):
+        self.org: pylo.Organization = org
+        self.workloads: List['pylo.Workload'] = []
+        self.successful: List[Optional[bool]] = []
+        self.message: List[Optional[str]] = []
+
+    def add_workload(self, workload: 'pylo.Workload'):
+        if not workload.api_stacked_updates_started():
+            raise pylo.PyloEx("Workload is not in 'update stacking' mode. {}:{}".format(workload.get_name(), workload.href))
+        self.workloads.append(workload)
+        self.successful.append(None)
+        self.message.append(None)
+
+    def push_all(self, amount_per_batch: int = 500):
+        if len(self.workloads) == 0:
+            return
+
+        #self split in list of lists of 500
+        batches: List[List[pylo.Workload]] = [self.workloads[i:i + amount_per_batch] for i in range(0, len(self.workloads), amount_per_batch)]
+
+        for batch in batches:
+            batch_json_payload = []
+            for workload in batch:
+                batch_json_payload.append(workload.api_stacked_updates_get_json())
+                batch_json_payload[-1]['href'] = workload.href
+
+            connector = pylo.find_connector_or_die(self.org)
+            results = connector.objects_workload_update_bulk(batch_json_payload)
+            for result in results:
+                workload_href = result['href']
+                if workload_href is None:
+                    raise pylo.PyloApiEx("Workload update failed. No href in results", result)
+                # get index of workload
+                index = -1
+                for i in range(len(self.workloads)):
+                    if self.workloads[i].href == workload_href:
+                        index = i
+                        break
+                if index == -1:
+                    raise pylo.PyloEx("Workload update failed. Could not find workload in list of workloads", workload_href)
+                self.successful[index] = result['status'] == 'updated'
+                if self.successful[index]:
+                    self.message[index] = None
+                else:
+                    self.message[index] = result['message']
+
+
+    def get_all_results(self) -> List[Result]:
+        results = []
+        for i in range(len(self.workloads)):
+            results.append(WorkloadApiUpdateStackExecutionManager.Result(self.successful[i], self.message[i], self.workloads[i]))
+        return results
+
+    def get_result_for_workload(self, workload: 'pylo.Workload') -> Optional[Result]:
+        for i in range(len(self.workloads)):
+            if self.workloads[i] == workload:
+                return WorkloadApiUpdateStackExecutionManager.Result(self.successful[i], self.message[i], self.workloads[i])
+        return None

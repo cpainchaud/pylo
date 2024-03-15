@@ -23,7 +23,7 @@ from .LabelGroup import LabelGroup
 from .LabelStore import LabelStore, label_type_app, label_type_env, label_type_loc, label_type_role
 from .IPList import IPList, IPListStore
 from .AgentStore import AgentStore, VENAgent
-from .Workload import Workload, WorkloadInterface
+from .Workload import Workload, WorkloadInterface, WorkloadApiUpdateStackExecutionManager
 from .WorkloadStore import WorkloadStore
 from .VirtualService import VirtualService
 from .VirtualServiceStore import VirtualServiceStore

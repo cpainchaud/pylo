@@ -9,6 +9,11 @@ class Label(ReferenceTracker, LabelCommon):
         ReferenceTracker.__init__(self)
         LabelCommon.__init__(self, name, href, label_type, owner)
 
+    def __str__(self):
+        return f"Label: {self.name} ({self.type})"
+
+    __repr__ = __str__
+
     def is_group(self) -> bool:
         return False
 

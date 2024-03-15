@@ -5,7 +5,7 @@ import click
 import illumio_pylo as pylo
 import argparse
 from typing import Dict, List, Literal, Optional
-from .misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'
@@ -35,6 +35,9 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--limit-number-of-deleted-workloads', '-l', type=int, default=None,
                         help='Limit the number of workloads to be deleted, for a limited test run for example.')
 
+    parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
+                        help='Directory where to write the report file(s)')
+
 
 
 def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
@@ -53,11 +56,12 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_do_not_delete_if_last_heartbeat_is_more_recent_than = args['do_not_delete_if_last_heartbeat_is_more_recent_than']
     arg_override_pce_offline_timer_to = args['override_pce_offline_timer_to']
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
+    arg_report_output_dir: str = args['output_dir']
 
-    output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_')
+
+    output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_', arg_report_output_dir)
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
-
 
 
     csv_report_headers = [{'name':'name'},

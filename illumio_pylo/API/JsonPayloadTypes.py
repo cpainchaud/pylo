@@ -96,6 +96,9 @@ class WorkloadObjectJsonStructure(TypedDict):
     updated_by: Optional[HrefReferenceWithName]
 
 class WorkloadObjectCreateJsonStructure(TypedDict):
+    """
+    This is the structure of the JSON payload for creating a workload.
+    """
     description:NotRequired[str]
     hostname: NotRequired[str]
     interfaces: NotRequired[List[WorkloadInterfaceObjectJsonStructure]]
@@ -107,6 +110,17 @@ class WorkloadObjectMultiCreateJsonStructure(WorkloadObjectCreateJsonStructure):
     href: str
 
 WorkloadObjectMultiCreateJsonRequestPayload = List[WorkloadObjectMultiCreateJsonStructure]
+
+class WorkloadBulkUpdateEntryJsonStructure(WorkloadObjectCreateJsonStructure):
+    href: str
+
+class WorkloadBulkUpdateResponseEntry(TypedDict):
+    href: str
+    status: Literal['updated', 'error', 'validation_failure']
+    token: NotRequired[str]
+    message: NotRequired[str]
+
+
 
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
     href: str

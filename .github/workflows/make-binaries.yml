@@ -1,8 +1,8 @@
-name: Package exe with PyInstaller - Windows
+name: Build and Release Executables for Windows
 
 on:
   push:
-    branches: [ master, mt4l ]
+    branches: [ master, dev ]
     tags:
       - 'v*.*.*'
   pull_request:
@@ -10,12 +10,23 @@ on:
 
 
 jobs:
-  build:
+  build_and_publish:
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Change Pylo Version if this is a DEV build
+        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+        run: |
+          echo "Update version to append '-dev-' and current date ISO format:"
+          # for double quoted strings version
+          sed -i -E "s/__version__ = \"([0-9]+\.[0-9]+\.[0-9]+)\"/__version__ = '\\1-dev-$(date +'%Y%m%d')'/" illumio_pylo/__init__.py
+          # for single quoted strings version
+          sed -i -E "s/__version__ = '([0-9]+\.[0-9]+\.[0-9]+)'/__version__ = '\\1-dev-$(date +'%Y%m%d')'/" illumio_pylo/__init__.py
+          grep __version__ illumio_pylo/__init__.py
+          
 
       - name: Make executables
         uses: cpainchaud/pyinstaller-action-windows@main
@@ -41,7 +52,7 @@ jobs:
           files: |
             dist/windows/*
 
-      - name: Publish executables along with the tag
+      - name: Publish executables along with the tag for a release
         # only if this is a TAG type
         if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
         uses: softprops/action-gh-release@975c1b265e11dd76618af1c374e7981f9a6ff44a  # v0.1.16
@@ -52,4 +63,15 @@ jobs:
           release_body: "Latest Binaries"
           draft: false
           prerelease: false
+
+      - name: Publish executables for Dev branch
+        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+        uses: softprops/action-gh-release@975c1b265e11dd76618af1c374e7981f9a6ff44a  # v0.1.16
+        with:
+          files: dist/windows/*
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
+          tag_name: "dev-build"
+          name: "Latest DEV/Unstable Binaries"
 

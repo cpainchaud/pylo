@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, TypedDict, NotRequired
+from typing import Dict, Any, List, Optional, TypedDict, NotRequired, Union
 
 try:
     import xlsxwriter
@@ -473,8 +473,11 @@ class CsvExcelToObject:
     def count_columns(self):
         return len(self._detected_headers)
 
-    def objects(self):
+    def objects(self) -> List[Dict[str, Union[str, int, bool, None]]]:
         return list(self._objects)
+
+    def headers(self):
+        return list(self._detected_headers)
 
     def save_to_csv(self, filename: str, fields_filter: List[Any]):
         headers = []
