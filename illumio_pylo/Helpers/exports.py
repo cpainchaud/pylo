@@ -255,10 +255,9 @@ class ArraysToExcel:
                             new_line.append('=HYPERLINK("{}", "{}")'.format(item,self._headers[item_index].url_text))
                         else:
                             new_line.append(item)
-
-                    length = find_length(new_line[item_index])
-                    if length > columns_max_width[item_index]:
-                        columns_max_width[item_index] = length
+                            length = find_length(new_line[item_index])
+                            if length > columns_max_width[item_index]:
+                                columns_max_width[item_index] = length
 
 
                 xls_data.append(new_line)

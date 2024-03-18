@@ -80,9 +80,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'label_{label_type}')
 
-    csv_report_headers.extend(['online', 'managed', 'status', 'agent.last_heartbeat',
-                               'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
-                          'href', 'agent.href'])
+    csv_report_headers.extend([
+        'online', 'managed', 'status', 'agent.last_heartbeat',
+        'agent.sec_policy_sync_state', 'agent.sec_policy_applied_at',
+        ExcelHeader(name='link_to_pce', wrap_text=False, url_text='See in PCE', is_url=True),
+        'href', 'agent.href'])
 
     for extra_column in extra_columns:
         csv_report_headers.append(extra_column.column_description().name)
@@ -110,7 +112,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         for field in filter_data._detected_headers:
             csv_report_headers.append('_' + field)
 
-    csv_report = pylo.ArraysToExcel()
+    csv_report = ArraysToExcel()
     csv_sheet = csv_report.create_sheet('workloads', csv_report_headers, force_all_wrap_text=True)
 
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
@@ -132,6 +134,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                 'online': wkl.online,
                 'managed': not wkl.unmanaged,
                 'status': wkl.get_status_string(),
+                'link_to_pce': wkl.href,
             }
             for label_type in org.LabelStore.label_types:
                 new_row[f'label_{label_type}'] = wkl.get_label_name(label_type)
