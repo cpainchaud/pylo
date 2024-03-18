@@ -39,18 +39,6 @@ jobs:
         run: |
           mv dist/windows/cli.exe dist/windows/pylo-cli.exe
 
-      - name: Publish executables for Master branch with 'latest' tag
-        # only if this is a TAG type
-        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Latest Binaries"
-          files: |
-            dist/windows/*
 
       - name: Publish executables along with the tag for a release
         # only if this is a TAG type
@@ -64,14 +52,27 @@ jobs:
           draft: false
           prerelease: false
 
+
+      - name: Publish executables for Master branch with 'latest' tag
+        # only if this is a TAG type
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: "crowbarmaster/GH-Automatic-Releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Latest Binaries"
+          files: |
+            dist/windows/*
+
+
       - name: Publish executables for Dev branch
         if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-        uses: softprops/action-gh-release@975c1b265e11dd76618af1c374e7981f9a6ff44a  # v0.1.16
+        uses: "crowbarmaster/GH-Automatic-Releases@latest"
         with:
-          files: dist/windows/*
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "dev-latest"
           prerelease: false
-          tag_name: "dev-build"
-          name: "Latest DEV/Unstable Binaries"
-
+          title: "Latest Binaries for DEV/Unstable branch"
+          files: |
+            dist/windows/*
