@@ -1,29 +1,56 @@
-from typing import Dict, Any, List, Optional, TypedDict, NotRequired, Union
+from typing import Dict, Any, List, Optional, TypedDict, NotRequired, Union, Iterable
 
-try:
-    import xlsxwriter
-except ImportError:
-    import xlsxwriter
-
-try:
-    import openpyxl
-except ImportError:
-    import openpyxl
-
+import xlsxwriter
+import openpyxl
 import csv
-import illumio_pylo as pylo
 import os
 
+import illumio_pylo as pylo
 
-class ExcelHeader(TypedDict):
-    name: str
-    nice_name: NotRequired[str]
-    max_width: NotRequired[int]
-    wrap_text: NotRequired[bool]
+
+class ExcelHeader:
+    def __init__(self, name: str, nice_name: Optional[str] = None, max_width: Optional[int] = None, wrap_text: Optional[bool] = None, is_url: [bool] = False, url_text: str = 'Link'):
+        self.name = name
+        self.nice_name:str = nice_name if nice_name is not None else name
+        self.max_width = max_width
+        self.wrap_text = wrap_text
+        self.url_text = url_text
+        self.is_url = is_url
+
+
+class ExcelHeaderSet(list[ExcelHeader]):
+    def __init__(self, headers: Optional[Iterable[str|ExcelHeader]]):
+        super(ExcelHeaderSet, self).__init__()
+        if headers is not None:
+            for header in headers:
+                self.append(header)
+
+    def append(self, value: str|ExcelHeader):
+        if type(value) is str:
+            super(ExcelHeaderSet, self).append(ExcelHeader(name=value))
+        elif type(value) is ExcelHeader:
+            super(ExcelHeaderSet, self).append(value)
+        else:
+            raise pylo.PyloEx("ExcelHeaderSet.append() must be a string or a dict (ExcelHeader)")
+
+    def _check_unique(self, new_header_name: str):
+        if new_header_name in self:
+            raise pylo.PyloEx("Header '{}' is already in the set".format(new_header_name))
+
+    def extend(self, iterable):
+        for item in iterable:
+            self.append(item)
+
+    def get_header(self, header_name: str) -> Optional[ExcelHeader]:
+        for header in self:
+            if header.name == header_name:
+                return header
+        return None
 
 
 class ArrayToExport:
-    def __init__(self, headers):
+
+    def __init__(self, headers: List[str]):
         self._headers = headers
         self._columns_count = len(headers)
         self._lines = []
@@ -106,8 +133,8 @@ class ArraysToExcel:
     _sheets: Dict[str, 'ArraysToExcel.Sheet']
 
     class Sheet:
-        def __init__(self, headers: List[str|ExcelHeader], force_all_wrap_text=True, sheet_color: Optional[str] = None, order_by: Optional[List[str]] = None, multivalues_cell_delimiter=' '):
-            self._headers: List[str|ExcelHeader] = headers
+        def __init__(self, headers: ExcelHeaderSet, force_all_wrap_text=True, sheet_color: Optional[str] = None, order_by: Optional[List[str]] = None, multivalues_cell_delimiter=' '):
+            self._headers: ExcelHeaderSet = headers
             self._columns_count = len(headers)
             self._lines = []
             self._columns_wrap = []
@@ -121,20 +148,18 @@ class ArraysToExcel:
             self._headers_index_to_name = []
             index = 0
 
-            for header_name in headers:
+            for header in headers:
                 self._columns_wrap.append(force_all_wrap_text)
 
-                if type(header_name) is str:
-                    self._headers_index_to_name.append(header_name)
-                    self._headers_name_to_index[header_name] = index
-                else:
-                    header_name['nice_name'] = header_name.get('nice_name', header_name['name'])
-                    self._headers_index_to_name.append(header_name['name'])
-                    self._headers_name_to_index[header_name['name']] = index
+                if header.nice_name is not None:
+                    header.nice_name = header.name
 
-                    wrap = header_name.get('wrap_text')
-                    if wrap is not None and not wrap:
-                        self._columns_wrap[len(self._columns_wrap)-1] = False
+                self._headers_index_to_name.append(header.name)
+                self._headers_name_to_index[header.name] = index
+
+                wrap = header.wrap_text
+                if wrap is not None and not wrap:
+                    self._columns_wrap[len(self._columns_wrap)-1] = False
 
                 index += 1
 
@@ -142,20 +167,11 @@ class ArraysToExcel:
         ):
             headers: List[str] = []
             for header in self._headers:
-                if type(header) is str:
-                    headers.append(header)
-                    continue
-                if 'nice_name' in header:
-                    headers.append(header['nice_name'])
-                    continue
-                headers.append(header['name'])
+                headers.append(header.name)
 
             headers_id: List[str] = []
             for header in self._headers:
-                if type(header) is str:
-                    headers_id.append(header)
-                    continue
-                headers_id.append(header['name'])
+                headers_id.append(header.name)
 
 
             exporter = ArrayToExport(headers)
@@ -180,10 +196,7 @@ class ArraysToExcel:
         def add_line_from_object(self, record):
             new_line = []
             for header in self._headers:
-                if type(header) is str:
-                    new_line.append(record.get(header))
-                else:
-                    new_line.append(record.get(header['name']))
+                new_line.append(record.get(header.name))
 
             self._lines.append(new_line)
 
@@ -226,21 +239,27 @@ class ArraysToExcel:
 
             columns_max_width = []
             for header in self._headers:
-                    columns_max_width.append(0)
+                columns_max_width.append(0)
 
+
+
+            # for each line, find the max length of string for each column and also add it to the data array
             for line in self._lines:
                 new_line = []
-                item_index = 0
-                for item in line:
+
+                for item_index, item in enumerate(line):
                     if type(item) is list:
                         new_line.append(pylo.string_list_to_text(item, self._multivalues_cell_delimiter))
                     else:
-                        new_line.append(item)
+                        if self._headers[item_index].is_url:
+                            new_line.append('=HYPERLINK("{}", "{}")'.format(item,self._headers[item_index].url_text))
+                        else:
+                            new_line.append(item)
 
                     length = find_length(new_line[item_index])
                     if length > columns_max_width[item_index]:
                         columns_max_width[item_index] = length
-                    item_index += 1
+
 
                 xls_data.append(new_line)
 
@@ -252,14 +271,10 @@ class ArraysToExcel:
 
                 header_max_width_setting = None
 
-                if type(header) is str:
-                    xls_headers.append({'header': header, 'format': cell_format})
-                    column_name_length = len(header) + 2 # add 2 for dropdown menus
-                else:
-                    column_name = header.get('nice_name') or header.get('name')
-                    xls_headers.append({'header': column_name, 'format': cell_format})
-                    column_name_length = len(column_name) + 2 # add 2 for dropdown menus
-                    header_max_width_setting = header.get('max_width')
+                column_name = header.nice_name
+                xls_headers.append({'header': column_name, 'format': cell_format})
+                column_name_length = len(column_name) + 2 # add 2 for dropdown menus
+                header_max_width_setting = header.max_width
 
                 # default is to use width=longest string
                 column_width = columns_max_width[header_index]+1
@@ -296,7 +311,7 @@ class ArraysToExcel:
     def __init__(self):
         self._sheets = {}
 
-    def create_sheet(self, name: str, headers, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None,
+    def create_sheet(self, name: str, headers: ExcelHeaderSet, force_all_wrap_text: bool = True, sheet_color: Optional[str] = None,
                      order_by: Optional[List[str]] = None, multivalues_cell_delimiter: str = ' ') -> Sheet:
         if name in self._sheets:
             pylo.PyloEx("A sheet named '{}' already exists".format(name))

@@ -4,6 +4,7 @@ import argparse
 import sys
 
 import illumio_pylo as pylo
+from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
 from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
 from .utils.misc import make_filename_with_timestamp
 from . import Command
@@ -97,14 +98,14 @@ def __main(args, org: pylo.Organization, **kwargs):
     context.ignored_workloads_count = 0
 
 
-    csv_report_headers: List[Union[str, pylo.ExcelHeader]] = ['name', 'hostname']
+    csv_report_headers = ExcelHeaderSet(['name', 'hostname'])
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'{context.settings_label_type_header_prefix}{label_type}')
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'new_{label_type}')
     csv_report_headers.extend(['**updated**', '**reason**', 'href'])
 
-    context.csv_report = csv_report = pylo.ArraysToExcel()
+    context.csv_report = csv_report = ArraysToExcel()
     context.csv_report_sheet = context.csv_report.create_sheet('Workloads Update Report', csv_report_headers)
 
     # <editor-fold desc="CSV input file data extraction">

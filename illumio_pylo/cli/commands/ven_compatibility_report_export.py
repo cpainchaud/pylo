@@ -6,6 +6,7 @@ from typing import Dict, List
 from prettytable import PrettyTable
 
 import illumio_pylo as pylo
+from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
 from . import Command
 from .utils.misc import make_filename_with_timestamp
 
@@ -39,17 +40,22 @@ def __main(args, org: pylo.Organization, **kwargs):
     pylo.file_clean(output_filename_csv)
     pylo.file_clean(output_filename_xls)
 
-    csv_report_headers = [{'name':'name'},
-                          {'name':'hostname'}]
+    csv_report_headers = ExcelHeaderSet([
+        ExcelHeader(name='name', max_width=40),
+        ExcelHeader(name='hostname', max_width=40)
+    ])
 
     # insert all label dimensions
     for label_type in org.LabelStore.label_types:
-        csv_report_headers.append({'name': 'label_'+label_type, 'wrap_text': False})
+        csv_report_headers.append(ExcelHeader(name= 'label_'+label_type, wrap_text= False))
 
-    csv_report_headers += [
-        'operating_system', 'report_failed', 'details',
-        {'name':'link_to_pce','max_width': 15, 'wrap_text': False, 'link_text': 'See in PCE', 'is_url': True},
-        {'name':'href', 'max_width': 15, 'wrap_text': False}]
+    csv_report_headers.extend([
+        'operating_system',
+        'report_failed',
+        'details',
+        ExcelHeader(name ='link_to_pce', max_width= 15, wrap_text=False, url_text='See in PCE',is_url= True),
+        ExcelHeader(name='href', max_width=15, wrap_text=False)
+    ])
     csv_report = pylo.ArraysToExcel()
     sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
     # </editor-fold desc="Prepare the output files and CSV/Excel Object">

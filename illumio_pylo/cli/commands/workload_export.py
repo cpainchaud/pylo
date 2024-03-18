@@ -1,9 +1,10 @@
 from typing import List, Dict
-
-import illumio_pylo as pylo
 import argparse
 import sys
 from datetime import datetime
+
+import illumio_pylo as pylo
+from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
 from .utils.misc import make_filename_with_timestamp
 from . import Command
 
@@ -36,7 +37,7 @@ extra_columns: List[ExtraColumn] = []
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--output', required=False, default='.')
+    parser.add_argument('--output-dir', required=False, default='output')
 
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='')
@@ -65,17 +66,17 @@ def __main(args, org: pylo.Organization, **kwargs):
     filter_file_delimiter = args['filter_file_delimiter']
     filter_fields = args['filter_fields']
     filter_keep_in_report = args['keep_filters_in_report']
-    save_location = args['save_location']
+    settings_output_dir = args['output_dir']
     verbose = args['verbose']
     csv_output_only = args['csv_output_only']
     excel_output_only = args['excel_output_only']
     # print(args['filter_fields'])
 
-    output_file_prefix = make_filename_with_timestamp('workload_export_')
-    output_file_csv = save_location + '/' + output_file_prefix + '.csv'
-    output_file_excel = save_location + '/' + output_file_prefix + '.xlsx'
+    output_file_prefix = make_filename_with_timestamp('workload_export_', output_directory=settings_output_dir)
+    output_file_csv = output_file_prefix + '.csv'
+    output_file_excel = output_file_prefix + '.xlsx'
 
-    csv_report_headers = ['name', 'hostname']
+    csv_report_headers = ExcelHeaderSet(['name', 'hostname'])
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'label_{label_type}')
 

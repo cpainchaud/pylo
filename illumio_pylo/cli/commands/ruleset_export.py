@@ -3,6 +3,7 @@ import os
 from typing import Dict, List
 
 import illumio_pylo as pylo
+from illumio_pylo import ArraysToExcel, ExcelHeader
 from .utils.misc import make_filename_with_timestamp
 from . import Command
 
@@ -26,17 +27,17 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 
 def __main(options: Dict, org: pylo.Organization, **kwargs):
-    csv_report_headers: List[pylo.ExcelHeader] = \
-        [{'name': 'ruleset', 'max_width': 40},
-         {'name': 'scope', 'max_width': 50},
-         {'name': 'type', 'max_width': 10},
-         {'name': 'consumers', 'max_width': 80},
-         {'name': 'providers', 'max_width': 80},
-         {'name': 'services', 'max_width': 30},
-         {'name': 'options', 'max_width': 40},
-         {'name': 'ruleset_url', 'max_width': 40, 'wrap_text': False},
-         {'name': 'ruleset_href', 'max_width': 30, 'wrap_text': False}
-         ]
+    csv_report_headers = pylo.ExcelHeaderSet(
+        [   ExcelHeader(name = 'ruleset', max_width = 40),
+            ExcelHeader(name = 'scope', max_width = 50),
+            ExcelHeader(name = 'type', max_width = 10),
+            ExcelHeader(name = 'consumers', max_width = 80),
+            ExcelHeader(name = 'providers', max_width = 80),
+            ExcelHeader(name = 'services', max_width = 30),
+            ExcelHeader(name = 'options', max_width = 40),
+            ExcelHeader(name = 'ruleset_url', max_width = 40, wrap_text = False),
+            ExcelHeader(name = 'ruleset_href', max_width = 30, wrap_text = False)
+            ])
 
     setting_prefix_objects_with_type: bool|str = options['prefix_objects_with_type']
     if setting_prefix_objects_with_type is False:

@@ -1,10 +1,11 @@
+from typing import Dict, List, Literal, Optional
 import datetime
-
 import click
+import argparse
 
 import illumio_pylo as pylo
-import argparse
-from typing import Dict, List, Literal, Optional
+from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
+
 from .utils.misc import make_filename_with_timestamp
 from . import Command
 
@@ -64,20 +65,22 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     output_file_excel = output_file_prefix + '.xlsx'
 
 
-    csv_report_headers = [{'name':'name'},
-                          {'name':'hostname'}]
-
+    csv_report_headers = pylo.ExcelHeaderSet([
+        ExcelHeader(name = 'name', max_width = 40),
+        ExcelHeader(name = 'hostname', max_width = 40)
+    ])
     # insert all label dimensions
     for label_type in org.LabelStore.label_types:
-        csv_report_headers.append({'name': 'label_'+label_type, 'wrap_text': False})
+        csv_report_headers.append(ExcelHeader(name= f'label_{label_type}', wrap_text= False))
 
-    csv_report_headers += [
-                          'online',
-                          {'name':'last_heartbeat', 'max_width': 15, 'wrap_text': False},
-                          {'name': 'created_at', 'max_width': 15, 'wrap_text': False},
-                          'action',
-                          {'name':'link_to_pce','max_width': 15, 'wrap_text': False, 'link_text': 'See in PCE', 'is_url': True},
-                          {'name':'href', 'max_width': 15, 'wrap_text': False}]
+    csv_report_headers.extend([
+        'online',
+        ExcelHeader(name = 'last_heartbeat', max_width = 15, wrap_text = False),
+        ExcelHeader(name = 'created_at', max_width = 15, wrap_text = False),
+        'action',
+        ExcelHeader(name = 'link_to_pce', max_width = 15, wrap_text = False, url_text = 'See in PCE', is_url = True),
+        ExcelHeader(name = 'href', max_width = 15, wrap_text = False)
+    ])
     csv_report = pylo.ArraysToExcel()
     sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
 

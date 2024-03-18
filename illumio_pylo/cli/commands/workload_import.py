@@ -4,6 +4,7 @@ import sys
 import argparse
 
 import illumio_pylo as pylo
+from illumio_pylo import ArraysToExcel, ExcelHeaderSet, ExcelHeader
 from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
 from .utils.misc import make_filename_with_timestamp
 from . import Command
@@ -76,13 +77,14 @@ def __main(args, org: pylo.Organization, **kwargs):
         csv_expected_fields.append({'name': f"{settings_header_label_prefix}{label_type}"  , 'optional': True})
 
 
-    csv_report_headers = ['name', 'hostname', 'ip', 'description']
+    csv_report_headers = ExcelHeaderSet(['name', 'hostname', 'ip', 'description'])
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'label_{label_type}')
-    csv_report_headers.append({'name': '**not_created_reason**'})
-    csv_report_headers.append({'name': 'href', 'max_width': 15})
 
-    csv_report = pylo.ArraysToExcel()
+    csv_report_headers.append(ExcelHeader(name='**not_created_reason**'))
+    csv_report_headers.append(ExcelHeader(name='href', max_width=15))
+
+    csv_report = ArraysToExcel()
     csv_sheet = csv_report.create_sheet('Workloads', csv_report_headers)
 
 
