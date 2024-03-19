@@ -60,7 +60,7 @@ explorer_query.filters.set_time_from_x_days_ago(5)
 # Query the PCE for traffic logs matching the filter
 print("Querying PCE for traffic logs matching the filter... ", end='', flush=True)
 traffic_logs = explorer_query.execute()
-print("OK! found {} traffic logs".format(traffic_logs.count_results()))
+print("OK! found {} traffic logs".format(traffic_logs.count_records()))
 
 # Print the results
 records = traffic_logs.get_all_records()
