@@ -3,12 +3,11 @@ from datetime import datetime
 
 import illumio_pylo as pylo
 
-log = logging.getLogger('Pylo')
-
+log = logging.getLogger('PYLO')
 
 def init_logger():
     console_logger = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s/%(filename)s:%(lineno)d - %(message)s')
     console_logger.setFormatter(formatter)
     log.addHandler(console_logger)
 
@@ -32,7 +31,12 @@ def get_logger():
     return log
 
 
-def find_connector_or_die(obj):
+def find_connector_or_die(obj) -> 'pylo.APIConnector':
+    """
+    Find the APIConnector object in the object or its owner recursively. Will raise an exception if not found
+    :param obj:
+    :return:
+    """
     connector = obj.__dict__.get('connector')  # type: pylo.APIConnector
     if connector is None:
         owner = obj.__dict__.get('owner')

@@ -101,29 +101,17 @@ class RulesetScopeEntry:
 
 
     def to_string(self, label_separator = '|', use_href=False):
-        string = 'All' + label_separator
-        if self.app_label is not None:
+        string = ''
+        for label_type in self.owner.owner.owner.owner.LabelStore.label_types:
+            label = self._labels.get(label_type)
+            if len(string) > 0:
+                string += label_separator
+            if label is None:
+                label += 'All'
             if use_href:
-                string = self.app_label.href + label_separator
+                string += label.href
             else:
-                string = self.app_label.name + label_separator
-
-        if self.env_label is None:
-            string += 'All' + label_separator
-        else:
-            if use_href:
-                string += self.env_label.href + label_separator
-            else:
-                string += self.env_label.name + label_separator
-
-        if self.loc_label is None:
-            string += 'All'
-        else:
-            if use_href:
-                string += self.loc_label.href
-            else:
-                string += self.loc_label.name
-
+                string += label.name
         return string
 
     def is_all_all_all(self):
@@ -287,7 +275,7 @@ class Ruleset:
         if pce_fqdn is None or pce_port is None:
             connector = pylo.find_connector_or_die(self)
             if pce_fqdn is None:
-                pce_fqdn = connector.hostname
+                pce_fqdn = connector.fqdn
             if pce_port is None:
                 pce_port = connector.port
 
