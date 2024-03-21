@@ -3,6 +3,8 @@ from dataclasses import dataclass
 import sys
 import argparse
 
+import click
+
 import illumio_pylo as pylo
 from illumio_pylo import ArraysToExcel, ExcelHeaderSet, ExcelHeader
 from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
@@ -43,6 +45,12 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to create per API call')
 
+    parser.add_argument('--proceed-with-creation', '-p', action='store_true',
+                        help='If set, the script will proceed with the creation of the workloads')
+
+    parser.add_argument('--no-confirmation-required', '-n', action='store_true',
+                        help='If set, the script will proceed with the creation of the workloads and labels without asking for confirmation')
+
 
 
 def __main(args, org: pylo.Organization, **kwargs):
@@ -54,6 +62,8 @@ def __main(args, org: pylo.Organization, **kwargs):
     settings_header_label_prefix: str = args['label_type_header_prefix']
     settings_ignore_all_sorts_collisions: bool = args['ignore_all_sorts_collisions']
     settings_ignore_empty_ip_entries: bool = args['ignore_empty_ip_entries']
+    settings_proceed_with_creation: bool = args['proceed_with_creation']
+    settings_no_confirmation_required: bool = args['no_confirmation_required']
     settings_output_dir: str = args['output_dir']
 
     batch_size = args['batch_size']
@@ -113,6 +123,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     # <editor-fold desc="Missing Labels creation">
     if len(labels_to_be_created) > 0:
         print(" * {} Labels need to created before Workloads can be imported, listing:".format(len(labels_to_be_created)))
+        for label in labels_to_be_created:
+            print("   - Label: {} (type={})".format(label.name, label.type))
+        if not settings_no_confirmation_required:
+            click.confirm("Do you want to proceed with the creation of these labels?", abort=True)
+
         create_labels(labels_to_be_created, org)
     # </editor-fold>
 
@@ -134,21 +149,37 @@ def __main(args, org: pylo.Organization, **kwargs):
         print(" * No Workloads to create, all were ignored due to collisions or missing data.")
         # still want to save the CSV/Excel files in the end so don't exit
     else:
-        print(" * Creating {} Unmanaged Workloads in batches of {}".format(umw_creator_manager.count_drafts(), batch_size))
-        total_created_count = 0
-        total_failed_count = 0
+        if not settings_proceed_with_creation is True:
+            print(" * No workload will be created because the --proceed-with-creation/-p flag was not set. Yet report will be generated")
+            for object_to_create in csv_objects_to_create:
+                if '**not_created_reason**' not in object_to_create:
+                    object_to_create['**not_created_reason**'] = '--proceed-with-creation/-p flag was not set'
+        else:
+            confirmed = settings_no_confirmation_required
+            print(" * Creating {} Unmanaged Workloads in batches of {}".format(umw_creator_manager.count_drafts(), batch_size))
+            if not settings_no_confirmation_required:
+                confirmed = click.confirm("Do you want to proceed with the creation of these workloads?")
 
-        results = umw_creator_manager.create_all_in_pce(amount_created_per_batch=batch_size, retrieve_workloads_after_creation=False)
-        for result in results:
-            if result.success:
-                total_created_count += 1
-                result.external_tracker_id['href'] = result.workload_href
+            if not confirmed:
+                print(" * No Workloads will be created, user aborted the operation")
+                for object_to_create in csv_objects_to_create:
+                    if '**not_created_reason**' not in object_to_create:
+                        object_to_create['**not_created_reason**'] = 'user aborted the operation'
             else:
-                total_failed_count += 1
-                result.external_tracker_id['**not_created_reason**'] = result.message
+                total_created_count = 0
+                total_failed_count = 0
 
-        print("  * DONE - {} created with success, {} failures and {} ignored.".format(
-            total_created_count, total_failed_count, ignored_objects_count))
+                results = umw_creator_manager.create_all_in_pce(amount_created_per_batch=batch_size, retrieve_workloads_after_creation=False)
+                for result in results:
+                    if result.success:
+                        total_created_count += 1
+                        result.external_tracker_id['href'] = result.workload_href
+                    else:
+                        total_failed_count += 1
+                        result.external_tracker_id['**not_created_reason**'] = result.message
+
+                print("  * DONE - {} created with success, {} failures and {} ignored.".format(
+                    total_created_count, total_failed_count, ignored_objects_count))
     # </editor-fold>
 
     print()

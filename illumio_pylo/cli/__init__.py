@@ -33,7 +33,7 @@ def run(forced_command_name: Optional[str] = None):
                     print(" * Native CLI arguments parsing...")
                 attr.execute(args[attr.get_arg_name()], org, padding='    ')
 
-    parser = argparse.ArgumentParser(description='TODO LATER')
+    parser = argparse.ArgumentParser(description='PYLO-CLI: Illumio API&More Command Line Interface')
     parser.add_argument('--pce', type=str, required=False,
                         help='hostname of the PCE')
     parser.add_argument('--debug', action='store_true',

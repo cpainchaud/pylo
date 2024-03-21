@@ -2,7 +2,7 @@ import json
 import time
 import getpass
 
-from .CredentialsManager import is_api_key_encrypted, decrypt_api_key
+from .CredentialsManager import is_api_key_encrypted, decrypt_api_key, CredentialProfile
 from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
     LabelObjectJsonStructure, LabelObjectUpdateJsonStructure, PCEObjectsJsonStructure, \
     LabelGroupObjectUpdateJsonStructure, IPListObjectCreationJsonStructure, IPListObjectJsonStructure, \
@@ -109,15 +109,19 @@ class APIConnector:
         return all_object_types.copy()
 
     @staticmethod
+    def create_from_credentials_object(credentials: CredentialProfile) -> Optional['APIConnector']:
+        return APIConnector(credentials.fqdn, credentials.port, credentials.api_user,
+                            credentials.api_key, skip_ssl_cert_check=not credentials.verify_ssl,
+                            org_id=credentials.org_id, name=credentials.name)
+
+    @staticmethod
     def create_from_credentials_in_file(fqdn_or_profile_name: str, request_if_missing: bool = False,
                                         credential_file: Optional[str] = None) -> Optional['APIConnector']:
 
         credentials = pylo.get_credentials_from_file(fqdn_or_profile_name, credential_file)
 
         if credentials is not None:
-            return APIConnector(credentials.fqdn, credentials.port, credentials.api_user,
-                                credentials.api_key, skip_ssl_cert_check=not credentials.verify_ssl,
-                                org_id=credentials.org_id, name=credentials.name)
+            return APIConnector.create_from_credentials_object(credentials)
 
         if not request_if_missing:
             return None
