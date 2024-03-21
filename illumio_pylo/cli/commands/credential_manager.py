@@ -1,3 +1,5 @@
+import sys
+
 from prettytable import PrettyTable
 import argparse
 import os
@@ -7,7 +9,8 @@ import paramiko
 import illumio_pylo as pylo
 import click
 from illumio_pylo.API.CredentialsManager import get_all_credentials, create_credential_in_file, CredentialFileEntry, \
-    create_credential_in_default_file, encrypt_api_key_with_paramiko_key, decrypt_api_key_with_paramiko_key
+    create_credential_in_default_file, encrypt_api_key_with_paramiko_key, decrypt_api_key_with_paramiko_key, \
+    get_credentials_from_file
 
 from illumio_pylo import log
 from . import Command
@@ -20,19 +23,24 @@ objects_load_filter = None
 def fill_parser(parser: argparse.ArgumentParser):
     sub_parser = parser.add_subparsers(dest='sub_command', required=True)
     list_parser = sub_parser.add_parser('list', help='List all credentials')
-    create_parser = sub_parser.add_parser('create', help='Create a new credential')
 
-    create_parser.add_argument('--name', required=True, type=str,
-                               help='Name of the credential')
-    create_parser.add_argument('--fqdn', required=True, type=str,
+    test_parser = sub_parser.add_parser('test', help='Test a credential')
+    test_parser.add_argument('--name', required=False, type=str, default=None,
+                             help='Name of the credential profile to test')
+
+
+    create_parser = sub_parser.add_parser('create', help='Create a new credential')
+    create_parser.add_argument('--name', required=False, type=str, default=None,
+                     help='Name of the credential')
+    create_parser.add_argument('--fqdn', required=False, type=str, default=None,
                                  help='FQDN of the PCE')
-    create_parser.add_argument('--port', required=True, type=int,
+    create_parser.add_argument('--port', required=False, type=int, default=None,
                                  help='Port of the PCE')
-    create_parser.add_argument('--org', required=True, type=int,
+    create_parser.add_argument('--org', required=False, type=int, default=None,
                                  help='Organization ID')
-    create_parser.add_argument('--api-user', required=True, type=str,
+    create_parser.add_argument('--api-user', required=False, type=str, default=None,
                                     help='API user')
-    create_parser.add_argument('--verify-ssl', required=True, type=bool,
+    create_parser.add_argument('--verify-ssl', required=False, type=bool, default=None,
                                  help='Verify SSL')
 
 
@@ -54,14 +62,10 @@ def __main(args, **kwargs):
                   )
 
     elif args['sub_command'] == 'create':
-        print("Recap:")
-        print("Name: {}".format(args['name']))
-        print("FQDN: {}".format(args['fqdn']))
-        print("Port: {}".format(args['port']))
-        print("Org ID: {}".format(args['org']))
-        print("API User: {}".format(args['api_user']))
-        print("Verify SSL: {}".format(args['verify_ssl']))
-        print()
+
+        wanted_name = args['name']
+        if wanted_name is None:
+            wanted_name = click.prompt('> Input a Profile Name (ie: prod-pce)', type=str)
 
         print("* Checking if a credential with the same name already exists...", flush=True, end="")
         credentials = get_all_credentials()
@@ -70,20 +74,52 @@ def __main(args, **kwargs):
                 raise pylo.PyloEx("A credential named '{}' already exists".format(args['name']))
         print("OK!")
 
+        wanted_fqdn = args['fqdn']
+        if wanted_fqdn is None:
+            wanted_fqdn = click.prompt('> PCE FQDN (ie: pce1.mycompany.com)', type=str)
+
+        wanted_port = args['port']
+        if wanted_port is None:
+            wanted_port = click.prompt('> PCE Port (ie: 8443)', type=int)
+
+        wanted_org = args['org']
+        if wanted_org is None:
+            wanted_org = click.prompt('> Organization ID', type=int)
+
+        wanted_api_user = args['api_user']
+        if wanted_api_user is None:
+            wanted_api_user = click.prompt('> API User', type=str)
+
+        wanted_verify_ssl = args['verify_ssl']
+        if wanted_verify_ssl is None:
+            wanted_verify_ssl = click.prompt('> Verify SSL/TLS certificate? Y/N', type=bool)
+
+
+        print()
+        print("Recap:")
+        print("Name: {}".format(wanted_name))
+        print("FQDN: {}".format(wanted_fqdn))
+        print("Port: {}".format(wanted_port))
+        print("Org ID: {}".format(wanted_org))
+        print("API User: {}".format(wanted_api_user))
+        print("Verify SSL: {}".format(wanted_verify_ssl))
+        print()
+
+
         # prompt of API key from user input, single line, hidden
         api_key = click.prompt('> API Key', hide_input=True)
 
         credentials_data: CredentialFileEntry = {
-            "name": args['name'],
-            "fqdn": args['fqdn'],
-            "port": args['port'],
-            "org_id": args['org'],
-            "api_user": args['api_user'],
-            "verify_ssl": args['verify_ssl'],
+            "name": wanted_name,
+            "fqdn": wanted_fqdn,
+            "port": wanted_port,
+            "org_id": wanted_org,
+            "api_user": wanted_api_user,
+            "verify_ssl": wanted_verify_ssl,
             "api_key": api_key
         }
 
-        encrypt_api_key = click.prompt('> Encrypt API? Y/N', type=bool)
+        encrypt_api_key = click.prompt('> Encrypt API (requires an SSH agent running and an RSA or Ed25519 key) ? Y/N', type=bool)
         if encrypt_api_key:
             print("Available keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
             ssh_keys = paramiko.Agent().get_keys()
@@ -122,6 +158,35 @@ def __main(args, **kwargs):
 
         print("OK! ({})".format(file_path))
 
+    elif args['sub_command'] == 'test':
+        print("* Profile Tester command")
+        wanted_name = args['name']
+        if wanted_name is None:
+            wanted_name = click.prompt('> Input a Profile Name to test (ie: prod-pce)', type=str)
+        found_profile = get_credentials_from_file(wanted_name, fail_with_an_exception=False)
+        if found_profile is None:
+            print("Cannot find a profile named '{}'".format(wanted_name))
+            print("Available profiles:")
+            credentials = get_all_credentials()
+            for credential in credentials:
+                print(" - {}".format(credential.name))
+            sys.exit(1)
+
+        print("Selected profile:")
+        print(" - Name: {}".format(found_profile.name))
+        print(" - FQDN: {}".format(found_profile.fqdn))
+        print(" - Port: {}".format(found_profile.port))
+        print(" - Org ID: {}".format(found_profile.org_id))
+        print(" - API User: {}".format(found_profile.api_user))
+        print(" - Verify SSL: {}".format(found_profile.verify_ssl))
+
+        print("* Testing credential...", flush=True, end="")
+        connector = pylo.APIConnector.create_from_credentials_object(found_profile)
+        connector.objects_label_dimension_get()
+        print("OK!")
+
+    else:
+        raise pylo.PyloEx("Unknown sub-command '{}'".format(args['sub_command']))
 
 command_object = Command(command_name, __main, fill_parser, credentials_manager_mode=True)
 

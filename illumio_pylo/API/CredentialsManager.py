@@ -97,7 +97,7 @@ def get_all_credentials_from_file(credential_file: str ) -> List[CredentialProfi
 
 
 def get_credentials_from_file(fqdn_or_profile_name: str = None,
-                              credential_file: str = None) -> CredentialProfile:
+                              credential_file: str = None, fail_with_an_exception=True) -> Optional[CredentialProfile]:
 
     if fqdn_or_profile_name is None:
         log.debug("No fqdn_or_profile_name provided, profile_name=default will be used")
@@ -121,8 +121,11 @@ def get_credentials_from_file(fqdn_or_profile_name: str = None,
         if credential_profile.fqdn.lower() == fqdn_or_profile_name.lower():
             return credential_profile
 
-    raise PyloEx("No profile found in credential file '{}' with fqdn: {}".
+    if fail_with_an_exception:
+        raise PyloEx("No profile found in credential file '{}' with fqdn: {}".
                     format(credential_file, fqdn_or_profile_name))
+
+    return None
 
 
 def list_potential_credential_files() -> List[str]:
