@@ -11,14 +11,8 @@ objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--filter-env-label', type=str, required=False, default=None,
-                        help='Filter agents by environment labels (separated by commas)')
-    parser.add_argument('--filter-loc-label', type=str, required=False, default=None,
-                        help='Filter agents by location labels (separated by commas)')
-    parser.add_argument('--filter-app-label', type=str, required=False, default=None,
-                        help='Filter agents by application labels (separated by commas)')
-    parser.add_argument('--filter-role-label', type=str, required=False, default=None,
-                        help='Filter agents by role labels (separated by commas)')
+    parser.add_argument('--filter-label', '-fl', action='append',
+                        help='Only look at workloads matching specified labels')
 
     parser.add_argument('--filter-ven-versions', nargs='+', type=str, required=False, default=None,
                         help='Filter agents by versions (separated by spaces)')
@@ -67,58 +61,13 @@ def __main(args, org: pylo.Organization, **kwargs):
     target_version = pylo.SoftwareVersion(target_version_string)
 
     print(" * Parsing filters")
-
-    env_label_list = {}
-    if args['filter_env_label'] is not None:
-        print("   * Environment Labels specified")
-        for raw_label_name in args['filter_env_label'].split(','):
-            print("     - label named '{}'".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_env)
+    filter_labels: List[pylo.Label] = []  # the list of labels to filter the workloads against
+    if args['filter_label'] is not None:
+        for label_name in args['filter_label']:
+            label = org.LabelStore.find_label_by_name(label_name)
             if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print("found")
-                env_label_list[label] = label
-
-    loc_label_list = {}
-    if args['filter_loc_label'] is not None:
-        print("   * Location Labels specified")
-        for raw_label_name in args['filter_loc_label'].split(','):
-            print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_loc)
-            if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print("found")
-                loc_label_list[label] = label
-
-    app_label_list = {}
-    if args['filter_app_label'] is not None:
-        print("   * Application Labels specified")
-        for raw_label_name in args['filter_app_label'].split(','):
-            print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_app)
-            if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print("found")
-                app_label_list[label] = label
-
-    role_label_list = {}
-    if args['filter_role_label'] is not None:
-        print("   * Role Labels specified")
-        for raw_label_name in args['filter_role_label']:
-            print("     - label named '{}' ".format(raw_label_name), end='', flush=True)
-            label = org.LabelStore.find_label_by_name_and_type(raw_label_name, pylo.label_type_role)
-            if label is None:
-                print("NOT FOUND!")
-                raise pylo.PyloEx("Cannot find label named '{}'".format(raw_label_name))
-            else:
-                print("found")
-                role_label_list[label] = label
+                raise pylo.PyloEx("Cannot find label '{}' in the PCE".format(label_name))
+            filter_labels.append(label)
 
     filter_versions = {}
     if args['filter_ven_versions'] is not None:
@@ -149,25 +98,8 @@ def __main(args, org: pylo.Organization, **kwargs):
                 del agents[agent_href]
                 continue
 
-        if len(env_label_list) > 0 and (workload.env_label is None or workload.env_label not in env_label_list):
-            pylo.log.debug(" - workload '{}' does not match env_label filters, it's out!".format(workload.get_name()))
-            del agents[agent_href]
-            continue
-        if len(loc_label_list) > 0 and (workload.loc_label is None or workload.loc_label not in loc_label_list):
-            pylo.log.debug(" - workload '{}' does not match loc_label filters, it's out!".format(workload.get_name()))
-            del agents[agent_href]
-            continue
-        if len(app_label_list) > 0 and (workload.app_label is None or workload.app_label not in app_label_list):
-            pylo.log.debug(" - workload '{}' does not match app_label filters, it's out!".format(workload.get_name()))
-            del agents[agent_href]
-            continue
-        if len(role_label_list) > 0 and (workload.role_label is None or workload.role_label not in role_label_list):
-            pylo.log.debug(" - workload '{}' does not match role_label filters, it's out!".format(workload.get_name()))
-            del agents[agent_href]
-            continue
-
-        if agent.software_version.version_string not in filter_versions:
-            pylo.log.debug(" - workload '{}' does not match the version filter, it's out!".format(workload.get_name()))
+        if workload.uses_all_labels(filter_labels) is False:
+            pylo.log.debug(" - workload '{}' is not matching the labels filter".format(workload.get_name()))
             del agents[agent_href]
             continue
 
