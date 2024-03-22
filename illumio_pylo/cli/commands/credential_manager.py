@@ -9,7 +9,7 @@ import paramiko
 import illumio_pylo as pylo
 import click
 from illumio_pylo.API.CredentialsManager import get_all_credentials, create_credential_in_file, CredentialFileEntry, \
-    create_credential_in_default_file, encrypt_api_key_with_paramiko_key, decrypt_api_key_with_paramiko_key, \
+    create_credential_in_default_file, encrypt_api_key_with_paramiko_ssh_key_fernet, decrypt_api_key_with_paramiko_ssh_key_fernet, \
     get_credentials_from_file
 
 from illumio_pylo import log
@@ -136,10 +136,10 @@ def __main(args, **kwargs):
                                                       selected_ssh_key.get_fingerprint().hex(),
                                                       selected_ssh_key.comment))
             print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
-            encrypted_api_key = encrypt_api_key_with_paramiko_key(ssh_key=selected_ssh_key, api_key=api_key)
+            encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key=selected_ssh_key, api_key=api_key)
             print("OK!")
             print(" * trying to decrypt the encrypted API key...", flush=True, end="")
-            decrypted_api_key = decrypt_api_key_with_paramiko_key(encrypted_api_key_payload=encrypted_api_key)
+            decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_fernet(encrypted_api_key_payload=encrypted_api_key)
             if decrypted_api_key != api_key:
                 raise pylo.PyloEx("Decrypted API key does not match original API key")
             print("OK!")

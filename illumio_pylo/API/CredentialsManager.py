@@ -207,9 +207,7 @@ def create_credential_in_default_file(data: CredentialFileEntry) -> str:
     return file_path
 
 
-def encrypt_api_key_with_paramiko_key(ssh_key: paramiko.AgentKey, api_key: str) -> str:
-
-
+def encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key: paramiko.AgentKey, api_key: str) -> str:
     def encrypt(raw: str, key: bytes) -> bytes:
         """
 
@@ -223,7 +221,7 @@ def encrypt_api_key_with_paramiko_key(ssh_key: paramiko.AgentKey, api_key: str) 
 
 
     # generate a random 128bit key
-    session_key_to_sign = os.urandom(16)
+    session_key_to_sign = os.urandom(32)
 
     signed_message = ssh_key.sign_ssh_data(session_key_to_sign)
 
@@ -239,7 +237,7 @@ def encrypt_api_key_with_paramiko_key(ssh_key: paramiko.AgentKey, api_key: str) 
     return api_key
 
 
-def decrypt_api_key_with_paramiko_key(encrypted_api_key_payload: str) -> str:
+def decrypt_api_key_with_paramiko_ssh_key_fernet(encrypted_api_key_payload: str) -> str:
     def decrypt(token_b64_encoded: str, key: bytes):
         f = Fernet(base64.urlsafe_b64encode(key))
         return f.decrypt(token_b64_encoded).decode('utf-8')
@@ -280,7 +278,7 @@ def decrypt_api_key(encrypted_api_key_payload: str) -> str:
     if not encrypted_api_key_payload.startswith("$encrypted$:"):
         raise PyloEx("Invalid encrypted API key format")
     if encrypted_api_key_payload.startswith("$encrypted$:ssh-Fernet:"):
-        return decrypt_api_key_with_paramiko_key(encrypted_api_key_payload)
+        return decrypt_api_key_with_paramiko_ssh_key_fernet(encrypted_api_key_payload)
 
     raise PyloEx("Unsupported encryption method: {}".format(encrypted_api_key_payload.split(":")[1]))
 
