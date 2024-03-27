@@ -107,8 +107,8 @@ class RulesetScopeEntry:
             if len(string) > 0:
                 string += label_separator
             if label is None:
-                label += 'All'
-            if use_href:
+                string += 'All'
+            elif use_href:
                 string += label.href
             else:
                 string += label.name
@@ -144,10 +144,6 @@ class RulesetScopeEntry:
 
 class Ruleset:
 
-    name: str
-    href: Optional[str]
-    description: str
-
     def __init__(self, owner: 'pylo.RulesetStore'):
         self.owner: 'pylo.RulesetStore' = owner
         self.href: Optional[str] = None
@@ -157,6 +153,7 @@ class Ruleset:
         # must keep an ordered list of rules while the dict by href is there for quick searches
         self._rules_by_href: Dict[str, 'pylo.Rule'] = {}
         self._rules: List['pylo.Rule'] = []
+        self.disabled: bool = False
 
     @property
     def rules(self):
@@ -198,6 +195,9 @@ class Ruleset:
         if 'href' not in data:
             raise pylo.PyloEx("Cannot find Ruleset href in JSON data: \n" + pylo.Helpers.nice_json(data))
         self.href = data['href']
+
+        if 'enabled' in data:
+            self.disabled = not data['enabled']
 
         scopes_json = data.get('scopes')
         if scopes_json is None:
