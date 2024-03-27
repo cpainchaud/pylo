@@ -13,7 +13,7 @@ class LabeledObject:
     def get_labels_dict(self):
         return self._labels.copy()
 
-    def get_labels(self):
+    def get_labels(self) -> Iterable['pylo.Label']:
         return self._labels.values()
 
     def set_label(self, label :'pylo.Label'):
