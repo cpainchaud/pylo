@@ -71,6 +71,15 @@ class IP4Map:
             self._entries.append(new_entry)
             self.sort_and_recalculate()
 
+    def add_another_map(self, another_map: 'IP4Map', skip_recalculation=False):
+        for entry in another_map._entries:
+            self._entries.append(entry)
+
+        if skip_recalculation:
+            return
+
+        self.sort_and_recalculate()
+
     def intersection(self, another_map: 'IP4Map'):
 
         inverted_map = IP4Map()
