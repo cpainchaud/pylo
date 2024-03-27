@@ -135,7 +135,10 @@ class Organization:
             object_to_load = pylo.APIConnector.get_all_object_types()
 
         if self.pce_version is None:
-            raise pylo.PyloEx('Organization has no "version" specified')
+            if 'pce_version' in data:
+                self.pce_version = pylo.SoftwareVersion(data['pce_version'])
+            else:
+                raise pylo.PyloEx('Organization has no "version" specified')
 
         self.LabelStore.load_label_dimensions(data.get('label_dimensions'))
 
