@@ -4,7 +4,7 @@ from typing import Optional, List, Union, Dict, Any, NewType
 import illumio_pylo as pylo
 from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
 from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
-    Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList
+    Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList, PortMap
 
 RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
 
@@ -250,6 +250,7 @@ class RuleServiceContainer(pylo.Referencer):
         self.owner = owner
         self._items: Dict[Service, Service] = {}
         self._direct_services: List[DirectServiceInRule] = []
+        self._cached_port_map: Optional[PortMap] = None
 
     def load_from_json(self, data_list: List[RuleServiceReferenceObjectJsonStructure|RuleDirectServiceReferenceObjectJsonStructure]):
         ss_store = self.owner.owner.owner.owner.ServiceStore  # make it a local variable for fast lookups
@@ -295,6 +296,8 @@ class RuleServiceContainer(pylo.Referencer):
         :param service:
         :return: True if the service was removed, False if it was not found
         """
+        self._cached_port_map = None
+
         for i in range(0, len(self._direct_services)):
             if self._direct_services[i] is service:
                 del(self._direct_services[i])
@@ -302,6 +305,8 @@ class RuleServiceContainer(pylo.Referencer):
         return False
 
     def add_direct_service(self, service: DirectServiceInRule) -> bool:
+        self._cached_port_map = None
+
         for member in self._direct_services:
             if service is member:
                 return False
@@ -351,6 +356,27 @@ class RuleServiceContainer(pylo.Referencer):
             self.owner.batch_update_stack.add_payload(data)
 
         self.owner.raw_json.update(data)
+
+    def get_port_map(self) -> PortMap:
+        """
+        Get a PortMap object with all ports and protocols from all services in this container
+        :return:
+        """
+        if self._cached_port_map is not None:
+            return self._cached_port_map
+
+        result = PortMap()
+        for service in self._items.values():
+            for entry in service.entries:
+                result.add(entry.protocol, entry.port, entry.to_port, skip_recalculation=True)
+        for direct in self._direct_services:
+            result.add(direct.protocol, direct.port, direct.to_port, skip_recalculation=True)
+
+        result.merge_overlapping_maps()
+
+        self._cached_port_map = result
+
+        return result
 
 
 class RuleHostContainer(pylo.Referencer):
