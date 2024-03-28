@@ -7,9 +7,19 @@ from typing import *
 
 class PortMap:
     def __init__(self):
-        self._tcp_map = []
-        self._udp_map = []
+        self._tcp_map: List[List[2]] = []  # [start, end]
+        self._udp_map: List[List[2]] = []  # [start, end]
         self._protocol_map = {}
+
+    def copy(self) -> 'PortMap':
+        new_map = PortMap()
+        new_map._tcp_map = self._tcp_map.copy()
+        new_map._udp_map = self._udp_map.copy()
+        new_map._protocol_map = self._protocol_map.copy()
+        return new_map
+
+    def count(self) -> int:
+        return len(self._tcp_map) + len(self._udp_map) + len(self._protocol_map)
 
     def add(self, protocol, start_port: int, end_port: int = None, skip_recalculation=False):
 
@@ -31,67 +41,54 @@ class PortMap:
             return
 
         if start_port is None:
+            start_port = end_port
+
+        if end_port is None:
             end_port = start_port
 
-        new_entry = [start_port, end_port]
+        if proto == 6:
+            self._tcp_map.append([start_port, end_port])
+        else:
+            self._udp_map.append([start_port, end_port])
 
         if not skip_recalculation:
             self.merge_overlapping_maps()
 
+    def to_list_of_objects(self) -> List[Dict]:
+        result = []
+        for entry in self._tcp_map:
+            result.append({'proto': 6, 'port': entry[0], 'to_port': entry[1]})
+
+        for entry in self._udp_map:
+            result.append({'proto': 17, 'port': entry[0], 'to_port': entry[1]})
+
+        for proto in self._protocol_map:
+            result.append({'proto': proto})
+
+        return result
+
     def merge_overlapping_maps(self):
         self._sort_maps()
 
-        new_map = []
+        def merge_maps(map_list):
+            new_list = []
+            current = None
+            for entry in map_list:
+                if current is None:
+                    current = entry
+                    continue
 
-        cur_entry = None
+                if entry[0] <= current[1] + 1:
+                    current[1] = entry[1]
+                else:
+                    new_list.append(current)
+                    current = entry
+            if current is not None:
+                new_list.append(current)
+            return new_list
 
-        for original_entry in self._tcp_map:
-            if cur_entry is None:
-                cur_entry = original_entry
-                continue
-
-            cur_start = cur_entry[0]
-            cur_end = cur_entry[1]
-            new_start = original_entry[0]
-            new_end = original_entry[1]
-
-            if new_start > cur_end + 1:
-                new_map.append(cur_entry)
-                continue
-
-            if new_end > cur_end:
-                cur_entry[1] = new_end
-
-        if cur_entry is not None:
-            self._tcp_map = []
-        else:
-            new_map.append(cur_entry)
-            self._tcp_map = new_map
-
-        new_map = []
-
-        for original_entry in self._udp_map:
-            if cur_entry is None:
-                cur_entry = original_entry
-                continue
-
-            cur_start = cur_entry[0]
-            cur_end = cur_entry[1]
-            new_start = original_entry[0]
-            new_end = original_entry[1]
-
-            if new_start > cur_end + 1:
-                new_map.append(cur_entry)
-                continue
-
-            if new_end > cur_end:
-                cur_entry[1] = new_end
-
-        if cur_entry is not None:
-            self._udp_map = []
-        else:
-            new_map.append(cur_entry)
-            self._udp_map = new_map
+        self._tcp_map = merge_maps(self._tcp_map)
+        self._udp_map = merge_maps(self._udp_map)
 
     def _sort_maps(self):
         def first_entry(my_list):
