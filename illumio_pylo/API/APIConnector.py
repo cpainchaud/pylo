@@ -366,7 +366,7 @@ class APIConnector:
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
-    def get_pce_objects(self, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None):
+    def get_pce_objects(self, include_deleted_workloads=False, list_of_objects_to_load: Optional[List[str]] = None, force_async_mode=False):
 
         objects_to_load = {}
         if list_of_objects_to_load is not None:
@@ -393,7 +393,7 @@ class APIConnector:
         errors = []
         thread_queue = Queue()
 
-        def get_objects(q: Queue, thread_num: int):
+        def get_objects(q: Queue, thread_num: int, force_async_mode=False):
             while True:
                 object_type, errors = q.get()
                 try:
@@ -401,7 +401,7 @@ class APIConnector:
                         q.task_done()
                         continue
                     if object_type == 'workloads':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
+                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls or force_async_mode:
                             data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads)
                         else:
                             data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads, async_mode=False, max_results=default_max_objects_for_sync_calls)
@@ -460,7 +460,7 @@ class APIConnector:
                 q.task_done()
 
         for i in range(threads_count):
-            worker = Thread(target=get_objects, args=(thread_queue, i))
+            worker = Thread(target=get_objects, args=(thread_queue, i, force_async_mode,))
             worker.daemon = True
             worker.start()
 

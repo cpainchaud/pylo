@@ -36,6 +36,8 @@ def run(forced_command_name: Optional[str] = None):
     parser = argparse.ArgumentParser(description='PYLO-CLI: Illumio API&More Command Line Interface')
     parser.add_argument('--pce', type=str, required=False,
                         help='hostname of the PCE')
+    parser.add_argument('--force-async-mode', action='store_true',
+                        help='Forces the command to run async API queries when required (large PCEs which timeout on specific queries)')
     parser.add_argument('--debug', action='store_true',
                         help='Enables extra debugging output in Pylo framework')
     parser.add_argument('--use-cache', action='store_true',
@@ -106,7 +108,7 @@ def run(forced_command_name: Optional[str] = None):
             print("OK!")
 
             print(" * Downloading PCE objects from API... ".format(credential_profile_name), end="", flush=True)
-            config_data = connector.get_pce_objects(list_of_objects_to_load=selected_command.load_specific_objects_only)
+            config_data = connector.get_pce_objects(list_of_objects_to_load=selected_command.load_specific_objects_only, force_async_mode=args['force_async_mode'])
             print("OK!")
 
             org = pylo.Organization(1)
