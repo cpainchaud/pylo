@@ -71,7 +71,7 @@ class Organization:
         credentials = get_credentials_from_file(fqdn_or_profile_name, credential_file)
 
         connector = pylo.APIConnector(fqdn=credentials.fqdn, port=credentials.port,
-                                      apiuser=credentials.api_user, apikey=credentials.api_key,
+                                      api_user=credentials.api_user, api_key=credentials.api_key,
                                       org_id=credentials.org_id,
                                       skip_ssl_cert_check=not credentials.verify_ssl, name=fqdn_or_profile_name)
 

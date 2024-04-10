@@ -43,7 +43,7 @@ def get_organization(fqdn: str, port: int, api_user: str, api_key: str,
     """
     Load an organization from the API with parameters provided as arguments.
     """
-    api = APIConnector(fqdn=fqdn, port=port, apiuser=api_user, apikey=api_key, org_id=organization_id,
+    api = APIConnector(fqdn=fqdn, port=port, api_user=api_user, api_key=api_key, org_id=organization_id,
                        skip_ssl_cert_check=not verify_ssl)
     org = Organization(1)
     org.load_from_api(api, include_deleted_workloads=include_deleted_workloads,
