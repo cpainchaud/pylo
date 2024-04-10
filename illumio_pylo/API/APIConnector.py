@@ -62,16 +62,16 @@ all_object_types: Dict[ObjectTypes, ObjectTypes] = {
 class APIConnector:
     """docstring for APIConnector."""
 
-    def __init__(self, fqdn: str, port, apiuser: str, apikey: str, skip_ssl_cert_check=False, org_id=1, name='unnamed'):
+    def __init__(self, fqdn: str, port, api_user: str, api_key: str, skip_ssl_cert_check=False, org_id=1, name='unnamed'):
         self.name = name
         self.fqdn: str = fqdn
         if type(port) is int:
             port = str(port)
         self.port: int = port
-        self._api_key: str = apikey
+        self._api_key: str = api_key
         self._decrypted_api_key: str = None
-        self.api_user: str = apiuser
-        self.orgID: int = org_id
+        self.api_user: str = api_user
+        self.org_id: int = org_id
         self.skipSSLCertCheck: bool = skip_ssl_cert_check
         self.version: Optional['pylo.SoftwareVersion'] = None
         self.version_string: str = "Not Defined"
@@ -148,7 +148,7 @@ class APIConnector:
     def _make_api_url(self, path: str = '', include_org_id=False) -> str:
         url = self._make_base_url('/api/v2')
         if include_org_id:
-            url += '/orgs/' + str(self.orgID)
+            url += '/orgs/' + str(self.org_id)
         url += path
 
         return url

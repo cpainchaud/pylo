@@ -6,8 +6,8 @@ import logging
 log.setLevel(logging.DEBUG)
 
 
-con = pylo.APIConnector(fqdn="192.168.253.10", port=8443, skip_ssl_cert_check=True, apiuser='api_185c2399e24b631c2',
-                        apikey='2dbaf8fe5bb9278e26388e5d35229a6797ff5c622154b6289edfc03e7c0f9782')
+con = pylo.APIConnector(fqdn="192.168.253.10", port=8443, skip_ssl_cert_check=True, api_user='api_185c2399e24b631c2',
+                        api_key='2dbaf8fe5bb9278e26388e5d35229a6797ff5c622154b6289edfc03e7c0f9782')
 
 con.collect_pce_infos()
 

@@ -71,7 +71,9 @@ def do_log_resolution(q: Queue, thread_num: int):
     global skip_count
     global resolution_cache
 
-    local_connector = pylo.APIConnector(connector.hostname, connector.port, connector.api_user, connector.api_key, connector.skipSSLCertCheck, connector.orgID)
+    local_connector = pylo.APIConnector(fqdn=connector.fqdn, port=connector.port,
+                                        api_user=connector.api_user, api_key=connector.api_key,
+                                        skip_ssl_cert_check= connector.skipSSLCertCheck, org_id=connector.org_id)
 
     while True:
 
