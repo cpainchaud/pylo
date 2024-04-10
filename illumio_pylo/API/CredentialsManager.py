@@ -14,7 +14,6 @@ except ImportError:
     paramiko = None
 
 
-
 class CredentialFileEntry(TypedDict):
     name: str
     fqdn: str

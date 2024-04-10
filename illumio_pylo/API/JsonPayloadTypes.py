@@ -121,6 +121,35 @@ class WorkloadBulkUpdateResponseEntry(TypedDict):
     message: NotRequired[str]
 
 
+class VenObjectWorkloadSummaryJsonStructure(TypedDict):
+    href: str
+    mode: str
+    online: bool
+
+
+class VenObjectJsonStructure(TypedDict):
+    created_at: str
+    created_by: Optional[HrefReferenceWithName]
+    description: Optional[str]
+    hostname: Optional[str]
+    href: str
+    labels: List[HrefReference]
+    name: Optional[str]
+    interfaces: List[WorkloadInterfaceObjectJsonStructure]
+    updated_at: str
+    updated_by: Optional[HrefReferenceWithName]
+    last_heartbeat_at: Optional[str]
+    last_goodbye_at: Optional[str]
+    ven_type: Literal['server', 'endpoint', 'containerized-ven']
+    active_pce_fqdn: Optional[str]
+    target_pce_fqdn: Optional[str]
+    workloads: List[VenObjectWorkloadSummaryJsonStructure]
+    version: Optional[str]
+    os_id: Optional[str]
+    os_version: Optional[str]
+    os_platform: Optional[str]
+    uid: Optional[str]
+
 
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
     href: str
