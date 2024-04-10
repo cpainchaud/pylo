@@ -625,12 +625,12 @@ class APIConnector:
         return None
 
     def objects_ven_get(self,
-                             include_deleted=False,
-                             filter_by_ip: str = None,
-                             filter_by_label: Optional[WorkloadsGetQueryLabelFilterJsonStructure] = None,
-                             filter_by_name: str = None,
-                             max_results: int = None,
-                             async_mode=True) -> List[VenObjectJsonStructure]:
+                        include_deleted=False,
+                        filter_by_ip: str = None,
+                        filter_by_label: Optional[WorkloadsGetQueryLabelFilterJsonStructure] = None,
+                        filter_by_name: str = None,
+                        max_results: int = None,
+                        async_mode=True) -> List[VenObjectJsonStructure]:
         path = '/vens'
         data = {}
 
@@ -651,7 +651,6 @@ class APIConnector:
             data['max_results'] = max_results
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
-
 
     def objects_workload_get(self,
                              include_deleted=False,
@@ -935,17 +934,19 @@ class APIConnector:
 
         return self.do_get_call(path=path, async_call=False, include_org_id=False )
 
-    def object_network_device_endpoint_create(self, network_device_href: str, name: str, endpoint_type: Literal['switch_port'], workloads_href: List[str]) -> List[NetworkDeviceEndpointObjectJsonStructure]:
+    def object_network_device_endpoint_create(self, network_device_href: str, name: str,
+                                              endpoint_type: Literal['switch_port'], workloads_href: List[str]) \
+            -> List[NetworkDeviceEndpointObjectJsonStructure]:
+
         path = '{}/network_endpoints'.format(network_device_href)
 
-        worklaods_href_objects = []
+        workloads_href_objects = []
         for workload_href in workloads_href:
-            worklaods_href_objects.append({'href': workload_href})
+            workloads_href_objects.append({'href': workload_href})
 
-        data = { 'config': { 'name': name, 'endpoint_type': endpoint_type }, 'workloads': worklaods_href_objects}
+        data = {'config': {'name': name, 'endpoint_type': endpoint_type}, 'workloads': workloads_href_objects}
 
         return self.do_post_call(path=path, async_call=False, include_org_id=False, json_arguments=data, json_output_expected=True)
-
 
     def objects_ruleset_get(self, max_results: int = None, async_mode=True) -> List[RulesetObjectJsonStructure]:
         path = '/sec_policy/draft/rule_sets'
@@ -1069,7 +1070,7 @@ class APIConnector:
             'ingress_services': services_json
         }
 
-        path = ruleset_href+'/sec_rules'
+        path = ruleset_href + '/sec_rules'
 
         return self.do_post_call(path, json_arguments=data, json_output_expected=True, include_org_id=False)
 
