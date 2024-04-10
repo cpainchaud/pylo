@@ -12,7 +12,7 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure, \
     NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference, \
     WorkloadObjectCreateJsonStructure, WorkloadObjectMultiCreateJsonRequestPayload, \
-    WorkloadBulkUpdateEntryJsonStructure, WorkloadBulkUpdateResponseEntry
+    WorkloadBulkUpdateEntryJsonStructure, WorkloadBulkUpdateResponseEntry, VenObjectJsonStructure
 
 try:
     import requests as requests
@@ -623,6 +623,35 @@ class APIConnector:
                 return item['href']
 
         return None
+
+    def objects_ven_get(self,
+                             include_deleted=False,
+                             filter_by_ip: str = None,
+                             filter_by_label: Optional[WorkloadsGetQueryLabelFilterJsonStructure] = None,
+                             filter_by_name: str = None,
+                             max_results: int = None,
+                             async_mode=True) -> List[VenObjectJsonStructure]:
+        path = '/vens'
+        data = {}
+
+        if include_deleted:
+            data['include_deleted'] = 'yes'
+
+        if filter_by_ip is not None:
+            data['ip_address'] = filter_by_ip
+
+        if filter_by_label is not None:
+            # filter_by_label must be converted to json text
+            data['labels'] = json.dumps(filter_by_label)
+
+        if filter_by_name is not None:
+            data['name'] = filter_by_name
+
+        if max_results is not None:
+            data['max_results'] = max_results
+
+        return self.do_get_call(path=path, async_call=async_mode, params=data)
+
 
     def objects_workload_get(self,
                              include_deleted=False,
