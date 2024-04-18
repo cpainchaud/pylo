@@ -153,7 +153,7 @@ def get_all_credentials() -> List[CredentialProfile]:
     return credentials
 
 
-def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, overwrite_existing_profile = False) -> str:
+def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, overwrite_existing_profile=False) -> str:
     """
     Create a credential in a file and return the full path to the file
     :param file_full_path:
@@ -173,7 +173,10 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
                 for profile in credentials:
                     if profile['name'].lower() == data['name'].lower():
                         if overwrite_existing_profile:
-                            profile = data
+                            # profile is a dict, remove of all its entries
+                            for key in list(profile.keys()):
+                                del profile[key]
+                            profile.update(data)
                             break
                         else:
                             raise PyloEx("Profile with name {} already exists in file {}".format(data['name'], file_full_path))
@@ -187,7 +190,7 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
                 else:
                     credentials = [credentials, data]
     else:
-            credentials = [data]
+        credentials = [data]
 
     # write to the file
     with open(file_full_path, 'w') as f:
