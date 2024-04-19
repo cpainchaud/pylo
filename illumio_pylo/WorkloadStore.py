@@ -10,6 +10,8 @@ from .WorkloadStoreSubClasses import UnmanagedWorkloadDraft, UnmanagedWorkloadDr
 
 class WorkloadStore:
 
+    __slots__ = ['owner', 'itemsByHRef']
+
     def __init__(self, owner: 'Organization'):
         self.owner: Organization = owner
         self.itemsByHRef: Dict[str, Workload] = {}

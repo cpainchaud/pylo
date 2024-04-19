@@ -9,6 +9,9 @@ from .API.CredentialsManager import get_credentials_from_file
 
 class Organization:
 
+    __slots__ = ['id', 'connector', 'LabelStore', 'IPListStore', 'WorkloadStore', 'VirtualServiceStore', 'AgentStore',
+                 'ServiceStore', 'RulesetStore', 'SecurityPrincipalStore', 'pce_version']
+
     def __init__(self, org_id):
         self.id: int = org_id
         self.connector: Optional['pylo.APIConnector'] = None

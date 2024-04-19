@@ -1,7 +1,5 @@
 __version__ = "0.3.4"
 
-import os
-import sys
 from typing import Callable
 
 from .tmp import *
@@ -75,7 +73,6 @@ def get_organization_using_credential_file(fqdn_or_profile_name: str = None,
                                                            list_of_objects_to_load=list_of_objects_to_load,
                                                            include_deleted_workloads=include_deleted_workloads,
                                                            callback_api_objects_downloaded=callback_api_objects_downloaded)
-
 
 
 ignoreWorkloadsWithSameName = True

@@ -5,6 +5,9 @@ from illumio_pylo import log
 
 
 class SecurityPrincipal(pylo.ReferenceTracker):
+
+    __slots__ = ['owner', 'name', 'href', 'sid', 'deleted', 'raw_json']
+
     def __init__(self, name: str, href: str, owner: 'pylo.SecurityPrincipalStore'):
         pylo.ReferenceTracker.__init__(self)
         self.owner: 'pylo.SecurityPrincipalStore' = owner

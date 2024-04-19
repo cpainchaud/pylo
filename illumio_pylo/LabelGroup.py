@@ -8,6 +8,8 @@ from .API.JsonPayloadTypes import LabelGroupObjectJsonStructure
 
 class LabelGroup(pylo.ReferenceTracker, pylo.LabelCommon):
 
+    __slots__ = ['_members_by_href', 'raw_json']
+
     def __init__(self, name: str, href: str, label_type: str, owner):
         pylo.ReferenceTracker.__init__(self)
         pylo.LabelCommon.__init__(self, name, href, label_type, owner)

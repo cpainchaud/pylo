@@ -4,6 +4,9 @@ import illumio_pylo as pylo
 
 
 class VirtualService(pylo.ReferenceTracker):
+
+    __slots__ = ['owner', 'name', 'href', 'raw_json']
+
     def __init__(self, name: str, href: str, owner: 'pylo.VirtualServiceStore'):
         pylo.ReferenceTracker.__init__(self)
         self.owner = owner

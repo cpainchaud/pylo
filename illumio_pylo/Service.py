@@ -6,6 +6,9 @@ from typing import *
 
 
 class PortMap:
+
+    __slots__ = ['_tcp_map', '_udp_map', '_protocol_map']
+
     def __init__(self):
         self._tcp_map: List[List[2]] = []  # [start, end]
         self._udp_map: List[List[2]] = []  # [start, end]
@@ -99,6 +102,9 @@ class PortMap:
 
 
 class ServiceEntry:
+
+    __slots__ = ['protocol', 'port', 'to_port', 'icmp_code', 'icmp_type']
+
     def __init__(self, protocol: int, port: int = None, to_port: Optional[int] = None, icmp_code: Optional[int] = None,
                  icmp_type: Optional[int] = None):
         self.protocol = protocol
@@ -159,6 +165,8 @@ class ServiceEntry:
 
 
 class Service(pylo.ReferenceTracker):
+
+    __slots__ = ['name', 'href', 'owner', 'entries', 'description', 'processName', 'deleted', 'raw_json']
 
     def __init__(self, name: str, href: str, owner: 'pylo.ServiceStore'):
         pylo.ReferenceTracker.__init__(self)

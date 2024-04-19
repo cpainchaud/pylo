@@ -47,6 +47,8 @@ class LabelStore:
                         result.append(label)
             return result
 
+    __slots__ = ['owner', '_items_by_href', 'label_types', 'label_types_as_set', 'label_resolution_cache']
+
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: "pylo.Organization" = owner
         self._items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}

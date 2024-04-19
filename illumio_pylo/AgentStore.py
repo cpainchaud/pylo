@@ -12,6 +12,9 @@ from typing import *
 
 class VENAgent(pylo.ReferenceTracker):
 
+    __slots__ = ['href', 'owner', 'workload', 'software_version', '_last_heartbeat', '_status_security_policy_sync_state',
+                 '_status_security_policy_applied_at', '_status_rule_count', 'mode', 'raw_json']
+
     def __init__(self, href: str, owner: 'pylo.AgentStore', workload: 'pylo.Workload' = None):
         pylo.ReferenceTracker.__init__(self)
         self.href: str = href

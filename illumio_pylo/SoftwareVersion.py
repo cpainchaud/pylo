@@ -6,9 +6,7 @@ version_regex = re.compile(r"^(?P<major>[0-9]+)\.(?P<middle>[0-9]+)\.(?P<minor>[
 
 class SoftwareVersion:
 
-    """
-    :type version_string: str
-    """
+    __slots__ = ['version_string', 'is_unknown', 'major', 'middle', 'minor', 'build']
 
     def __init__(self, version_string: str):
         self.version_string = version_string
