@@ -58,7 +58,7 @@ class Organization:
         """
         Credentials files will be looked for in the following order:
         1. The path provided in the credential_file argument
-        2. The path provided in the Pylo_CREDENTIAL_FILE environment variable
+        2. The path provided in the PYLO_CREDENTIAL_FILE environment variable
         3. The path ~/.pylo/credentials.json
         4. Current working directory credentials.json
         :param fqdn_or_profile_name:

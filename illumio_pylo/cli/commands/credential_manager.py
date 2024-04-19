@@ -9,8 +9,9 @@ import paramiko
 import illumio_pylo as pylo
 import click
 from illumio_pylo.API.CredentialsManager import get_all_credentials, create_credential_in_file, CredentialFileEntry, \
-    create_credential_in_default_file, encrypt_api_key_with_paramiko_ssh_key_fernet, decrypt_api_key_with_paramiko_ssh_key_fernet, \
-    get_credentials_from_file
+    create_credential_in_default_file,  \
+    get_credentials_from_file, encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, \
+    decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, decrypt_api_key_with_paramiko_ssh_key_fernet
 
 from illumio_pylo import log
 from . import Command
@@ -27,7 +28,6 @@ def fill_parser(parser: argparse.ArgumentParser):
     test_parser = sub_parser.add_parser('test', help='Test a credential')
     test_parser.add_argument('--name', required=False, type=str, default=None,
                              help='Name of the credential profile to test')
-
 
     create_parser = sub_parser.add_parser('create', help='Create a new credential')
     create_parser.add_argument('--name', required=False, type=str, default=None,
@@ -46,20 +46,18 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 def __main(args, **kwargs):
     if args['sub_command'] == 'list':
+        table = PrettyTable(field_names=["Name", "URL", "API User", "Originating File"])
+        # all should be left justified
+        table.align = "l"
+
         credentials = get_all_credentials()
         # sort credentials by name
         credentials.sort(key=lambda x: x.name)
 
-        # print credentials in a nice table
-        table_template = " {:<19} {:<40} {:<22} {:<25}"
-        print(table_template.format("Name", "URL", "API User", "Originating File"))
-
         for credential in credentials:
-            print(table_template.format(credential.name,
-                                        credential.fqdn + ':' + str(credential.port),
-                                        credential.api_user,
-                                        credential.originating_file)
-                  )
+            table.add_row([credential.name, credential.fqdn, credential.api_user, credential.originating_file])
+
+        print(table)
 
     elif args['sub_command'] == 'create':
 
@@ -136,10 +134,11 @@ def __main(args, **kwargs):
                                                       selected_ssh_key.get_fingerprint().hex(),
                                                       selected_ssh_key.comment))
             print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
-            encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key=selected_ssh_key, api_key=api_key)
+            # encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key=selected_ssh_key, api_key=api_key)
+            encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(ssh_key=selected_ssh_key, api_key=api_key)
             print("OK!")
             print(" * trying to decrypt the encrypted API key...", flush=True, end="")
-            decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_fernet(encrypted_api_key_payload=encrypted_api_key)
+            decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(encrypted_api_key_payload=encrypted_api_key)
             if decrypted_api_key != api_key:
                 raise pylo.PyloEx("Decrypted API key does not match original API key")
             print("OK!")
