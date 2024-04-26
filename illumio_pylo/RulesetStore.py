@@ -7,6 +7,8 @@ from .Helpers import nice_json
 
 class RulesetStore:
 
+    __slots__ = ['owner', '_items_by_href']
+
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: pylo.Organization = owner
         self._items_by_href: Dict[str, 'pylo.Ruleset'] = {}

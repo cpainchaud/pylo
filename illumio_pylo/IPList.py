@@ -8,13 +8,7 @@ from .Helpers import *
 
 class IPList(pylo.ReferenceTracker):
 
-    """
-    :type owner: IPListStore
-    :type description: str|None
-    :type raw_entries: dict[str,str]
-    """
-    name: str
-    href: str
+    __slots__ = ['owner', 'name', 'href', 'description', 'raw_json', 'raw_entries']
 
     def __init__(self, name: str, href: str, owner: 'pylo.IPListStore', description=None):
         """

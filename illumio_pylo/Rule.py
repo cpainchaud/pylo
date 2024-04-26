@@ -28,6 +28,9 @@ class RuleApiUpdateStack:
 
 class Rule:
 
+    __slots__ = ['owner', 'description', 'services', 'providers', 'consumers', 'consuming_principals', 'href', 'enabled',
+                 'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack']
+
     def __init__(self, owner: 'Ruleset'):
         self.owner: Ruleset = owner
         self.description: Optional[str] = None
@@ -123,6 +126,9 @@ class Rule:
 
 
 class RuleSecurityPrincipalContainer(pylo.Referencer):
+
+    __slots__ = ['owner', '_items']
+
     def __init__(self, owner: 'pylo.Rule'):
         Referencer.__init__(self)
         self.owner = owner
@@ -140,6 +146,9 @@ class RuleSecurityPrincipalContainer(pylo.Referencer):
 
 
 class DirectServiceInRule:
+
+    __slots__ = ['protocol', 'port', 'to_port']
+
     def __init__(self, proto: int, port: int = None, toport: int = None):
         self.protocol = proto
         self.port = port
@@ -245,6 +254,9 @@ class DirectServiceInRule:
 
 
 class RuleServiceContainer(pylo.Referencer):
+
+    __slots__ = ['owner', '_items', '_direct_services', '_cached_port_map']
+
     def __init__(self, owner: 'pylo.Rule'):
         Referencer.__init__(self)
         self.owner = owner
@@ -380,6 +392,9 @@ class RuleServiceContainer(pylo.Referencer):
 
 
 class RuleHostContainer(pylo.Referencer):
+
+    __slots__ = ['owner', '_items', 'name', '_hasAllWorkloads']
+
     def __init__(self, owner: 'pylo.Rule', name: str):
         Referencer.__init__(self)
         self.owner = owner

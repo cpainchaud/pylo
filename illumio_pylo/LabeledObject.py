@@ -4,6 +4,8 @@ import illumio_pylo as pylo
 
 class LabeledObject:
 
+    __slots__ = ['_labels']
+
     def __init__(self):
         self._labels: Dict[str, 'pylo.Label'] = {}
 

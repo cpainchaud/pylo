@@ -5,6 +5,8 @@ from .LabelStore import label_type_role, label_type_env, label_type_loc, label_t
 
 class LabelCommon:
 
+    __slots__ = ['owner', 'name', 'href', 'type']
+
     def __init__(self, name: str, href: str, label_type: str, owner: LabelStore):
         self.owner: LabelStore = owner
         self.name: str = name

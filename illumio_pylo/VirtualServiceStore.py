@@ -6,6 +6,8 @@ from .API.JsonPayloadTypes import VirtualServiceObjectJsonStructure
 
 class VirtualServiceStore:
 
+    __slots__ = ['owner', 'items_by_href', 'itemsByName']
+
     def __init__(self, owner: 'pylo.Organization'):
         self.owner: 'pylo.Organization' = owner
         self.items_by_href: Dict[str, 'pylo.VirtualService'] = {}

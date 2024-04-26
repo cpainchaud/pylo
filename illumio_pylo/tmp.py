@@ -37,14 +37,33 @@ def find_connector_or_die(obj) -> 'pylo.APIConnector':
     :param obj:
     :return:
     """
-    connector = obj.__dict__.get('connector')  # type: pylo.APIConnector
-    if connector is None:
-        owner = obj.__dict__.get('owner')
-        if owner is None:
-            raise Exception("Could not find a Connector object")
-        return find_connector_or_die(owner)
 
-    return connector
+    connector = None
+
+    # check if object has a __dict__ attribute
+    if not hasattr(obj, '__dict__'):
+        # check if it's in __slots__
+        if hasattr(obj, '__slots__'):
+            if 'connector' in obj.__slots__:
+                connector = obj.__getattribute__('connector')
+                if connector is not None:
+                    return connector
+                raise Exception("Could not find a Connector object")
+            if 'owner' in obj.__slots__:
+                owner = obj.__getattribute__('owner')
+                if owner is None:
+                    raise Exception("Could not find a Connector object")
+                return find_connector_or_die(owner)
+        raise Exception("Could not find a Connector object")
+    else:
+        connector = obj.__dict__.get('connector')  # type: pylo.APIConnector
+        if connector is None:
+            owner = obj.__dict__.get('owner')
+            if owner is None:
+                raise Exception("Could not find a Connector object")
+            return find_connector_or_die(owner)
+
+        return connector
 
 
 class IDTranslationTable:

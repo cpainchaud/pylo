@@ -47,6 +47,9 @@ class WorkloadApiUpdateStack:
 
 class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
 
+    __slots__ = ['owner', 'name', 'href', 'forced_name', 'hostname', 'description', 'interfaces', 'online', 'os_id',
+                 'os_detail', 'ven_agent', 'unmanaged', 'temporary', 'deleted', 'raw_json', '_batch_update_stack']
+
     def __init__(self, name: str, href: str, owner: 'pylo.WorkloadStore'):
         ReferenceTracker.__init__(self)
         Referencer.__init__(self)

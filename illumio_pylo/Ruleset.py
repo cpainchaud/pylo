@@ -10,6 +10,8 @@ ruleset_id_extraction_regex = re.compile(r"^/orgs/([0-9]+)/sec_policy/([0-9]+)?(
 
 class RulesetScope:
 
+    __slots__ = ['owner', 'scope_entries']
+
     def __init__(self, owner: 'pylo.Ruleset'):
         self.owner: 'pylo.Ruleset' = owner
         self.scope_entries: Dict['pylo.RulesetScopeEntry', 'pylo.RulesetScopeEntry'] = {}
@@ -38,6 +40,8 @@ class RulesetScope:
         return False
 
 class RulesetScopeEntry:
+
+    __slots__ = ['owner', '_labels']
 
     def __init__(self, owner: 'pylo.RulesetScope'):
         self.owner: pylo.RulesetScope = owner
@@ -143,6 +147,8 @@ class RulesetScopeEntry:
 
 
 class Ruleset:
+
+    __slots__ = ['owner', 'href', 'name', 'description', 'scopes', '_rules_by_href', '_rules', 'disabled']
 
     def __init__(self, owner: 'pylo.RulesetStore'):
         self.owner: 'pylo.RulesetStore' = owner

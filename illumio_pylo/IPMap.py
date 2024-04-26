@@ -20,6 +20,9 @@ for i in range(32):
 
 
 class IP4Map:
+
+    __slots__ = ['_entries']
+
     def __init__(self):
         self._entries = []
 
