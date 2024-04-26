@@ -630,7 +630,9 @@ class APIConnector:
                         filter_by_label: Optional[WorkloadsGetQueryLabelFilterJsonStructure] = None,
                         filter_by_name: str = None,
                         max_results: int = None,
-                        async_mode=True) -> List[VenObjectJsonStructure]:
+                        async_mode=True,
+                        representation: Optional[Literal['ven_labels']] = None
+                        ) -> List[VenObjectJsonStructure]:
         path = '/vens'
         data = {}
 
