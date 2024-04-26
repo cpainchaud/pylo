@@ -649,6 +649,9 @@ class APIConnector:
         if filter_by_name is not None:
             data['name'] = filter_by_name
 
+        if representation is not None:
+            data['representation'] = representation
+
         if max_results is not None:
             data['max_results'] = max_results
 
