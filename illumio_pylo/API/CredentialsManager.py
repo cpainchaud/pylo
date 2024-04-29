@@ -46,7 +46,6 @@ class CredentialProfile:
 
         self.raw_json: Optional[CredentialFileEntry] = None
 
-
     @staticmethod
     def from_credentials_file_entry(credential_file_entry: CredentialFileEntry, originating_file: Optional[str] = None):
         return CredentialProfile(credential_file_entry['name'],
@@ -303,3 +302,25 @@ def find_ssh_key_from_fingerprint(fingerprint: bytes) -> Optional[paramiko.Agent
         if key.get_fingerprint() == fingerprint:
             return key
     return None
+
+
+def get_supported_keys_from_ssh_agent() -> list[paramiko.AgentKey]:
+    keys = paramiko.Agent().get_keys()
+    # filter out ECDSA NISTPXXX and sk-ssh-ed25519
+    # RSA and ED25519 keys are reported to be working
+    return [key for key in keys if not (key.get_name().startswith("ecdsa-sha2-nistp") or
+                                        key.get_name().startswith("sk-ssh-ed25519"))]
+
+
+def is_encryption_available() -> bool:
+    if paramiko is None:
+        return False
+
+    # does paramiko have an agent module and does it have any supported key?
+    if hasattr(paramiko, 'Agent'):
+        keys = get_supported_keys_from_ssh_agent()
+        return len(keys) > 0
+
+    return False
+
+

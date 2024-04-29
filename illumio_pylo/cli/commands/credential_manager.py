@@ -9,9 +9,9 @@ import paramiko
 import illumio_pylo as pylo
 import click
 from illumio_pylo.API.CredentialsManager import get_all_credentials, create_credential_in_file, CredentialFileEntry, \
-    create_credential_in_default_file,  \
+    create_credential_in_default_file, \
     get_credentials_from_file, encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, \
-    decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, decrypt_api_key_with_paramiko_ssh_key_fernet
+    decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, get_supported_keys_from_ssh_agent, is_encryption_available
 
 from illumio_pylo import log
 from . import Command
@@ -117,32 +117,33 @@ def __main(args, **kwargs):
             "api_key": api_key
         }
 
-        encrypt_api_key = click.prompt('> Encrypt API (requires an SSH agent running and an RSA or Ed25519 key) ? Y/N', type=bool)
-        if encrypt_api_key:
-            print("Available keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
-            ssh_keys = paramiko.Agent().get_keys()
-            # filter out ECDSA NISTPXXX and sk-ssh-ed25519@openssh.com
-            ssh_keys = get_supported_keys_from_ssh_agent()
+        if is_encryption_available():
+            encrypt_api_key = click.prompt('> Encrypt API (requires an SSH agent running and an RSA or Ed25519 key added to them) ? Y/N', type=bool)
+            if encrypt_api_key:
+                print("Available keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
+                ssh_keys = get_supported_keys_from_ssh_agent()
 
-            # display a table of keys
-            print_keys(keys=ssh_keys, display_index=True)
-            print()
+                # display a table of keys
+                print_keys(keys=ssh_keys, display_index=True)
+                print()
 
-            index_of_selected_key = click.prompt('> Select key by ID#', type=click.IntRange(0, len(ssh_keys)-1))
-            selected_ssh_key = ssh_keys[index_of_selected_key]
-            print("Selected key: {} | {} | {}".format(selected_ssh_key.get_name(),
-                                                      selected_ssh_key.get_fingerprint().hex(),
-                                                      selected_ssh_key.comment))
-            print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
-            # encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key=selected_ssh_key, api_key=api_key)
-            encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(ssh_key=selected_ssh_key, api_key=api_key)
-            print("OK!")
-            print(" * trying to decrypt the encrypted API key...", flush=True, end="")
-            decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(encrypted_api_key_payload=encrypted_api_key)
-            if decrypted_api_key != api_key:
-                raise pylo.PyloEx("Decrypted API key does not match original API key")
-            print("OK!")
-            credentials_data["api_key"] = encrypted_api_key
+                index_of_selected_key = click.prompt('> Select key by ID#', type=click.IntRange(0, len(ssh_keys)-1))
+                selected_ssh_key = ssh_keys[index_of_selected_key]
+                print("Selected key: {} | {} | {}".format(selected_ssh_key.get_name(),
+                                                          selected_ssh_key.get_fingerprint().hex(),
+                                                          selected_ssh_key.comment))
+                print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
+                # encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key=selected_ssh_key, api_key=api_key)
+                encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(ssh_key=selected_ssh_key, api_key=api_key)
+                print("OK!")
+                print(" * trying to decrypt the encrypted API key...", flush=True, end="")
+                decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(encrypted_api_key_payload=encrypted_api_key)
+                if decrypted_api_key != api_key:
+                    raise pylo.PyloEx("Decrypted API key does not match original API key")
+                print("OK!")
+                credentials_data["api_key"] = encrypted_api_key
+        else:
+            print(" * encryption is not available (no SSH agent or compatible key found), storing API key in plain text...")
 
 
         cwd = os.getcwd()
@@ -187,15 +188,9 @@ def __main(args, **kwargs):
     else:
         raise pylo.PyloEx("Unknown sub-command '{}'".format(args['sub_command']))
 
+
 command_object = Command(command_name, __main, fill_parser, credentials_manager_mode=True)
 
-
-def get_supported_keys_from_ssh_agent() -> list[paramiko.AgentKey]:
-    keys = paramiko.Agent().get_keys()
-    # filter out ECDSA NISTPXXX and sk-ssh-ed25519
-    # RSA and ED25519 keys are reported to be working
-    return [key for key in keys if not (key.get_name().startswith("ecdsa-sha2-nistp") or
-                                        key.get_name().startswith("sk-ssh-ed25519"))]
 
 def print_keys(keys: list[paramiko.AgentKey], display_index = True) -> None:
 
