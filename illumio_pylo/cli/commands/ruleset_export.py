@@ -25,7 +25,6 @@ def fill_parser(parser: argparse.ArgumentParser):
                         "Public_NATed")
 
 
-
 def __main(args: Dict, org: pylo.Organization, **kwargs):
 
     setting_prefix_objects_with_type: bool|str = args['prefix_objects_with_type']
@@ -33,12 +32,10 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     settings_output_file_format = args['format']
     settings_output_dir = args['output_dir']
 
-
     if setting_prefix_objects_with_type is False:
         print(" * Prefix for object types are disabled")
     else:
         print(" * Prefix for object types are enabled")
-
 
     if setting_object_types_as_section is False:
         print(" * Object types as section are disabled")
