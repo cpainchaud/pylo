@@ -128,6 +128,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print('OK')
     print("   - CSV has {} columns and {} lines (headers don't count)".format(csv_input_object.count_columns(), csv_input_object.count_lines()))
+    context.csv_data = csv_input_object.objects()
     # </editor-fold desc="CSV input file data extraction">
 
 
@@ -307,7 +308,7 @@ def check_and_sanitize_csv_input_data(context, input_match_on_hostname, input_ma
     if input_match_on_hostname:
         for csv_data in context.csv_data:
             name = csv_data['hostname']
-            name = pylo.Workload.static_name_stripped_fqdn(name)
+            name = pylo.Workload.static_name_stripped_fqdn(name).lower()
             if name is None or len(name) < 1:
                 print("   - ERROR: CSV line #{} has invalid hostname defined: '{}'".format(csv_data['*line*'],
                                                                                            csv_data['hostname']),
@@ -332,7 +333,7 @@ def check_and_sanitize_csv_input_data(context, input_match_on_hostname, input_ma
                 continue
 
             if href not in context.csv_href_index:
-                context.csv_name_index[href] = csv_data
+                context.csv_href_index[href] = csv_data
                 continue
 
             print("   - ERROR: CSV line #{} has duplicate href defined from a previous line: '{}'".format(
@@ -343,6 +344,7 @@ def check_and_sanitize_csv_input_data(context, input_match_on_hostname, input_ma
             "ERROR! Several ({}) inconsistencies were found in the CSV, please fix them before you continue!".format(
                 csv_check_failed_count))
         sys.exit(1)
+
     print("   * Done")
 
 
