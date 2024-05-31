@@ -151,7 +151,7 @@ def run(forced_command_name: Optional[str] = None):
     print("**** END OF {} UTILITY ****".format(selected_command.name.upper()))
     print("Command Specific Execution time: {:.2f} seconds".format(time.perf_counter() - command_execution_time_start))
     print("CLI started at {} and finished at {}".format(cli_start_time, cli_end_time))
-    print("CLI Total Execution time: {}".format(cli_end_time - cli_start_time))
+    print("CLI Total Execution time: {}".format((cli_end_time - cli_start_time)))
     print()
 
 

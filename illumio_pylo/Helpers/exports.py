@@ -436,7 +436,7 @@ class CsvExcelToObject:
                     for col_index in range(1, source_worksheet.max_column+1):
                         item = source_worksheet.cell(row_count, col_index).value
                         if item is None or len(item) < 1:
-                            raise pylo.PyloEx('Excel headers has blank fields, this is not supported')
+                            raise pylo.PyloEx('Excel headers has blank field at column #{}'.format(col_index))
                         self._detected_headers.append(item.lower())
                         if strict_headers and item.lower() not in mandatory_headers_dict:
                             raise pylo.PyloEx("CSV/Excel headers have an unexpected header named '{}'".format(item))
