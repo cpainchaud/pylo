@@ -283,8 +283,8 @@ def detect_workloads_name_collisions(csv_data, org: pylo.Organization, ignore_al
         if csv_object['hostname'] is not None and len(csv_object['hostname']) > 0:
             lower_hostname = csv_object['hostname'].lower()
             if lower_name != lower_hostname:
-                if csv_object['hostname'] not in name_cache:
-                    name_cache[csv_object['hostname']] = WorkloadCollisionItem(from_pce=False, csv_object=csv_object,
+                if lower_hostname not in name_cache:
+                    name_cache[lower_hostname] = WorkloadCollisionItem(from_pce=False, csv_object=csv_object,
                                                                                managed=False)
                 else:
                     if not name_cache[lower_hostname].from_pce:
