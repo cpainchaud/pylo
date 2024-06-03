@@ -6,7 +6,7 @@ import sys
 import illumio_pylo as pylo
 from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
 from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
-from .utils.misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp, default_label_columns_prefix
 from . import Command
 
 
@@ -25,7 +25,7 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--input-file-delimiter', type=str, required=False, default=',',
                         help='CSV field delimiter')
 
-    parser.add_argument('--label-type-header-prefix', type=str, required=False, default='label_',
+    parser.add_argument('--label-type-header-prefix', type=str, required=False, default=default_label_columns_prefix,
                         help='Prefix for the label type headers in the CSV/Excel file')
 
     parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
@@ -48,6 +48,7 @@ def fill_parser(parser: argparse.ArgumentParser):
 
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to update per API call')
+
 
 class ContextSingleton:
 

@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 import illumio_pylo as pylo
 
+default_label_columns_prefix = 'label:'
+
 
 def make_filename_with_timestamp(prefix: str, output_directory: str = './') -> str:
     # if output directory starts with a dot, we assume it's a relative path. Same if not it's not starting with a slash
