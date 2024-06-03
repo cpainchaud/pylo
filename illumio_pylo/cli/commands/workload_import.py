@@ -8,7 +8,7 @@ import click
 import illumio_pylo as pylo
 from illumio_pylo import ArraysToExcel, ExcelHeaderSet, ExcelHeader
 from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
-from .utils.misc import make_filename_with_timestamp
+from .utils.misc import make_filename_with_timestamp, default_label_columns_prefix
 from . import Command
 
 command_name = 'workload-import'
@@ -27,7 +27,7 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--ignore-missing-headers', action='store_true',
                         help='Ignore missing headers in the CSV/Excel file for label types')
 
-    parser.add_argument('--label-type-header-prefix', type=str, required=False, default='label_',
+    parser.add_argument('--label-type-header-prefix', type=str, required=False, default=default_label_columns_prefix,
                         help='Prefix for the label type headers in the CSV/Excel file')
 
     parser.add_argument('--ignore-hostname-collision', action='store_true',
@@ -89,7 +89,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     csv_report_headers = ExcelHeaderSet(['name', 'hostname', 'ip', 'description'])
     for label_type in org.LabelStore.label_types:
-        csv_report_headers.append(f'label_{label_type}')
+        csv_report_headers.append(f'{settings_header_label_prefix}{label_type}')
 
     csv_report_headers.append(ExcelHeader(name='**not_created_reason**'))
     csv_report_headers.append(ExcelHeader(name='href', max_width=15))
