@@ -1,8 +1,12 @@
+from typing import List
+
 import illumio_pylo as pylo
 import argparse
 import sys
+import click
 from .utils.misc import make_filename_with_timestamp
 from . import Command
+from ...API.JsonPayloadTypes import IPListObjectCreationJsonStructure
 
 command_name = 'iplist-import'
 objects_load_filter = ['iplists']
@@ -14,20 +18,32 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--input-file-delimiter', type=str, required=False, default=',',
                         help='CSV field delimiter')
 
+    parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
+                        help='Directory where the output files will be saved')
+
     parser.add_argument('--ignore-if-iplist-exists', action='store_true',
                         help='If an IPList with same same exists, ignore CSV entry')
 
     parser.add_argument('--network-delimiter', type=str, required=False, default=',', nargs='?', const=True,
                         help='If an IPList with same same exists, ignore CSV entry')
 
+    parser.add_argument('--proceed', '-p', action='store_true',
+                       help='If set, the script will proceed with the creation of iplists')
+
+    parser.add_argument('--no-confirmation-required', '-n', action='store_true',
+                        help='If set, the script will proceed with the creation of iplists without asking for confirmation')
+
 
 def __main(args, org: pylo.Organization, **kwargs):
-    input_file = args['input_file']
-    input_file_delimiter = args['input_file_delimiter']
-    ignore_if_iplist_exists = args['ignore_if_iplist_exists']
-    network_delimiter = args['network_delimiter']
+    setting_input_file = args['input_file']
+    settings_input_file_delimiter = args['input_file_delimiter']
+    settings_ignore_if_iplist_exists = args['ignore_if_iplist_exists']
+    settings_network_delimiter = args['network_delimiter']
+    settings_proceed = args['proceed']
+    settings_no_confirmation_required = args['no_confirmation_required']
+    settings_output_dir: str = args['output_dir']
 
-    output_file_prefix = make_filename_with_timestamp('import-iplists-results_')
+    output_file_prefix = make_filename_with_timestamp('import-iplists-results_', settings_output_dir)
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
 
@@ -44,8 +60,8 @@ def __main(args, org: pylo.Organization, **kwargs):
     pylo.file_clean(output_file_csv)
     pylo.file_clean(output_file_excel)
 
-    print(" * Loading CSV input file '{}'...".format(input_file), flush=True, end='')
-    csv_data = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
+    print(" * Loading CSV input file '{}'...".format(setting_input_file), flush=True, end='')
+    csv_data = pylo.CsvExcelToObject(setting_input_file, expected_headers=csv_expected_fields, csv_delimiter=settings_input_file_delimiter)
     print('OK')
     print("   - CSV has {} columns and {} lines (headers don't count)".format(csv_data.count_columns(), csv_data.count_lines()))
     # print(pylo.nice_json(csv_data._objects))
@@ -71,7 +87,7 @@ def __main(args, org: pylo.Organization, **kwargs):
                     sys.exit(1)
                 else:
                     csv_object['**not_created_reason**'] = 'Found duplicated name in PCE'
-                    if not ignore_if_iplist_exists:
+                    if not settings_ignore_if_iplist_exists:
                         pylo.log.error("PCE contains iplists with duplicates name from CSV: '{}' at line #{}. Please fix CSV or look for --options to ignore it".format(lower_name, csv_object['*line*']))
                         sys.exit(1)
                     print("  - WARNING: CSV has an entry for iplist name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(lower_name, csv_object['*line*']))
@@ -89,28 +105,28 @@ def __main(args, org: pylo.Organization, **kwargs):
             ignored_objects_count += 1
 
     print(' * Preparing Iplist JSON data...')
-    iplists_json_data = []
+    iplists_json_data: List[IPListObjectCreationJsonStructure] = []
     for data in csv_objects_to_create:
-        new_iplist = {}
+        new_iplist: IPListObjectCreationJsonStructure = {}
         iplists_json_data.append(new_iplist)
 
         if len(data['name']) < 1:
             raise pylo.PyloEx('Iplist at line #{} is missing a name in CSV'.format(data['*line*']))
-        else:
-            new_iplist['name'] = data['name']
+
+        new_iplist['name'] = str(data['name'])
 
         if len(data['description']) > 0:
-            new_iplist['description'] = data['description']
+            new_iplist['description'] = str(data['description'])
 
         if len(data['networks']) < 1:
             print('Iplist at line #{} has empty networks list'.format(data['*line*']))
             sys.exit(1)
 
-        network_delimiter = network_delimiter.replace("\\n", "\n")
+        settings_network_delimiter = settings_network_delimiter.replace("\\n", "\n")
         ip_ranges = []
         new_iplist['ip_ranges'] = ip_ranges
 
-        for network_string in data['networks'].rsplit(network_delimiter):
+        for network_string in data['networks'].rsplit(settings_network_delimiter):
             network_string = network_string.strip(" \r\n")  # cleanup trailing characters
 
             exclusion = False
@@ -155,30 +171,38 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print("  * DONE")
 
-    print(" * Creating {} IPLists".format(len(iplists_json_data)))
-    total_created_count = 0
-    total_failed_count = 0
+    if settings_proceed is False:
+        print(" * Dry-run mode, no changes will be made to the PCE. Use --proceed to actually create the iplists")
 
-    for index in range(0, len(iplists_json_data)):
-        json_blob = iplists_json_data[index]
-        print("  - Pushing new iplist '{}' to PCE (#{} of {})... ".format(json_blob['name'], index+1, len(iplists_json_data)), end='', flush=True)
-        result = org.connector.objects_iplist_create(json_blob)
-        print("OK")
+    else:
+        if not settings_no_confirmation_required:
+            print(" * WARNING: You are about to create {} IPLists in the PCE. Are you sure you want to proceed?".format(len(iplists_json_data)))
+            click.confirm("Do you want to proceed with the creation of these labels?", abort=True)
 
-        href = result.get('href')
-        if href is None:
-            raise pylo.PyloEx('API returned unexpected response which is missing a HREF:', result)
+        print(" * Creating {} IPLists".format(len(iplists_json_data)))
+        total_created_count = 0
+        total_failed_count = 0
 
-        total_created_count += 1
-        csv_objects_to_create[index]['href'] = href
+        for index in range(0, len(iplists_json_data)):
+            json_blob: IPListObjectCreationJsonStructure = iplists_json_data[index]
+            print("  - Pushing new iplist '{}' to PCE (#{} of {})... ".format(json_blob['name'], index+1, len(iplists_json_data)), end='', flush=True)
+            result = org.connector.objects_iplist_create(json_blob)
+            print("OK")
+
+            href = result.get('href')
+            if href is None:
+                raise pylo.PyloEx('API returned unexpected response which is missing a HREF:', result)
+
+            total_created_count += 1
+            csv_objects_to_create[index]['href'] = href
+
+            csv_data.save_to_csv(output_file_csv, csv_created_fields)
+            csv_data.save_to_excel(output_file_excel, csv_created_fields)
 
         csv_data.save_to_csv(output_file_csv, csv_created_fields)
         csv_data.save_to_excel(output_file_excel, csv_created_fields)
 
-    csv_data.save_to_csv(output_file_csv, csv_created_fields)
-    csv_data.save_to_excel(output_file_excel, csv_created_fields)
-
-    print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_objects_count, output_file_csv, output_file_excel))
+        print("  * DONE - {} created with success, {} failures and {} ignored. A report was created in {} and {}".format(total_created_count, total_failed_count, ignored_objects_count, output_file_csv, output_file_excel))
 
 
 command_object = Command(command_name, __main, fill_parser, load_specific_objects_only=objects_load_filter)
