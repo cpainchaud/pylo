@@ -124,7 +124,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     if len(labels_to_be_created) > 0:
         print(" * {} Labels need to created before Workloads can be imported, listing:".format(len(labels_to_be_created)))
         for label in labels_to_be_created:
-            print("   - Label: {} (type={})".format(label.name, label.type))
+            print("   - Label: {} (type={})".format(label['name'], label['type']))
         if not settings_no_confirmation_required:
             click.confirm("Do you want to proceed with the creation of these labels?", abort=True)
 
