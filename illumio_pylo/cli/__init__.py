@@ -65,7 +65,6 @@ def run(forced_command_name: Optional[str] = None):
                 add_native_parser_to_argparse(parser, command.native_parsers)
             selected_command = command
 
-
     # version is a special command that does not require a PCE
     # if first argument is --version, we print the version and exit
     if len(sys.argv) > 1:
@@ -93,7 +92,6 @@ def run(forced_command_name: Optional[str] = None):
     config_data = None
     
     print("* Started Pylo CLI version {}".format(pylo.__version__))
-
 
     if not selected_command.credentials_manager_mode:
         timer_start = time.perf_counter()

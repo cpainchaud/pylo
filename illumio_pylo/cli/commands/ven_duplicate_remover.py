@@ -4,13 +4,14 @@ import click
 import argparse
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
+from illumio_pylo import ExcelHeader
 
 from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'
 objects_load_filter = ['labels']
+
 
 def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--verbose', '-v', action='store_true',
@@ -40,13 +41,10 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Directory where to write the report file(s)')
 
 
-
 def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
-
-    report_wanted_format: List[Literal['csv','xlsx']] = args['report_format']
+    report_wanted_format: List[Literal['csv', 'xlsx']] = args['report_format']
     if report_wanted_format is None:
         report_wanted_format = ['xlsx']
-
 
     arg_verbose = args['verbose']
     arg_proceed_with_deletion = args['proceed_with_deletion'] is True
@@ -59,31 +57,28 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
     arg_report_output_dir: str = args['output_dir']
 
-
     output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_', arg_report_output_dir)
     output_file_csv = output_file_prefix + '.csv'
     output_file_excel = output_file_prefix + '.xlsx'
 
-
     csv_report_headers = pylo.ExcelHeaderSet([
-        ExcelHeader(name = 'name', max_width = 40),
-        ExcelHeader(name = 'hostname', max_width = 40)
+        ExcelHeader(name='name', max_width=40),
+        ExcelHeader(name='hostname', max_width=40)
     ])
     # insert all label dimensions
     for label_type in org.LabelStore.label_types:
-        csv_report_headers.append(ExcelHeader(name= f'label_{label_type}', wrap_text= False))
+        csv_report_headers.append(ExcelHeader(name=f'label_{label_type}', wrap_text=False))
 
     csv_report_headers.extend([
         'online',
-        ExcelHeader(name = 'last_heartbeat', max_width = 15, wrap_text = False),
-        ExcelHeader(name = 'created_at', max_width = 15, wrap_text = False),
+        ExcelHeader(name='last_heartbeat', max_width=15, wrap_text=False),
+        ExcelHeader(name='created_at', max_width=15, wrap_text=False),
         'action',
-        ExcelHeader(name = 'link_to_pce', max_width = 15, wrap_text = False, url_text = 'See in PCE', is_url = True),
-        ExcelHeader(name = 'href', max_width = 15, wrap_text = False)
+        ExcelHeader(name='link_to_pce', max_width=15, wrap_text=False, url_text='See in PCE', is_url=True),
+        ExcelHeader(name='href', max_width=15, wrap_text=False)
     ])
     csv_report = pylo.ArraysToExcel()
     sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
-
 
     filter_labels: List[pylo.Label] = []  # the list of labels to filter the workloads against
     if args['filter_label'] is not None:
@@ -138,17 +133,17 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     def add_workload_to_report(workload: pylo.Workload, action: str):
         url_link_to_pce = workload.get_pce_ui_url()
         new_row = {
-                'hostname': workload.hostname,
-                'online': workload.online,
-                'last_heartbeat': workload.ven_agent.get_last_heartbeat_date().strftime('%Y-%m-%d %H:%M'),
-                'created_at': workload.created_at_datetime().strftime('%Y-%m-%d %H:%M'),
-                'href': workload.href,
-                'link_to_pce': url_link_to_pce,
-                'action': action
+            'hostname': workload.hostname,
+            'online': workload.online,
+            'last_heartbeat': workload.ven_agent.get_last_heartbeat_date().strftime('%Y-%m-%d %H:%M'),
+            'created_at': workload.created_at_datetime().strftime('%Y-%m-%d %H:%M'),
+            'href': workload.href,
+            'link_to_pce': url_link_to_pce,
+            'action': action
         }
 
         for label_type in org.LabelStore.label_types:
-            new_row['label_'+label_type] = workload.get_label_name(label_type, '')
+            new_row['label_' + label_type] = workload.get_label_name(label_type, '')
 
         sheet.add_line_from_object(new_row)
 
@@ -173,9 +168,9 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
             continue
 
         print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
-                                                                                         len(dup_record.online),
-                                                                                         len(dup_record.offline),
-                                                                                         len(dup_record.unmanaged)))
+                                                                                               len(dup_record.online),
+                                                                                               len(dup_record.offline),
+                                                                                               len(dup_record.unmanaged)))
 
         latest_created_workload = dup_record.find_latest_created_at()
         latest_heartbeat_workload = dup_record.find_latest_heartbeat()
@@ -195,7 +190,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
             add_workload_to_report(wkl, "ignored (VEN is online)")
 
         for wkl in dup_record.offline:
-            if arg_do_not_delete_the_most_recent_workload and  wkl is latest_created_workload:
+            if arg_do_not_delete_the_most_recent_workload and wkl is latest_created_workload:
                 print("    - IGNORED: wkl {}/{} is the most recent".format(wkl.get_name_stripped_fqdn(), wkl.href))
                 add_workload_to_report(wkl, "ignored (it is the most recently created)")
             elif arg_do_not_delete_the_most_recently_heartbeating_workload and wkl is latest_heartbeat_workload:
@@ -211,7 +206,6 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                 else:
                     delete_tracker.add_workload(wkl)
                     print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
-
 
         for wkl in dup_record.unmanaged:
             if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
@@ -269,7 +263,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         if len(report_wanted_format) < 1:
             print(" * No report format was specified, no report will be generated")
         else:
-            sheet.reorder_lines(['hostname']) # sort by hostname for better readability
+            sheet.reorder_lines(['hostname'])  # sort by hostname for better readability
             for report_format in report_wanted_format:
                 output_filename = output_file_prefix + '.' + report_format
                 print(" * Writing report file '{}' ... ".format(output_filename), end='', flush=True)
@@ -294,7 +288,7 @@ class DuplicateRecordManager:
         def __init__(self, pce_offline_timer_override: Optional[int] = None):
             self.offline = []
             self.online = []
-            self.unmanaged= []
+            self.unmanaged = []
             self.all: List[pylo.Workload] = []
             self._pce_offline_timer_override: Optional[int] = pce_offline_timer_override
 
@@ -330,7 +324,7 @@ class DuplicateRecordManager:
                 return True
             return False
 
-        def find_latest_created_at(self)-> 'pylo.Workload':
+        def find_latest_created_at(self) -> 'pylo.Workload':
             latest: Optional[pylo.Workload] = None
             for wkl in self.all:
                 if wkl.unmanaged:
@@ -339,7 +333,7 @@ class DuplicateRecordManager:
                     latest = wkl
             return latest
 
-        def find_latest_heartbeat(self)-> 'pylo.Workload':
+        def find_latest_heartbeat(self) -> 'pylo.Workload':
             latest: Optional[pylo.Workload] = None
             for wkl in self.all:
                 if wkl.unmanaged:

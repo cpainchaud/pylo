@@ -26,10 +26,10 @@ class RulesetScope:
         result = ''
         for scope in self.scope_entries.keys():
             if len(result) < 1:
-                result += scope.to_string(label_separator,use_href=use_href)
+                result += scope.to_string(label_separator, use_href=use_href)
             else:
                 result += scope_separator
-                result += scope.to_string(label_separator,use_href=use_href)
+                result += scope.to_string(label_separator, use_href=use_href)
 
         return result
 
@@ -38,6 +38,7 @@ class RulesetScope:
             if scope_entry.is_all_all_all():
                 return True
         return False
+
 
 class RulesetScopeEntry:
 
@@ -48,7 +49,7 @@ class RulesetScopeEntry:
         self._labels: Dict[str, Union['pylo.Label', 'pylo.LabelGroup']] = {}
 
     def load_from_json(self, data: List[RulesetScopeEntryLineJsonStructure]):
-        #log.error(pylo.nice_json(data))
+        # log.error(pylo.nice_json(data))
         l_store = self.owner.owner.owner.owner.LabelStore
         for label_json in data:
             label_entry = label_json.get('label')
@@ -64,7 +65,8 @@ class RulesetScopeEntry:
             if label is None:
                 raise pylo.PyloEx("Cannot find label with href '{}' in Ruleset '{}' scope: {}".format(href_entry,
                                                                                                       self.owner.owner.name,
-                                                                                      pylo.nice_json(data)))
+                                                                                                      pylo.nice_json(
+                                                                                                          data)))
 
             if label.type not in self.owner.owner.owner.owner.LabelStore.label_types_as_set:
                 raise pylo.PyloEx("Unsupported label type '{}' named '{}' in scope of ruleset '{}'/'{}'".format(label.type_string(),
@@ -103,8 +105,7 @@ class RulesetScopeEntry:
         """
         return {label.href: label for label in self._labels.values()}
 
-
-    def to_string(self, label_separator = '|', use_href=False):
+    def to_string(self, label_separator='|', use_href=False):
         string = ''
         for label_type in self.owner.owner.owner.owner.LabelStore.label_types:
             label = self._labels.get(label_type)
@@ -191,7 +192,6 @@ class Ruleset:
             if not rule.is_intra_scope():
                 rules.append(rule)
         return rules
-
 
     def load_from_json(self, data: RulesetObjectJsonStructure):
         if 'name' not in data:

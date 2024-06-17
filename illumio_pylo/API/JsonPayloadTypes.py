@@ -186,6 +186,8 @@ class RulesetObjectJsonStructure(TypedDict):
     scopes: List[List[RulesetScopeEntryLineJsonStructure]]
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+    enabled: bool
+
 
 
 class RulesetObjectUpdateStructure(TypedDict):
@@ -258,6 +260,7 @@ class PCEObjectsJsonStructure(TypedDict):
     virtual_services: List[VirtualServiceObjectJsonStructure]
     workloads: List[WorkloadObjectJsonStructure]
     label_dimensions: List[LabelDimensionObjectStructure]
+    pce_version: str
 
 
 class PCECacheFileJsonStructure(TypedDict):

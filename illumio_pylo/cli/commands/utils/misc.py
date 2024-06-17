@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import illumio_pylo as pylo
 
 default_label_columns_prefix = 'label:'
 

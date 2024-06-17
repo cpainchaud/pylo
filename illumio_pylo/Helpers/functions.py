@@ -2,6 +2,7 @@ import json
 import os
 import re
 import time
+import functools
 
 
 def nice_json(json_obj):
@@ -133,7 +134,7 @@ ___ipv6_pattern = re.compile(r"""
 def is_valid_ipv6(ip):
     """Validates IPv6 addresses.
     """
-    #print("testing ({})".format(ip))
+    # print("testing ({})".format(ip))
     return ___ipv6_pattern.match(ip) is not None
 
 
@@ -145,22 +146,16 @@ __clocks_start = {}
 __clocks_end = {}
 
 
-def clock_start(name:str = 'default'):
+def clock_start(name: str = 'default'):
     __clocks_start[name] = time.time()
 
 
-def clock_stop(name:str = 'default'):
+def clock_stop(name: str = 'default'):
     __clocks_end[name] = time.time()
 
 
-import functools
-
-
-def clock_elapsed_str(name:str = 'default'):
-    t = time.time()-__clocks_start[name]
+def clock_elapsed_str(name: str = 'default'):
+    t = time.time() - __clocks_start[name]
     return "%d:%02d:%02d.%03d" % \
-           functools.reduce(lambda ll,b : divmod(ll[0],b) + ll[1:],
-                  [(t*1000,),1000,60,60])
-    return "{}".format(time.time()-__clocks_start[name])
-
-
+        functools.reduce(lambda ll, b: divmod(ll[0], b) + ll[1:],
+                         [(t * 1000,), 1000, 60, 60])

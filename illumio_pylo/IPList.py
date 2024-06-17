@@ -1,6 +1,3 @@
-from typing import Dict, Optional
-
-import illumio_pylo as pylo
 from .API.JsonPayloadTypes import IPListObjectJsonStructure
 from illumio_pylo import log
 from .Helpers import *
@@ -59,15 +56,15 @@ class IPList(pylo.ReferenceTracker):
             self.raw_entries[entry] = entry
 
     def get_ip4map(self) -> pylo.IP4Map:
-        map = pylo.IP4Map()
+        new_map = pylo.IP4Map()
 
         for entry in self.raw_entries:
             if entry[0] == '!':
-                map.subtract_from_text(entry[1:], ignore_ipv6=True)
+                new_map.subtract_from_text(entry[1:], ignore_ipv6=True)
             else:
-                map.add_from_text(entry, ignore_ipv6=True)
+                new_map.add_from_text(entry, ignore_ipv6=True)
 
-        return map
+        return new_map
 
     def get_raw_entries_as_string_list(self, separator=',') -> str:
         return pylo.string_list_to_text(self.raw_entries.values(), separator=separator)
@@ -115,7 +112,7 @@ class IPListStore:
     def find_by_href(self, href: str) -> Optional['pylo.IPList']:
         return self.items_by_href.get(href)
 
-    def find_by_name(self, name: str, case_sensitive: bool = True ) -> Optional['pylo.IPList']:
+    def find_by_name(self, name: str, case_sensitive: bool = True) -> Optional['pylo.IPList']:
         if case_sensitive:
             for iplist in self.items_by_href.values():
                 if iplist.name == name:
@@ -126,4 +123,3 @@ class IPListStore:
                 if iplist.name.lower() == lower_name:
                     return iplist
         return None
-

@@ -44,19 +44,19 @@ def get_field_or_die(field_name: str, data):
 
 
 ObjectTypes = Literal['iplists', 'workloads', 'virtual_services', 'labels', 'labelgroups', 'services', 'rulesets',
-                     'security_principals', 'label_dimensions']
+                        'security_principals', 'label_dimensions']
 
 all_object_types: Dict[ObjectTypes, ObjectTypes] = {
-        'iplists': 'iplists',
-        'workloads': 'workloads',
-        'virtual_services': 'virtual_services',
-        'labels': 'labels',
-        'labelgroups': 'labelgroups',
-        'services': 'services',
-        'rulesets': 'rulesets',
-        'security_principals': 'security_principals',
-        'label_dimensions': 'label_dimensions'
-    }
+    'iplists': 'iplists',
+    'workloads': 'workloads',
+    'virtual_services': 'virtual_services',
+    'labels': 'labels',
+    'labelgroups': 'labelgroups',
+    'services': 'services',
+    'rulesets': 'rulesets',
+    'security_principals': 'security_principals',
+    'label_dimensions': 'label_dimensions'
+}
 
 
 class APIConnector:
@@ -69,7 +69,7 @@ class APIConnector:
             port = str(port)
         self.port: int = port
         self._api_key: str = api_key
-        self._decrypted_api_key: str = None
+        self._decrypted_api_key: Optional[str] = None
         self.api_user: str = api_user
         self.org_id: int = org_id
         self.skipSSLCertCheck: bool = skip_ssl_cert_check
@@ -85,7 +85,6 @@ class APIConnector:
             self._decrypted_api_key = decrypt_api_key(self._api_key)
             return self._decrypted_api_key
         return self._api_key
-
 
     @staticmethod
     def get_all_object_types_names_except(exception_list: List[ObjectTypes]):
@@ -138,7 +137,7 @@ class APIConnector:
         connector = pylo.APIConnector(fqdn_or_profile_name, port, user, password, skip_ssl_cert_check=True, name=name)
         return connector
 
-    def _make_base_url(self, path: str='') -> str:
+    def _make_base_url(self, path: str = '') -> str:
         # remove leading '/' from path if exists
         if len(path) > 0 and path[0] == '/':
             path = path[1:]
@@ -222,7 +221,7 @@ class APIConnector:
                 raise pylo.PyloApiEx("PCE connectivity or low level issue: {}".format(e))
 
             answer_size = len(req.content) / 1024
-            log.info("URL downloaded (size "+str( int(answer_size) )+"KB) Reply headers:\n" +
+            log.info("URL downloaded (size "+str(int(answer_size))+"KB) Reply headers:\n" +
                      "HTTP " + method + " " + url + " STATUS " + str(req.status_code) + " " + req.reason)
             log.info(req.headers)
             # log.info("Request Body:" + pylo.nice_json(json_arguments))
@@ -247,7 +246,9 @@ class APIConnector:
                 retry_loop_times = 0
 
                 while True:
-                    log.info("Sleeping " + str(retry_interval) + " seconds before polling for job status, elapsed " + str(retry_interval*retry_loop_times) + " seconds so far" )
+                    log.info(
+                        "Sleeping " + str(retry_interval) + " seconds before polling for job status, elapsed " + str(
+                            retry_interval * retry_loop_times) + " seconds so far")
                     retry_loop_times += 1
                     time.sleep(retry_interval)
                     job_poll = self.do_get_call(job_location, include_org_id=False)
@@ -304,17 +305,18 @@ class APIConnector:
                                 continue
 
                 if req.status_code == 403:
-                    raise pylo.PyloApiRequestForbiddenEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
-                                                        + '" and error message: ' + req.text)
+                    raise pylo.PyloApiRequestForbiddenEx(
+                        'API returned error status "' + str(req.status_code) + ' ' + req.reason
+                        + '" and error message: ' + req.text)
 
                 raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
-                                + '" and error message: ' + req.text)
+                                     + '" and error message: ' + req.text)
 
             if return_headers:
                 return req.headers
 
             if json_output_expected:
-                log.info("Parsing API answer to JSON (with a size of " + str( int(answer_size) ) + "KB)")
+                log.info("Parsing API answer to JSON (with a size of " + str(int(answer_size)) + "KB)")
                 json_out = req.json()
                 log.info("Done!")
                 if answer_size < 5:
@@ -386,7 +388,6 @@ class APIConnector:
         else:
             if 'label_dimensions' in objects_to_load:
                 del objects_to_load['label_dimensions']
-
 
         threads_count = 4
         data: PCEObjectsJsonStructure = pylo.Organization.create_fake_empty_config()
@@ -660,7 +661,7 @@ class APIConnector:
     def objects_workload_get(self,
                              include_deleted=False,
                              filter_by_ip: str = None,
-                             filter_by_label: WorkloadsGetQueryLabelFilterJsonStructure=None,
+                             filter_by_label: WorkloadsGetQueryLabelFilterJsonStructure = None,
                              filter_by_name: str = None,
                              filter_by_managed: bool = None,
                              filer_by_policy_health: Literal['active', 'warning', 'error'] = None,
@@ -787,11 +788,10 @@ class APIConnector:
 
             try:
                 result = self.connector.objects_workload_delete_multi(list(self._hrefs.keys()))
-            except Exception as ex:  #global exception means something really bad happened we log errors for all workloads
+            except Exception as ex:  # global exception means something really bad happened we log errors for all workloads
                 for href in self._hrefs.keys():
                     self._errors[href] = str(ex)
                 return
-
 
             # print(pylo.nice_json(result))
             if not type(result) is list:
@@ -837,7 +837,6 @@ class APIConnector:
                         self._errors[href] = str(ex)
                         break
 
-
         def count_entries(self):
             return len(self._hrefs)
 
@@ -847,7 +846,7 @@ class APIConnector:
     def new_tracker_workload_multi_delete(self):
         return APIConnector.WorkloadMultiDeleteTracker(self)
 
-    def objects_workload_delete_multi(self, href_or_workload_array: Union[List['pylo.Workload'],List[str]]):
+    def objects_workload_delete_multi(self, href_or_workload_array: Union[List['pylo.Workload'], List[str]]):
         if len(href_or_workload_array) < 1:
             return
 
@@ -923,8 +922,7 @@ class APIConnector:
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
-    def objects_network_device_get(self,
-                                       max_results: int = None) -> List[NetworkDeviceObjectJsonStructure]:
+    def objects_network_device_get(self, max_results: int = None) -> List[NetworkDeviceObjectJsonStructure]:
         path = '/network_devices'
         data = {}
 
@@ -1069,7 +1067,7 @@ class APIConnector:
             'enabled': enabled,
             'stateless': stateless,
             'consuming_security_principals': consuming_security_principals,
-            'resolve_labels_as': {'providers': resolve_providers, 'consumers': resolve_consumers,},
+            'resolve_labels_as': {'providers': resolve_providers, 'consumers': resolve_consumers},
             'consumers': consumers_json,
             'providers': providers_json,
             'ingress_services': services_json
@@ -1270,7 +1268,7 @@ class APIConnector:
         # get current timestamp to ensure we don't wait too long
         start_time = time.time()
 
-        query_status = None # Json response from API for specific query
+        query_status = None  # Json response from API for specific query
 
         while True:
             # check that we don't wait too long
@@ -1325,19 +1323,18 @@ class APIConnector:
                            check_for_update_interval_seconds: int = 10) -> 'pylo.ExplorerQuery':
         return pylo.ExplorerQuery(self, max_results, max_running_time_seconds, check_for_update_interval_seconds)
 
-
     def new_audit_log_query(self, max_results: int = 10000, max_running_time_seconds: int = 1800,
                             check_for_update_interval_seconds: int = 10) -> 'pylo.AuditLogQuery':
-        return pylo.AuditLogQuery(self, max_results, max_running_time_seconds )
+        return pylo.AuditLogQuery(self, max_results, max_running_time_seconds)
 
-    def audit_log_query(self, max_results = 1000, event_type: Optional[str] = None) -> List[AuditLogApiReplyEventJsonStructure]:
+    def audit_log_query(self, max_results=1000, event_type: Optional[str] = None) \
+            -> List[AuditLogApiReplyEventJsonStructure]:
         url = '/events'
         args = {'max_results': max_results}
         if event_type is not None:
             args['event_type'] = event_type
 
         return self.do_get_call(path=url, params=args)
-
 
     def get_pce_ui_workload_url(self, href: str) -> str:
         # extract UUID from workload HREF:

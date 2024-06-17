@@ -1,5 +1,3 @@
-import illumio_pylo as pylo
-from illumio_pylo import log
 from .Helpers import *
 
 
@@ -38,4 +36,3 @@ class Referencer:
 class Pathable:
     def __init__(self):
         self.name = ''
-

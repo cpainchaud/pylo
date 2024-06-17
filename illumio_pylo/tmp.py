@@ -5,6 +5,7 @@ import illumio_pylo as pylo
 
 log = logging.getLogger('PYLO')
 
+
 def init_logger():
     console_logger = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s/%(filename)s:%(lineno)d - %(message)s')

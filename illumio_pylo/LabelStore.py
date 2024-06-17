@@ -1,6 +1,6 @@
 from hashlib import md5
 import random
-from typing import Union, Set, Iterable
+from typing import Set
 # Pylo imports
 from illumio_pylo import log
 from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure, LabelDimensionObjectStructure
@@ -96,7 +96,7 @@ class LabelStore:
 
     def load_label_groups_from_json(self, json_list: List[LabelGroupObjectJsonStructure]):
         # groups cannot be loaded straight away : we need to extract of their principal properties (name, href and type)
-        #then we can extract their members in case there are nested groups
+        # then we can extract their members in case there are nested groups
         created_groups = []
         for json_label in json_list:
             if 'name' not in json_label or 'href' not in json_label or 'key' not in json_label:
@@ -174,33 +174,34 @@ class LabelStore:
                 data.append(label)
         return data
 
-
     def get_label_groups_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, 'pylo.LabelGroup']:
         label_list = self.get_label_groups(label_type)
         return self.Utils.list_to_dict_by_href(label_list)
 
-
-    def get_both_labels_and_groups(self, label_type: Optional[str] = None) -> List[Union['pylo.Label','pylo.LabelGroup']]:
+    def get_both_labels_and_groups(self, label_type: Optional[str] = None) \
+            -> List[Union['pylo.Label', 'pylo.LabelGroup']]:
         data = []
         if label_type is not None:
             if label_type not in self.label_types_as_set:
-                raise pylo.PyloEx("Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
+                raise pylo.PyloEx(
+                    "Invalid label type '%s'. Valid types are: %s" % (label_type, self.label_types_as_set))
 
         for label in self._items_by_href.values():
             if label_type is None or label.type == label_type:
                 data.append(label)
         return data
 
-    def get_both_labels_and_groups_as_dict_by_href(self, label_type: Optional[str] = None) -> Dict[str, Union['pylo.Label','pylo.LabelGroup']]:
+    def get_both_labels_and_groups_as_dict_by_href(self, label_type: Optional[str] = None) \
+            -> Dict[str, Union['pylo.Label', 'pylo.LabelGroup']]:
         label_list = self.get_both_labels_and_groups(label_type)
         return self.Utils.list_to_dict_by_href(label_list)
 
-
-    def find_object_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
-                           missing_labels_names: Optional[List[str]] = None,
-                           allow_label_group: bool = True,
-                           allow_label: bool = True,
-                           raise_exception_if_not_found: bool = False) -> Optional[Union['pylo.Label','pylo.LabelGroup',List[Union['pylo.Label','pylo.LabelGroup']]]]:
+    def find_object_by_name(self, name: str | List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
+                            missing_labels_names: Optional[List[str]] = None,
+                            allow_label_group: bool = True,
+                            allow_label: bool = True,
+                            raise_exception_if_not_found: bool = False) \
+            -> Optional[Union['pylo.Label', 'pylo.LabelGroup', List[Union['pylo.Label', 'pylo.LabelGroup']]]]:
         """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
         If case_sensitive is False it will return a list of labels with the same name rather than a single object.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
@@ -218,13 +219,13 @@ class LabelStore:
             for label in self._items_by_href.values():
                 if label_type is not None and label.type != label_type:
                     continue
-                if label.is_label() and allow_label: # ignore groups
+                if label.is_label() and allow_label:  # ignore groups
                     if case_sensitive:
                         if label.name == name:
                             return label
                 elif allow_label_group:
-                        if label.name.lower() == name.lower():
-                            return label
+                    if label.name.lower() == name.lower():
+                        return label
             if raise_exception_if_not_found:
                 raise pylo.PyloEx("Label/group '%s' not found", name)
             if missing_labels_names is not None:
@@ -234,10 +235,10 @@ class LabelStore:
             results = []
             local_notfound_labels = []
             for name_to_find in name:
-                result = self.find_object_by_name(name_to_find, label_type=label_type ,case_sensitive=case_sensitive,
-                                                 allow_label_group=allow_label_group, allow_label=allow_label)
+                result = self.find_object_by_name(name_to_find, label_type=label_type, case_sensitive=case_sensitive,
+                                                  allow_label_group=allow_label_group, allow_label=allow_label)
                 if result is None:
-                        local_notfound_labels.append(name_to_find)
+                    local_notfound_labels.append(name_to_find)
                 else:
                     results.append(result)
             if raise_exception_if_not_found and len(local_notfound_labels) > 0:
@@ -246,9 +247,9 @@ class LabelStore:
                 missing_labels_names.extend(local_notfound_labels)
             return results
 
-    def find_label_by_name(self, name: str|List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
-                            missing_labels_names: Optional[List[str]] = None,
-                            raise_exception_if_not_found: bool = False) -> Optional['pylo.Label'|List['pylo.Label']]:
+    def find_label_by_name(self, name: str | List[str], label_type: Optional[str] = None, case_sensitive: bool = True,
+                           missing_labels_names: Optional[List[str]] = None,
+                           raise_exception_if_not_found: bool = False) -> Optional['pylo.Label' | List['pylo.Label']]:
         """Find a label by its name.
         If case_sensitive is False it will return a list of labels with the same name rather than a single object.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
@@ -261,11 +262,9 @@ class LabelStore:
                                         allow_label_group=False, allow_label=True,
                                         raise_exception_if_not_found=raise_exception_if_not_found)
 
-
     def find_label_by_name_whatever_type(self, name: str, case_sensitive: bool = True) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
         pylo.log.warn("find_label_by_name_whatever_type is deprecated, use find_label_by_name instead")
         return self.find_label_by_name(name, case_sensitive=case_sensitive)
-
 
     def find_label_by_name_and_type(self, name: str, label_type: str, case_sensitive: bool = True) \
             -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
@@ -366,7 +365,7 @@ class LabelStore:
 
         new_label_name = name
         new_label_type = label_type
-        new_label_href = '**fake-label-href**/{}'.format( md5(str(random.random()).encode('utf8')).digest() )
+        new_label_href = '**fake-label-href**/{}'.format(md5(str(random.random()).encode('utf8')).digest())
 
         new_label = pylo.Label(new_label_name, new_label_href, new_label_type, self)
 

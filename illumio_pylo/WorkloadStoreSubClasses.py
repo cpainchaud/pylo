@@ -14,9 +14,8 @@ class UnmanagedWorkloadDraft(LabeledObject):
             self.name: str = name
             self.ip: str = ip
 
-
     def __init__(self, owner: 'pylo.WorkloadStore', name: Optional[str] = None, hostname: Optional[str] = None,
-                 description: Optional[str] = None, ip_single_or_list: Optional[str|Iterable[str]] = None,
+                 description: Optional[str] = None, ip_single_or_list: Optional[str | Iterable[str]] = None,
                  labels: Optional[List['pylo.Label']] = None):
         super().__init__()
         self.owner = owner
@@ -57,6 +56,7 @@ class UnmanagedWorkloadDraft(LabeledObject):
         api_results = api.objects_workload_create_single_unmanaged(self.generate_json_payload())
         return self.owner.add_workload_from_json(api_results)
 
+
 @dataclass
 class CreationTracker:
     draft: UnmanagedWorkloadDraft
@@ -69,7 +69,6 @@ class CreationTracker:
 
 class UnmanagedWorkloadDraftMultiCreatorManager:
     def __init__(self, owner: 'pylo.WorkloadStore'):
-
 
         self.owner = owner
         self.drafts: List[UnmanagedWorkloadDraft] = []
@@ -84,7 +83,9 @@ class UnmanagedWorkloadDraftMultiCreatorManager:
         self._external_tracker_ids.append(external_tracker_id)
         return draft
 
-    def create_all_in_pce(self, amount_created_per_batch = 500, retrieve_workloads_after_creation = False) -> List[CreationTracker]:
+    def create_all_in_pce(self, amount_created_per_batch=500, retrieve_workloads_after_creation=False) \
+            -> List[CreationTracker]:
+
         results: List[CreationTracker] = []
 
         if retrieve_workloads_after_creation:
@@ -97,7 +98,6 @@ class UnmanagedWorkloadDraftMultiCreatorManager:
                     results.append(CreationTracker(draft, self._external_tracker_ids[self.drafts.index(draft)], False, str(e)))
 
             return results
-
 
         batches: List[List[UnmanagedWorkloadDraft]] = []
 
@@ -112,7 +112,7 @@ class UnmanagedWorkloadDraftMultiCreatorManager:
 
             api = self.owner.owner.connector
 
-            try :
+            try:
                 api_results = api.objects_workload_create_bulk_unmanaged(multi_create_payload)
                 for i in range(len(api_results)):
                     if api_results[i]["status"] == "created":
@@ -132,8 +132,5 @@ class UnmanagedWorkloadDraftMultiCreatorManager:
                                                    external_tracker_id=self._external_tracker_ids[self.drafts.index(draft)],
                                                    success=False,
                                                    message=str(e)))
-
-
-
 
         return results

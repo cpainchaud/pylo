@@ -1,6 +1,6 @@
 from typing import Union
 from .Exception import PyloEx
-from .LabelStore import label_type_role, label_type_env, label_type_loc, label_type_app, LabelStore
+from .LabelStore import LabelStore
 
 
 class LabelCommon:

@@ -13,7 +13,6 @@ from illumio_pylo.API.CredentialsManager import get_all_credentials, create_cred
     get_credentials_from_file, encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, \
     decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305, get_supported_keys_from_ssh_agent, is_encryption_available
 
-from illumio_pylo import log
 from . import Command
 
 
@@ -31,17 +30,17 @@ def fill_parser(parser: argparse.ArgumentParser):
 
     create_parser = sub_parser.add_parser('create', help='Create a new credential')
     create_parser.add_argument('--name', required=False, type=str, default=None,
-                     help='Name of the credential')
+                               help='Name of the credential')
     create_parser.add_argument('--fqdn', required=False, type=str, default=None,
-                                 help='FQDN of the PCE')
+                               help='FQDN of the PCE')
     create_parser.add_argument('--port', required=False, type=int, default=None,
-                                 help='Port of the PCE')
+                               help='Port of the PCE')
     create_parser.add_argument('--org', required=False, type=int, default=None,
-                                 help='Organization ID')
+                               help='Organization ID')
     create_parser.add_argument('--api-user', required=False, type=str, default=None,
-                                    help='API user')
+                               help='API user')
     create_parser.add_argument('--verify-ssl', required=False, type=bool, default=None,
-                                 help='Verify SSL')
+                               help='Verify SSL')
 
 
 def __main(args, **kwargs):
@@ -92,7 +91,6 @@ def __main(args, **kwargs):
         if wanted_verify_ssl is None:
             wanted_verify_ssl = click.prompt('> Verify SSL/TLS certificate? Y/N', type=bool)
 
-
         print()
         print("Recap:")
         print("Name: {}".format(wanted_name))
@@ -102,7 +100,6 @@ def __main(args, **kwargs):
         print("API User: {}".format(wanted_api_user))
         print("Verify SSL: {}".format(wanted_verify_ssl))
         print()
-
 
         # prompt of API key from user input, single line, hidden
         api_key = click.prompt('> API Key', hide_input=True)
@@ -145,10 +142,8 @@ def __main(args, **kwargs):
         else:
             print(" * encryption is not available (no SSH agent or compatible key found), storing API key in plain text...")
 
-
         cwd = os.getcwd()
         create_in_current_workdir = click.prompt('> Create in current workdir ({})? If not then user homedir will be used.   Y/N '.format(cwd), type=bool)
-
 
         print("* Creating credential...", flush=True, end="")
         if create_in_current_workdir:
@@ -192,9 +187,7 @@ def __main(args, **kwargs):
 command_object = Command(command_name, __main, fill_parser, credentials_manager_mode=True)
 
 
-def print_keys(keys: list[paramiko.AgentKey], display_index = True) -> None:
-
-    args_for_print = []
+def print_keys(keys: list[paramiko.AgentKey], display_index=True) -> None:
 
     column_properties = [  # (name, width)
         ("ID#", 4),
@@ -207,10 +200,8 @@ def print_keys(keys: list[paramiko.AgentKey], display_index = True) -> None:
         # remove tuple with name "ID#"
         column_properties = [item for item in column_properties if item[0] != "ID#"]
 
-
     table = PrettyTable()
     table.field_names = [item[0] for item in column_properties]
-
 
     for i, key in enumerate(keys):
         display_values = []
@@ -223,5 +214,3 @@ def print_keys(keys: list[paramiko.AgentKey], display_index = True) -> None:
         table.add_row(display_values)
 
     print(table)
-
-

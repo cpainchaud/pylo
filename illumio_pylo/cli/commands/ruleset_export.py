@@ -11,23 +11,24 @@ command_name = 'rule-export'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--format', '-f', required=False, default='excel',choices=['csv', 'excel'], help='Output file format')
-    parser.add_argument('--output-dir', '-o', required=False, default='output', help='Directory where to save the output file')
+    parser.add_argument('--format', '-f', required=False, default='excel', choices=['csv', 'excel'],
+                        help='Output file format')
+    parser.add_argument('--output-dir', '-o', required=False, default='output',
+                        help='Directory where to save the output file')
     parser.add_argument('--prefix-objects-with-type', nargs='?', const=True, default=False,
                         help='Prefix objects with their type (e.g. "label:mylabel")')
     parser.add_argument('--object-types-as-section', action='store_true', default=False,
                         help="Consumer and providers will show objects types section headers, example:" + os.linesep +
-                        "LABELS: " + os.linesep +
-                        "R-WEB" + os.linesep +
-                        "A-FUSION" + os.linesep +
-                        "IPLISTS: " + os.linesep +
-                        "Private_Networks" + os.linesep +
-                        "Public_NATed")
+                             "LABELS: " + os.linesep +
+                             "R-WEB" + os.linesep +
+                             "A-FUSION" + os.linesep +
+                             "IPLISTS: " + os.linesep +
+                             "Private_Networks" + os.linesep +
+                             "Public_NATed")
 
 
 def __main(args: Dict, org: pylo.Organization, **kwargs):
-
-    setting_prefix_objects_with_type: bool|str = args['prefix_objects_with_type']
+    setting_prefix_objects_with_type: bool | str = args['prefix_objects_with_type']
     setting_object_types_as_section: bool = args['prefix_objects_with_type']
     settings_output_file_format = args['format']
     settings_output_dir = args['output_dir']
@@ -69,12 +70,12 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
             if scope_str[-1] == "\n":
                 scope_str = scope_str[:-1]
 
-
-            consumers_str = rule.consumers.members_to_str("\n", prefix_objects_with_type=setting_prefix_objects_with_type,
-                                                            object_types_as_section=setting_object_types_as_section)
-            providers_str = rule.providers.members_to_str("\n", prefix_objects_with_type=setting_prefix_objects_with_type,
+            consumers_str = rule.consumers.members_to_str("\n",
+                                                          prefix_objects_with_type=setting_prefix_objects_with_type,
                                                           object_types_as_section=setting_object_types_as_section)
-
+            providers_str = rule.providers.members_to_str("\n",
+                                                          prefix_objects_with_type=setting_prefix_objects_with_type,
+                                                          object_types_as_section=setting_object_types_as_section)
 
             data = {'ruleset': ruleset.name, 'scope': scope_str,
                     'consumers': consumers_str,
@@ -126,8 +127,3 @@ def prepare_csv_report_object(output_file_format: Literal['excel', 'csv'], setti
 
 
 command_object = Command(command_name, __main, fill_parser)
-
-
-
-
-
