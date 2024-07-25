@@ -150,6 +150,14 @@ class VenObjectJsonStructure(TypedDict):
     os_platform: Optional[str]
     uid: Optional[str]
 
+class VENUnpairApiResponseSingleErrorObjectJsonStructure(TypedDict):
+    token: str
+    message: str
+    hrefs: List[str]
+
+class VENUnpairApiResponseObjectJsonStructure(TypedDict):
+    errors: List[VENUnpairApiResponseSingleErrorObjectJsonStructure]
+
 
 class RuleServiceReferenceObjectJsonStructure(TypedDict):
     href: str
@@ -187,7 +195,6 @@ class RulesetObjectJsonStructure(TypedDict):
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
     enabled: bool
-
 
 
 class RulesetObjectUpdateStructure(TypedDict):

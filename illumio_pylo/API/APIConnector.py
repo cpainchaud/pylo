@@ -12,7 +12,8 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure, \
     NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference, \
     WorkloadObjectCreateJsonStructure, WorkloadObjectMultiCreateJsonRequestPayload, \
-    WorkloadBulkUpdateEntryJsonStructure, WorkloadBulkUpdateResponseEntry, VenObjectJsonStructure
+    WorkloadBulkUpdateEntryJsonStructure, WorkloadBulkUpdateResponseEntry, VenObjectJsonStructure, \
+    VENUnpairApiResponseObjectJsonStructure
 
 try:
     import requests as requests
@@ -816,25 +817,63 @@ class APIConnector:
             if len(agents_to_unpair) > 0:
                 self._unpair_agents(agents_to_unpair)
 
+        def _mark_error(self, href: str, error_msg: str):
+            # does href contains "/ven' ?
+            if href.find("/vens/") > -1:
+                # replace '/vens/' with '/workloads/'
+                other_href = href.replace('/vens/', '/workloads/')
+            else:
+                # replace '/workloads/' with '/vens/'
+                other_href = href.replace('/workloads/', '/vens/')
+
+            # is href in self._hrefs ?
+            if href in self._hrefs:
+                self._errors[href] = error_msg
+                return
+
+            # is other_href in self._hrefs ?
+            if other_href in self._hrefs:
+                self._errors[other_href] = error_msg
+                return
+
+            # may be it's in self._workloads
+            if href in self._workloads:
+                self._errors[href] = error_msg
+                return
+
+            if other_href in self._workloads:
+                self._errors[other_href] = error_msg
+                return
+
+            raise pylo.PyloEx("Error for unknown href '{}'".format(href))
+
         def _unpair_agents(self, workloads_hrefs: [str]):
-            for href in workloads_hrefs:
+
+            # split in batches of 500 href
+            workloads_hrefs_batches = [workloads_hrefs[i:i + 500] for i in range(0, len(workloads_hrefs), 500)]
+
+            for workloads_hrefs_batch in workloads_hrefs_batches:
                 retry_count = 5
-                api_result = None
 
                 while retry_count >= 0:
                     retry_count -= 1
                     try:
-                        api_result = self.connector.objects_workload_unpair_multi([href])
+                        api_result = self.connector.objects_workload_unpair_multi(workloads_hrefs_batch)
+                        for error in api_result['errors']:
+                            for errored_href in error['hrefs']:
+                                self._mark_error(errored_href, error['token'])
                         break
 
                     except pylo.PyloApiTooManyRequestsEx as ex:
                         if retry_count <= 0:
-                            self._errors[href] = str(ex)
+                            for href in workloads_hrefs_batch:
+                                self._mark_error(href, str(ex))
                             break
                         time.sleep(6)
 
                     except pylo.PyloApiEx as ex:
-                        self._errors[href] = str(ex)
+                        for href in workloads_hrefs_batch:
+                            self._mark_error(href, str(ex))
                         break
 
         def count_entries(self):
@@ -866,33 +905,33 @@ class APIConnector:
 
         return self.do_put_call(path=path, json_arguments=json_data, json_output_expected=True)
 
-    def objects_workload_unpair_multi(self, href_or_workload_array):
-        """
-
-        :type href_or_workload_array: list[str]|list[pylo.Workload]
-        """
+    def objects_workload_unpair_multi(self, href_or_workload_array: Union[List['pylo.Workload'], List[str]]) -> VENUnpairApiResponseObjectJsonStructure:
 
         if len(href_or_workload_array) < 1:
-            return
+            raise pylo.PyloEx("HREF list of workloads/VENs to unpair is empty")
 
         json_data = {
-            "ip_table_restore": "disable",
-            "workloads": []
+            "firewall_restore": "saved",
+            "vens": []
         }
 
         if type(href_or_workload_array[0]) is str:
+            href: str
             for href in href_or_workload_array:
-                json_data['workloads'].append({"href": href})
+                # href may contain '/workloads/', we want to replace it with '/vens/'
+                new_href = href.replace('/workloads/', '/vens/')
+                json_data['vens'].append({"href": new_href})
         else:
-            href: 'pylo.Workload'
-            for href in href_or_workload_array:
-                json_data['workloads'].append({"href": href.href})
+            workload: 'pylo.Workload'
+            for workload in href_or_workload_array:
+                new_href = workload.href.replace('/workloads/', '/vens/')
+                json_data['vens'].append({"href": new_href})
 
         # print(json_data)
 
-        path = "/workloads/unpair"
+        path = "/vens/unpair"
 
-        return self.do_put_call(path=path, json_arguments=json_data, json_output_expected=False)
+        return self.do_put_call(path=path, json_arguments=json_data, json_output_expected=True)
 
     def objects_workload_create_single_unmanaged(self, json_object: WorkloadObjectCreateJsonStructure):
         path = '/workloads'
