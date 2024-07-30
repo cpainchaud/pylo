@@ -85,7 +85,7 @@ class Organization:
             callback_api_objects_downloaded()
 
         org = Organization(1)
-        org.load_from_json(objects,list_of_objects_to_load=list_of_objects_to_load)
+        org.load_from_json(objects, list_of_objects_to_load=list_of_objects_to_load)
 
         return org
 
@@ -260,5 +260,3 @@ class Organization:
             format(padding, self.RulesetStore.count_rulesets(), self.RulesetStore.count_rules())
 
         return stats
-
-

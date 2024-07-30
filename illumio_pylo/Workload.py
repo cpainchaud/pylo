@@ -1,10 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, List, Union
 
-import illumio_pylo as pylo
 from illumio_pylo.API.JsonPayloadTypes import WorkloadObjectJsonStructure, WorkloadObjectCreateJsonStructure
-from illumio_pylo import log
 from .AgentStore import VENAgent
 from .Helpers import *
 from .Exception import PyloEx
@@ -41,8 +38,6 @@ class WorkloadApiUpdateStack:
 
     def count_payloads(self) -> int:
         return len(self.json_payload)
-
-
 
 
 class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
@@ -127,10 +122,10 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
             self.ven_agent = self.owner.owner.AgentStore.create_ven_agent_from_workload_record(self, agent_json)
             self.online = data['online']
             self.os_id = data.get('os_id')
-            #if self.os_id is None:
+            # if self.os_id is None:
             #    raise PyloEx("Workload named '{}' has no os_id record:\n%s".format(self.name), data)
             self.os_detail = data.get('os_detail')
-            #if self.os_detail is None:
+            # if self.os_detail is None:
             #    raise PyloEx("Workload named '{}' has no os_detail record:\n%s".format(self.name), data)
 
         self.description = data.get('description')
@@ -162,7 +157,7 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
                     if not self.deleted:
                         raise pylo.PyloObjectNotFound(
                             "Workload '%s'/'%s' is referencing label href '%s' which does not exist" % (
-                            self.name, self.href, href))
+                                self.name, self.href, href))
 
                 self.set_label(label_object)
                 # print("Workload '%s'/'%s' is referencing label '%s'/'%s'" % (self.name, self.hostname, label_object.type, label_object.name))
@@ -206,10 +201,8 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
     def created_at(self) -> str:
         return self.raw_json['created_at']
 
-
     def created_at_datetime(self) -> datetime:
         return pylo.illumio_date_time_string_to_datetime(self.created_at)
-
 
     def api_update_description(self, new_description: str):
         if new_description is None or len(new_description) == 0:
@@ -355,7 +348,6 @@ class Workload(pylo.ReferenceTracker, pylo.Referencer, LabeledObject):
 
         return labels
 
-
     def get_appgroup_str(self, separator: str = '|') -> str:
         labels = ''
 
@@ -498,7 +490,7 @@ class WorkloadApiUpdateStackExecutionManager:
         if len(self.workloads) == 0:
             return
 
-        #self split in list of lists of 500
+        # self split in list of lists of 500
         batches: List[List[pylo.Workload]] = [self.workloads[i:i + amount_per_batch] for i in range(0, len(self.workloads), amount_per_batch)]
 
         for batch in batches:
@@ -526,7 +518,6 @@ class WorkloadApiUpdateStackExecutionManager:
                     self.message[index] = None
                 else:
                     self.message[index] = result['message']
-
 
     def get_all_results(self) -> List[Result]:
         results = []

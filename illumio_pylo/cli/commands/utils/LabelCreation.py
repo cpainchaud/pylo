@@ -30,7 +30,7 @@ def generate_list_of_labels_to_create(csv_data: Iterable[Dict[str, Union[bool, s
         real_case: str
         type: str
 
-    name_cache: Dict[str,LabelExistsRecord] = {}
+    name_cache: Dict[str, LabelExistsRecord] = {}
 
     for label in org.LabelStore.get_labels():
         if label.name is not None:

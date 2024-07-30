@@ -28,7 +28,7 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='If an IPList with same same exists, ignore CSV entry')
 
     parser.add_argument('--proceed', '-p', action='store_true',
-                       help='If set, the script will proceed with the creation of iplists')
+                        help='If set, the script will proceed with the creation of iplists')
 
     parser.add_argument('--no-confirmation-required', '-n', action='store_true',
                         help='If set, the script will proceed with the creation of iplists without asking for confirmation')
@@ -206,4 +206,3 @@ def __main(args, org: pylo.Organization, **kwargs):
 
 
 command_object = Command(command_name, __main, fill_parser, load_specific_objects_only=objects_load_filter)
-

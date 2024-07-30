@@ -40,8 +40,8 @@ def __main(args, org: pylo.Organization, **kwargs):
                 global_concerned_rules[concerned_rule] = True
 
                 if concerned_ruleset not in concerned_rulesets:
-                        concerned_rulesets[concerned_ruleset] = {concerned_rule: concerned_rule}
-                        count_concerned_rules = count_concerned_rules + 1
+                    concerned_rulesets[concerned_ruleset] = {concerned_rule: concerned_rule}
+                    count_concerned_rules = count_concerned_rules + 1
                 else:
                     if concerned_rule not in concerned_rulesets[concerned_ruleset]:
                         concerned_rulesets[concerned_ruleset][concerned_rule] = concerned_rule
@@ -67,9 +67,9 @@ def __main(args, org: pylo.Organization, **kwargs):
         print("  - '{}' HREF: {} URL: {}".format(ruleset.name, ruleset.href, ruleset_url))
 
     print("\n*****  DONE with workloads & rules parsing  *****")
-    print("** Total: {} Workloads used in {} Rulesets and {} Rules".format(   global_count_concerned_workloads,
-                                                                                len(global_concerned_rulesets),
-                                                                                len(global_concerned_rules)))
+    print("** Total: {} Workloads used in {} Rulesets and {} Rules".format(global_count_concerned_workloads,
+                                                                           len(global_concerned_rulesets),
+                                                                           len(global_concerned_rules)))
 
     print("\n**** END OF SCRIPT ****\n")
 

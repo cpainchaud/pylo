@@ -1,2 +1,2 @@
-name,hostname,ip,role,app,env,loc
+name,hostname,ip,label:role,label:app,label:env,label:loc
 VEN-KFMGF,hostdd,192.168.50.12,R_WEB,A_APPC,E_DEV,L_AMER

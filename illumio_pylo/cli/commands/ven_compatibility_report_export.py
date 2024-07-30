@@ -1,6 +1,4 @@
 import argparse
-import sys
-from datetime import datetime
 from typing import Dict, List
 
 from prettytable import PrettyTable
@@ -23,18 +21,17 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
                         help='Directory where the output files will be saved')
 
+
 def __main(args, org: pylo.Organization, **kwargs):
 
     settings_output_dir: str = args['output_dir']
     settings_filter_labels: List[str] = args['filter_label']
     settings_limit: int = args['limit']
 
-
     # <editor-fold desc="Prepare the output files and CSV/Excel Object">
     output_file_prefix = make_filename_with_timestamp('ven-compatibility-reports_', settings_output_dir)
     output_filename_csv = output_file_prefix + '.csv'
     output_filename_xls = output_file_prefix + '.xlsx'
-
 
     # clean the files if they exist, also to check if we have write access to the directory/files
     pylo.file_clean(output_filename_csv)
@@ -47,19 +44,18 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # insert all label dimensions
     for label_type in org.LabelStore.label_types:
-        csv_report_headers.append(ExcelHeader(name= 'label_'+label_type, wrap_text= False))
+        csv_report_headers.append(ExcelHeader(name='label_' + label_type, wrap_text=False))
 
     csv_report_headers.extend([
         'operating_system',
         'report_failed',
         'details',
-        ExcelHeader(name ='link_to_pce', max_width= 15, wrap_text=False, url_text='See in PCE',is_url= True),
+        ExcelHeader(name='link_to_pce', max_width=15, wrap_text=False, url_text='See in PCE', is_url=True),
         ExcelHeader(name='href', max_width=15, wrap_text=False)
     ])
     csv_report = pylo.ArraysToExcel()
     sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
     # </editor-fold desc="Prepare the output files and CSV/Excel Object">
-
 
     agents: Dict[str, pylo.VENAgent] = {}
     for agent in org.AgentStore.items_by_href.values():
@@ -86,7 +82,6 @@ def __main(args, org: pylo.Organization, **kwargs):
         if workload.get_label('loc') is not None and workload.get_label('loc').name == 'CN':
             print("hello")
 
-
         if len(filter_labels) > 0:
             if not workload.uses_all_labels(filter_labels):
                 pylo.log.info(" - Removing Agent '{}' because it does not match the filter".format(workload.get_name()))
@@ -99,7 +94,6 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print("OK! {} Agents left after filtering".format(len(agents)))
 
-
     print()
     print(" ** Request Compatibility Report for each Agent in IDLE mode **", flush=True)
 
@@ -109,7 +103,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     stats_agent_skipped_not_online = 0
     stats_agent_has_no_report_count = 0
     stats_agent_report_failed_count = 0
-
 
     for agent in agents.values():
         stats_agent_count += 1
@@ -134,7 +127,6 @@ def __main(args, org: pylo.Organization, **kwargs):
         for label_type in org.LabelStore.label_types:
             label = agent.workload.get_label(label_type)
             export_row['label_'+label_type] = label.name if label else ''
-
 
         print("    - Downloading report (it may be delayed by API flood protection)...", flush=True, end='')
         report = org.connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
@@ -163,14 +155,12 @@ def __main(args, org: pylo.Organization, **kwargs):
 
         sheet.add_line_from_object(export_row)
 
-
     print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_csv), end='', flush=True)
     sheet.write_to_csv(output_filename_csv)
     print("OK!")
     print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_xls), end='', flush=True)
     csv_report.write_to_excel(output_filename_xls)
     print("OK!")
-
 
     print("\n\n*** Statistics ***\n")
     table = PrettyTable()

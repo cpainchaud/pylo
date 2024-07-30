@@ -18,10 +18,10 @@ class LabeledObject:
     def get_labels(self) -> Iterable['pylo.Label']:
         return self._labels.values()
 
-    def set_label(self, label :'pylo.Label'):
+    def set_label(self, label: 'pylo.Label'):
         self._labels[label.type] = label
 
-    def get_label_name(self, key: str, not_found_return_value = None):
+    def get_label_name(self, key: str, not_found_return_value=None):
         label = self.get_label(key)
         return label.name if label else not_found_return_value
 
@@ -53,7 +53,6 @@ class LabeledObject:
 
     def is_using_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']) -> bool:
         if isinstance(label, pylo.Label):
-            return label.type in self._labels
+            return label in self._labels
         else:
-            return any([label.type in self._labels for label in label.labels])
-
+            return any([label in self._labels for label in label.get_members().values()])

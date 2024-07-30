@@ -1,8 +1,7 @@
-from typing import Dict, List, Any
+from typing import List
 import sys
 import argparse
 import illumio_pylo as pylo
-from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 

@@ -1,8 +1,6 @@
-from typing import Dict, List, Any, Union
+from typing import Dict, Union
 from dataclasses import dataclass
-import sys
 import argparse
-import math
 import illumio_pylo as pylo
 from .utils.misc import make_filename_with_timestamp
 from . import Command
@@ -265,7 +263,7 @@ def __main(args, org: pylo.Organization, native_parsers: MyBuiltInParser, **kwar
         print(myformat(" - Agents with successful report count:", agent_green_count))
     print(myformat(" - SKIPPED because not online count:", agent_skipped_not_online))
     print(myformat(" - SKIPPED because report was not found:", agent_has_no_report_count))
-    print(myformat(" - Agents with failed reports:", agent_report_failed_count ))
+    print(myformat(" - Agents with failed reports:", agent_report_failed_count))
 
     print()
     print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)

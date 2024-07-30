@@ -4,7 +4,7 @@ import argparse
 import sys
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
+from illumio_pylo import ArraysToExcel, ExcelHeaderSet
 from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
 from .utils.misc import make_filename_with_timestamp, default_label_columns_prefix
 from . import Command
@@ -54,7 +54,7 @@ class ContextSingleton:
 
     def __init__(self, org: pylo.Organization):
         self.org: pylo.Organization = org
-        self.csv_data: List[Dict[str, Union[str,bool,int, None]]] = []
+        self.csv_data: List[Dict[str, Union[str, bool, int, None]]] = []
         self.settings_label_type_header_prefix: str = ''
         self.settings_blank_labels_means_remove: bool = False
         self.csv_ip_index: Dict[str, Dict] = {}  # ip -> csv_data
@@ -64,8 +64,9 @@ class ContextSingleton:
         self.csv_report_sheet: Optional[pylo.ArraysToExcel.Sheet] = None
         self.ignored_workloads_count = 0
         self.stats_count_csv_entries_with_no_match = 0
-        self.workloads_previous_labels: Dict[pylo.Workload,Dict[str, pylo.Label]] = {}
+        self.workloads_previous_labels: Dict[pylo.Workload, Dict[str, pylo.Label]] = {}
         self.csv_input_missing_label_types: List[str] = []
+
 
 def __main(args, org: pylo.Organization, **kwargs):
     
@@ -98,7 +99,6 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     context.ignored_workloads_count = 0
 
-
     csv_report_headers = ExcelHeaderSet(['name', 'hostname'])
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'{context.settings_label_type_header_prefix}{label_type}')
@@ -106,7 +106,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         csv_report_headers.append(f'new_{label_type}')
     csv_report_headers.extend(['**updated**', '**reason**', 'href'])
 
-    context.csv_report = csv_report = ArraysToExcel()
+    context.csv_report = ArraysToExcel()
     context.csv_report_sheet = context.csv_report.create_sheet('Workloads Update Report', csv_report_headers)
 
     # <editor-fold desc="CSV input file data extraction">
@@ -120,7 +120,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     for label_type in org.LabelStore.label_types:
         csv_expected_fields.append({'name': f'{context.settings_label_type_header_prefix}{label_type}', 'optional': True})
 
-
     print(" * Loading CSV input file '{}'...".format(settings_input_file), flush=True, end='')
     csv_input_object = pylo.CsvExcelToObject(settings_input_file, expected_headers=csv_expected_fields, csv_delimiter=settings_input_file_delimiter)
     for label_type in org.LabelStore.label_types:
@@ -132,7 +131,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     context.csv_data = csv_input_object.objects()
     # </editor-fold desc="CSV input file data extraction">
 
-
     if not input_match_on_ip and not input_match_on_hostname and not input_match_on_href:
         pylo.log.error('You must specify at least one (or several) property to match on for workloads vs input: href, ip or hostname')
         sys.exit(1)
@@ -142,11 +140,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     # </editor-fold desc="CSV input basic checks">
 
     # <editor-fold desc="Filter the list of Workloads to be edited">
-    workloads_to_update: Dict[str, pylo.Workload] = org.WorkloadStore.itemsByHRef.copy() # start with a list of all workloads from  the PCE
+    workloads_to_update: Dict[str, pylo.Workload] = org.WorkloadStore.itemsByHRef.copy()  # start with a list of all workloads from  the PCE
     print(" * PCE has {} workloads. Now applying requested filters...".format(len(workloads_to_update)))
 
     context.ignored_workloads_count += filter_pce_workloads(context, workloads_to_update, settings_filter_managed_only,
-                                                    settings_filter_unmanaged_only)
+                                                            settings_filter_unmanaged_only)
 
     print("  * DONE! {} Workloads remain to be updated".format(len(workloads_to_update)))
     # </editor-fold>
@@ -154,13 +152,12 @@ def __main(args, org: pylo.Organization, **kwargs):
     # <editor-fold desc="Matching between CSV/Excel and Managed Workloads">
     workloads_to_update_match_csv: Dict[pylo.Workload, Dict]  # Workloads from the PCE and CSV data associated to it
     workloads_to_update_match_csv = match_pce_workloads_vs_csv(context,
-                                                                input_match_on_hostname,
-                                                                input_match_on_href,
-                                                                input_match_on_ip,
-                                                                workloads_to_update)
+                                                               input_match_on_hostname,
+                                                               input_match_on_href,
+                                                               input_match_on_ip,
+                                                               workloads_to_update)
     add_unmatched_csv_lines_to_report(context, workloads_to_update_match_csv)
     # </editor-fold>
-
 
     # <editor-fold desc="List missing Labels and exclude Workloads which require no changes">
     print(" * Looking for any missing label which need to be created and Workloads which already have the right labels:")
@@ -172,13 +169,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     # </editor-fold>
 
     # <editor-fold desc="Compare remaining workloads and CSV data to generate update payloads later">
-    print(" * Comparing remaining {} Workloads and CSV data to generate update payloads later...".format(len(workloads_to_update)) , flush=True)
+    print(" * Comparing remaining {} Workloads and CSV data to generate update payloads later...".format(len(workloads_to_update)), flush=True)
     compare_workloads_vs_csv_data_to_generate_changes(context, workloads_to_update, workloads_to_update_match_csv)
-
 
     print("  * DONE - {} Workloads remain to be updated".format(len(workloads_to_update_match_csv)))
     # </editor-fold desc="Compare remaining workloads and CSV data to generate update payloads later">
-
 
     # <editor-fold desc="Workloads updates Push to API">
     if len(workloads_to_update) == 0:
@@ -227,7 +222,7 @@ def __main(args, org: pylo.Organization, **kwargs):
             print("*************")
             for workload in workloads_to_update.values():
                 context.csv_report_sheet.add_line_from_object(workload_to_csv_report(context, workload, 'Potentially', reason='No confirmation was given to proceed with the update'))
-                #new_labels = workloads_list_changed_labels_for_report[workload]))
+                # new_labels = workloads_list_changed_labels_for_report[workload]))
     # </editor-fold>
 
     print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
@@ -238,7 +233,8 @@ def __main(args, org: pylo.Organization, **kwargs):
     print("DONE")
 
 
-def compare_workloads_vs_csv_data_to_generate_changes(context: ContextSingleton,workloads_to_update, workloads_to_update_match_csv):
+def compare_workloads_vs_csv_data_to_generate_changes(context: ContextSingleton, workloads_to_update,
+                                                      workloads_to_update_match_csv):
     for workload, csv_data in workloads_to_update_match_csv.copy().items():
         workload.api_stacked_updates_start()
         if 'name' in csv_data:
@@ -263,7 +259,6 @@ def compare_workloads_vs_csv_data_to_generate_changes(context: ContextSingleton,
                         raise pylo.PyloEx('Cannot find a Label named "{}" in the PCE for CSV line #{}'.
                                           format(csv_data[csv_label_column_name], csv_data['*line*']))
                     found_labels.append(found_label)
-
 
         context.workloads_previous_labels[workload] = workload.get_labels_dict()
         workload.api_update_labels(found_labels, missing_label_type_means_no_change=context.settings_blank_labels_means_remove)
@@ -385,14 +380,14 @@ def match_pce_workloads_vs_csv(context: ContextSingleton,
                 print("    - No matching IP address found in CSV/Excel, this Workload will not be relabeled")
                 del workloads_to_relabel[workload_href]
                 context.ignored_workloads_count += 1
-                #context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
+                # context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
                 #                                                       'No IP match was found in CSV/Excel input'))
                 continue
             if len(ip_matches) > 1:
                 print("    - Found more than 1 IP matches in CSV/Excel, this Workload will not be relabeled")
                 del workloads_to_relabel[workload_href]
                 context.ignored_workloads_count += 1
-                #context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
+                # context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
                 #                                                       'Too many IP matches were found in CSV/Excel input'))
                 continue
             this_workload_matched_on_ip = ip_matches[0]
@@ -405,7 +400,7 @@ def match_pce_workloads_vs_csv(context: ContextSingleton,
                 del workloads_to_relabel[workload_href]
                 print("  NOT FOUND")
                 context.ignored_workloads_count += 1
-                #context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
+                # context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
                 #                                                       'No hostname match was found in CSV/Excel input'))
                 continue
 
@@ -420,7 +415,7 @@ def match_pce_workloads_vs_csv(context: ContextSingleton,
                 del workloads_to_relabel[workload_href]
                 print("  NOT FOUND")
                 context.ignored_workloads_count += 1
-                #context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
+                # context.csv_report.add_line_from_object(workload_to_csv_report(context, workload, False,
                 #                                                       'No href match was found in CSV/Excel input'))
                 continue
 
@@ -463,7 +458,7 @@ def filter_pce_workloads(context: ContextSingleton, workloads_to_update: Dict[st
                 del workloads_to_update[workload_href]
                 ignored_workloads_count += 1
                 context.csv_report_sheet.add_line_from_object(workload_to_csv_report(context, workload, False,
-                                                                       'Managed Workload was filtered out'))
+                                                                                     'Managed Workload was filtered out'))
     if filter_managed_only:
         print("   - Filtering out Unmanaged Workloads...")
         for workload_href in list(workloads_to_update.keys()):
@@ -472,13 +467,13 @@ def filter_pce_workloads(context: ContextSingleton, workloads_to_update: Dict[st
                 del workloads_to_update[workload_href]
                 ignored_workloads_count += 1
                 context.csv_report_sheet.add_line_from_object(workload_to_csv_report(context, workload, False,
-                                                                       'Unmanaged Workload was filtered out'))
+                                                                                     'Unmanaged Workload was filtered out'))
 
     print("  * DONE! {} Workloads were ignored".format(ignored_workloads_count))
     return ignored_workloads_count
 
 
-def workload_to_csv_report(context: ContextSingleton, workload: pylo.Workload, updated: Union[bool,str],
+def workload_to_csv_report(context: ContextSingleton, workload: pylo.Workload, updated: Union[bool, str],
                            reason: str = ''):
 
     record = {
@@ -487,7 +482,6 @@ def workload_to_csv_report(context: ContextSingleton, workload: pylo.Workload, u
         '**updated**': str(updated),
         '**reason**':  reason
     }
-
 
     for label_type in context.org.LabelStore.label_types:
         previous_label = context.workloads_previous_labels[workload].get(label_type)
@@ -508,11 +502,13 @@ def workload_to_csv_report(context: ContextSingleton, workload: pylo.Workload, u
 
 command_object = Command(command_name, __main, fill_parser, objects_load_filter)
 
+
 class ChangedLabelRecord(TypedDict):
     name: Optional[str]
     href: Optional[str]
 
-ChangedLabelRecordCollection = Dict[pylo.Workload, Dict[str,ChangedLabelRecord]]
+
+ChangedLabelRecordCollection = Dict[pylo.Workload, Dict[str, ChangedLabelRecord]]
 
 
 def add_unmatched_csv_lines_to_report(context: ContextSingleton,
@@ -539,7 +535,6 @@ def add_unmatched_csv_lines_to_report(context: ContextSingleton,
             new_data['**updated**'] = str(False)
             new_data['**reason**'] = 'No matching Workload was found in the PCE'
             context.csv_report_sheet.add_line_from_object(new_data)
-
 
     print(" * {} CSV lines were not matched with any Workload. They are added to the report now".
           format(context.stats_count_csv_entries_with_no_match))

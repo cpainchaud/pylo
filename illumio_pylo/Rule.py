@@ -264,7 +264,7 @@ class RuleServiceContainer(pylo.Referencer):
         self._direct_services: List[DirectServiceInRule] = []
         self._cached_port_map: Optional[PortMap] = None
 
-    def load_from_json(self, data_list: List[RuleServiceReferenceObjectJsonStructure|RuleDirectServiceReferenceObjectJsonStructure]):
+    def load_from_json(self, data_list: List[RuleServiceReferenceObjectJsonStructure | RuleDirectServiceReferenceObjectJsonStructure]):
         ss_store = self.owner.owner.owner.owner.ServiceStore  # make it a local variable for fast lookups
 
         for data in data_list:
@@ -312,7 +312,7 @@ class RuleServiceContainer(pylo.Referencer):
 
         for i in range(0, len(self._direct_services)):
             if self._direct_services[i] is service:
-                del(self._direct_services[i])
+                del self._direct_services[i]
                 return True
         return False
 

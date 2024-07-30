@@ -26,7 +26,6 @@ class SecurityPrincipal(pylo.ReferenceTracker):
         self.deleted = data['deleted']
 
 
-
 class SecurityPrincipalStore:
     def __init__(self, owner: 'pylo.Organization'):
         self.owner = owner
@@ -59,7 +58,3 @@ class SecurityPrincipalStore:
 
     def find_by_href(self, href: str) -> Optional[SecurityPrincipal]:
         return self.itemsByHRef.get(href)
-
-
-
-

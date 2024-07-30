@@ -27,4 +27,3 @@ class Label(ReferenceTracker, LabelCommon):
 
     def get_api_reference_json(self) -> LabelHrefRef:
         return {'label': {'href': self.href}}
-

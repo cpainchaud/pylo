@@ -1,4 +1,4 @@
-from typing import Dict, List, Any, Union
+from typing import Dict, List, Any
 from dataclasses import dataclass
 import sys
 import argparse
@@ -52,7 +52,6 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='If set, the script will proceed with the creation of the workloads and labels without asking for confirmation')
 
 
-
 def __main(args, org: pylo.Organization, **kwargs):
     input_file = args['input_file']
     input_file_delimiter: str = args['input_file_delimiter']
@@ -84,8 +83,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     # each label type/dimension is optional
     for label_type in org.LabelStore.label_types:
-        csv_expected_fields.append({'name': f"{settings_header_label_prefix}{label_type}"  , 'optional': True})
-
+        csv_expected_fields.append({'name': f"{settings_header_label_prefix}{label_type}", 'optional': True})
 
     csv_report_headers = ExcelHeaderSet(['name', 'hostname', 'ip', 'description'])
     for label_type in org.LabelStore.label_types:
@@ -97,20 +95,18 @@ def __main(args, org: pylo.Organization, **kwargs):
     csv_report = ArraysToExcel()
     csv_sheet = csv_report.create_sheet('Workloads', csv_report_headers)
 
-
     print(" * Loading CSV input file '{}'...".format(input_file), flush=True, end='')
     csv_data = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
     print('OK')
     print("   - CSV has {} columns and {} lines (headers don't count)".format(csv_data.count_columns(), csv_data.count_lines()))
 
-    #check if CSV has all headers for each labels types
+    # check if CSV has all headers for each labels types
     if not settings_ignore_missing_headers:
         for label_type in org.LabelStore.label_types:
             header_name = f"{settings_header_label_prefix}{label_type}".lower()
             if header_name not in csv_data.headers():
                 raise pylo.PyloEx(f"CSV/Excel file is missing the column '{header_name}' for label type '{label_type}'. "
                                   "If this was intended use --ignore-missing-headers flag")
-
 
     detect_workloads_name_collisions(csv_data, org, settings_ignore_all_sorts_collisions, settings_ignore_hostname_collision)
 
@@ -149,7 +145,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         print(" * No Workloads to create, all were ignored due to collisions or missing data.")
         # still want to save the CSV/Excel files in the end so don't exit
     else:
-        if not settings_proceed_with_creation is True:
+        if settings_proceed_with_creation is not True:
             print(" * No workload will be created because the --proceed-with-creation/-p flag was not set. Yet report will be generated")
             for object_to_create in csv_objects_to_create:
                 if '**not_created_reason**' not in object_to_create:
@@ -238,6 +234,7 @@ class WorkloadCollisionItem:
     workload_object: pylo.Workload = None
     csv_object: Dict[str, Any] = None
 
+
 def detect_workloads_name_collisions(csv_data, org: pylo.Organization, ignore_all_sorts_collisions, ignore_hostname_collision):
     print(" * Checking for name/hostname collisions inside the PCE:", flush=True)
     name_cache: Dict[str, WorkloadCollisionItem] = {}
@@ -278,14 +275,14 @@ def detect_workloads_name_collisions(csv_data, org: pylo.Organization, ignore_al
                     else:
                         print(
                             "  - WARNING: CSV has an entry for workload name '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(
-                            lower_name, csv_object['*line*']))
+                                lower_name, csv_object['*line*']))
 
         if csv_object['hostname'] is not None and len(csv_object['hostname']) > 0:
             lower_hostname = csv_object['hostname'].lower()
             if lower_name != lower_hostname:
                 if lower_hostname not in name_cache:
                     name_cache[lower_hostname] = WorkloadCollisionItem(from_pce=False, csv_object=csv_object,
-                                                                               managed=False)
+                                                                       managed=False)
                 else:
                     if not name_cache[lower_hostname].from_pce:
                         raise pylo.PyloEx('CSV contains workloads with duplicates name/hostname: {}'.format(lower_name))
@@ -295,7 +292,7 @@ def detect_workloads_name_collisions(csv_data, org: pylo.Organization, ignore_al
                         else:
                             print(
                                 "  - WARNING: CSV has an entry for workload hostname '{}' at line #{} but it exists already in the PCE. It will be ignored.".format(
-                                lower_hostname, csv_object['*line*']))
+                                    lower_hostname, csv_object['*line*']))
     print("  * DONE")
 
 
@@ -348,9 +345,10 @@ def detect_ip_collisions(csv_data, org: pylo.Organization, ignore_all_sorts_coll
             else:
                 count_duplicate_ip_addresses_in_csv += 1
                 if not ignore_all_sorts_collisions and not settings_ignore_ip_collision:
-                    pylo.log.warn(indent+"Duplicate IP address {} found in the PCE and CSV/Excel at line #{} (name={}  hostname={}). "
-                          "(look for --options to bypass this if you know what you are doing)"
-                          .format(ip, csv_object['*line*'], csv_object['name'], csv_object['hostname']))
+                    pylo.log.warn(
+                        indent + "Duplicate IP address {} found in the PCE and CSV/Excel at line #{} (name={}  hostname={}). "
+                                 "(look for --options to bypass this if you know what you are doing)"
+                        .format(ip, csv_object['*line*'], csv_object['name'], csv_object['hostname']))
                     csv_object['**not_created_reason**'] = "Duplicate IP address {} found in the PCE".format(ip)
 
     if ignore_all_sorts_collisions or settings_ignore_ip_collision:

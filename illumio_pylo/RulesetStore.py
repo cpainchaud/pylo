@@ -1,7 +1,7 @@
 from typing import Optional, List, Union, Dict
 
 import illumio_pylo as pylo
-from illumio_pylo import log, Organization, PyloEx, Rule, Ruleset
+from illumio_pylo import log, PyloEx, Ruleset
 from .Helpers import nice_json
 
 
