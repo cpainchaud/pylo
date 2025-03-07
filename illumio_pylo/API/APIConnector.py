@@ -1378,7 +1378,4 @@ class APIConnector:
     def get_pce_ui_workload_url(self, href: str) -> str:
         # extract UUID from workload HREF:
         uuid = href.split('/')[-1]
-        return self._make_base_url('/#/workloads/' + uuid )
-
-
-
+        return self._make_base_url('/#/workloads/' + uuid)

@@ -81,6 +81,7 @@ class WorkloadInterfaceObjectJsonStructure(TypedDict):
     name: str
     address: str
 
+
 class WorkloadObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
@@ -95,6 +96,7 @@ class WorkloadObjectJsonStructure(TypedDict):
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
 
+
 class WorkloadObjectCreateJsonStructure(TypedDict):
     """
     This is the structure of the JSON payload for creating a workload.
@@ -106,13 +108,17 @@ class WorkloadObjectCreateJsonStructure(TypedDict):
     name: NotRequired[str]
     public_ip: NotRequired[Optional[str]]
 
+
 class WorkloadObjectMultiCreateJsonStructure(WorkloadObjectCreateJsonStructure):
     href: str
 
+
 WorkloadObjectMultiCreateJsonRequestPayload = List[WorkloadObjectMultiCreateJsonStructure]
+
 
 class WorkloadBulkUpdateEntryJsonStructure(WorkloadObjectCreateJsonStructure):
     href: str
+
 
 class WorkloadBulkUpdateResponseEntry(TypedDict):
     href: str
@@ -150,10 +156,12 @@ class VenObjectJsonStructure(TypedDict):
     os_platform: Optional[str]
     uid: Optional[str]
 
+
 class VENUnpairApiResponseSingleErrorObjectJsonStructure(TypedDict):
     token: str
     message: str
     hrefs: List[str]
+
 
 class VENUnpairApiResponseObjectJsonStructure(TypedDict):
     errors: List[VENUnpairApiResponseSingleErrorObjectJsonStructure]
@@ -173,6 +181,7 @@ class RuleDirectServiceReferenceObjectJsonStructure(TypedDict):
 class RuleObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
+    description: str
     href: str
     ingress_services: List[RuleDirectServiceReferenceObjectJsonStructure|RuleServiceReferenceObjectJsonStructure]
     updated_at: str
@@ -219,25 +228,30 @@ class VirtualServiceObjectJsonStructure(TypedDict):
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
 
+
 class NetworkDeviceConfigObjectJsonStructure(TypedDict):
     device_type: Literal['switch']
     name: str
+
 
 class NetworkDeviceObjectJsonStructure(TypedDict):
     href: str
     config: NetworkDeviceConfigObjectJsonStructure
     supported_endpoint_type: Literal['switch_port']
 
+
 class NetworkDeviceEndpointConfigObjectJsonStructure(TypedDict):
     type: Literal['switch_port']
     name: str
     workload_discovery: bool
+
 
 class NetworkDeviceEndpointObjectJsonStructure(TypedDict):
     href: str
     config: NetworkDeviceEndpointConfigObjectJsonStructure
     status: Literal['unmonitored', 'monitored']
     workloads: List[HrefReference]
+
 
 class SecurityPrincipalObjectJsonStructure(TypedDict):
     created_at: str
@@ -246,6 +260,7 @@ class SecurityPrincipalObjectJsonStructure(TypedDict):
     name: str
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+
 
 class LabelDimensionObjectStructure(TypedDict):
     created_at: str
@@ -286,12 +301,15 @@ WorkloadsGetQueryLabelFilterJsonStructure = List[List[str]]
 
 AuditLogApiEventType = Literal['agent.clone_detected', 'workloads.update', 'workload.update', 'workload_interfaces.update']
 
+
 class AuditLogEntryJsonStructure(TypedDict):
     event_type: AuditLogApiEventType
     timestamp: str
 
+
 class AuditLogApiRequestPayloadStructure(TypedDict):
     pass
+
 
 class AuditLogApiReplyEventJsonStructure(TypedDict):
     pass
