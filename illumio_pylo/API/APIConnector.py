@@ -69,14 +69,14 @@ class APIConnector:
         if type(port) is int:
             port = str(port)
         self.port: int = port
-        self._api_key: str = api_key
-        self._decrypted_api_key: Optional[str] = None
         self.api_user: str = api_user
+        self._api_key: str = api_key
+        self._decrypted_api_key: Optional[str] = None  # if api_key is encrypted, this will hold the decrypted value after first use
         self.org_id: int = org_id
         self.skipSSLCertCheck: bool = skip_ssl_cert_check
         self.version: Optional['pylo.SoftwareVersion'] = None
         self.version_string: str = "Not Defined"
-        self._cached_session = requests.session()
+        self._cached_session = requests.sessions.Session()
 
     @property
     def api_key(self):
