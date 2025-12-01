@@ -533,12 +533,18 @@ class APIConnector:
             params = {'include_deny_rules': include_boundary_rules}
         return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False, params=params)
 
-    def objects_label_get(self, max_results: int = None, async_mode=True) -> List[LabelObjectJsonStructure]:
+    def objects_label_get(self, max_results: int = None, async_mode=True, get_usage: bool = False, get_deleted: bool = False) -> List[LabelObjectJsonStructure]:
         path = '/labels'
         data = {}
 
         if max_results is not None:
             data['max_results'] = max_results
+
+        if get_usage:
+            data['usage'] = 'true'
+
+        if get_deleted:
+            data['includeDeleted'] = 'true'
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
 
