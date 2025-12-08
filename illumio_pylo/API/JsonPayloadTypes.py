@@ -25,6 +25,26 @@ class ServiceHrefRef(TypedDict):
 class VirtualServiceHrefRef(TypedDict):
     virtual_service: HrefReference
 
+
+class LabelObjectUsageJsonStructure(TypedDict):
+    virtual_server: bool
+    label_group: bool
+    static_policy_scopes: bool
+    pairing_profile: bool
+    permission: bool
+    workload: bool
+    container_workload: bool
+    firewall_coexistence_scope: bool
+    containers_inherit_host_policy_scopes: bool
+    container_workload_profile: bool
+    blocked_connection_reject_scopes: bool
+    enforcement_boundary: bool
+    loopback_interfaces_in_policy_scopes: bool
+    ip_forwarding_enabled_scopes: bool
+    rule_hit_count_enabled_scopes: bool
+    label_mapping_rule: bool
+    virtual_service: bool
+
 class LabelObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
@@ -33,6 +53,7 @@ class LabelObjectJsonStructure(TypedDict):
     key: str
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+    usage: Optional[LabelObjectUsageJsonStructure]
     value: str
 
 
