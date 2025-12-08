@@ -6,6 +6,7 @@ import illumio_pylo as pylo
 from .JsonPayloadTypes import RuleCoverageQueryEntryJsonStructure
 from illumio_pylo.API.APIConnector import APIConnector
 
+
 class ExplorerResult:
     _draft_mode_policy_decision: Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]
     destination_workload_labels_href: List[str]
@@ -375,6 +376,15 @@ class RuleCoverageQueryManager:
             if log_id not in self.service_index_to_log_ids[service_index]:
                 self.service_index_to_log_ids[service_index].append(log_id)
 
+        def get_allow_rules_for_log_id(self, log_id: int):
+            rules = []
+            for service_id, list_of_log_ids in self.service_index_to_log_ids.items():
+                if log_id in list_of_log_ids:
+                    policy_coverage = self.service_index_policy_coverage[service_id]
+                    for rule in policy_coverage:
+                        rules.append(rule)
+            return rules
+
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             policy_decision = None
             found_boundary_block = False
@@ -405,6 +415,9 @@ class RuleCoverageQueryManager:
 
         def add_service(self, service_record: Dict, log_id: int):
             self.services.add_service(service_record, log_id)
+
+        def get_allow_rules_for_log_id(self, log_id: int) -> List[str]:
+            return self.services.get_allow_rules_for_log_id(log_id)
 
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
             return self.services.get_policy_decision_for_log_id(log_id)
@@ -511,6 +524,19 @@ class RuleCoverageQueryManager:
                         # print(f'Processing deny_edge {edge} against query {query.src_workload_href} -> {query.dst_workload_href} -> {len(query.services.services_array)}')
                         query.process_response_boundary_deny(deny_rules, edge)
 
+        def get_allow_rules_for_log_id(self, log_id: int) -> List[str]:
+            rules = []
+            for query in self.queries.values():
+                results = query.get_allow_rules_for_log_id(log_id)
+                if results is not None:
+                    for rule_dict in results:
+                        rules.append(rule_dict['href'])
+
+            # make them unique
+            rules = list(set(rules))
+
+            return rules
+
         def get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal["allowed", "blocked", "blocked_by_boundary"]]:
             policy_decision: Optional[Literal["allowed", "blocked", "blocked_by_boundary"]] = None
             found_blocked_by_boundary = False
@@ -614,6 +640,24 @@ class RuleCoverageQueryManager:
                     _log_ids[log_id] = True
 
         return len(_log_ids)
+
+    def get_allow_rules_for_log(self, log: ExplorerResult) -> List[str]:
+        log_id = self.log_to_id[log]
+        if log_id is None:
+            raise pylo.PyloEx('No log_id found for log', log)
+
+        rules: List[str] = []
+
+        rules.extend(self.iplist_to_workload_query_manager.get_allow_rules_for_log_id(log_id))
+        rules.extend(self.workload_to_iplist_query_manager.get_allow_rules_for_log_id(log_id))
+        rules.extend(self.workload_to_workload_query_manager.get_allow_rules_for_log_id(log_id))
+
+        # make them unique
+        rules = list(set(rules))
+
+        return rules
+
+
 
     def _get_policy_decision_for_log_id(self, log_id: int) -> Optional[Literal['allowed', 'blocked', 'blocked_by_boundary']]:
         decision = self.iplist_to_workload_query_manager.get_policy_decision_for_log_id(log_id)

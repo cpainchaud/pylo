@@ -107,6 +107,15 @@ class IP4Map:
             return True
         return False
 
+    def match_single_ip(self, ip: str) -> bool:
+        ip_object = ipaddress.IPv4Address(ip)
+        for entry in self._entries:
+            if entry[start] <= int(ip_object) <= entry[end]:
+                return True
+            if entry[start] > int(ip_object):
+                return False
+        return False
+
     def substract(self, another_map: 'IP4Map'):
         affected_rows = 0
         for entry in another_map._entries:

@@ -1,5 +1,5 @@
 from .API.JsonPayloadTypes import IPListObjectJsonStructure
-from illumio_pylo import log
+from illumio_pylo import log, IP4Map
 from .Helpers import *
 
 
@@ -20,6 +20,7 @@ class IPList(pylo.ReferenceTracker):
         self.description = description
         self.raw_json = None
         self.raw_entries = {}
+        self._ip4map: IP4Map = None
 
     def count_entries(self) -> int:
         return len(self.raw_entries)
@@ -56,15 +57,21 @@ class IPList(pylo.ReferenceTracker):
             self.raw_entries[entry] = entry
 
     def get_ip4map(self) -> pylo.IP4Map:
-        new_map = pylo.IP4Map()
+        return self.ip4map
 
-        for entry in self.raw_entries:
-            if entry[0] == '!':
-                new_map.subtract_from_text(entry[1:], ignore_ipv6=True)
-            else:
-                new_map.add_from_text(entry, ignore_ipv6=True)
+    @property
+    def ip4map(self) -> pylo.IP4Map:
+        if self._ip4map is None:
+            new_map = pylo.IP4Map()
+            self._ip4map = new_map
 
-        return new_map
+            for entry in self.raw_entries:
+                if entry[0] == '!':
+                    new_map.subtract_from_text(entry[1:], ignore_ipv6=True)
+                else:
+                    new_map.add_from_text(entry, ignore_ipv6=True)
+
+        return self._ip4map
 
     def get_raw_entries_as_string_list(self, separator=',') -> str:
         return pylo.string_list_to_text(self.raw_entries.values(), separator=separator)

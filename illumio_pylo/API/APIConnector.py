@@ -69,14 +69,14 @@ class APIConnector:
         if type(port) is int:
             port = str(port)
         self.port: int = port
-        self._api_key: str = api_key
-        self._decrypted_api_key: Optional[str] = None
         self.api_user: str = api_user
+        self._api_key: str = api_key
+        self._decrypted_api_key: Optional[str] = None  # if api_key is encrypted, this will hold the decrypted value after first use
         self.org_id: int = org_id
         self.skipSSLCertCheck: bool = skip_ssl_cert_check
         self.version: Optional['pylo.SoftwareVersion'] = None
         self.version_string: str = "Not Defined"
-        self._cached_session = requests.session()
+        self._cached_session = requests.sessions.Session()
 
     @property
     def api_key(self):
@@ -533,12 +533,18 @@ class APIConnector:
             params = {'include_deny_rules': include_boundary_rules}
         return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False, params=params)
 
-    def objects_label_get(self, max_results: int = None, async_mode=True) -> List[LabelObjectJsonStructure]:
+    def objects_label_get(self, max_results: int = None, async_mode=True, get_usage: bool = False, get_deleted: bool = False) -> List[LabelObjectJsonStructure]:
         path = '/labels'
         data = {}
 
         if max_results is not None:
             data['max_results'] = max_results
+
+        if get_usage:
+            data['usage'] = 'true'
+
+        if get_deleted:
+            data['includeDeleted'] = 'true'
 
         return self.do_get_call(path=path, async_call=async_mode, params=data)
 
@@ -552,6 +558,60 @@ class APIConnector:
             path = href.href
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
+
+    class LabelMultiDeleteTracker:
+        _errors: Dict[str, str]
+        _hrefs: Dict[str, bool]
+        _labels: Dict[str, 'pylo.Label']  # dict of workloads by HREF
+        connector: 'pylo.APIConnector'
+
+        def __init__(self, connector: 'pylo.APIConnector'):
+            self.connector = connector
+            self._errors: Dict[str, Union[bool, str]] = {}
+            self._hrefs: Dict[str, str] = {}
+            self._labels: Dict[str, 'pylo.Label'] = {}
+
+        def add_label(self, label_or_href: Union['pylo.Label', str]):
+            if type(label_or_href) is str:
+                self._hrefs[label_or_href] = True
+                return
+            self._labels[label_or_href.href] = label_or_href
+            self._hrefs[label_or_href.href] = True
+
+        def execute_deletion(self):
+            for href in self._hrefs.keys():
+                try:
+                    self.connector.objects_label_delete(href)
+                    self._errors[href] = False
+                except Exception as e:
+                    self._errors[href] = str(e)
+
+            return self._errors
+
+        def has_errors(self) -> bool:
+            for href in self._errors.keys():
+                if self._errors[href] is not False:
+                    return True
+            return False
+
+        def get_errors_count(self) -> int:
+            count = 0
+            for href in self._errors.keys():
+                if self._errors[href] is not False:
+                    count += 1
+            return count
+
+        def get_error(self, label_or_href: Union['pylo.Label', str]) -> Optional[str]:
+            href = label_or_href
+            if type(label_or_href) is pylo.Label:
+                href = label_or_href.href
+            error = self._errors.get(href, None)
+            if error is None or error is False:
+                return None
+            return error
+
+    def new_tracker_for_label_multi_deletion(self) -> 'pylo.APIConnector.LabelMultiDeleteTracker':
+        return pylo.APIConnector.LabelMultiDeleteTracker(self)
 
     def objects_label_create(self, label_name: str, label_type: str):
         path = '/labels'
@@ -1378,7 +1438,4 @@ class APIConnector:
     def get_pce_ui_workload_url(self, href: str) -> str:
         # extract UUID from workload HREF:
         uuid = href.split('/')[-1]
-        return self._make_base_url('/#/workloads/' + uuid )
-
-
-
+        return self._make_base_url('/#/workloads/' + uuid)

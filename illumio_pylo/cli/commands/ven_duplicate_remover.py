@@ -4,7 +4,7 @@ import click
 import argparse
 
 import illumio_pylo as pylo
-from illumio_pylo import ExcelHeader
+from illumio_pylo import ExcelHeader, nice_json
 
 from .utils.misc import make_filename_with_timestamp
 from . import Command
@@ -134,8 +134,8 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         url_link_to_pce = workload.get_pce_ui_url()
         new_row = {
             'hostname': workload.hostname,
-            'online': workload.online,
-            'last_heartbeat': workload.ven_agent.get_last_heartbeat_date().strftime('%Y-%m-%d %H:%M'),
+            'online': workload.online if not workload.unmanaged else 'UNMANAGED',
+            'last_heartbeat': workload.ven_agent.get_last_heartbeat_date().strftime('%Y-%m-%d %H:%M') if not workload.unmanaged else 'UNMANAGED',
             'created_at': workload.created_at_datetime().strftime('%Y-%m-%d %H:%M'),
             'href': workload.href,
             'link_to_pce': url_link_to_pce,
@@ -172,48 +172,66 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                                                                                                len(dup_record.offline),
                                                                                                len(dup_record.unmanaged)))
 
-        latest_created_workload = dup_record.find_latest_created_at()
-        latest_heartbeat_workload = dup_record.find_latest_heartbeat()
-        print("     - Latest created at {} and latest heartbeat at {}".format(latest_created_workload.created_at, latest_heartbeat_workload.ven_agent.get_last_heartbeat_date()))
+        if not dup_record.has_no_managed_workloads():
+            latest_created_workload = dup_record.find_latest_managed_created_at()
+            latest_heartbeat_workload = dup_record.find_latest_heartbeat()
 
-        if dup_record.count_online() == 0:
-            print("     - IGNORED: there is no VEN online")
+            print("    - Latest created at {} and latest heartbeat at {}".format(latest_created_workload.created_at, latest_heartbeat_workload.ven_agent.get_last_heartbeat_date()))
+
+            if dup_record.count_online() == 0:
+                print("     - IGNORED: there is no VEN online")
+                for wkl in dup_record.offline:
+                    add_workload_to_report(wkl, "ignored (no VEN online)")
+                continue
+
+            if dup_record.count_online() > 1:
+                print("     - WARNING: there are more than 1 VEN online")
+
+            # Don't delete online workloads but still show them in the report
+            for wkl in dup_record.online:
+                add_workload_to_report(wkl, "ignored (VEN is online)")
+
             for wkl in dup_record.offline:
-                add_workload_to_report(wkl, "ignored (no VEN online)")
-            continue
+                if arg_do_not_delete_the_most_recent_workload and wkl is latest_created_workload:
+                    print("    - IGNORED: wkl {}/{} is the most recent".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                    add_workload_to_report(wkl, "ignored (it is the most recently created)")
+                elif arg_do_not_delete_the_most_recently_heartbeating_workload and wkl is latest_heartbeat_workload:
+                    print("    - IGNORED: wkl {}/{} is the most recently heartbeating".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                    add_workload_to_report(wkl, "ignored (it is the most recently heartbeating)")
+                elif arg_do_not_delete_if_last_heartbeat_is_more_recent_than is not None and wkl.ven_agent.get_last_heartbeat_date() > datetime.datetime.now() - datetime.timedelta(days=arg_do_not_delete_if_last_heartbeat_is_more_recent_than):
+                    print("    - IGNORED: wkl {}/{} has a last heartbeat more recent than {} days".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
+                    add_workload_to_report(wkl, "ignored (last heartbeat is more recent than {} days)".format(arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
+                else:
+                    if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
+                        print("    - IGNORED: wkl {}/{} because the limit of {} workloads to be deleted was reached".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_limit_number_of_deleted_workloads))
+                        add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
+                    else:
+                        delete_tracker.add_workload(wkl)
+                        print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
-        if dup_record.count_online() > 1:
-            print("     - WARNING: there are more than 1 VEN online")
-
-        # Don't delete online workloads but still show them in the report
-        for wkl in dup_record.online:
-            add_workload_to_report(wkl, "ignored (VEN is online)")
-
-        for wkl in dup_record.offline:
-            if arg_do_not_delete_the_most_recent_workload and wkl is latest_created_workload:
-                print("    - IGNORED: wkl {}/{} is the most recent".format(wkl.get_name_stripped_fqdn(), wkl.href))
-                add_workload_to_report(wkl, "ignored (it is the most recently created)")
-            elif arg_do_not_delete_the_most_recently_heartbeating_workload and wkl is latest_heartbeat_workload:
-                print("    - IGNORED: wkl {}/{} is the most recently heartbeating".format(wkl.get_name_stripped_fqdn(), wkl.href))
-                add_workload_to_report(wkl, "ignored (it is the most recently heartbeating)")
-            elif arg_do_not_delete_if_last_heartbeat_is_more_recent_than is not None and wkl.ven_agent.get_last_heartbeat_date() > datetime.datetime.now() - datetime.timedelta(days=arg_do_not_delete_if_last_heartbeat_is_more_recent_than):
-                print("    - IGNORED: wkl {}/{} has a last heartbeat more recent than {} days".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
-                add_workload_to_report(wkl, "ignored (last heartbeat is more recent than {} days)".format(arg_do_not_delete_if_last_heartbeat_is_more_recent_than))
-            else:
+            for wkl in dup_record.unmanaged:
                 if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
                     print("    - IGNORED: wkl {}/{} because the limit of {} workloads to be deleted was reached".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_limit_number_of_deleted_workloads))
                     add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
                 else:
                     delete_tracker.add_workload(wkl)
-                    print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
-
-        for wkl in dup_record.unmanaged:
-            if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
-                print("    - IGNORED: wkl {}/{} because the limit of {} workloads to be deleted was reached".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_limit_number_of_deleted_workloads))
-                add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
-            else:
-                delete_tracker.add_workload(wkl)
-                print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                    print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+        else:
+            latest_created_workload = dup_record.find_latest_unmanaged_created_at()
+            if latest_created_workload is None:
+                raise pylo.PyloEx("Internal error: cannot find the latest created unmanaged workload for hostname '{}'".format(dup_hostname))
+            print("    - All workloads are unmanaged. Latest created at {} will be kept".format(latest_created_workload.created_at))
+            for wkl in dup_record.unmanaged:
+                if wkl is latest_created_workload:
+                    print("    - IGNORED: wkl {}/{} is the most recent".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                    add_workload_to_report(wkl, "ignored (it is the most recently created)")
+                else:
+                    if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
+                        print("    - IGNORED: wkl {}/{} because the limit of {} workloads to be deleted was reached".format(wkl.get_name_stripped_fqdn(), wkl.href, arg_limit_number_of_deleted_workloads))
+                        add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
+                    else:
+                        delete_tracker.add_workload(wkl)
+                        print("    - added unmanaged wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
     print()
 
@@ -324,7 +342,12 @@ class DuplicateRecordManager:
                 return True
             return False
 
-        def find_latest_created_at(self) -> 'pylo.Workload':
+        def has_no_managed_workloads(self):
+            if len(self.offline) + len(self.online) == 0:
+                return True
+            return False
+
+        def find_latest_managed_created_at(self) -> Optional['pylo.Workload']:
             latest: Optional[pylo.Workload] = None
             for wkl in self.all:
                 if wkl.unmanaged:
@@ -333,7 +356,16 @@ class DuplicateRecordManager:
                     latest = wkl
             return latest
 
-        def find_latest_heartbeat(self) -> 'pylo.Workload':
+        def find_latest_unmanaged_created_at(self) -> Optional['pylo.Workload']:
+            latest: Optional[pylo.Workload] = None
+            for wkl in self.all:
+                if not wkl.unmanaged:
+                    continue
+                if latest is None or wkl.created_at > latest.created_at:
+                    latest = wkl
+            return latest
+
+        def find_latest_heartbeat(self) ->  Optional['pylo.Workload']:
             latest: Optional[pylo.Workload] = None
             for wkl in self.all:
                 if wkl.unmanaged:
