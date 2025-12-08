@@ -559,6 +559,60 @@ class APIConnector:
 
         return self.do_delete_call(path=path, json_output_expected=False, include_org_id=False)
 
+    class LabelMultiDeleteTracker:
+        _errors: Dict[str, str]
+        _hrefs: Dict[str, bool]
+        _labels: Dict[str, 'pylo.Label']  # dict of workloads by HREF
+        connector: 'pylo.APIConnector'
+
+        def __init__(self, connector: 'pylo.APIConnector'):
+            self.connector = connector
+            self._errors: Dict[str, Union[bool, str]] = {}
+            self._hrefs: Dict[str, str] = {}
+            self._labels: Dict[str, 'pylo.Label'] = {}
+
+        def add_label(self, label_or_href: Union['pylo.Label', str]):
+            if type(label_or_href) is str:
+                self._hrefs[label_or_href] = True
+                return
+            self._labels[label_or_href.href] = label_or_href
+            self._hrefs[label_or_href.href] = True
+
+        def execute_deletion(self):
+            for href in self._hrefs.keys():
+                try:
+                    self.connector.objects_label_delete(href)
+                    self._errors[href] = False
+                except Exception as e:
+                    self._errors[href] = str(e)
+
+            return self._errors
+
+        def has_errors(self) -> bool:
+            for href in self._errors.keys():
+                if self._errors[href] is not False:
+                    return True
+            return False
+
+        def get_errors_count(self) -> int:
+            count = 0
+            for href in self._errors.keys():
+                if self._errors[href] is not False:
+                    count += 1
+            return count
+
+        def get_error(self, label_or_href: Union['pylo.Label', str]) -> Optional[str]:
+            href = label_or_href
+            if type(label_or_href) is pylo.Label:
+                href = label_or_href.href
+            error = self._errors.get(href, None)
+            if error is None or error is False:
+                return None
+            return error
+
+    def new_tracker_for_label_multi_deletion(self) -> 'pylo.APIConnector.LabelMultiDeleteTracker':
+        return pylo.APIConnector.LabelMultiDeleteTracker(self)
+
     def objects_label_create(self, label_name: str, label_type: str):
         path = '/labels'
         data: LabelObjectCreationJsonStructure = {'key': label_type, 'value': label_name}
