@@ -42,6 +42,21 @@ def fill_parser(parser: argparse.ArgumentParser):
     create_parser.add_argument('--verify-ssl', required=False, type=bool, default=None,
                                help='Verify SSL')
 
+    update_parser = sub_parser.add_parser('update', help='Update a credential')
+    update_parser.add_argument('--name', required=False, type=str, default=None,
+                               help='Name of the credential to update')
+
+    update_parser.add_argument('--fqdn', required=False, type=str, default=None,
+                               help='FQDN of the PCE')
+    update_parser.add_argument('--port', required=False, type=int, default=None,
+                               help='Port of the PCE')
+    update_parser.add_argument('--org', required=False, type=int, default=None,
+                               help='Organization ID')
+    update_parser.add_argument('--api-user', required=False, type=str, default=None,
+                               help='API user')
+    update_parser.add_argument('--verify-ssl', required=False, type=bool, default=None,
+                               help='Verify SSL')
+
 
 def __main(args, **kwargs):
     if args['sub_command'] == 'list':
@@ -152,6 +167,87 @@ def __main(args, **kwargs):
             file_path = create_credential_in_default_file(data=credentials_data)
 
         print("OK! ({})".format(file_path))
+
+    elif args['sub_command'] == 'update':
+        # if name is not provided, prompt for it
+        if args['name'] is None:
+            wanted_name = click.prompt('> Input a Profile Name to update (ie: prod-pce)', type=str)
+            args['name'] = wanted_name
+
+        # find the credential by name
+        wanted_name = args['name']
+        found_profile = get_credentials_from_file(wanted_name, fail_with_an_exception=False)
+        if found_profile is None:
+            print("Cannot find a profile named '{}'".format(wanted_name))
+            print("Available profiles:")
+            credentials = get_all_credentials()
+            for credential in credentials:
+                print(" - {}".format(credential.name))
+            sys.exit(1)
+
+        print("Found profile '{}' to update in file '{}'".format(found_profile.name, found_profile.originating_file))
+
+        if args['fqdn'] is not None:
+            found_profile.fqdn = args['fqdn']
+        if args['port'] is not None:
+            found_profile.port = args['port']
+        if args['org'] is not None:
+            found_profile.org_id = args['org']
+        if args['api_user'] is not None:
+            found_profile.api_user = args['api_user']
+        if args['verify_ssl'] is not None:
+            found_profile.verify_ssl = args['verify_ssl']
+
+        # ask if user wants to update API key
+        update_api_key = click.prompt('> Do you want to update the API key? Y/N', type=bool)
+        if update_api_key:
+            api_key = click.prompt('> New API Key', hide_input=True)
+            found_profile.api_key = api_key
+        print()
+
+        if is_encryption_available():
+            encrypt_api_key = click.prompt('> Encrypt API (requires an SSH agent running and an RSA or Ed25519 key added to them) ? Y/N', type=bool)
+            if encrypt_api_key:
+                print("Available keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
+                ssh_keys = get_supported_keys_from_ssh_agent()
+
+                # display a table of keys
+                print_keys(keys=ssh_keys, display_index=True)
+                print()
+
+                index_of_selected_key = click.prompt('> Select key by ID#', type=click.IntRange(0, len(ssh_keys)-1))
+                selected_ssh_key = ssh_keys[index_of_selected_key]
+                print("Selected key: {} | {} | {}".format(selected_ssh_key.get_name(),
+                                                          selected_ssh_key.get_fingerprint().hex(),
+                                                          selected_ssh_key.comment))
+                print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
+                # encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_fernet(ssh_key=selected_ssh_key, api_key=found_profile.api_key)
+                encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(ssh_key=selected_ssh_key, api_key=found_profile.api_key)
+                print("OK!")
+                print(" * trying to decrypt the encrypted API key...", flush=True, end="")
+                decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(encrypted_api_key_payload=encrypted_api_key)
+                if decrypted_api_key != found_profile.api_key:
+                    raise pylo.PyloEx("Decrypted API key does not match original API key")
+                print("OK!")
+                found_profile.api_key = encrypted_api_key
+
+        credentials_data: CredentialFileEntry = {
+            "name": found_profile.name,
+            "fqdn": found_profile.fqdn,
+            "port": found_profile.port,
+            "org_id": found_profile.org_id,
+            "api_user": found_profile.api_user,
+            "verify_ssl": found_profile.verify_ssl,
+            "api_key": found_profile.api_key
+        }
+
+        print("* Updating credential in file '{}'...".format(found_profile.originating_file), flush=True, end="")
+        create_credential_in_file(file_full_path=found_profile.originating_file, data=credentials_data, overwrite_existing_profile=True)
+        print("OK!")
+
+
+
+
 
     elif args['sub_command'] == 'test':
         print("* Profile Tester command")
