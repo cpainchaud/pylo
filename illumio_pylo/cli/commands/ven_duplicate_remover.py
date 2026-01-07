@@ -38,6 +38,10 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--limit-number-of-deleted-workloads', '-l', type=int, default=None,
                         help='Limit the number of workloads to be deleted, for a limited test run for example.')
 
+    # New option: don't delete if labels mismatch across duplicates
+    parser.add_argument('--do-not-delete-if-labels-mismatch', action='store_true',
+                        help='Do not delete workloads for a duplicated hostname if the workloads do not all have the same set of labels')
+
     parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
                         help='Directory where to write the report file(s)')
     parser.add_argument('--output-filename', type=str, default=None,
@@ -59,6 +63,9 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_override_pce_offline_timer_to = args['override_pce_offline_timer_to']
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
     arg_report_output_dir: str = args['output_dir']
+
+    # New arg: label mismatch guard
+    arg_do_not_delete_if_labels_mismatch = args.get('do_not_delete_if_labels_mismatch', False) is True
 
     # Determine output filename behavior: user provided filename/basename or use timestamped prefix
     arg_output_filename: Optional[str] = args.get('output_filename')
@@ -177,6 +184,20 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                                                                                                len(dup_record.online),
                                                                                                len(dup_record.offline),
                                                                                                len(dup_record.unmanaged)))
+
+        # If the new flag was passed, ensure all workloads under this duplicate record have identical labels
+        if arg_do_not_delete_if_labels_mismatch:
+            label_strings = set()
+            for wkl in dup_record.all:
+                # Use workload.get_labels_str() to produce a stable representation across label types
+                lbl_str = wkl.get_labels_str()
+                label_strings.add(lbl_str)
+
+            if len(label_strings) > 1:
+                print("    - IGNORED: workloads for hostname '{}' have mismatching labels".format(dup_hostname))
+                for wkl in dup_record.all:
+                    add_workload_to_report(wkl, "ignored (labels mismatch)")
+                continue
 
         if not dup_record.has_no_managed_workloads():
             latest_created_workload = dup_record.find_latest_managed_created_at()
