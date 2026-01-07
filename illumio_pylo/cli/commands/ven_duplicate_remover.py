@@ -2,9 +2,10 @@ from typing import Dict, List, Literal, Optional
 import datetime
 import click
 import argparse
+import os
 
 import illumio_pylo as pylo
-from illumio_pylo import ExcelHeader, nice_json
+from illumio_pylo import ExcelHeader
 
 from .utils.misc import make_filename_with_timestamp
 from . import Command
@@ -39,6 +40,8 @@ def fill_parser(parser: argparse.ArgumentParser):
 
     parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
                         help='Directory where to write the report file(s)')
+    parser.add_argument('--output-filename', type=str, default=None,
+                        help='Write report to the specified file (or basename) instead of using the default timestamped filename. If multiple formats are requested, the provided path\'s extension will be replaced/added per format.')
 
 
 def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
@@ -57,9 +60,12 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
     arg_report_output_dir: str = args['output_dir']
 
-    output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_', arg_report_output_dir)
-    output_file_csv = output_file_prefix + '.csv'
-    output_file_excel = output_file_prefix + '.xlsx'
+    # Determine output filename behavior: user provided filename/basename or use timestamped prefix
+    arg_output_filename: Optional[str] = args.get('output_filename')
+    if arg_output_filename is None:
+        output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_', arg_report_output_dir)
+    else:
+        output_file_prefix = None
 
     csv_report_headers = pylo.ExcelHeaderSet([
         ExcelHeader(name='name', max_width=40),
@@ -257,7 +263,8 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
             for wkl in delete_tracker.workloads:
                 add_workload_to_report(wkl, "TO BE DELETED (aborted by user)")
         else:
-            print(" * Executing deletion requests ... ".format(output_file_csv), end='', flush=True)
+            # execute deletions
+            print(" * Executing deletion requests ... ", end='', flush=True)
             delete_tracker.execute(unpair_agents=True)
             print("DONE")
 
@@ -283,7 +290,22 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         else:
             sheet.reorder_lines(['hostname'])  # sort by hostname for better readability
             for report_format in report_wanted_format:
-                output_filename = output_file_prefix + '.' + report_format
+                # Choose output filename depending on whether user provided --output-filename
+                if arg_output_filename is None:
+                    output_filename = output_file_prefix + '.' + report_format
+                else:
+                    # If only one format requested, use the provided filename as-is
+                    if len(report_wanted_format) == 1:
+                        output_filename = arg_output_filename
+                    else:
+                        base = os.path.splitext(arg_output_filename)[0]
+                        output_filename = base + '.' + report_format
+
+                # Ensure parent directory exists
+                outdir = os.path.dirname(output_filename)
+                if outdir:
+                    os.makedirs(outdir, exist_ok=True)
+
                 print(" * Writing report file '{}' ... ".format(output_filename), end='', flush=True)
                 if report_format == 'csv':
                     sheet.write_to_csv(output_filename)
