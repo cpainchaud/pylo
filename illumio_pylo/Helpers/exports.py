@@ -9,7 +9,7 @@ import illumio_pylo as pylo
 
 
 class ExcelHeader:
-    def __init__(self, name: str, nice_name: Optional[str] = None, max_width: Optional[int] = None, wrap_text: Optional[bool] = None, is_url: [bool] = False, url_text: str = 'Link'):
+    def __init__(self, name: str, nice_name: Optional[str] = None, max_width: Optional[int] = None, wrap_text: Optional[bool] = None, is_url: bool = False, url_text: str = 'Link'):
         self.name = name
         self.nice_name:str = nice_name if nice_name is not None else name
         self.max_width = max_width

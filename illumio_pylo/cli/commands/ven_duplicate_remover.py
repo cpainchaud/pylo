@@ -103,6 +103,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
     # <editor-fold desc="Download workloads from PCE">
     if not pce_cache_was_used:
+        # in case cache was not used, we need to download workloads now
         print("* Downloading Workloads data from the PCE (it may take moment for large amounts of workloads) ... ", flush=True, end='')
         if args['filter_label'] is None:
             workloads_json = org.connector.objects_workload_get(async_mode=True, max_results=1000000)
@@ -160,9 +161,8 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
         sheet.add_line_from_object(new_row)
 
-    duplicated_hostnames = DuplicateRecordManager(arg_override_pce_offline_timer_to)
-
     print(" * Looking for VEN with duplicated hostname(s)")
+    duplicated_hostnames = DuplicateRecordManager(arg_override_pce_offline_timer_to)
 
     for workload in all_workloads:
         if workload.deleted:
@@ -174,10 +174,12 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
     print(" * Found {} duplicated hostnames".format(duplicated_hostnames.count_duplicates()))
 
-    delete_tracker = org.connector.new_tracker_workload_multi_delete()
+    delete_tracker = org.connector.new_tracker_workload_multi_delete()  # tracker to handle deletions, it will be executed later
 
+    # Process each duplicated hostname record
     for dup_hostname, dup_record in duplicated_hostnames._records.items():
-        if not dup_record.has_duplicates():
+
+        if not dup_record.has_duplicates():  # no duplicates, skip
             continue
 
         print("  - hostname '{}' has duplicates. ({} online, {} offline, {} unmanaged)".format(dup_hostname,
@@ -305,6 +307,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         for wkl in delete_tracker.workloads:
             add_workload_to_report(wkl, "TO BE DELETED (no confirm option used)")
 
+    # if report is not empty, write it to disk
     if sheet.lines_count() >= 1:
         if len(report_wanted_format) < 1:
             print(" * No report format was specified, no report will be generated")
@@ -323,9 +326,9 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                         output_filename = base + '.' + report_format
 
                 # Ensure parent directory exists
-                outdir = os.path.dirname(output_filename)
-                if outdir:
-                    os.makedirs(outdir, exist_ok=True)
+                output_directory = os.path.dirname(output_filename)
+                if output_directory:
+                    os.makedirs(output_directory, exist_ok=True)
 
                 print(" * Writing report file '{}' ... ".format(output_filename), end='', flush=True)
                 if report_format == 'csv':
