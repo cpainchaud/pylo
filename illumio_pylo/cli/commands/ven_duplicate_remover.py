@@ -42,6 +42,10 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--do-not-delete-if-labels-mismatch', action='store_true',
                         help='Do not delete workloads for a duplicated hostname if the workloads do not all have the same set of labels')
 
+    # New option: ignore PCE online status and allow online workloads to be considered for deletion
+    parser.add_argument('--ignore-pce-online-status', action='store_true',
+                        help='Bypass the logic that keeps online workloads; when set online workloads will be treated like offline ones for deletion decisions')
+
     parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
                         help='Directory where to write the report file(s)')
     parser.add_argument('--output-filename', type=str, default=None,
@@ -62,10 +66,9 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_do_not_delete_if_last_heartbeat_is_more_recent_than = args['do_not_delete_if_last_heartbeat_is_more_recent_than']
     arg_override_pce_offline_timer_to = args['override_pce_offline_timer_to']
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
-    arg_report_output_dir: str = args['output_dir']
-
-    # New arg: label mismatch guard
-    arg_do_not_delete_if_labels_mismatch = args.get('do_not_delete_if_labels_mismatch', False) is True
+    arg_ignore_pce_online_status = args['ignore_pce_online_status'] is True
+    arg_do_not_delete_if_labels_mismatch = args['do_not_delete_if_labels_mismatch'] is True
+    arg_report_output_dir: str = args['output_dir'] 
 
     # Determine output filename behavior: user provided filename/basename or use timestamped prefix
     arg_output_filename: Optional[str] = args.get('output_filename')
@@ -207,7 +210,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
 
             print("    - Latest created at {} and latest heartbeat at {}".format(latest_created_workload.created_at, latest_heartbeat_workload.ven_agent.get_last_heartbeat_date()))
 
-            if dup_record.count_online() == 0:
+            if not arg_ignore_pce_online_status and dup_record.count_online() == 0:
                 print("     - IGNORED: there is no VEN online")
                 for wkl in dup_record.offline:
                     add_workload_to_report(wkl, "ignored (no VEN online)")
@@ -217,10 +220,18 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                 print("     - WARNING: there are more than 1 VEN online")
 
             # Don't delete online workloads but still show them in the report
-            for wkl in dup_record.online:
-                add_workload_to_report(wkl, "ignored (VEN is online)")
+            if not arg_ignore_pce_online_status:
+                for wkl in dup_record.online:
+                    add_workload_to_report(wkl, "ignored (VEN is online)")
 
-            for wkl in dup_record.offline:
+            # Build the list of candidate workloads to consider for deletion. If --ignore-pce-online-status
+            # is passed, include online workloads among the candidates.
+            if arg_ignore_pce_online_status:
+                deletion_candidates = list(dup_record.offline) + list(dup_record.online)
+            else:
+                deletion_candidates = list(dup_record.offline)
+
+            for wkl in deletion_candidates:
                 if arg_do_not_delete_the_most_recent_workload and wkl is latest_created_workload:
                     print("    - IGNORED: wkl {}/{} is the most recent".format(wkl.get_name_stripped_fqdn(), wkl.href))
                     add_workload_to_report(wkl, "ignored (it is the most recently created)")
@@ -236,7 +247,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                         add_workload_to_report(wkl, "ignored (limit of {} workloads to be deleted was reached)".format(arg_limit_number_of_deleted_workloads))
                     else:
                         delete_tracker.add_workload(wkl)
-                        print("    - added offline wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
+                        print("    - added wkl {}/{} to the delete list".format(wkl.get_name_stripped_fqdn(), wkl.href))
 
             for wkl in dup_record.unmanaged:
                 if arg_limit_number_of_deleted_workloads is not None and delete_tracker.count_entries() >= arg_limit_number_of_deleted_workloads:
