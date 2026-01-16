@@ -339,12 +339,17 @@ class APIConnector:
         self.collect_pce_infos()
         return self.version_string
 
-    def get_objects_count_by_type(self, object_type: str) -> int:
+    def get_objects_count_by_type(self, object_type: Literal['workloads', 'virtual_services', 'labels', 'labelgroups',
+    'iplists', 'services', 'rulesets', 'security_principals', 'label_dimensions']) -> int:
 
         def extract_count(headers):
             count = headers.get('x-total-count')
             if count is None:
                 raise pylo.PyloApiEx('API didnt provide field "x-total-count"')
+
+            # count should be an integer
+            if not count.isdigit():
+                raise pylo.PyloApiEx('API returned invalid value for "x-total-count": {}'.format(count))
 
             return int(count)
 
