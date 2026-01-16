@@ -109,7 +109,12 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         # in case cache was not used, we need to download workloads now
         print("* Downloading Workloads data from the PCE (it may take moment for large amounts of workloads) ... ", flush=True, end='')
         if args['filter_label'] is None:
-            workloads_json = org.connector.objects_workload_get(async_mode=True, max_results=1000000)
+            workloads_count = org.connector.get_objects_count_by_type('workloads')
+            if workloads_count < 1:
+                # exit if no workloads found
+                print("No workloads found in the PCE.")
+                return
+            workloads_json = org.connector.objects_workload_get(async_mode=False, max_results=workloads_count+1000)
         else:
             filter_labels_list_of_list: List[List[pylo.Label]] = []
             # convert filter_labels dict to an array of arrays
