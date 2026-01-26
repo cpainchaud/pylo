@@ -275,7 +275,7 @@ class APIConnector:
                     log.info("Job status is " + job_poll_status)
 
                 log.info("Job is done, we will now download the resulting dataset")
-                dataset = self.do_get_call(result_href, include_org_id=False)
+                dataset = self.do_get_call(result_href, include_org_id=False, return_headers=return_headers)
 
                 return dataset
 
@@ -313,9 +313,6 @@ class APIConnector:
                 raise pylo.PyloApiEx('API returned error status "' + str(req.status_code) + ' ' + req.reason
                                      + '" and error message: ' + req.text)
 
-            if return_headers:
-                return req.headers
-
             if json_output_expected:
                 log.info("Parsing API answer to JSON (with a size of " + str(int(answer_size)) + "KB)")
                 json_out = req.json()
@@ -325,8 +322,12 @@ class APIConnector:
                     log.info(json.dumps(json_out, indent=2, sort_keys=True))
                 else:
                     log.info("Answer is too large to be printed")
+                if return_headers:
+                    return json_out, req.headers
                 return json_out
 
+            if return_headers:
+                return req.text, req.headers
             return req.text
 
         raise pylo.PyloApiEx("Unexpected API output or race condition")
@@ -354,23 +355,23 @@ class APIConnector:
             return int(count)
 
         if object_type == 'workloads':
-            return extract_count(self.do_get_call('/workloads', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/workloads', async_call=False, return_headers=True)[1])
         elif object_type == 'virtual_services':
-            return extract_count(self.do_get_call('/sec_policy/draft/virtual_services', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/virtual_services', async_call=False, return_headers=True)[1])
         elif object_type == 'labels':
-            return extract_count(self.do_get_call('/labels', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/labels', async_call=False, return_headers=True)[1])
         elif object_type == 'labelgroups':
-            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', async_call=False, return_headers=True)[1])
         elif object_type == 'iplists':
-            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', async_call=False, return_headers=True)[1])
         elif object_type == 'services':
-            return extract_count(self.do_get_call('/sec_policy/draft/services', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/services', async_call=False, return_headers=True)[1])
         elif object_type == 'rulesets':
-            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True)[1])
         elif object_type == 'security_principals':
-            return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True)[1])
         elif object_type == 'label_dimensions':
-            return extract_count(self.do_get_call('/label_dimensions', async_call=False, return_headers=True))
+            return extract_count(self.do_get_call('/label_dimensions', async_call=False, return_headers=True)[1])
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
