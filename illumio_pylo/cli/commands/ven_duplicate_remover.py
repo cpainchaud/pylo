@@ -11,7 +11,7 @@ from .utils.misc import make_filename_with_timestamp
 from . import Command
 
 command_name = 'ven-duplicate-remover'
-objects_load_filter = ['labels']
+objects_load_filter = ['labels', 'workloads']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
@@ -104,53 +104,11 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
                 raise pylo.PyloEx("Cannot find label '{}' in the PCE".format(label_name))
             filter_labels.append(label)
 
-    # <editor-fold desc="Download workloads from PCE">
-    if not pce_cache_was_used:
-        # in case cache was not used, we need to download workloads now
-        print("* Downloading Workloads data from the PCE (it may take moment for large amounts of workloads) ... ", flush=True, end='')
-        if args['filter_label'] is None:
-            workloads_count = org.connector.get_objects_count_by_type('workloads')
-            if workloads_count < 1:
-                # exit if no workloads found
-                print("No workloads found in the PCE.")
-                return
-            workloads_json = org.connector.objects_workload_get(async_mode=False, max_results=workloads_count+1000)
-        else:
-            filter_labels_list_of_list: List[List[pylo.Label]] = []
-            # convert filter_labels dict to an array of arrays
-            for label_type, label_list in org.LabelStore.Utils.list_to_dict_by_type(filter_labels).items():
-                filter_labels_list_of_list.append(label_list)
-
-            # convert filter_labels_list_of_list to a matrix of all possibilities
-            # example: [[a,b],[c,d]] becomes [[a,c],[a,d],[b,c],[b,d]]
-            filter_labels_matrix = [[]]
-            for label_list in filter_labels_list_of_list:
-                new_matrix = []
-                for label in label_list:
-                    for row in filter_labels_matrix:
-                        new_row = row.copy()
-                        new_row.append(label.href)
-                        new_matrix.append(new_row)
-                filter_labels_matrix = new_matrix
-
-            workloads_json = org.connector.objects_workload_get(async_mode=False, max_results=1000000, filter_by_label=filter_labels_matrix)
-
-        org.WorkloadStore.load_workloads_from_json(workloads_json)
-
-    print("OK! {} workloads loaded".format(org.WorkloadStore.count_workloads()))
-    # </editor-fold>
-
-    all_workloads: List[pylo.Workload]  # the list of all workloads to be processed
-
-    if pce_cache_was_used:
-        # if some filters were used, let's apply them now
-        print("* Filtering workloads loaded from cache based on their labels... ", end='', flush=True)
-        # if some label filters were used, we will apply them at later stage
-        all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
-        print("OK! {} workloads left after filtering".format(len(all_workloads)))
-    else:
-        # filter was already applied during the download from the PCE
-        all_workloads = org.WorkloadStore.workloads
+    # if some filters were used, let's apply them now
+    print("* Filtering workloads loaded based on their labels... ", end='', flush=True)
+    # if some label filters were used, we will apply them at later stage
+    all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
+    print("OK! {} workloads left after filtering".format(len(all_workloads)))
 
     def add_workload_to_report(workload: pylo.Workload, action: str):
         url_link_to_pce = workload.get_pce_ui_url()
