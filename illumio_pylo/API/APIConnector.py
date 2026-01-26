@@ -371,8 +371,7 @@ class APIConnector:
         self.collect_pce_infos()
         return self.version_string
 
-    def get_objects_count_by_type(self, object_type: Literal['workloads', 'virtual_services', 'labels', 'labelgroups',
-    'iplists', 'services', 'rulesets', 'security_principals', 'label_dimensions']) -> int:
+    def get_objects_count_by_type(self, object_type: objects_types_strings) -> int:
 
         def extract_count(headers):
             count = headers.get('x-total-count')
@@ -385,24 +384,26 @@ class APIConnector:
 
             return int(count)
 
+        params = {'max_results': 1}
+
         if object_type == 'workloads':
-            return extract_count(self.do_get_call('/workloads', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/workloads', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'virtual_services':
-            return extract_count(self.do_get_call('/sec_policy/draft/virtual_services', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/sec_policy/draft/virtual_services', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'labels':
-            return extract_count(self.do_get_call('/labels', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/labels', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'labelgroups':
-            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/sec_policy/draft/label_groups', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'iplists':
-            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/sec_policy/draft/ip_lists', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'services':
-            return extract_count(self.do_get_call('/sec_policy/draft/services', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/sec_policy/draft/services', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'rulesets':
-            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/sec_policy/draft/rule_sets', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'security_principals':
-            return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/security_principals', async_call=False, return_headers=True, params=params)[1])
         elif object_type == 'label_dimensions':
-            return extract_count(self.do_get_call('/label_dimensions', async_call=False, return_headers=True)[1])
+            return extract_count(self.do_get_call('/label_dimensions', async_call=False, return_headers=True, params=params)[1])
         else:
             raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
 
