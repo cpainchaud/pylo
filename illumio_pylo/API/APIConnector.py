@@ -157,6 +157,33 @@ class APIConnector:
 
         return url
 
+    def _get_objects_auto_switch_async(self, path: str, data: Dict[str, Any], async_mode: bool, max_results: Optional[int]) -> Any:
+        # use a copy of data to not modify the original
+        data_copy = data.copy()
+
+        if async_mode:
+            if max_results is not None:
+                data_copy['max_results'] = max_results
+            return self.do_get_call(path=path, async_call=True, params=data_copy)
+
+        if max_results is not None:
+            data_copy['max_results'] = max_results
+            return self.do_get_call(path=path, async_call=False, params=data_copy)
+
+        # We will grab the maximum allowed with sync mode (variable default_max_objects_for_sync_calls) and switch to async if it's higher
+        data_copy['max_results'] = default_max_objects_for_sync_calls
+        results = self.do_get_call(path=path, async_call=False, params=data_copy, return_headers=True)
+        total_count = results[1].get('x-total-count')
+        if total_count is None:
+            raise pylo.PyloApiEx('API didnt provide field "x-total-count" in headers')
+        if not total_count.isdigit():
+            raise pylo.PyloApiEx('API returned invalid value for "x-total-count": {}'.format(total_count))
+        if int(total_count) > default_max_objects_for_sync_calls:
+            # remove the max_results from data
+            del data_copy['max_results']
+            return self.do_get_call(path=path, async_call=True, params=data_copy)
+        return results[0]
+
     def do_get_call(self, path, json_arguments=None, include_org_id=True, json_output_expected=True, async_call=False, params=None, skip_product_version_check=False,
                     retry_count_if_api_call_limit_reached=default_retry_count_if_api_call_limit_reached,
                     retry_wait_time_if_api_call_limit_reached=default_retry_wait_time_if_api_call_limit_reached,
