@@ -30,7 +30,7 @@ requests.packages.urllib3.disable_warnings()
 
 default_retry_count_if_api_call_limit_reached = 3
 default_retry_wait_time_if_api_call_limit_reached = 10
-default_max_objects_for_sync_calls = 99999
+default_max_objects_for_sync_calls = 200000
 
 
 def get_field_or_die(field_name: str, data):
