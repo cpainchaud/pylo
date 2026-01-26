@@ -441,57 +441,32 @@ class APIConnector:
                         q.task_done()
                         continue
                     if object_type == 'workloads':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls or force_async_mode:
-                            data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads)
-                        else:
-                            data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads, async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['workloads'] = self.objects_workload_get(include_deleted=include_deleted_workloads, async_mode=force_async_mode)
 
                     elif object_type == 'virtual_services':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['virtual_services'] = self.objects_virtual_service_get()
-                        else:
-                            data['virtual_services'] = self.objects_virtual_service_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['virtual_services'] = self.objects_virtual_service_get(async_mode=force_async_mode)
 
                     elif object_type == 'labels':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['labels'] = self.objects_label_get()
-                        else:
-                            data['labels'] = self.objects_label_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['labels'] = self.objects_label_get(async_mode=force_async_mode)
 
                     elif object_type == 'labelgroups':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['labelgroups'] = self.objects_labelgroup_get()
-                        else:
-                            data['labelgroups'] = self.objects_labelgroup_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['labelgroups'] = self.objects_labelgroup_get(async_mode=force_async_mode)
 
                     elif object_type == 'iplists':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['iplists'] = self.objects_iplist_get()
-                        else:
-                            data['iplists'] = self.objects_iplist_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['iplists'] = self.objects_iplist_get(async_mode=force_async_mode)
 
                     elif object_type == 'services':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['services'] = self.objects_service_get()
-                        else:
-                            data['services'] = self.objects_service_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['services'] = self.objects_service_get(async_mode=force_async_mode)
 
                     elif object_type == 'rulesets':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['rulesets'] = self.objects_ruleset_get()
-                        else:
-                            data['rulesets'] = self.objects_ruleset_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['rulesets'] = self.objects_ruleset_get(async_mode=force_async_mode)
 
                     elif object_type == 'security_principals':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['security_principals'] = self.objects_securityprincipal_get()
-                        else:
-                            data['security_principals'] = self.objects_securityprincipal_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['security_principals'] = self.objects_securityprincipal_get(async_mode=force_async_mode)
+
                     elif object_type == 'label_dimensions':
-                        if self.get_objects_count_by_type(object_type) > default_max_objects_for_sync_calls:
-                            data['label_dimensions'] = self.objects_label_dimension_get()
-                        else:
-                            data['label_dimensions'] = self.objects_label_dimension_get(async_mode=False, max_results=default_max_objects_for_sync_calls)
+                        data['label_dimensions'] = self.objects_label_dimension_get()
+
                     else:
                         raise pylo.PyloEx("Unsupported object type '{}'".format(object_type))
                 except Exception as e:
@@ -571,11 +546,9 @@ class APIConnector:
             params = {'include_deny_rules': include_boundary_rules}
         return self.do_post_call(path='/sec_policy/draft/rule_coverage', json_arguments=data, include_org_id=True, json_output_expected=True, async_call=False, params=params)
 
-    def objects_label_get(self, max_results: int = 200000, async_mode=True, get_usage: bool = False, get_deleted: bool = False) -> List[LabelObjectJsonStructure]:
+    def objects_label_get(self, max_results: int = None, async_mode=False, get_usage: bool = False, get_deleted: bool = False) -> List[LabelObjectJsonStructure]:
         path = '/labels'
         data = {}
-
-        data['max_results'] = max_results
 
         if get_usage:
             data['usage'] = 'true'
@@ -583,7 +556,7 @@ class APIConnector:
         if get_deleted:
             data['includeDeleted'] = 'true'
 
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
     def objects_label_update(self, href: str, data: LabelObjectUpdateJsonStructure):
         path = href
@@ -655,14 +628,11 @@ class APIConnector:
         data: LabelObjectCreationJsonStructure = {'key': label_type, 'value': label_name}
         return self.do_post_call(path=path, json_arguments=data)
 
-    def objects_labelgroup_get(self, max_results: int = None, async_mode=True) -> List[LabelGroupObjectJsonStructure]:
+    def objects_labelgroup_get(self, max_results: int = None, async_mode=False) -> List[LabelGroupObjectJsonStructure]:
         path = '/sec_policy/draft/label_groups'
         data = {}
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
     def objects_labelgroup_update(self, href: str, data: LabelGroupObjectUpdateJsonStructure):
         path = href
@@ -672,34 +642,26 @@ class APIConnector:
         path = '/label_dimensions'
         data = {}
 
-        if max_results is not None:
-            data['max_results'] = max_results
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
-    def objects_virtual_service_get(self, max_results: int = None, async_mode=True) -> List[VirtualServiceObjectJsonStructure]:
+    def objects_virtual_service_get(self, max_results: int = None, async_mode=False) -> List[VirtualServiceObjectJsonStructure]:
         path = '/sec_policy/draft/virtual_services'
         data = {}
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        results = self.do_get_call(path=path, async_call=async_mode, params=data)
+        results = self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
         # check type
         if type(results) is list:
             return results
         raise pylo.PyloEx("Unexpected result type '{}' while expecting an array of Virtual Service objects".format(type(results)), results)
 
-    def objects_iplist_get(self, max_results: int = None, async_mode=True, search_name: str = None) -> List[IPListObjectJsonStructure]:
+    def objects_iplist_get(self, max_results: int = None, async_mode=False, search_name: str = None) -> List[IPListObjectJsonStructure]:
         path = '/sec_policy/draft/ip_lists'
         data = {}
 
         if search_name is not None:
             data['name'] = search_name
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        results: List[IPListObjectJsonStructure] = self.do_get_call(path=path, async_call=async_mode, params=data)
+        results: List[IPListObjectJsonStructure] = self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
         # check type
         if type(results) is list:
             return results
@@ -751,10 +713,7 @@ class APIConnector:
         if representation is not None:
             data['representation'] = representation
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
     def objects_workload_get(self,
                              include_deleted=False,
@@ -764,7 +723,7 @@ class APIConnector:
                              filter_by_managed: bool = None,
                              filer_by_policy_health: Literal['active', 'warning', 'error'] = None,
                              max_results: int = None,
-                             async_mode=True) -> List[WorkloadObjectJsonStructure]:
+                             async_mode=False) -> List[WorkloadObjectJsonStructure]:
         path = '/workloads'
         data = {}
 
@@ -787,10 +746,8 @@ class APIConnector:
         if filer_by_policy_health is not None:
             data['policy_health'] = filer_by_policy_health
 
-        if max_results is not None:
-            data['max_results'] = max_results
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
 
     def objects_workload_agent_upgrade(self, workload_href: str, target_version: str):
         path = '{}/upgrade'.format(workload_href)
@@ -1038,14 +995,11 @@ class APIConnector:
         path = '/workloads/bulk_create'
         return self.do_put_call(path=path, json_arguments=workloads_json_payload)
 
-    def objects_service_get(self, max_results: int = None, async_mode=True):
+    def objects_service_get(self, max_results: int = None, async_mode=False):
         path = '/sec_policy/draft/services'
         data = {}
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
     def objects_service_delete(self, href):
         """
@@ -1087,14 +1041,11 @@ class APIConnector:
 
         return self.do_post_call(path=path, async_call=False, include_org_id=False, json_arguments=data, json_output_expected=True)
 
-    def objects_ruleset_get(self, max_results: int = None, async_mode=True) -> List[RulesetObjectJsonStructure]:
+    def objects_ruleset_get(self, max_results: int = None, async_mode=False) -> List[RulesetObjectJsonStructure]:
         path = '/sec_policy/draft/rule_sets'
         data = {}
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
     def objects_ruleset_create(self, name: str,
                                scope_app: 'pylo.Label' = None,
@@ -1213,14 +1164,11 @@ class APIConnector:
 
         return self.do_post_call(path, json_arguments=data, json_output_expected=True, include_org_id=False)
 
-    def objects_securityprincipal_get(self, max_results: int = None, async_mode=True) -> List[SecurityPrincipalObjectJsonStructure]:
+    def objects_securityprincipal_get(self, max_results: int = None, async_mode=False) -> List[SecurityPrincipalObjectJsonStructure]:
         path = '/security_principals'
         data = {}
 
-        if max_results is not None:
-            data['max_results'] = max_results
-
-        return self.do_get_call(path=path, async_call=async_mode, params=data)
+        return self._get_objects_auto_switch_async(path=path, data=data, async_mode=async_mode, max_results=max_results)
 
     def objects_securityprincipal_create(self, name: str = None, sid: str = None, json_data=None) -> str:
         """
