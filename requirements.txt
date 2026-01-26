@@ -6,3 +6,4 @@ paramiko~=3.4.0
 prettytable~=3.10.0
 requests~=2.32.0
 xlsxwriter~=3.2.0
+flask~=2.2.0

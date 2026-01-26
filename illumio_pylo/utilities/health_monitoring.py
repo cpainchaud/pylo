@@ -4,7 +4,11 @@ import argparse
 import math
 from datetime import datetime
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+# in case user wants to run this utility while having a version of pylo already installed
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+    pass
+
 import illumio_pylo as pylo
 
 

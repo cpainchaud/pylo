@@ -42,7 +42,7 @@ setup(
         'console_scripts': ['pylo-cli=pylo.cli:run'],
     },
     package_data={
-        "": ["*.pem"],
+        "": ["*.pem", "*.html", "*.css", "*.js"],
     },
     python_requires='>=3.11',
     setup_requires=required
