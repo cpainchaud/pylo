@@ -170,6 +170,7 @@
                 <td class="actions-cell">
                     <button class="btn btn-small btn-success btn-test" data-name="${escapeHtml(cred.name)}">Test</button>
                     <button class="btn btn-small btn-secondary btn-edit" data-name="${escapeHtml(cred.name)}">Edit</button>
+                    ${showEncryptBtn ? `<button class="btn btn-small btn-warning btn-encrypt" data-name="${escapeHtml(cred.name)}">Encrypt</button>` : ''}
                     <button class="btn btn-small btn-danger btn-delete" data-name="${escapeHtml(cred.name)}">Delete</button>
                 </td>
             `;

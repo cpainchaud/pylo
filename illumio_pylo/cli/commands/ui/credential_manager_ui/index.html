@@ -162,6 +162,28 @@
                 </div>
             </div>
         </div>
+
+        <!-- Encrypt confirmation modal -->
+        <div id="encrypt-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Encrypt API Key</h2>
+                    <button class="btn-close" id="btn-close-encrypt-modal">&times;</button>
+                </div>
+                <div class="encrypt-confirmation">
+                    <p>Encrypt the API key for "<strong id="encrypt-credential-name"></strong>" using an SSH key.</p>
+                    <div class="form-group">
+                        <label for="encrypt-ssh-key">Select SSH Key:</label>
+                        <select id="encrypt-ssh-key">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-encrypt">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-encrypt">Encrypt</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>

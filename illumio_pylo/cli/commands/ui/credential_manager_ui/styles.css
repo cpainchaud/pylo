@@ -85,6 +85,15 @@ header .subtitle {
     background-color: #2f855a;
 }
 
+.btn-warning {
+    background-color: #d69e2e;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #b7791f;
+}
+
 .btn-small {
     padding: 5px 10px;
     font-size: 0.85rem;
@@ -426,5 +435,21 @@ form {
     color: #c53030;
     font-size: 0.9rem;
     font-style: italic;
+}
+
+/* Encrypt confirmation modal */
+.encrypt-confirmation {
+    padding: 25px;
+    text-align: center;
+}
+
+.encrypt-confirmation p {
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.encrypt-confirmation .form-group {
+    text-align: left;
+    margin-top: 20px;
 }
 
