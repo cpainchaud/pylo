@@ -57,18 +57,27 @@
         deleteCredentialName: document.getElementById('delete-credential-name'),
         btnCloseDeleteModal: document.getElementById('btn-close-delete-modal'),
         btnCancelDelete: document.getElementById('btn-cancel-delete'),
-        btnConfirmDelete: document.getElementById('btn-confirm-delete')
+        btnConfirmDelete: document.getElementById('btn-confirm-delete'),
+
+        // Encrypt modal
+        encryptModal: document.getElementById('encrypt-modal'),
+        encryptCredentialName: document.getElementById('encrypt-credential-name'),
+        encryptSshKey: document.getElementById('encrypt-ssh-key'),
+        btnCloseEncryptModal: document.getElementById('btn-close-encrypt-modal'),
+        btnCancelEncrypt: document.getElementById('btn-cancel-encrypt'),
+        btnConfirmEncrypt: document.getElementById('btn-confirm-encrypt')
     };
 
     // State
     let sshKeys = [];
     let encryptionAvailable = false;
     let credentialToDelete = null;
+    let credentialToEncrypt = null;
 
     // Initialize the application
     async function init() {
-        await loadCredentials();
         await checkEncryptionStatus();
+        await loadCredentials();
         setupEventListeners();
     }
 
@@ -96,6 +105,11 @@
         elements.btnCancelDelete.addEventListener('click', closeDeleteModal);
         elements.btnConfirmDelete.addEventListener('click', confirmDelete);
 
+        // Encrypt modal buttons
+        elements.btnCloseEncryptModal.addEventListener('click', closeEncryptModal);
+        elements.btnCancelEncrypt.addEventListener('click', closeEncryptModal);
+        elements.btnConfirmEncrypt.addEventListener('click', confirmEncrypt);
+
         // Close modals on background click
         elements.credentialModal.addEventListener('click', (e) => {
             if (e.target === elements.credentialModal) closeModal();
@@ -105,6 +119,9 @@
         });
         elements.deleteModal.addEventListener('click', (e) => {
             if (e.target === elements.deleteModal) closeDeleteModal();
+        });
+        elements.encryptModal.addEventListener('click', (e) => {
+            if (e.target === elements.encryptModal) closeEncryptModal();
         });
     }
 
@@ -183,6 +200,9 @@
         });
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', () => openEditModal(btn.dataset.name));
+        });
+        document.querySelectorAll('.btn-encrypt').forEach(btn => {
+            btn.addEventListener('click', () => openEncryptModal(btn.dataset.name));
         });
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', () => openDeleteModal(btn.dataset.name));
