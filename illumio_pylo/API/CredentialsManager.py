@@ -174,6 +174,7 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
             credentials: CredentialsFileType = json.load(f)
             if isinstance(credentials, list):
                 # check if the profile already exists
+                profile_found = False
                 for profile in credentials:
                     if profile['name'].lower() == data['name'].lower():
                         if overwrite_existing_profile:
@@ -181,10 +182,12 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
                             for key in list(profile.keys()):
                                 del profile[key]
                             profile.update(data)
+                            profile_found = True
                             break
                         else:
                             raise PyloEx("Profile with name {} already exists in file {}".format(data['name'], file_full_path))
-                credentials.append(data)
+                if not profile_found:
+                    credentials.append(data)
             else:
                 if data['name'].lower() == credentials['name'].lower():
                     if overwrite_existing_profile:
