@@ -397,6 +397,7 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
                 'org_id': cred.org_id,
                 'api_user': cred.api_user,
                 'verify_ssl': cred.verify_ssl,
+                'api_key_encrypted': cred.is_api_key_encrypted(),
                 'originating_file': cred.originating_file
             })
         return jsonify(result)
@@ -414,6 +415,7 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
             'org_id': found_profile.org_id,
             'api_user': found_profile.api_user,
             'verify_ssl': found_profile.verify_ssl,
+            'api_key_encrypted': found_profile.is_api_key_encrypted(),
             'originating_file': found_profile.originating_file
         })
 
