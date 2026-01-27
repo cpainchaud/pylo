@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credential Manager - Web Editor</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 PYLO Credential Manager</h1>
+            <p class="subtitle">Manage your PCE credentials</p>
+        </header>
+
+        <!-- Notification area -->
+        <div id="notification" class="notification hidden"></div>
+
+        <!-- Main content area -->
+        <main>
+            <!-- Credentials list section -->
+            <section id="credentials-section">
+                <div class="section-header">
+                    <h2>Stored Credentials</h2>
+                    <button id="btn-new-credential" class="btn btn-primary">+ New Credential</button>
+                </div>
+                <div id="credentials-loading" class="loading">Loading credentials...</div>
+                <table id="credentials-table" class="hidden">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>FQDN</th>
+                            <th>Port</th>
+                            <th>Org ID</th>
+                            <th>API User</th>
+                            <th>SSL</th>
+                            <th>File</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="credentials-body">
+                    </tbody>
+                </table>
+                <div id="no-credentials" class="empty-state hidden">
+                    <p>No credentials found. Click "New Credential" to create one.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal for Create/Edit credential -->
+        <div id="credential-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">New Credential</h2>
+                    <button class="btn-close" id="btn-close-modal">&times;</button>
+                </div>
+                <form id="credential-form">
+                    <input type="hidden" id="form-mode" value="create">
+                    <input type="hidden" id="form-original-name" value="">
+
+                    <div class="form-group">
+                        <label for="form-name">Profile Name *</label>
+                        <input type="text" id="form-name" required placeholder="e.g., prod-pce">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-fqdn">PCE FQDN *</label>
+                        <input type="text" id="form-fqdn" required placeholder="e.g., pce1.mycompany.com">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-port">Port *</label>
+                            <input type="number" id="form-port" required value="8443" min="1" max="65535">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-org-id">Organization ID *</label>
+                            <input type="number" id="form-org-id" required value="1" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-api-user">API User *</label>
+                        <input type="text" id="form-api-user" required placeholder="e.g., api_xxx">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-api-key">API Key <span id="api-key-required">*</span></label>
+                        <input type="password" id="form-api-key" placeholder="Enter API key">
+                        <small id="api-key-hint" class="hidden">Leave empty to keep current key</small>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="form-verify-ssl" checked>
+                            Verify SSL/TLS Certificate
+                        </label>
+                    </div>
+
+                    <!-- Encryption section -->
+                    <div id="encryption-section" class="form-section hidden">
+                        <h3>API Key Encryption</h3>
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="form-encrypt">
+                                Encrypt API key with SSH key
+                            </label>
+                        </div>
+                        <div id="ssh-keys-section" class="hidden">
+                            <label for="form-ssh-key">Select SSH Key:</label>
+                            <select id="form-ssh-key">
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Storage location (only for create) -->
+                    <div id="storage-section" class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="form-use-workdir">
+                            Save in current working directory (otherwise user home)
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Test result modal -->
+        <div id="test-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Connection Test</h2>
+                    <button class="btn-close" id="btn-close-test-modal">&times;</button>
+                </div>
+                <div id="test-result" class="test-result">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" id="btn-close-test">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete confirmation modal -->
+        <div id="delete-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Confirm Deletion</h2>
+                    <button class="btn-close" id="btn-close-delete-modal">&times;</button>
+                </div>
+                <div class="delete-confirmation">
+                    <p>Are you sure you want to delete the credential "<strong id="delete-credential-name"></strong>"?</p>
+                    <p class="warning-text">This action cannot be undone.</p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-delete">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

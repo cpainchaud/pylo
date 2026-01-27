@@ -23,6 +23,7 @@ class MyBuiltInParser:  # optional, if you want to use built-in parsers
                                    label_type='env',  # optional, it will ensure that selected labels are of a specified type
                                    is_required=False, allow_multiple=True)
 
+
 def fill_parser(parser: argparse.ArgumentParser):
     """ This function will be called by the CLI to fill the parser with the arguments of your command """
     parser.add_argument('--sort-by-name', '-s', action='store_true',

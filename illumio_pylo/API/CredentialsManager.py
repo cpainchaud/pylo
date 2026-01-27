@@ -199,6 +199,44 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
     return file_full_path
 
 
+def delete_credential_from_file(profile_name: str, file_path: str) -> bool:
+    """
+    Delete a credential from a file by profile name.
+    :param profile_name: Name of the profile to delete
+    :param file_path: Path to the credential file
+    :return: True if deleted successfully
+    """
+    if not os.path.exists(file_path):
+        raise PyloEx("Credential file does not exist: {}".format(file_path))
+
+    with open(file_path, 'r') as f:
+        credentials: CredentialsFileType = json.load(f)
+
+    if isinstance(credentials, list):
+        original_len = len(credentials)
+        credentials = [c for c in credentials if c['name'].lower() != profile_name.lower()]
+        if len(credentials) == original_len:
+            raise PyloEx("Profile '{}' not found in file '{}'".format(profile_name, file_path))
+
+        if len(credentials) == 0:
+            # If no credentials left, delete the file
+            os.remove(file_path)
+            return True
+    else:
+        if credentials['name'].lower() == profile_name.lower():
+            # Single credential in file, delete the file
+            os.remove(file_path)
+            return True
+        else:
+            raise PyloEx("Profile '{}' not found in file '{}'".format(profile_name, file_path))
+
+    # Write the updated credentials back to the file
+    with open(file_path, 'w') as f:
+        json.dump(credentials, f, indent=4)
+
+    return True
+
+
 def create_credential_in_default_file(data: CredentialFileEntry) -> str:
     """
     Create a credential in the default credential file and return the full path to the file

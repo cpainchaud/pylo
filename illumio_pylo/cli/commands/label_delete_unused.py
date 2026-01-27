@@ -2,10 +2,7 @@ import argparse
 from typing import Optional, List
 
 import illumio_pylo as pylo
-import json
-import hashlib
 
-from illumio_pylo import log
 from . import Command
 from illumio_pylo.API.JsonPayloadTypes import LabelObjectJsonStructure
 

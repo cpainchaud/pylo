@@ -20,6 +20,7 @@ jobs:
       - name: Change Pylo Version if this is a DEV build
         if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
         run: |
+          pwd
           echo "Update version to append '-dev-' and current date ISO format:"
           # for double quoted strings version
           sed -i -E "s/__version__ = \"([0-9]+\.[0-9]+\.[0-9]+)\"/__version__ = '\\1-dev-$(date +'%Y%m%d')'/" illumio_pylo/__init__.py
@@ -28,12 +29,49 @@ jobs:
           grep __version__ illumio_pylo/__init__.py
           
 
+      - name: copy scripts and pkg to build folder
+        run: |
+          # build the package
+          pip install build
+          python -m build
+          echo "current working directory:"
+          pwd
+          # get package whl filename for later use, it is in dist/
+          package_filename=$(find dist/ -name "illumio_pylo-*.whl" | sed 's|dist/||')
+          echo "*** Package filename is: $package_filename"
+          mkdir cli-build
+          # move package to cli-build
+          mv "dist/$package_filename" cli-build/
+          
+          # create requirements.txt that points to the local package
+          echo "illumio_pylo@file:./cli-build/$package_filename" > cli-build/requirements.txt
+          #echo "pyinstaller==6.16.0" >> cli-build/requirements.txt
+          echo "*** Created cli-build/requirements.txt with contents:"
+          cat cli-build/requirements.txt
+          
+          # copy cli.py removing any sys.path.insert lines
+          grep -v 'sys.path.insert' illumio_pylo/utilities/cli.py > cli-build/cli.py
+          mv illumio_pylo/utilities/health_monitoring.py cli-build/
+          
+          # delete illumio_pylo to avoid confusion
+          rm -rf illumio_pylo/
+          
+          echo "*** Contents of cli-build/:"
+          find cli-build/
+
       - name: Make executables
         uses: cpainchaud/pyinstaller-action-windows@main
         with:
           path: ./
-          spec: illumio_pylo/utilities/
-          extra_python_paths: Z:\\github\\workspace\\;Z:\\github\\workspace\\pylo;C:\\Windows\\System32\\downlevel
+          spec: ./cli-build/
+          requirements: ./cli-build/requirements.txt
+          collect_data: illumio_pylo
+          extra_python_paths: Z:\\github\\workspace\\;C:\\Windows\\System32\\downlevel
+
+      - name: show spec files
+        run: |
+          echo "Showing the spec files created by PyInstaller:"
+          find ../ -name "*.spec" -exec cat {} \;
 
       - name: rename executables
         run: |
