@@ -666,6 +666,61 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
     def api_encryption_status():
         return jsonify({'available': is_encryption_available()})
 
+    # API: Encrypt a credential's API key
+    @app.route('/api/credentials/<name>/encrypt', methods=['POST'])
+    def api_encrypt_credential(name):
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        if not is_encryption_available():
+            return jsonify({'error': 'Encryption is not available. Please ensure an SSH agent is running with RSA or Ed25519 keys added.'}), 400
+
+        found_profile = get_credentials_from_file(name, fail_with_an_exception=False)
+        if found_profile is None:
+            return jsonify({'error': 'Credential not found'}), 404
+
+        # Check if already encrypted
+        if found_profile.is_api_key_encrypted():
+            return jsonify({'error': 'API key is already encrypted'}), 400
+
+        # Get the SSH key index
+        if 'ssh_key_index' not in data:
+            return jsonify({'error': 'ssh_key_index is required'}), 400
+
+        try:
+            ssh_keys = get_supported_keys_from_ssh_agent()
+            key_index = int(data['ssh_key_index'])
+            if key_index < 0 or key_index >= len(ssh_keys):
+                return jsonify({'error': 'Invalid SSH key index'}), 400
+
+            selected_ssh_key = ssh_keys[key_index]
+            encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(
+                ssh_key=selected_ssh_key, api_key=found_profile.api_key)
+
+            # Verify encryption
+            decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(
+                encrypted_api_key_payload=encrypted_api_key)
+            if decrypted_api_key != found_profile.api_key:
+                return jsonify({'error': 'Encryption verification failed'}), 500
+
+            # Update the credential
+            credentials_data: CredentialFileEntry = {
+                "name": found_profile.name,
+                "fqdn": found_profile.fqdn,
+                "port": found_profile.port,
+                "org_id": found_profile.org_id,
+                "api_user": found_profile.api_user,
+                "verify_ssl": found_profile.verify_ssl,
+                "api_key": encrypted_api_key
+            }
+
+            create_credential_in_file(file_full_path=found_profile.originating_file,
+                                      data=credentials_data, overwrite_existing_profile=True)
+            return jsonify({'success': True, 'message': f"API key for '{name}' encrypted successfully"})
+        except Exception as e:
+            return jsonify({'error': f'Encryption failed: {str(e)}'}), 500
+
     print(f"Starting web editor at http://{host}:{port}")
     print("Press Ctrl+C to stop the server")
     app.run(host=host, port=port, debug=False)
