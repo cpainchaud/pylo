@@ -359,6 +359,7 @@ def print_keys(keys: list[paramiko.AgentKey], display_index=True) -> None:
 def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
     """Start the Flask web server for credential management."""
     try:
+        # noinspection PyUnusedImports
         from flask import Flask, jsonify, request, send_from_directory
     except ImportError:
         print("Flask is not installed. Please install it with: pip install flask")
