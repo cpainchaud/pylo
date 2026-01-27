@@ -46,6 +46,10 @@ class CredentialProfile:
 
         self.raw_json: Optional[CredentialFileEntry] = None
 
+    def is_api_key_encrypted(self) -> bool:
+        """Check if the API key is encrypted (starts with $encrypted$:)."""
+        return self.api_key.startswith("$encrypted$:")
+
     @staticmethod
     def from_credentials_file_entry(credential_file_entry: CredentialFileEntry, originating_file: Optional[str] = None):
         return CredentialProfile(credential_file_entry['name'],
