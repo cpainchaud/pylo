@@ -175,6 +175,9 @@
 
         for (const cred of credentials) {
             const row = document.createElement('tr');
+            // Show encrypt button only if encryption is available and key is not already encrypted
+            const showEncryptBtn = encryptionAvailable && sshKeys.length > 0 && !cred.api_key_encrypted;
+            console.log('Rendering credential:', cred.name, 'Show Encrypt Button:', showEncryptBtn, 'Encryption Available:', encryptionAvailable, 'SSH Keys:', sshKeys.length, 'API Key Encrypted:', cred.api_key_encrypted);
             row.innerHTML = `
                 <td><strong>${escapeHtml(cred.name)}</strong></td>
                 <td>${escapeHtml(cred.fqdn)}</td>
@@ -317,6 +320,52 @@
     function closeDeleteModal() {
         elements.deleteModal.classList.add('hidden');
         credentialToDelete = null;
+    }
+
+    // Open modal for encrypting credential
+    function openEncryptModal(name) {
+        credentialToEncrypt = name;
+        elements.encryptCredentialName.textContent = name;
+        // Populate SSH key dropdown
+        elements.encryptSshKey.innerHTML = '';
+        for (const key of sshKeys) {
+            const option = document.createElement('option');
+            option.value = key.index;
+            option.textContent = `${key.type} | ${key.fingerprint.substring(0, 16)}... | ${key.comment || 'No comment'}`;
+            elements.encryptSshKey.appendChild(option);
+        }
+        elements.encryptModal.classList.remove('hidden');
+    }
+
+    // Close encrypt modal
+    function closeEncryptModal() {
+        elements.encryptModal.classList.add('hidden');
+        credentialToEncrypt = null;
+    }
+
+    // Confirm credential encryption
+    async function confirmEncrypt() {
+        if (!credentialToEncrypt) return;
+
+        elements.btnConfirmEncrypt.disabled = true;
+        elements.btnConfirmEncrypt.textContent = 'Encrypting...';
+
+        try {
+            await apiCall(`/api/credentials/${encodeURIComponent(credentialToEncrypt)}/encrypt`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    ssh_key_index: parseInt(elements.encryptSshKey.value)
+                })
+            });
+            showNotification('API key encrypted successfully!', 'success');
+            closeEncryptModal();
+            await loadCredentials();
+        } catch (error) {
+            showNotification('Failed to encrypt API key: ' + error.message, 'error');
+        } finally {
+            elements.btnConfirmEncrypt.disabled = false;
+            elements.btnConfirmEncrypt.textContent = 'Encrypt';
+        }
     }
 
     // Reset form
