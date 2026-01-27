@@ -398,6 +398,17 @@ form {
     display: none !important;
 }
 
+/* Warning text used in modals/forms to indicate potential SSH agent prompts */
+.warning-text {
+    color: #7a4a12; /* dark amber */
+    background-color: #fff7e6; /* very light amber */
+    border-left: 4px solid #d69e2e;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 0.95rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row {
