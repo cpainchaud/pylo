@@ -164,6 +164,7 @@
                 <td>${cred.port}</td>
                 <td>${cred.org_id}</td>
                 <td>${escapeHtml(cred.api_user)}</td>
+                <td class="${cred.api_key_encrypted ? 'status-yes' : 'status-no'}">${cred.api_key_encrypted ? 'Yes' : 'No'}</td>
                 <td class="${cred.verify_ssl ? 'status-yes' : 'status-no'}">${cred.verify_ssl ? 'Yes' : 'No'}</td>
                 <td title="${escapeHtml(cred.originating_file)}">${truncatePath(cred.originating_file)}</td>
                 <td class="actions-cell">
