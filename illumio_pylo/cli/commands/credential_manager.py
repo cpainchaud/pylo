@@ -721,6 +721,29 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
         except Exception as e:
             return jsonify({'error': f'Encryption failed: {str(e)}'}), 500
 
+    # Flag to track shutdown request
+    shutdown_requested = {'value': False}
+
+    # API: Request server shutdown
+    @app.route('/api/shutdown', methods=['POST'])
+    def api_shutdown():
+        shutdown_requested['value'] = True
+        return jsonify({'success': True, 'message': 'Shutdown acknowledged. Server will stop shortly.'})
+
+    # Shutdown check after each request
+    @app.after_request
+    def check_shutdown(response):
+        if shutdown_requested['value']:
+            # Schedule shutdown after response is sent
+            def shutdown():
+                import time
+                time.sleep(1)  # Give time for the response to be sent
+                print("\nShutdown requested via web UI. Stopping server...")
+                os._exit(0)
+            import threading
+            threading.Thread(target=shutdown, daemon=True).start()
+        return response
+
     print(f"Starting web editor at http://{host}:{port}")
     print("Press Ctrl+C to stop the server")
     app.run(host=host, port=port, debug=False)
