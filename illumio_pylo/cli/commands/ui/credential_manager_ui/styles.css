@@ -463,3 +463,47 @@ form {
     text-align: left;
     margin-top: 20px;
 }
+
+/* Shutdown button */
+.shutdown-button-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.btn-shutdown {
+    background-color: #c53030;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(197, 48, 48, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-shutdown:hover {
+    background-color: #9b2c2c;
+    box-shadow: 0 6px 16px rgba(197, 48, 48, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Shutdown confirmation modal */
+.shutdown-confirmation {
+    padding: 25px;
+    text-align: center;
+}
+
+.shutdown-confirmation p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.shutdown-confirmation .countdown-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #c53030;
+    margin-top: 15px;
+}
+

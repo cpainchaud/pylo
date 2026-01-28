@@ -186,6 +186,29 @@
                 </div>
             </div>
         </div>
+
+        <!-- Shutdown confirmation modal -->
+        <div id="shutdown-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Close Program</h2>
+                    <button class="btn-close" id="btn-close-shutdown-modal">&times;</button>
+                </div>
+                <div id="shutdown-content" class="shutdown-confirmation">
+                    <p id="shutdown-message">This will stop the Credential Manager server program.</p>
+                    <p id="shutdown-countdown" class="hidden"></p>
+                </div>
+                <div class="form-actions" id="shutdown-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-shutdown">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-shutdown">Stop Server</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shutdown button fixed at bottom -->
+        <div class="shutdown-button-container">
+            <button id="btn-shutdown" class="btn btn-shutdown">Job done, close program</button>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>
