@@ -65,7 +65,17 @@
         encryptSshKey: document.getElementById('encrypt-ssh-key'),
         btnCloseEncryptModal: document.getElementById('btn-close-encrypt-modal'),
         btnCancelEncrypt: document.getElementById('btn-cancel-encrypt'),
-        btnConfirmEncrypt: document.getElementById('btn-confirm-encrypt')
+        btnConfirmEncrypt: document.getElementById('btn-confirm-encrypt'),
+
+        // Shutdown modal
+        shutdownModal: document.getElementById('shutdown-modal'),
+        btnShutdown: document.getElementById('btn-shutdown'),
+        btnCloseShutdownModal: document.getElementById('btn-close-shutdown-modal'),
+        btnCancelShutdown: document.getElementById('btn-cancel-shutdown'),
+        btnConfirmShutdown: document.getElementById('btn-confirm-shutdown'),
+        shutdownMessage: document.getElementById('shutdown-message'),
+        shutdownCountdown: document.getElementById('shutdown-countdown'),
+        shutdownActions: document.getElementById('shutdown-actions')
     };
 
     // State
@@ -73,6 +83,7 @@
     let encryptionAvailable = false;
     let credentialToDelete = null;
     let credentialToEncrypt = null;
+    let shutdownInProgress = false;
 
     // Initialize the application
     async function init() {
@@ -109,6 +120,10 @@
         elements.btnCloseEncryptModal.addEventListener('click', closeEncryptModal);
         elements.btnCancelEncrypt.addEventListener('click', closeEncryptModal);
         elements.btnConfirmEncrypt.addEventListener('click', confirmEncrypt);
+
+        // Shutdown modal buttons
+        elements.btnShutdown.addEventListener('click', openShutdownModal);
+        elements.btnConfirmShutdown.addEventListener('click', confirmShutdown);
 
         // Close modals on background click
         elements.credentialModal.addEventListener('click', (e) => {
@@ -341,6 +356,69 @@
     function closeEncryptModal() {
         elements.encryptModal.classList.add('hidden');
         credentialToEncrypt = null;
+    }
+
+    // Open modal for shutting down the server
+    function openShutdownModal() {
+        // Reset modal to initial state
+        shutdownInProgress = false;
+        elements.shutdownMessage.textContent = 'This will stop the Credential Manager server program.';
+        elements.shutdownCountdown.classList.add('hidden');
+        elements.shutdownCountdown.textContent = '';
+        elements.shutdownActions.classList.remove('hidden');
+        elements.btnConfirmShutdown.disabled = false;
+        elements.btnConfirmShutdown.textContent = 'Stop Server';
+        elements.btnCancelShutdown.disabled = true;
+        elements.btnCloseShutdownModal.disabled = true;
+        elements.shutdownModal.classList.remove('hidden');
+    }
+
+    // Shutdown modal intentionally stays visible once opened.
+
+    // Confirm shutdown
+    async function confirmShutdown() {
+        if (shutdownInProgress) return;
+
+        shutdownInProgress = true;
+        elements.btnConfirmShutdown.disabled = true;
+        elements.btnConfirmShutdown.textContent = 'Stopping...';
+        elements.btnCancelShutdown.disabled = true;
+        elements.btnCloseShutdownModal.disabled = true;
+
+        try {
+            await apiCall('/api/shutdown', { method: 'POST' });
+
+            // Update modal to show success and countdown
+            elements.shutdownMessage.textContent = 'Server shutdown acknowledged. Closing window...';
+            elements.shutdownActions.classList.add('hidden');
+            elements.shutdownCountdown.classList.remove('hidden');
+
+            // Start countdown
+            let countdown = 10;
+            elements.shutdownCountdown.textContent = `Window will close in ${countdown} seconds...`;
+            elements.shutdownCountdown.className = 'countdown-text';
+
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    elements.shutdownCountdown.textContent = `Window will close in ${countdown} seconds...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    elements.shutdownCountdown.textContent = 'Closing window...';
+                    // Attempt to close the window/tab
+                    window.close();
+                    // If window.close() doesn't work (common in modern browsers), show a message
+                    setTimeout(() => {
+                        elements.shutdownCountdown.textContent = 'Please close this browser tab/window manually.';
+                    }, 500);
+                }
+            }, 1000);
+        } catch (error) {
+            shutdownInProgress = false;
+            elements.btnConfirmShutdown.disabled = false;
+            elements.btnConfirmShutdown.textContent = 'Stop Server';
+            showNotification('Failed to stop server: ' + error.message, 'error');
+        }
     }
 
     // Confirm credential encryption
