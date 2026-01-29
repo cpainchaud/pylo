@@ -202,7 +202,7 @@ class LabelStore:
                             allow_label: bool = True,
                             raise_exception_if_not_found: bool = False) \
             -> Optional[Union['pylo.Label', 'pylo.LabelGroup', List[Union['pylo.Label', 'pylo.LabelGroup']]]]:
-        """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
+        """Find a label by its name. If case_sensitive is False, the search is case-insensitive and will return a list of matches
         If case_sensitive is False it will return a list of labels with the same name rather than a single object.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
         If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
@@ -210,22 +210,30 @@ class LabelStore:
         If a label is not found, None will be returned in the list.
         """
         if not isinstance(name, list):
-            if case_sensitive is False:
-                return self.find_object_by_name([name], label_type=label_type, case_sensitive=case_sensitive,
-                                                missing_labels_names=missing_labels_names,
-                                                allow_label_group=allow_label_group,
-                                                allow_label=allow_label,
-                                                raise_exception_if_not_found=raise_exception_if_not_found)
-            for label in self._items_by_href.values():
-                if label_type is not None and label.type != label_type:
-                    continue
-                if label.is_label() and allow_label:  # ignore groups
-                    if case_sensitive:
+            if case_sensitive:
+                for label in self._items_by_href.values():
+                    if label_type is not None and label.type != label_type:
+                        continue
+                    if label.is_label() and allow_label:
                         if label.name == name:
                             return label
-                elif allow_label_group:
-                    if label.name.lower() == name.lower():
-                        return label
+                    elif label.is_group() and allow_label_group:  # ignore labels
+                        if label.name == name:
+                            return label
+            else:
+                matches = []
+                for label in self._items_by_href.values():
+                    if label_type is not None and label.type != label_type:
+                        continue
+                    if label.is_label() and allow_label:
+                        if label.name.lower() == name.lower():
+                            matches.append(label)
+                    elif label.is_group() and allow_label_group:  # ignore labels
+                        if label.name.lower() == name.lower():
+                            matches.append(label)
+                if len(matches) > 0:
+                    return matches
+
             if raise_exception_if_not_found:
                 raise pylo.PyloEx("Label/group '%s' not found", name)
             if missing_labels_names is not None:
