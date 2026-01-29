@@ -12,7 +12,8 @@ from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
 from .API.APIConnector import APIConnector, ObjectTypes
 from .API.RuleSearchQuery import RuleSearchQuery, RuleSearchQueryResolvedResultSet
 from .API.ClusterHealth import ClusterHealth
-from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager, ExplorerFilterSetV1, ExplorerQuery
+from .API.Explorer import (ExplorerResultSetV1, ExplorerResultSetV2, RuleCoverageQueryManager, ExplorerFilterSetV1,
+                           ExplorerFilterSetV2, ExplorerQuery, ExplorerQueryV2, ExplorerResultV2)
 from .API.AuditLog import AuditLogQuery, AuditLogQueryResultSet, AuditLogFilterSet
 from .API.CredentialsManager import get_credentials_from_file
 from .LabelCommon import LabelCommon

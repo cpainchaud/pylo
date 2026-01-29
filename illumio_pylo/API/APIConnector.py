@@ -28,10 +28,6 @@ from typing import Union, Dict, Any, List, Optional, Literal
 
 requests.packages.urllib3.disable_warnings()
 
-objects_types_strings = Literal[
-    'workloads', 'virtual_services', 'labels', 'labelgroups', 'iplists', 'services',
-    'rulesets', 'security_principals', 'label_dimensions']
-
 default_retry_count_if_api_call_limit_reached = 3
 default_retry_wait_time_if_api_call_limit_reached = 10
 default_max_objects_for_sync_calls = 200000
@@ -49,7 +45,7 @@ def get_field_or_die(field_name: str, data):
 
 
 ObjectTypes = Literal['iplists', 'workloads', 'virtual_services', 'labels', 'labelgroups', 'services', 'rulesets',
-                        'security_principals', 'label_dimensions']
+                      'security_principals', 'label_dimensions']
 
 all_object_types: Dict[ObjectTypes, ObjectTypes] = {
     'iplists': 'iplists',
@@ -316,7 +312,7 @@ class APIConnector:
                     or\
                     method == 'DELETE' and req.status_code != 204 \
                     or \
-                    method == 'PUT' and req.status_code != 204 and req.status_code != 200:
+                    method == 'PUT' and req.status_code != 204 and req.status_code != 202 and req.status_code != 200:
 
                 if req.status_code == 429:
                     # too many requests sent in short amount of time? [{"token":"too_many_requests_error", ....}]
@@ -371,7 +367,7 @@ class APIConnector:
         self.collect_pce_infos()
         return self.version_string
 
-    def get_objects_count_by_type(self, object_type: objects_types_strings) -> int:
+    def get_objects_count_by_type(self, object_type: ObjectTypes) -> int:
 
         def extract_count(headers):
             count = headers.get('x-total-count')
@@ -1323,11 +1319,22 @@ class APIConnector:
 
         raise pylo.PyloObjectNotFound("Request with ID {} not found".format(request_href))
 
-    def explorer_search(self, filters: Union[Dict, 'pylo.ExplorerFilterSetV1'],
-                        max_running_time_seconds=1800,
-                        check_for_update_interval_seconds=10) -> 'pylo.ExplorerResultSetV1':
+    def explorer_search(self, filters: Union[Dict, 'pylo.ExplorerFilterSetV1', 'pylo.ExplorerFilterSetV2'],
+                        max_running_time_seconds=1800,check_for_update_interval_seconds=10, draft_mode_enabled=False)\
+            -> Union['pylo.ExplorerResultSetV1', 'pylo.ExplorerResultSetV2']:
+        """
+
+        :param filters:
+        :param max_running_time_seconds:
+        :param check_for_update_interval_seconds:
+        :param draft_mode_enabled: only for V2 filters
+        :return:
+        """
+
         path = "/traffic_flows/async_queries"
         if isinstance(filters, pylo.ExplorerFilterSetV1):
+            data = filters.generate_json_query()
+        elif isinstance(filters, pylo.ExplorerFilterSetV2):
             data = filters.generate_json_query()
         else:
             data = filters
@@ -1373,11 +1380,45 @@ class APIConnector:
         if query_status is None:
             raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
 
-        query_json_response = self.do_get_call(query_href + "/download", json_output_expected=True, include_org_id=False)
+        # if draft mode is not enabled we can download the results and pass them over
+        if not draft_mode_enabled or isinstance(filters, pylo.ExplorerFilterSetV1):
+            query_json_response = self.do_get_call(query_href + "/download", json_output_expected=True, include_org_id=False)
 
-        result = pylo.ExplorerResultSetV1(query_json_response,
-                                          owner=self,
-                                          emulated_process_exclusion=filters.exclude_processes_emulate)
+            if isinstance(filters, pylo.ExplorerFilterSetV1):
+                result = pylo.ExplorerResultSetV1(query_json_response,
+                                                  owner=self,
+                                                  emulated_process_exclusion=filters.exclude_processes_emulate)
+            else:
+                result = pylo.ExplorerResultSetV2(query_json_response)
+
+            return result
+
+        # from here we are in draft mode with V2 filters so we must request API to calculate the draft results
+        draft_mode_trigger_url = query_href + "/update_rules?label_based_rules=false&offset=0&limit=250000"
+        draft_mode_trigger_response = self.do_put_call(draft_mode_trigger_url, json_output_expected=False, include_org_id=False)
+
+        time.sleep(5)  # wait a bit before checking for results
+
+        while True:
+            # check that we don't wait too long
+            if time.time() - start_time > max_running_time_seconds:
+                raise pylo.PyloApiEx("Timeout while waiting for draft mode results to be calculated", draft_mode_trigger_response)
+
+            draft_mode_status_response = self.explorer_async_query_get_specific_request_status(query_href)
+            if draft_mode_status_response['rules'] == "completed":
+                query_status = draft_mode_status_response
+                break
+
+            if draft_mode_status_response['rules'] not in ["queued", "working"]:
+                raise pylo.PyloApiEx("Draft mode results calculation failed with status {}".format(draft_mode_status_response['status']),
+                                     draft_mode_status_response)
+
+            time.sleep(check_for_update_interval_seconds)
+
+        if query_status is None:
+            raise pylo.PyloEx("Unexpected logic where query_status is None", query_queued_json_response)
+        query_json_response = self.do_get_call(query_href + "/download", json_output_expected=True, include_org_id=False)
+        result = pylo.ExplorerResultSetV2(query_json_response)
 
         return result
 
@@ -1406,6 +1447,12 @@ class APIConnector:
     def new_explorer_query(self, max_results: int = 1500, max_running_time_seconds: int = 1800,
                            check_for_update_interval_seconds: int = 10) -> 'pylo.ExplorerQuery':
         return pylo.ExplorerQuery(self, max_results, max_running_time_seconds, check_for_update_interval_seconds)
+
+    def new_explorer_query_v2(self, max_results: int = 2500, draft_mode_enabled=False,  max_running_time_seconds: int = 1800,
+                              check_for_update_interval_seconds: int = 10) -> 'pylo.ExplorerQueryV2':
+        return pylo.ExplorerQueryV2(self, max_results=max_results, draft_mode_enabled=draft_mode_enabled,
+                                    max_running_time_seconds=max_running_time_seconds,
+                                    check_for_update_interval_seconds=check_for_update_interval_seconds)
 
     def new_audit_log_query(self, max_results: int = 10000, max_running_time_seconds: int = 1800,
                             check_for_update_interval_seconds: int = 10) -> 'pylo.AuditLogQuery':

@@ -1,26 +1,32 @@
 """This module contains the JSON payload types for the PCE API."""
 
-from typing import List, Optional, TypedDict, NotRequired, Union, Literal
+from typing import List, Optional, TypedDict, NotRequired, Union, Literal, Dict
 
 
 class HrefReference(TypedDict):
     href: str
 
+
 class HrefReferenceWithName(TypedDict):
     href: str
     name: str
 
+
 class LabelHrefRef(TypedDict):
     label: HrefReference
+
 
 class WorkloadHrefRef(TypedDict):
     workload: HrefReference
 
+
 class IPListHrefRef(TypedDict):
     ip_list: HrefReference
 
+
 class ServiceHrefRef(TypedDict):
     service: HrefReference
+
 
 class VirtualServiceHrefRef(TypedDict):
     virtual_service: HrefReference
@@ -45,6 +51,7 @@ class LabelObjectUsageJsonStructure(TypedDict):
     label_mapping_rule: bool
     virtual_service: bool
 
+
 class LabelObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
@@ -60,6 +67,12 @@ class LabelObjectJsonStructure(TypedDict):
 class LabelObjectCreationJsonStructure(TypedDict):
     value: str
     key: str
+
+
+class LabelObjectShortReferenceJsonStructure(TypedDict):
+    value: str
+    key: str
+    href: str
 
 
 class LabelObjectUpdateJsonStructure(TypedDict):
@@ -82,6 +95,7 @@ class LabelGroupObjectUpdateJsonStructure(TypedDict):
     labels: NotRequired[List[HrefReference]]
     name: NotRequired[str]
 
+
 class IPListObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
@@ -91,6 +105,7 @@ class IPListObjectJsonStructure(TypedDict):
     name: str
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+
 
 class IPListObjectCreationJsonStructure(TypedDict):
     description: str
@@ -122,7 +137,7 @@ class WorkloadObjectCreateJsonStructure(TypedDict):
     """
     This is the structure of the JSON payload for creating a workload.
     """
-    description:NotRequired[str]
+    description: NotRequired[str]
     hostname: NotRequired[str]
     interfaces: NotRequired[List[WorkloadInterfaceObjectJsonStructure]]
     labels: NotRequired[List[HrefReference]]
@@ -204,7 +219,7 @@ class RuleObjectJsonStructure(TypedDict):
     created_by: Optional[HrefReferenceWithName]
     description: str
     href: str
-    ingress_services: List[RuleDirectServiceReferenceObjectJsonStructure|RuleServiceReferenceObjectJsonStructure]
+    ingress_services: List[RuleDirectServiceReferenceObjectJsonStructure | RuleServiceReferenceObjectJsonStructure]
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
 
@@ -320,7 +335,8 @@ class RuleCoverageQueryEntryJsonStructure(TypedDict):
 
 WorkloadsGetQueryLabelFilterJsonStructure = List[List[str]]
 
-AuditLogApiEventType = Literal['agent.clone_detected', 'workloads.update', 'workload.update', 'workload_interfaces.update']
+AuditLogApiEventType = Literal[
+    'agent.clone_detected', 'workloads.update', 'workload.update', 'workload_interfaces.update']
 
 
 class AuditLogEntryJsonStructure(TypedDict):
@@ -335,3 +351,47 @@ class AuditLogApiRequestPayloadStructure(TypedDict):
 class AuditLogApiReplyEventJsonStructure(TypedDict):
     pass
 
+
+class ExplorerTrafficRecordActorWorkloadJsonStructure(TypedDict):
+    enforcement_mode: Literal['enforced', 'visibility_only', 'idle', 'selective_enforcement']
+    hostname: str
+    href: str
+    labels: List[LabelObjectShortReferenceJsonStructure]
+    managed: bool
+    os_type: str
+
+
+class ExplorerTrafficRecordActorJsonStructure(TypedDict):
+    ip: str
+    fqdn: NotRequired[str]
+    ip_lists: NotRequired[List[HrefReferenceWithName]]
+    workload: NotRequired[ExplorerTrafficRecordActorWorkloadJsonStructure]
+
+
+class ExplorerTrafficRecordTimestampRangeJsonStructure(TypedDict):
+    first_detected: str  # ISO 8601 format UTC timestamp
+    last_detected: str  # ISO 8601 format UTC timestamp
+
+
+class ExplorerTrafficRecordJsonStructure(TypedDict):
+    boundary_decision: NotRequired[Literal['blocked', 'allowed']]
+    src: ExplorerTrafficRecordActorJsonStructure
+    dst: ExplorerTrafficRecordActorJsonStructure
+    caps: List[str]
+    client_type: Literal['server', 'endpoint']
+    flow_direction: Literal['inbound', 'outbound']
+    network: HrefReferenceWithName
+    num_connections: int
+    policy_decision: Literal['allowed', 'potentially_blocked', 'blocked']
+    service: Dict
+    state: str
+    origin: str
+    draft_policy_decision: Literal[
+        'allowed', 'allowed_across_boundaries', 'denied', '', 'potentially_blocked', 'potentially_blocked_by_boundary']
+    timestamp_range: ExplorerTrafficRecordTimestampRangeJsonStructure
+    rules: List[HrefReference]
+    deny_rules: List[HrefReference]
+    override_deny_rules: List[HrefReference]
+
+
+ExplorerTrafficRecordsApiReplyPayloadJsonStructure = List[ExplorerTrafficRecordJsonStructure]
