@@ -730,9 +730,26 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
         shutdown_requested['value'] = True
         return jsonify({'success': True, 'message': 'Shutdown acknowledged. Server will stop shortly.'})
 
-    # Shutdown check after each request
+    # Shutdown check and security headers after each request
     @app.after_request
     def check_shutdown(response):
+        # Add security headers to prevent XSS and other attacks
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "font-src 'self'; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'"
+        )
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
         if shutdown_requested['value']:
             # Schedule shutdown after response is sent
             def shutdown():
