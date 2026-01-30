@@ -21,6 +21,7 @@
         btnSubmit: document.getElementById('btn-submit'),
         btnCloseTestModal: document.getElementById('btn-close-test-modal'),
         btnCloseTest: document.getElementById('btn-close-test'),
+        themeToggle: document.getElementById('theme-toggle'),
 
         // Modal
         credentialModal: document.getElementById('credential-modal'),
@@ -85,8 +86,44 @@
     let credentialToEncrypt = null;
     let shutdownInProgress = false;
 
+    // Theme Management
+    function initTheme() {
+        // Check for saved theme preference or default to browser preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (prefersDark) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+
+        // Listen for browser theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+    }
+
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        elements.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        elements.themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    }
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
     // Initialize the application
     async function init() {
+        initTheme();
         await checkEncryptionStatus();
         await loadCredentials();
         setupEventListeners();
@@ -94,6 +131,9 @@
 
     // Setup event listeners
     function setupEventListeners() {
+        // Theme toggle button
+        elements.themeToggle.addEventListener('click', toggleTheme);
+
         // New credential button
         elements.btnNewCredential.addEventListener('click', () => openCreateModal());
 
