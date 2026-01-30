@@ -14,8 +14,7 @@ objects_load_filter = None
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--include-deleted-workloads', action='store_true',
-                        help='should deleted workloads be downloaded as well')
+    pass  # All options are now handled by the global CLI arguments
 
 
 def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = None, config_data=None, **kwargs):

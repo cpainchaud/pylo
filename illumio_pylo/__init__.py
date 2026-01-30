@@ -32,7 +32,11 @@ from .Ruleset import Ruleset, RulesetScope, RulesetScopeEntry
 from .RulesetStore import RulesetStore
 from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
 from .Organization import Organization
-from .Query import Query
+from .FilterQuery import (
+    FilterQuery, FilterRegistry, FilterField, ValueType,
+    WorkloadFilterRegistry, get_workload_filter_registry,
+    QueryLexer, QueryParser, QueryNode, AndNode, OrNode, NotNode, ConditionNode
+)
 
 
 def get_organization(fqdn: str, port: int, api_user: str, api_key: str,
