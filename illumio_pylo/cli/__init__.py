@@ -38,7 +38,7 @@ def run(forced_command_name: Optional[str] = None):
 
     parser = argparse.ArgumentParser(description='PYLO-CLI: Illumio API&More Command Line Interface')
     parser.add_argument('--pce', type=str, required=False,
-                        help='hostname of the PCE')
+                        help='name of the CredentialProfile to use (as defined in the credentials file)')
     parser.add_argument('--force-async-mode', action='store_true',
                         help='Forces the command to run async API queries when required (large PCEs which timeout on specific queries)')
     parser.add_argument('--debug', action='store_true',
