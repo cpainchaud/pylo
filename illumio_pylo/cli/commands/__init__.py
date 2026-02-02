@@ -33,3 +33,4 @@ from .credential_manager import command_object
 from .iplist_analyzer import command_object
 from .ven_compatibility_report_export import command_object
 from .label_delete_unused import command_object
+from .traffic_export import command_object

@@ -12,9 +12,11 @@ from .ReferenceTracker import ReferenceTracker, Referencer, Pathable
 from .API.APIConnector import APIConnector, ObjectTypes
 from .API.RuleSearchQuery import RuleSearchQuery, RuleSearchQueryResolvedResultSet
 from .API.ClusterHealth import ClusterHealth
-from .API.Explorer import ExplorerResultSetV1, RuleCoverageQueryManager, ExplorerFilterSetV1, ExplorerQuery
+from .API.Explorer import (ExplorerResultSetV1, ExplorerResultSetV2, RuleCoverageQueryManager, ExplorerFilterSetV1,
+                           ExplorerFilterSetV2, ExplorerQuery, ExplorerQueryV2, ExplorerResultV2)
 from .API.AuditLog import AuditLogQuery, AuditLogQueryResultSet, AuditLogFilterSet
 from .API.CredentialsManager import get_credentials_from_file
+from .LabelDimension import LabelDimension, DIMENSION_KEY_ROLE, DIMENSION_KEY_APP, DIMENSION_KEY_ENV, DIMENSION_KEY_LOC
 from .LabelCommon import LabelCommon
 from .Label import Label
 from .LabelGroup import LabelGroup
@@ -31,7 +33,11 @@ from .Ruleset import Ruleset, RulesetScope, RulesetScopeEntry
 from .RulesetStore import RulesetStore
 from .SecurityPrincipal import SecurityPrincipal, SecurityPrincipalStore
 from .Organization import Organization
-from .Query import Query
+from .FilterQuery import (
+    FilterQuery, FilterRegistry, FilterField, ValueType,
+    WorkloadFilterRegistry, get_workload_filter_registry,
+    QueryLexer, QueryParser, QueryNode, AndNode, OrNode, NotNode, ConditionNode
+)
 
 
 def get_organization(fqdn: str, port: int, api_user: str, api_key: str,

@@ -21,6 +21,7 @@
         btnSubmit: document.getElementById('btn-submit'),
         btnCloseTestModal: document.getElementById('btn-close-test-modal'),
         btnCloseTest: document.getElementById('btn-close-test'),
+        themeToggle: document.getElementById('theme-toggle'),
 
         // Modal
         credentialModal: document.getElementById('credential-modal'),
@@ -57,23 +58,82 @@
         deleteCredentialName: document.getElementById('delete-credential-name'),
         btnCloseDeleteModal: document.getElementById('btn-close-delete-modal'),
         btnCancelDelete: document.getElementById('btn-cancel-delete'),
-        btnConfirmDelete: document.getElementById('btn-confirm-delete')
+        btnConfirmDelete: document.getElementById('btn-confirm-delete'),
+
+        // Encrypt modal
+        encryptModal: document.getElementById('encrypt-modal'),
+        encryptCredentialName: document.getElementById('encrypt-credential-name'),
+        encryptSshKey: document.getElementById('encrypt-ssh-key'),
+        btnCloseEncryptModal: document.getElementById('btn-close-encrypt-modal'),
+        btnCancelEncrypt: document.getElementById('btn-cancel-encrypt'),
+        btnConfirmEncrypt: document.getElementById('btn-confirm-encrypt'),
+
+        // Shutdown modal
+        shutdownModal: document.getElementById('shutdown-modal'),
+        btnShutdown: document.getElementById('btn-shutdown'),
+        btnCloseShutdownModal: document.getElementById('btn-close-shutdown-modal'),
+        btnCancelShutdown: document.getElementById('btn-cancel-shutdown'),
+        btnConfirmShutdown: document.getElementById('btn-confirm-shutdown'),
+        shutdownMessage: document.getElementById('shutdown-message'),
+        shutdownCountdown: document.getElementById('shutdown-countdown'),
+        shutdownActions: document.getElementById('shutdown-actions')
     };
 
     // State
     let sshKeys = [];
     let encryptionAvailable = false;
     let credentialToDelete = null;
+    let credentialToEncrypt = null;
+    let shutdownInProgress = false;
+
+    // Theme Management
+    function initTheme() {
+        // Check for saved theme preference or default to browser preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (prefersDark) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+
+        // Listen for browser theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+    }
+
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        elements.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        elements.themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    }
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
 
     // Initialize the application
     async function init() {
-        await loadCredentials();
+        initTheme();
         await checkEncryptionStatus();
+        await loadCredentials();
         setupEventListeners();
     }
 
     // Setup event listeners
     function setupEventListeners() {
+        // Theme toggle button
+        elements.themeToggle.addEventListener('click', toggleTheme);
+
         // New credential button
         elements.btnNewCredential.addEventListener('click', () => openCreateModal());
 
@@ -96,6 +156,15 @@
         elements.btnCancelDelete.addEventListener('click', closeDeleteModal);
         elements.btnConfirmDelete.addEventListener('click', confirmDelete);
 
+        // Encrypt modal buttons
+        elements.btnCloseEncryptModal.addEventListener('click', closeEncryptModal);
+        elements.btnCancelEncrypt.addEventListener('click', closeEncryptModal);
+        elements.btnConfirmEncrypt.addEventListener('click', confirmEncrypt);
+
+        // Shutdown modal buttons
+        elements.btnShutdown.addEventListener('click', openShutdownModal);
+        elements.btnConfirmShutdown.addEventListener('click', confirmShutdown);
+
         // Close modals on background click
         elements.credentialModal.addEventListener('click', (e) => {
             if (e.target === elements.credentialModal) closeModal();
@@ -105,6 +174,9 @@
         });
         elements.deleteModal.addEventListener('click', (e) => {
             if (e.target === elements.deleteModal) closeDeleteModal();
+        });
+        elements.encryptModal.addEventListener('click', (e) => {
+            if (e.target === elements.encryptModal) closeEncryptModal();
         });
     }
 
@@ -158,17 +230,22 @@
 
         for (const cred of credentials) {
             const row = document.createElement('tr');
+            // Show encrypt button only if encryption is available and key is not already encrypted
+            const showEncryptBtn = encryptionAvailable && sshKeys.length > 0 && !cred.api_key_encrypted;
+            console.log('Rendering credential:', cred.name, 'Show Encrypt Button:', showEncryptBtn, 'Encryption Available:', encryptionAvailable, 'SSH Keys:', sshKeys.length, 'API Key Encrypted:', cred.api_key_encrypted);
             row.innerHTML = `
                 <td><strong>${escapeHtml(cred.name)}</strong></td>
                 <td>${escapeHtml(cred.fqdn)}</td>
                 <td>${cred.port}</td>
                 <td>${cred.org_id}</td>
                 <td>${escapeHtml(cred.api_user)}</td>
+                <td class="${cred.api_key_encrypted ? 'status-yes' : 'status-no'}">${cred.api_key_encrypted ? 'Yes' : 'No'}</td>
                 <td class="${cred.verify_ssl ? 'status-yes' : 'status-no'}">${cred.verify_ssl ? 'Yes' : 'No'}</td>
                 <td title="${escapeHtml(cred.originating_file)}">${truncatePath(cred.originating_file)}</td>
                 <td class="actions-cell">
                     <button class="btn btn-small btn-success btn-test" data-name="${escapeHtml(cred.name)}">Test</button>
                     <button class="btn btn-small btn-secondary btn-edit" data-name="${escapeHtml(cred.name)}">Edit</button>
+                    ${showEncryptBtn ? `<button class="btn btn-small btn-warning btn-encrypt" data-name="${escapeHtml(cred.name)}">Encrypt</button>` : ''}
                     <button class="btn btn-small btn-danger btn-delete" data-name="${escapeHtml(cred.name)}">Delete</button>
                 </td>
             `;
@@ -181,6 +258,9 @@
         });
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', () => openEditModal(btn.dataset.name));
+        });
+        document.querySelectorAll('.btn-encrypt').forEach(btn => {
+            btn.addEventListener('click', () => openEncryptModal(btn.dataset.name));
         });
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', () => openDeleteModal(btn.dataset.name));
@@ -295,6 +375,115 @@
     function closeDeleteModal() {
         elements.deleteModal.classList.add('hidden');
         credentialToDelete = null;
+    }
+
+    // Open modal for encrypting credential
+    function openEncryptModal(name) {
+        credentialToEncrypt = name;
+        elements.encryptCredentialName.textContent = name;
+        // Populate SSH key dropdown
+        elements.encryptSshKey.innerHTML = '';
+        for (const key of sshKeys) {
+            const option = document.createElement('option');
+            option.value = key.index;
+            option.textContent = `${key.type} | ${key.fingerprint.substring(0, 16)}... | ${key.comment || 'No comment'}`;
+            elements.encryptSshKey.appendChild(option);
+        }
+        elements.encryptModal.classList.remove('hidden');
+    }
+
+    // Close encrypt modal
+    function closeEncryptModal() {
+        elements.encryptModal.classList.add('hidden');
+        credentialToEncrypt = null;
+    }
+
+    // Open modal for shutting down the server
+    function openShutdownModal() {
+        // Reset modal to initial state
+        shutdownInProgress = false;
+        elements.shutdownMessage.textContent = 'This will stop the Credential Manager server program.';
+        elements.shutdownCountdown.classList.add('hidden');
+        elements.shutdownCountdown.textContent = '';
+        elements.shutdownActions.classList.remove('hidden');
+        elements.btnConfirmShutdown.disabled = false;
+        elements.btnConfirmShutdown.textContent = 'Stop Server';
+        elements.btnCancelShutdown.disabled = true;
+        elements.btnCloseShutdownModal.disabled = true;
+        elements.shutdownModal.classList.remove('hidden');
+    }
+
+    // Shutdown modal intentionally stays visible once opened.
+
+    // Confirm shutdown
+    async function confirmShutdown() {
+        if (shutdownInProgress) return;
+
+        shutdownInProgress = true;
+        elements.btnConfirmShutdown.disabled = true;
+        elements.btnConfirmShutdown.textContent = 'Stopping...';
+        elements.btnCancelShutdown.disabled = true;
+        elements.btnCloseShutdownModal.disabled = true;
+
+        try {
+            await apiCall('/api/shutdown', { method: 'POST' });
+
+            // Update modal to show success and countdown
+            elements.shutdownMessage.textContent = 'Server shutdown acknowledged. Closing window...';
+            elements.shutdownActions.classList.add('hidden');
+            elements.shutdownCountdown.classList.remove('hidden');
+
+            // Start countdown
+            let countdown = 10;
+            elements.shutdownCountdown.textContent = `Window will close in ${countdown} seconds...`;
+            elements.shutdownCountdown.className = 'countdown-text';
+
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    elements.shutdownCountdown.textContent = `Window will close in ${countdown} seconds...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    elements.shutdownCountdown.textContent = 'Closing window...';
+                    // Attempt to close the window/tab
+                    window.close();
+                    // If window.close() doesn't work (common in modern browsers), show a message
+                    setTimeout(() => {
+                        elements.shutdownCountdown.textContent = 'Please close this browser tab/window manually.';
+                    }, 500);
+                }
+            }, 1000);
+        } catch (error) {
+            shutdownInProgress = false;
+            elements.btnConfirmShutdown.disabled = false;
+            elements.btnConfirmShutdown.textContent = 'Stop Server';
+            showNotification('Failed to stop server: ' + error.message, 'error');
+        }
+    }
+
+    // Confirm credential encryption
+    async function confirmEncrypt() {
+        if (!credentialToEncrypt) return;
+
+        elements.btnConfirmEncrypt.disabled = true;
+        elements.btnConfirmEncrypt.textContent = 'Encrypting...';
+
+        try {
+            await apiCall(`/api/credentials/${encodeURIComponent(credentialToEncrypt)}/encrypt`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    ssh_key_index: parseInt(elements.encryptSshKey.value)
+                })
+            });
+            showNotification('API key encrypted successfully!', 'success');
+            closeEncryptModal();
+            await loadCredentials();
+        } catch (error) {
+            showNotification('Failed to encrypt API key: ' + error.message, 'error');
+        } finally {
+            elements.btnConfirmEncrypt.disabled = false;
+            elements.btnConfirmEncrypt.textContent = 'Encrypt';
+        }
     }
 
     // Reset form

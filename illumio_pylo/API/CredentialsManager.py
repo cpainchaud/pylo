@@ -46,6 +46,10 @@ class CredentialProfile:
 
         self.raw_json: Optional[CredentialFileEntry] = None
 
+    def is_api_key_encrypted(self) -> bool:
+        """Check if the API key is encrypted (starts with $encrypted$:)."""
+        return self.api_key.startswith("$encrypted$:")
+
     @staticmethod
     def from_credentials_file_entry(credential_file_entry: CredentialFileEntry, originating_file: Optional[str] = None):
         return CredentialProfile(credential_file_entry['name'],
@@ -57,11 +61,104 @@ class CredentialProfile:
                                  credential_file_entry['verify_ssl'],
                                  originating_file)
 
+    @staticmethod
+    def from_environment_variables() -> 'CredentialProfile':
+        """
+        Create a CredentialProfile from environment variables.
+        This profile is only accessible when specifically requesting profile name 'ENV'.
+
+        Required environment variables:
+        - PYLO_FQDN: Fully qualified domain name of the PCE
+        - PYLO_API_USER: API username
+        - PYLO_API_KEY: API key (can be encrypted with $encrypted$: prefix)
+
+        Optional environment variables:
+        - PYLO_PORT: Port number (default: 8443, or 443 for illum.io domains)
+        - PYLO_ORG_ID: Organization ID (default: 1, required for illum.io domains)
+        - PYLO_VERIFY_SSL: Verify SSL certificate (default: true, accepts: true/false/1/0)
+
+        :return: CredentialProfile with name='ENV'
+        :raises PyloEx: If required environment variables are missing or invalid
+        """
+        # Check for required environment variables
+        fqdn = os.environ.get('PYLO_FQDN')
+        api_user = os.environ.get('PYLO_API_USER')
+        api_key = os.environ.get('PYLO_API_KEY')
+
+        missing_vars = []
+        if not fqdn:
+            missing_vars.append('PYLO_FQDN')
+        if not api_user:
+            missing_vars.append('PYLO_API_USER')
+        if not api_key:
+            missing_vars.append('PYLO_API_KEY')
+
+        if missing_vars:
+            raise PyloEx("Missing required environment variables for ENV profile: {}. "
+                        "Required: PYLO_FQDN, PYLO_API_USER, PYLO_API_KEY. "
+                        "Optional: PYLO_PORT, PYLO_ORG_ID, PYLO_VERIFY_SSL".format(', '.join(missing_vars)))
+
+        # Determine if this is an illum.io domain
+        is_illumio_domain = 'illum.io' in fqdn.lower()
+
+        # Parse PORT with validation
+        port_str = os.environ.get('PYLO_PORT')
+        if port_str:
+            try:
+                port = int(port_str)
+                if port <= 0 or port > 65535:
+                    raise ValueError("Port must be between 1 and 65535")
+            except ValueError as e:
+                raise PyloEx("Invalid PYLO_PORT value '{}': must be a valid port number (1-65535)".format(port_str))
+        else:
+            # Default port based on domain type
+            port = 443 if is_illumio_domain else 8443
+
+        # Parse ORG_ID with validation
+        org_id_str = os.environ.get('PYLO_ORG_ID')
+        if org_id_str:
+            try:
+                org_id = int(org_id_str)
+                if org_id <= 0:
+                    raise ValueError("Organization ID must be positive")
+            except ValueError as e:
+                raise PyloEx("Invalid PYLO_ORG_ID value '{}': must be a positive integer".format(org_id_str))
+        else:
+            # For illum.io domains, org_id is mandatory
+            if is_illumio_domain:
+                raise PyloEx("PYLO_ORG_ID is required for illum.io domains (no default available)")
+            org_id = 1
+
+        # Parse VERIFY_SSL with validation
+        verify_ssl_str = os.environ.get('PYLO_VERIFY_SSL', 'true').lower()
+        if verify_ssl_str in ['true', '1', 'yes', 'y']:
+            verify_ssl = True
+        elif verify_ssl_str in ['false', '0', 'no', 'n']:
+            verify_ssl = False
+        else:
+            raise PyloEx("Invalid PYLO_VERIFY_SSL value '{}': must be true/false/1/0/yes/no/y/n (case-insensitive)".format(verify_ssl_str))
+
+        # Decrypt API key if encrypted
+        if api_key.startswith("$encrypted$:"):
+            log.debug("Detected encrypted API key in environment variable, attempting to decrypt")
+            api_key = decrypt_api_key(api_key)
+
+        return CredentialProfile(
+            name='ENV',
+            fqdn=fqdn,
+            port=port,
+            api_user=api_user,
+            api_key=api_key,
+            org_id=org_id,
+            verify_ssl=verify_ssl,
+            originating_file='environment'
+        )
+
 
 CredentialsFileType = Union[CredentialFileEntry | List[CredentialFileEntry]]
 
 
-def check_profile_json_structure(profile: Dict) -> None:
+def check_profile_json_structure(profile: CredentialFileEntry) -> None:
     # ensure all fields from CredentialFileEntry are present
     if "name" not in profile or type(profile["name"]) != str:
         raise PyloEx("The profile {} does not contain a name".format(profile))
@@ -79,7 +176,7 @@ def check_profile_json_structure(profile: Dict) -> None:
         raise PyloEx("The profile {} does not contain a verify_ssl".format(profile))
 
 
-def get_all_credentials_from_file(credential_file: str ) -> List[CredentialProfile]:
+def get_all_credentials_from_file(credential_file: str) -> List[CredentialProfile]:
     log.debug("Loading credentials from file: {}".format(credential_file))
     with open(credential_file, 'r') as f:
         credentials: CredentialsFileType = json.load(f)
@@ -97,10 +194,25 @@ def get_all_credentials_from_file(credential_file: str ) -> List[CredentialProfi
 
 def get_credentials_from_file(fqdn_or_profile_name: str = None,
                               credential_file: str = None, fail_with_an_exception=True) -> Optional[CredentialProfile]:
+    """
+    Get credentials from a file or environment variables.
 
+    Special profile name 'ENV' will load credentials from environment variables instead of files.
+    See CredentialProfile.from_environment_variables() for required environment variables.
+
+    :param fqdn_or_profile_name: Profile name or FQDN to search for (default: 'default')
+    :param credential_file: Specific credential file to search in (optional)
+    :param fail_with_an_exception: Raise exception if profile not found (default: True)
+    :return: CredentialProfile or None
+    """
     if fqdn_or_profile_name is None:
         log.debug("No fqdn_or_profile_name provided, profile_name=default will be used")
         fqdn_or_profile_name = "default"
+
+    # Check for special 'ENV' profile name to load from environment variables
+    if fqdn_or_profile_name.lower() == 'env':
+        log.debug("Loading credentials from environment variables")
+        return CredentialProfile.from_environment_variables()
 
     credential_files: List[str] = []
     if credential_file is not None:
@@ -170,17 +282,21 @@ def create_credential_in_file(file_full_path: str, data: CredentialFileEntry, ov
             credentials: CredentialsFileType = json.load(f)
             if isinstance(credentials, list):
                 # check if the profile already exists
+                profile_found = False
                 for profile in credentials:
                     if profile['name'].lower() == data['name'].lower():
                         if overwrite_existing_profile:
                             # profile is a dict, remove of all its entries
                             for key in list(profile.keys()):
+                                # noinspection PyTypedDict
                                 del profile[key]
                             profile.update(data)
+                            profile_found = True
                             break
                         else:
                             raise PyloEx("Profile with name {} already exists in file {}".format(data['name'], file_full_path))
-                credentials.append(data)
+                if not profile_found:
+                    credentials.append(data)
             else:
                 if data['name'].lower() == credentials['name'].lower():
                     if overwrite_existing_profile:
@@ -360,5 +476,16 @@ def is_encryption_available() -> bool:
         return len(keys) > 0
 
     return False
+
+
+def is_env_credentials_available() -> bool:
+    """
+    Check if required environment variables for ENV profile are set.
+
+    :return: True if PYLO_FQDN, PYLO_API_USER, and PYLO_API_KEY are all set, False otherwise
+    """
+    return (os.environ.get('PYLO_FQDN') is not None and
+            os.environ.get('PYLO_API_USER') is not None and
+            os.environ.get('PYLO_API_KEY') is not None)
 
 

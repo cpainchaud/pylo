@@ -6,6 +6,7 @@ from .Organization import Organization
 from typing import Optional, List, Union, Set, Iterable
 
 from .WorkloadStoreSubClasses import UnmanagedWorkloadDraft, UnmanagedWorkloadDraftMultiCreatorManager
+from .FilterQuery import FilterQuery, get_workload_filter_registry
 
 
 class WorkloadStore:
@@ -296,6 +297,63 @@ class WorkloadStore:
 
     def new_unmanaged_workload_multi_creator_manager(self) -> UnmanagedWorkloadDraftMultiCreatorManager:
         return UnmanagedWorkloadDraftMultiCreatorManager(self)
+
+    def find_workloads_matching_query(self, query: str, include_deleted: bool = False) -> List['Workload']:
+        """
+        Find all workloads matching a filter query expression.
+
+        Query syntax supports:
+        - Comparison operators: ==, !=, <, >, <=, >=
+        - String operators: contains, matches (regex)
+        - Logical operators: and, or, not
+        - Parentheses for grouping
+
+        Available fields:
+        - name, hostname, forced_name, href, description
+        - online, managed, unmanaged, deleted
+        - os_id, os_detail
+        - ip_address, ip (checks all interfaces)
+        - last_heartbeat, last_heartbeat_received
+        - agent.status, agent.mode, mode, agent.version
+        - label.<type> for any label type configured in the PCE (e.g., label.role, label.app, label.env, label.loc)
+        - Shorthand aliases for labels (e.g., role, app, env, loc)
+        - created_at
+        - reference_count
+
+        Examples:
+            "(name == 'SRV158' or name == 'SRV48889') and ip_address == '192.168.2.54'"
+            "last_heartbeat_received <= '2022-09-12' and online == true"
+            "hostname contains 'prod' and label.env == 'Production'"
+            "name matches 'SRV[0-9]+' and not deleted == true"
+
+        :param query: filter query expression
+        :param include_deleted: whether to include deleted workloads in the search
+        :return: list of matching Workload objects
+        """
+        # Pass owner (Organization) to get registry with all configured label types
+        registry = get_workload_filter_registry(self.owner)
+        filter_query = FilterQuery(registry)
+
+        # Get workloads to filter
+        if include_deleted:
+            workloads = list(self.itemsByHRef.values())
+        else:
+            workloads = [w for w in self.itemsByHRef.values() if not w.deleted]
+
+        return filter_query.execute(query, workloads)
+
+    def find_workloads_matching_query_as_dict(self, query: str, include_deleted: bool = False) -> Dict[str, 'Workload']:
+        """
+        Find all workloads matching a filter query expression, returned as a dict with HREF as key.
+
+        See find_workloads_matching_query() for query syntax and available fields.
+
+        :param query: filter query expression
+        :param include_deleted: whether to include deleted workloads in the search
+        :return: dict of matching Workload objects with HREF as key
+        """
+        matching = self.find_workloads_matching_query(query, include_deleted)
+        return {w.href: w for w in matching}
 
 
 

@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <header>
+            <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
             <h1>🔐 PYLO Credential Manager</h1>
             <p class="subtitle">Manage your PCE credentials</p>
         </header>
@@ -33,7 +34,8 @@
                             <th>Port</th>
                             <th>Org ID</th>
                             <th>API User</th>
-                            <th>SSL</th>
+                            <th>Encrypted Key</th>
+                            <th>Verify SSL</th>
                             <th>File</th>
                             <th>Actions</th>
                         </tr>
@@ -111,6 +113,7 @@
                             <select id="form-ssh-key">
                             </select>
                         </div>
+                        <p class="warning-text">You may be prompted by your SSH agent to unlock the selected SSH key when encrypting or using the key.</p>
                     </div>
 
                     <!-- Storage location (only for create) -->
@@ -160,6 +163,52 @@
                     <button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Encrypt confirmation modal -->
+        <div id="encrypt-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Encrypt API Key</h2>
+                    <button class="btn-close" id="btn-close-encrypt-modal">&times;</button>
+                </div>
+                <div class="encrypt-confirmation">
+                    <p>Encrypt the API key for "<strong id="encrypt-credential-name"></strong>" using an SSH key.</p>
+                    <div class="form-group">
+                        <label for="encrypt-ssh-key">Select SSH Key:</label>
+                        <select id="encrypt-ssh-key">
+                        </select>
+                    </div>
+                    <p class="warning-text">You may be prompted by your SSH agent to unlock the selected SSH key when encrypting the API key.</p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-encrypt">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-encrypt">Encrypt</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shutdown confirmation modal -->
+        <div id="shutdown-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Close Program</h2>
+                    <button class="btn-close" id="btn-close-shutdown-modal">&times;</button>
+                </div>
+                <div id="shutdown-content" class="shutdown-confirmation">
+                    <p id="shutdown-message">This will stop the Credential Manager server program.</p>
+                    <p id="shutdown-countdown" class="hidden"></p>
+                </div>
+                <div class="form-actions" id="shutdown-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-shutdown">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-shutdown">Stop Server</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shutdown button fixed at bottom -->
+        <div class="shutdown-button-container">
+            <button id="btn-shutdown" class="btn btn-shutdown">Job done, close program</button>
         </div>
     </div>
 

@@ -38,13 +38,15 @@ def run(forced_command_name: Optional[str] = None):
 
     parser = argparse.ArgumentParser(description='PYLO-CLI: Illumio API&More Command Line Interface')
     parser.add_argument('--pce', type=str, required=False,
-                        help='hostname of the PCE')
+                        help='name of the CredentialProfile to use (as defined in the credentials file)')
     parser.add_argument('--force-async-mode', action='store_true',
                         help='Forces the command to run async API queries when required (large PCEs which timeout on specific queries)')
     parser.add_argument('--debug', action='store_true',
                         help='Enables extra debugging output in Pylo framework')
     parser.add_argument('--use-cache', action='store_true',
                         help='For developers only')
+    parser.add_argument('--include-deleted-workloads', action='store_true',
+                        help='Include deleted workloads when loading data from the PCE')
     parser.add_argument('--version', action='store_true', help='Prints the version of the Pylo CLI')
 
     selected_command = None
@@ -80,6 +82,7 @@ def run(forced_command_name: Optional[str] = None):
 
     credential_profile_name = args['pce']
     settings_use_cache = args['use_cache']
+    include_deleted_workloads = args['include_deleted_workloads']
     org: Optional[pylo.Organization] = None
 
     # We are getting the command object associated to the command name if it was not already set (via forced_command_name)
@@ -111,7 +114,7 @@ def run(forced_command_name: Optional[str] = None):
             print("OK!")
 
             print(" * Downloading PCE objects from API... ".format(credential_profile_name), end="", flush=True)
-            config_data = connector.get_pce_objects(list_of_objects_to_load=selected_command.load_specific_objects_only, force_async_mode=args['force_async_mode'])
+            config_data = connector.get_pce_objects(list_of_objects_to_load=selected_command.load_specific_objects_only, force_async_mode=args['force_async_mode'], include_deleted_workloads=include_deleted_workloads)
             timer_download_finished = time.perf_counter()
             print("OK! (execution time: {:.2f} seconds)".format(timer_download_finished - timer_start))
 

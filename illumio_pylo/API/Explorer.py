@@ -1,9 +1,10 @@
 import sys
-from typing import Optional, List, Dict, Literal, TypeVar, Generic, Union
-from datetime import datetime, timedelta
+from typing import Optional, List, Dict, Literal, TypeVar, Generic, Union, Set
+from datetime import datetime, timedelta, timezone
 
 import illumio_pylo as pylo
-from .JsonPayloadTypes import RuleCoverageQueryEntryJsonStructure
+from .JsonPayloadTypes import RuleCoverageQueryEntryJsonStructure, ExplorerTrafficRecordsApiReplyPayloadJsonStructure, \
+    ExplorerTrafficRecordJsonStructure
 from illumio_pylo.API.APIConnector import APIConnector
 
 
@@ -344,7 +345,6 @@ class ExplorerResultSetV1:
         draft_manager = RuleCoverageQueryManager(self.owner)
         draft_manager.add_query_from_explorer_results(self._records)
         draft_manager.execute()
-
 
 
 class RuleCoverageQueryManager:
@@ -697,7 +697,11 @@ class RuleCoverageQueryManager:
 
         self.apply_policy_decisions_to_logs()
 
+
 class ExplorerFilterSetV1:
+    """
+    Legacy Filters for use with PCE version < 23.2"
+    """
     exclude_processes_emulate: Dict[str, str]
     _exclude_processes: List[str]
     _exclude_direct_services: List['pylo.DirectServiceInRule']
@@ -879,13 +883,6 @@ class ExplorerFilterSetV1:
         for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
             self.provider_exclude_cidr(item)
 
-    def provider_include_cidr(self, ipaddress: str):
-        self.__filter_provider_ip_include.append(ipaddress)
-
-    def provider_include_ip4map(self, map: 'pylo.IP4Map'):
-        for item in map.to_list_of_cidr_string():
-            self.provider_include_cidr(item)
-
     def service_include_add(self, service: Union['pylo.DirectServiceInRule',str]):
         if isinstance(service, str):
             self._include_direct_services.append(pylo.DirectServiceInRule.create_from_text(service))
@@ -929,7 +926,7 @@ class ExplorerFilterSetV1:
         self._time_from = time
 
     def set_time_from_x_seconds_ago(self, seconds: int):
-        self._time_from = datetime.utcnow() - timedelta(seconds=seconds)
+        self._time_from = datetime.now(timezone.utc) - timedelta(seconds=seconds)
 
     def set_time_from_x_days_ago(self, days: int):
         return self.set_time_from_x_seconds_ago(days*60*60*24)
@@ -941,7 +938,7 @@ class ExplorerFilterSetV1:
         self._time_to = time
 
     def set_time_to_x_seconds_ago(self, seconds: int):
-        self._time_to = datetime.utcnow() - timedelta(seconds=seconds)
+        self._time_to = datetime.now(timezone.utc) - timedelta(seconds=seconds)
 
     def set_time_to_x_days_ago(self, days: int):
         return self.set_time_to_x_seconds_ago(days*60*60*24)
@@ -1091,6 +1088,12 @@ class ExplorerFilterSetV1:
             for process in self._exclude_processes:
                 filters['services']['exclude'].append({'process_name': process})
 
+        # empty sources/destinations include will return no results, so we add an empty array to mean "any"
+        if len(filters['sources']['include']) == 0:
+            filters['sources']['include'].append([])
+        if len(filters['destinations']['include']) == 0:
+            filters['destinations']['include'].append([])
+
         # print(filters)
         return filters
 
@@ -1104,7 +1107,6 @@ class ExplorerQuery:
         self.max_running_time_seconds = max_running_time_seconds
         self.check_for_update_interval_seconds = check_for_update_interval_seconds
 
-
     def execute(self) -> ExplorerResultSetV1:
         """
         Execute the query and stores the results in the 'results' property.
@@ -1116,6 +1118,609 @@ class ExplorerQuery:
         return self.results
 
 
+class ExplorerFilterSetV2:
+    """
+    New Filters for use with PCE version >= 23.2"
+    """
+    def __init__(self, max_results=2500):
+        self._source_filters: List[ExplorerFilterSetV2Filter] = []  # List of source filters, in the backend logic they will be treated with OR logic
+        self._destination_filters: List[ExplorerFilterSetV2Filter] = []  # List of destination filters, in the backend logic they will be treated with OR logic
+
+        self.__filter_consumer_ip_exclude = []
+        self.__filter_provider_ip_exclude = []
+
+        self._consumer_exclude_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+        self._provider_exclude_labels: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
+
+        self._consumer_iplists_exclude = {}
+        self._provider_iplists_exclude = {}
+
+        self.max_results = max_results
+
+        self._policy_decision_filter = []
+        self._time_from = None
+        self._time_to = None
+
+        self._include_direct_services = []
+
+        self._exclude_broadcast = False
+        self._exclude_multicast = False
+        self._exclude_direct_services = []
+        self._exclude_processes = []
+
+    @staticmethod
+    def __filter_prop_add_label(prop_dict, label_or_href):
+        """
+
+        @type prop_dict: dict
+        @type label_or_href: str|pylo.Label|pylo.LabelGroup
+        """
+        if isinstance(label_or_href, str):
+            prop_dict[label_or_href] = label_or_href
+            return
+        elif isinstance(label_or_href, pylo.Label):
+            prop_dict[label_or_href.href] = label_or_href
+            return
+        elif isinstance(label_or_href, pylo.LabelGroup):
+            # since 21.5 labelgroups can be included directly
+            # for nested_label in label_or_href.expand_nested_to_array():
+            #    prop_dict[nested_label.href] = nested_label
+            prop_dict[label_or_href.href] = label_or_href
+            return
+        else:
+            raise pylo.PyloEx("Unsupported object type {}".format(type(label_or_href)))
+
+    def new_source_filter(self) -> 'ExplorerFilterSetV2Filter':
+        filter = ExplorerFilterSetV2Filter()
+        self._source_filters.append(filter)
+        return filter
+
+    def new_destination_filter(self) -> 'ExplorerFilterSetV2Filter':
+        filter = ExplorerFilterSetV2Filter()
+        self._destination_filters.append(filter)
+        return filter
+
+    def consumer_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
+        self.__filter_prop_add_label(self._consumer_exclude_labels, label_or_href)
+
+    def consumer_exclude_labels(self, labels: List[Union[str, 'pylo.Label', 'pylo.LabelGroup']]):
+        for label in labels:
+            self.consumer_exclude_label(label)
 
 
+    def consumer_exclude_cidr(self, ipaddress: str):
+        self.__filter_consumer_ip_exclude.append(ipaddress)
+
+    def consumer_exclude_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
+        if isinstance(iplist_or_href, str):
+            self._consumer_iplists_exclude[iplist_or_href] = iplist_or_href
+            return
+
+        if isinstance(iplist_or_href, pylo.IPList):
+            self._consumer_iplists_exclude[iplist_or_href.href] = iplist_or_href.href
+            return
+
+        raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
+
+    def consumer_exclude_ip4map(self, map: 'pylo.IP4Map'):
+        for item in map.to_list_of_cidr_string():
+            self.consumer_exclude_cidr(item)
+
+    def provider_exclude_label(self, label_or_href: Union[str, 'pylo.Label', 'pylo.LabelGroup']):
+        self.__filter_prop_add_label(self._provider_exclude_labels, label_or_href)
+
+    def provider_exclude_labels(self, labels_or_hrefs: List[Union[str, 'pylo.Label', 'pylo.LabelGroup']]):
+        for label in labels_or_hrefs:
+            self.provider_exclude_label(label)
+
+    def provider_exclude_cidr(self, ipaddress: str):
+        self.__filter_provider_ip_exclude.append(ipaddress)
+
+    def provider_exclude_iplist(self, iplist_or_href: Union[str, 'pylo.IPList']):
+        if isinstance(iplist_or_href, str):
+            self._provider_iplists_exclude[iplist_or_href] = iplist_or_href
+            return
+
+        if isinstance(iplist_or_href, pylo.IPList):
+            self._provider_iplists_exclude[iplist_or_href.href] = iplist_or_href.href
+            return
+
+        raise pylo.PyloEx("Unsupported object type {}".format(type(iplist_or_href)))
+
+    def provider_exclude_ip4map(self, map: 'pylo.IP4Map'):
+        for item in map.to_list_of_cidr_string(skip_netmask_for_32=True):
+            self.provider_exclude_cidr(item)
+
+    def service_include_add(self, service: Union['pylo.DirectServiceInRule',str]):
+        if isinstance(service, str):
+            self._include_direct_services.append(pylo.DirectServiceInRule.create_from_text(service))
+            return
+        self._include_direct_services.append(service)
+
+    def service_include_add_protocol(self, protocol: int):
+        self._include_direct_services.append(pylo.DirectServiceInRule(proto=protocol))
+
+    def service_include_add_protocol_tcp(self):
+        self._include_direct_services.append(pylo.DirectServiceInRule(proto=6))
+
+    def service_include_add_protocol_udp(self):
+        self._include_direct_services.append(pylo.DirectServiceInRule(proto=17))
+
+    def service_exclude_add(self, service: 'pylo.DirectServiceInRule'):
+        self._exclude_direct_services.append(service)
+
+    def service_exclude_add_protocol(self, protocol: int):
+        self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=protocol))
+
+    def service_exclude_add_protocol_tcp(self):
+        self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=6))
+
+    def service_exclude_add_protocol_udp(self):
+        self._exclude_direct_services.append(pylo.DirectServiceInRule(proto=17))
+
+    def process_exclude_add(self, process_name: str, emulate_on_client=False):
+        if emulate_on_client:
+            self.exclude_processes_emulate[process_name] = process_name
+        else:
+            self._exclude_processes.append(process_name)
+
+    def set_exclude_broadcast(self, exclude=True):
+        self._exclude_broadcast = exclude
+
+    def set_exclude_multicast(self, exclude=True):
+        self._exclude_multicast = exclude
+
+    def set_time_from(self, time: datetime):
+        self._time_from = time
+
+    def set_time_from_x_seconds_ago(self, seconds: int):
+        self._time_from = datetime.now(timezone.utc) - timedelta(seconds=seconds)
+
+    def set_time_from_x_days_ago(self, days: int):
+        return self.set_time_from_x_seconds_ago(days*60*60*24)
+
+    def set_max_results(self, max: int):
+        self.max_results = max
+
+    def set_time_to(self, time: datetime):
+        self._time_to = time
+
+    def set_time_to_x_seconds_ago(self, seconds: int):
+        self._time_to = datetime.now(timezone.utc) - timedelta(seconds=seconds)
+
+    def set_time_to_x_days_ago(self, days: int):
+        return self.set_time_to_x_seconds_ago(days*60*60*24)
+
+    def filter_on_policy_decision_unknown(self):
+        self._policy_decision_filter.append('unknown')
+
+    def filter_on_policy_decision_blocked(self):
+        self._policy_decision_filter.append('blocked')
+
+    def filter_on_policy_decision_potentially_blocked(self):
+        self._policy_decision_filter.append('potentially_blocked')
+
+    def filter_on_policy_decision_all_blocked(self):
+        self.filter_on_policy_decision_blocked()
+        self.filter_on_policy_decision_potentially_blocked()
+
+    def filter_on_policy_decision_allowed(self):
+        self._policy_decision_filter.append('allowed')
+
+    def generate_json_query(self):
+        """
+        Generate the JSON query payload for this filter set
+        :return:
+        """
+        filters = {
+            "sources": {"include": [], "exclude": []},
+            "destinations": {"include": [], "exclude": []},
+            "services": {"include": [], "exclude": []},
+            "sources_destinations_query_op": "and",
+            "policy_decisions": self._policy_decision_filter,
+            "max_results": self.max_results,
+            "query_name": "api call"
+        }
+
+        if self._exclude_broadcast:
+            filters['destinations']['exclude'].append({'transmission': 'broadcast'})
+
+        if self._exclude_multicast:
+            filters['destinations']['exclude'].append({'transmission': 'multicast'})
+
+        if self._time_from is not None:
+            filters["start_date"] = self._time_from.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            filters["start_date"] = "2010-10-13T11:27:28.824Z",
+
+        if self._time_to is not None:
+            filters["end_date"] = self._time_to.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            filters["end_date"] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        if len(self._consumer_exclude_labels) > 0:
+            for label_href in self._consumer_exclude_labels.keys():
+                filters['sources']['exclude'].append({'label': {'href': label_href}})
+
+        if len(self._consumer_iplists_exclude) > 0:
+            for iplist_href in self._consumer_iplists_exclude.keys():
+                filters['sources']['exclude'].append({'ip_list': {'href': iplist_href}})
+
+        if len(self.__filter_consumer_ip_exclude) > 0:
+            for ipaddress in self.__filter_consumer_ip_exclude:
+                filters['sources']['exclude'].append({'ip_address': ipaddress})
+
+        if len(self._provider_exclude_labels) > 0:
+            for label_href in self._provider_exclude_labels.keys():
+                filters['destinations']['exclude'].append({'label': {'href': label_href}})
+
+        if len(self._provider_iplists_exclude) > 0:
+            for iplist_href in self._provider_iplists_exclude.keys():
+                filters['destinations']['exclude'].append({'ip_list': {'href': iplist_href}})
+
+        if len(self.__filter_provider_ip_exclude) > 0:
+            for ipaddress in self.__filter_provider_ip_exclude:
+                filters['destinations']['exclude'].append({'ip_address': ipaddress})
+
+        if len(self._include_direct_services) > 0:
+            for service in self._include_direct_services:
+                filters['services']['include'] .append(service.get_api_json())
+
+        if len(self._exclude_direct_services) > 0:
+            for service in self._exclude_direct_services:
+                filters['services']['exclude'].append(service.get_api_json())
+
+        if len(self._exclude_processes) > 0:
+            for process in self._exclude_processes:
+                filters['services']['exclude'].append({'process_name': process})
+
+        for source_filter in self._source_filters:
+            source_payloads = source_filter.generate_json_payloads()
+            for payload in source_payloads:
+                filters['sources']['include'].append(payload)
+
+        for destination_filter in self._destination_filters:
+            destination_payloads = destination_filter.generate_json_payloads()
+            for payload in destination_payloads:
+                filters['destinations']['include'].append(payload)
+
+        # empty sources/destinations include will return no results, so we add an empty array to mean "any"
+        if len(filters['sources']['include']) == 0:
+            filters['sources']['include'].append([])
+        if len(filters['destinations']['include']) == 0:
+            filters['destinations']['include'].append([])
+
+        return filters
+
+
+class ExplorerFilterSetV2Filter:
+    """
+    A single filter for ExplorerFilterSetV2. The filter can contain multiple types items which will be treated differently
+    """
+    def __init__(self):
+        self._labels_href_by_type: Dict[str, Set[str]] = {}  # key is label type (e.g., 'environment'), value is set of label hrefs
+        self._workloads_href: Set[str] = set()
+        self._iplists_href: Set[str] = set()
+
+    def add_label(self, label: Union['pylo.Label', 'pylo.LabelGroup']):
+        label_type = label.type
+        if label_type not in self._labels_href_by_type:
+            self._labels_href_by_type[label_type] = set()
+        self._labels_href_by_type[label_type].add(label.href)
+
+    def add_workload(self, workload: 'pylo.Workload'):
+        self._workloads_href.add(workload.href)
+
+    def add_iplist(self, iplist: 'pylo.IPList'):
+        self._iplists_href.add(iplist.href)
+
+    def generate_json_payloads(self):
+        """
+        Generate the JSON payloads for this filter. It may return more than 1 payload in the result array because some items
+        like labels of different types combination require a cartesian product to be generated.
+        :return:
+        """
+        result_payloads = []
+
+        # First, generate all combinations of labels by type
+        label_type_keys = list(self._labels_href_by_type.keys())
+        label_combinations = [[]]
+        for label_type in label_type_keys:
+            new_combinations = []
+            for href in self._labels_href_by_type[label_type]:
+                for existing_combination in label_combinations:
+                    new_combination = existing_combination + [(label_type, href)]
+                    new_combinations.append(new_combination)
+            label_combinations = new_combinations
+
+        if len(label_combinations) == 0:
+            label_combinations = [[]]  # Ensure at least one combination exists so payloads can be generated when no labels are present
+
+        for label_combination in label_combinations:
+            payload = []
+            for label_type, href in label_combination:
+                payload.append({'label': {'type': label_type, 'href': href}})
+
+            for workload_href in self._workloads_href:
+                payload.append({'workload': {'href': workload_href}})
+            for iplist_href in self._iplists_href:
+                payload.append({'ip_list': {'href': iplist_href}})
+
+            result_payloads.append(payload)
+
+        return result_payloads
+
+
+class ExplorerResultV2:
+
+    def __init__(self, data: ExplorerTrafficRecordJsonStructure):
+        self.raw_json = data
+        self.num_connections = data['num_connections']
+
+        self.policy_decision_string = data['policy_decision']
+        self._draft_mode_policy_decision = data.get('draft_policy_decision')
+
+        self.source_ip_fqdn: Optional[str] = None
+        self.destination_ip_fqdn: Optional[str] = None
+
+        src = data['src']
+        self.source_ip: str = src['ip']
+        self._source_iplists = src.get('ip_lists')
+        self._source_iplists_href: List[str] = []
+        if self._source_iplists is not None:
+            for href in self._source_iplists:
+                self._source_iplists_href.append(href['href'])
+
+        self.source_workload_href: Optional[str] = None
+        self.source_workload_hostname: Optional[str] = None
+        self.source_workload_labels_by_type: Dict[str, str] = {}  # key is label type, value is label name
+        workload_data = src.get('workload')
+        if workload_data is not None:
+            self.source_workload_href: Optional[str] = workload_data.get('href')
+            if self.source_workload_href is None:
+                raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
+
+            self.source_workload_hostname = workload_data.get('hostname')
+
+            self.source_workload_labels_href: Optional[List[str]] = []
+            workload_labels_data = workload_data.get('labels')
+            if workload_labels_data is not None:
+                for label_data in workload_labels_data:
+                    self.source_workload_labels_href.append(label_data.get('href'))
+                    label_type = label_data.get('key')
+                    label_name = label_data.get('value')
+                    if label_type is not None and label_name is not None:
+                        self.source_workload_labels_by_type[label_type] = label_name
+
+        dst = data['dst']
+        self.destination_ip: str = dst['ip']
+        self.destination_ip_fqdn = dst.get('fqdn')
+        self._destination_iplists = dst.get('ip_lists')
+        self._destination_iplists_href: List[str] = []
+        if self._destination_iplists is not None:
+            for href in self._destination_iplists:
+                self._destination_iplists_href.append(href['href'])
+
+        self.destination_workload_href: Optional[str] = None
+        self.destination_workload_hostname: Optional[str] = None
+        self.destination_workload_labels_by_type: Dict[str, str] = {}  # key is label type, value is label name
+        workload_data = dst.get('workload')
+        if workload_data is not None:
+            self.destination_workload_href = workload_data.get('href')
+            if self.destination_workload_href is None:
+                raise pylo.PyloApiUnexpectedSyntax("Explorer API has return a record referring to a Workload with no HREF given:", data)
+
+            self.destination_workload_hostname = workload_data.get('hostname')
+
+            self.destination_workload_labels_href: Optional[List[str]] = []
+            workload_labels_data = workload_data.get('labels')
+            if workload_labels_data is not None:
+                for label_data in workload_labels_data:
+                    self.destination_workload_labels_href.append(label_data.get('href'))
+                    label_type = label_data.get('key')
+                    label_name = label_data.get('value')
+                    if label_type is not None and label_name is not None:
+                        self.destination_workload_labels_by_type[label_type] = label_name
+
+        service_json = data['service']
+        self.service_json = service_json
+
+        self.service_protocol: int = service_json['proto']
+        self.service_port: Optional[int] = service_json.get('port')
+        self.process_name: Optional[str] = service_json.get('process_name')
+        self.username: Optional[str] = service_json.get('user_name')
+
+        self.first_detected: str = data['timestamp_range']['first_detected']  # e.g., "2023-10-05T12:34:56Z" ISO 8601
+        self.last_detected: str = data['timestamp_range']['last_detected']  # e.g., "2023-10-05T12:39:56Z" ISO 8601
+
+        self._cast_type: Optional[str] = data.get('transmission')
+
+    def service_to_str(self, protocol_first=True):
+        if protocol_first:
+            if self.service_port is None or self.service_port == 0:
+                return 'proto/{}'.format(self.service_protocol)
+
+            if self.service_protocol == 17:
+                return 'udp/{}'.format(self.service_port)
+
+            if self.service_protocol == 6:
+                return 'tcp/{}'.format(self.service_port)
+        else:
+            if self.service_port is None or self.service_port == 0:
+                return '{}/proto'.format(self.service_protocol)
+
+            if self.service_protocol == 17:
+                return '{}/udp'.format(self.service_port)
+
+            if self.service_protocol == 6:
+                return '{}/tcp'.format(self.service_port)
+
+    def service_to_str_array(self):
+        if self.service_port is None or self.service_port == 0:
+            return [self.service_protocol, 'proto']
+
+        if self.service_protocol == 17:
+            return [self.service_port, 'udp']
+
+        if self.service_protocol == 6:
+            return [self.service_port, 'tcp']
+
+        return ['n/a', 'n/a']
+
+    def source_is_workload(self):
+        return self.source_workload_href is not None
+
+    def destination_is_workload(self):
+        return self.destination_workload_href is not None
+
+    def get_source_workload_href(self):
+        return self.source_workload_href
+
+    def get_destination_workload_href(self):
+        return self.destination_workload_href
+
+    def get_source_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
+        if self.source_workload_href is None:
+            return None
+        return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.source_workload_href, '*DELETED*')
+
+    def get_destination_workload(self, org_for_resolution: 'pylo.Organization') -> Optional['pylo.Workload']:
+        if self.destination_workload_href is None:
+            return None
+        return org_for_resolution.WorkloadStore.find_by_href_or_create_tmp(self.destination_workload_href, '*DELETED*')
+
+    def get_source_labels_href(self) -> Optional[List[str]]:
+        if not self.source_is_workload():
+            return None
+        return self.source_workload_labels_href
+
+    def get_destination_labels_href(self) -> Optional[List[str]]:
+        if not self.destination_is_workload():
+            return None
+        return self.destination_workload_labels_href
+
+    def get_source_iplists(self, org_for_resolution: 'pylo.Organization') ->Dict[str, 'pylo.IPList']:
+        if self._source_iplists is None:
+            return {}
+
+        result = {}
+
+        for record in self._source_iplists:
+            href = record.get('href')
+            if href is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+            iplist = org_for_resolution.IPListStore.find_by_href(href)
+            if iplist is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+
+            result[href] = iplist
+
+        return result
+
+    def get_source_iplists_href(self) -> Optional[List[str]]:
+        if self.source_is_workload():
+            return None
+        if self._source_iplists_href is None:
+            return []
+        return self._source_iplists_href.copy()
+
+    def get_destination_iplists_href(self) -> Optional[List[str]]:
+        if self.destination_is_workload():
+            return None
+
+        if self._destination_iplists_href is None:
+            return []
+        return self._destination_iplists_href.copy()
+
+    def get_destination_iplists(self, org_for_resolution: 'pylo.Organization') -> Dict[str, 'pylo.IPList']:
+        if self._destination_iplists is None:
+            return {}
+
+        result = {}
+
+        for record in self._destination_iplists:
+            href = record.get('href')
+            if href is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+            iplist = org_for_resolution.IPListStore.find_by_href(href)
+            if iplist is None:
+                raise pylo.PyloEx('Cannot find HREF for IPList in Explorer result json', record)
+
+            result[href] = iplist
+
+        return result
+
+    def pd_is_potentially_blocked(self):
+        return self.policy_decision_string == 'potentially_blocked'
+
+    def cast_is_broadcast(self):
+        return self._cast_type == 'broadcast'
+
+    def cast_is_multicast(self):
+        return self._cast_type == 'multicast'
+
+    def cast_is_unicast(self):
+        return self._cast_type is not None
+
+    def draft_mode_policy_decision_is_blocked(self) -> Optional[bool]:
+        """
+        @return: None if draft_mode was not enabled
+        """
+        return self._draft_mode_policy_decision is not None and \
+            (self._draft_mode_policy_decision == 'blocked' or self._draft_mode_policy_decision == 'blocked_by_boundary')
+
+    def draft_mode_policy_decision_is_allowed(self) -> Optional[bool]:
+        """
+        @return: None if draft_mode was not enabled
+        """
+        return self._draft_mode_policy_decision is not None and self._draft_mode_policy_decision == "allowed"
+
+    def draft_mode_policy_decision_is_unavailable(self) -> Optional[bool]:
+        """
+        @return: None if draft_mode was not enabled
+        """
+        return self._draft_mode_policy_decision is None
+
+    def draft_mode_policy_decision_is_not_defined(self) -> Optional[bool]:
+        return self._draft_mode_policy_decision is None
+
+    def draft_mode_policy_decision_to_str(self) -> str:
+        if self._draft_mode_policy_decision is None:
+            return 'not_available'
+        return self._draft_mode_policy_decision
+
+
+class ExplorerResultSetV2:
+    def __init__(self, data_array: ExplorerTrafficRecordsApiReplyPayloadJsonStructure):
+        self.raw_json = data_array
+        self.records: List[ExplorerResultV2] = []
+        for record_json in data_array:
+            record = ExplorerResultV2(record_json)
+            self.records.append(record)
+
+    def get_all_records(self) -> List[ExplorerResultV2]:
+        return self.records
+
+
+class ExplorerQueryV2:
+    def __init__(self, connector: APIConnector, max_results: int = 1500, draft_mode_enabled=False, max_running_time_seconds: int = 1800,
+                 check_for_update_interval_seconds: int = 10):
+        self.api: APIConnector = connector
+        self.filters = ExplorerFilterSetV2(max_results=max_results)
+        self.max_running_time_seconds = max_running_time_seconds
+        self.check_for_update_interval_seconds = check_for_update_interval_seconds
+        self.draft_mode_enabled = draft_mode_enabled
+
+    def execute(self) -> Union[ExplorerResultSetV2]:
+        """
+        Execute the query and stores the results in the 'results' property.
+        It will also return said results for convenience.
+        :return:
+        """
+        self.results = self.api.explorer_search(self.filters, max_running_time_seconds=self.max_running_time_seconds,
+                                                check_for_update_interval_seconds=self.check_for_update_interval_seconds,
+                                                draft_mode_enabled=self.draft_mode_enabled)
+
+
+        return self.results
 

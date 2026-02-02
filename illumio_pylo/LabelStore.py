@@ -1,15 +1,20 @@
 from hashlib import md5
 import random
-from typing import Set
+from typing import Set, Union
 # Pylo imports
 from illumio_pylo import log
 from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure, LabelDimensionObjectStructure
 from .Helpers import *
+from .LabelDimension import (
+    LabelDimension,
+    DIMENSION_KEY_ROLE, DIMENSION_KEY_APP, DIMENSION_KEY_ENV, DIMENSION_KEY_LOC
+)
 
-label_type_loc = 'loc'
-label_type_env = 'env'
-label_type_app = 'app'
-label_type_role = 'role'
+# Backward compatibility aliases
+label_type_loc: str = DIMENSION_KEY_LOC
+label_type_env: str = DIMENSION_KEY_ENV
+label_type_app: str = DIMENSION_KEY_APP
+label_type_role: str = DIMENSION_KEY_ROLE
 
 
 class LabelStore:
@@ -47,32 +52,78 @@ class LabelStore:
                         result.append(label)
             return result
 
-    __slots__ = ['owner', '_items_by_href', 'label_types', 'label_types_as_set', 'label_resolution_cache']
+    __slots__ = ['owner', '_items_by_href', '_dimensions', '_dimensions_dict', '_label_types_cache', '_label_types_as_set_cache', 'label_resolution_cache']
 
-    def __init__(self, owner: 'pylo.Organization'):
+    def __init__(self, owner: 'pylo.Organization') -> None:
         self.owner: "pylo.Organization" = owner
         self._items_by_href: Dict[str, Union[pylo.Label, pylo.LabelGroup]] = {}
-        self.label_types: List[str] = []
-        self.label_types_as_set: Set[str] = set()
+        self._dimensions: List[LabelDimension] = []
+        self._dimensions_dict: Dict[str, LabelDimension] = {}
+        self._label_types_cache: Optional[List[str]] = None
+        self._label_types_as_set_cache: Optional[Set[str]] = None
 
-        self.label_resolution_cache: Optional[Dict[str, Union[pylo.Label, pylo.LabelGroup]]] = None
-        
-    def _add_dimension(self, dimension: str):
-        if dimension not in self.label_types_as_set:
-            self.label_types_as_set.add(dimension)
-            self.label_types.append(dimension)
+        self.label_resolution_cache: Optional[Dict[str, List[pylo.Workload]]] = None
 
-    def load_label_dimensions(self, json_list: Optional[List[LabelDimensionObjectStructure]]):
+    @property
+    def label_types(self) -> List[str]:
+        """Backward-compatible property returning list of label type keys (strings)."""
+        if self._label_types_cache is None:
+            self._label_types_cache = [dim.key for dim in self._dimensions]
+        return self._label_types_cache
+
+    @property
+    def label_types_as_set(self) -> Set[str]:
+        """Backward-compatible property returning set of label type keys (strings)."""
+        if self._label_types_as_set_cache is None:
+            self._label_types_as_set_cache = set(dim.key for dim in self._dimensions)
+        return self._label_types_as_set_cache
+
+    @property
+    def dimensions(self) -> List[LabelDimension]:
+        """Return the list of LabelDimension objects, preserving order."""
+        return self._dimensions
+
+    def get_dimension(self, key: str) -> Optional[LabelDimension]:
+        """Get a LabelDimension by its key."""
+        return self._dimensions_dict.get(key)
+
+    def _add_dimension(self, dimension: Union[str, LabelDimension]) -> None:
+        """Add a dimension to the store. Accepts either a string key or a LabelDimension object."""
+        if isinstance(dimension, str):
+            # Create a basic LabelDimension from string key for backward compatibility
+            if dimension in self._dimensions_dict:
+                return
+            # Create built-in dimensions with proper display names
+            builtin_dims: Dict[str, LabelDimension] = LabelDimension.create_builtin_dimensions()
+            if dimension in builtin_dims:
+                dim_obj: LabelDimension = builtin_dims[dimension]
+            else:
+                # Custom dimension from string - use key as display name
+                dim_obj = LabelDimension(key=dimension, display_name=dimension)
+        else:
+            dim_obj = dimension
+            if dim_obj.key in self._dimensions_dict:
+                return
+
+        self._dimensions.append(dim_obj)
+        self._dimensions_dict[dim_obj.key] = dim_obj
+        # Invalidate caches
+        self._label_types_cache = None
+        self._label_types_as_set_cache = None
+
+    def load_label_dimensions(self, json_list: Optional[List[LabelDimensionObjectStructure]]) -> None:
         if json_list is None or len(json_list) == 0:
-            # add the default built-in label types
-            self._add_dimension(label_type_role)
-            self._add_dimension(label_type_app)
-            self._add_dimension(label_type_env)
-            self._add_dimension(label_type_loc)
+            # add the default built-in label types in the standard order
+            builtin_dims: Dict[str, LabelDimension] = LabelDimension.create_builtin_dimensions()
+            self._add_dimension(builtin_dims[DIMENSION_KEY_ROLE])
+            self._add_dimension(builtin_dims[DIMENSION_KEY_APP])
+            self._add_dimension(builtin_dims[DIMENSION_KEY_ENV])
+            self._add_dimension(builtin_dims[DIMENSION_KEY_LOC])
             return
 
-        for dimension in json_list:
-            self._add_dimension(dimension['key'])
+        for dimension_json in json_list:
+            dim_obj: LabelDimension = LabelDimension.from_json(dimension_json)
+            self._add_dimension(dim_obj)
 
     def load_labels_from_json(self, json_list: List[LabelObjectJsonStructure]):
         for json_label in json_list:
@@ -202,7 +253,7 @@ class LabelStore:
                             allow_label: bool = True,
                             raise_exception_if_not_found: bool = False) \
             -> Optional[Union['pylo.Label', 'pylo.LabelGroup', List[Union['pylo.Label', 'pylo.LabelGroup']]]]:
-        """Find a label by its name. If case_sensitive is False, the search is case-insensitive.
+        """Find a label by its name. If case_sensitive is False, the search is case-insensitive and will return a list of matches
         If case_sensitive is False it will return a list of labels with the same name rather than a single object.
         If missing_labels_names is not None, it will be filled with the names of the labels not found.
         If raise_exception_if_not_found is True, an exception will be raised if a label is not found.
@@ -210,22 +261,30 @@ class LabelStore:
         If a label is not found, None will be returned in the list.
         """
         if not isinstance(name, list):
-            if case_sensitive is False:
-                return self.find_object_by_name([name], label_type=label_type, case_sensitive=case_sensitive,
-                                                missing_labels_names=missing_labels_names,
-                                                allow_label_group=allow_label_group,
-                                                allow_label=allow_label,
-                                                raise_exception_if_not_found=raise_exception_if_not_found)
-            for label in self._items_by_href.values():
-                if label_type is not None and label.type != label_type:
-                    continue
-                if label.is_label() and allow_label:  # ignore groups
-                    if case_sensitive:
+            if case_sensitive:
+                for label in self._items_by_href.values():
+                    if label_type is not None and label.type != label_type:
+                        continue
+                    if label.is_label() and allow_label:
                         if label.name == name:
                             return label
-                elif allow_label_group:
-                    if label.name.lower() == name.lower():
-                        return label
+                    elif label.is_group() and allow_label_group:  # ignore labels
+                        if label.name == name:
+                            return label
+            else:
+                matches = []
+                for label in self._items_by_href.values():
+                    if label_type is not None and label.type != label_type:
+                        continue
+                    if label.is_label() and allow_label:
+                        if label.name.lower() == name.lower():
+                            matches.append(label)
+                    elif label.is_group() and allow_label_group:  # ignore labels
+                        if label.name.lower() == name.lower():
+                            matches.append(label)
+                if len(matches) > 0:
+                    return matches
+
             if raise_exception_if_not_found:
                 raise pylo.PyloEx("Label/group '%s' not found", name)
             if missing_labels_names is not None:

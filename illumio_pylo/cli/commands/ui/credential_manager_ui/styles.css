@@ -5,15 +5,59 @@
     padding: 0;
 }
 
+/* CSS Variables for theming */
+:root {
+    /* Light mode colors */
+    --bg-primary: #f5f7fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e2e8f0;
+    --text-primary: #333;
+    --text-secondary: #4a5568;
+    --text-tertiary: #718096;
+    --border-color: #e2e8f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+    --input-bg: #ffffff;
+    --input-border: #cbd5e0;
+    --table-hover: #f7fafc;
+    --gradient-start: #667eea;
+    --gradient-end: #764ba2;
+    --warning-text: #7a4a12;
+    --warning-bg: #fff7e6;
+    --warning-border: #d69e2e;
+}
+
+/* Dark mode colors */
+[data-theme="dark"] {
+    --bg-primary: #1a202c;
+    --bg-secondary: #2d3748;
+    --bg-tertiary: #4a5568;
+    --text-primary: #e2e8f0;
+    --text-secondary: #cbd5e0;
+    --text-tertiary: #a0aec0;
+    --border-color: #4a5568;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-hover: rgba(0, 0, 0, 0.5);
+    --input-bg: #2d3748;
+    --input-border: #4a5568;
+    --table-hover: #374151;
+    --gradient-start: #667eea;
+    --gradient-end: #764ba2;
+    --warning-text: #fbbf24;
+    --warning-bg: #44403c;
+    --warning-border: #d69e2e;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 20px;
 }
@@ -23,9 +67,10 @@ header {
     text-align: center;
     margin-bottom: 30px;
     padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
     border-radius: 10px;
     color: white;
+    position: relative;
 }
 
 header h1 {
@@ -36,6 +81,26 @@ header h1 {
 header .subtitle {
     opacity: 0.9;
     font-size: 1rem;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
 }
 
 /* Buttons */
@@ -59,12 +124,12 @@ header .subtitle {
 }
 
 .btn-secondary {
-    background-color: #e2e8f0;
-    color: #4a5568;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
 }
 
 .btn-secondary:hover {
-    background-color: #cbd5e0;
+    background-color: var(--border-color);
 }
 
 .btn-danger {
@@ -85,6 +150,15 @@ header .subtitle {
     background-color: #2f855a;
 }
 
+.btn-warning {
+    background-color: #d69e2e;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #b7791f;
+}
+
 .btn-small {
     padding: 5px 10px;
     font-size: 0.85rem;
@@ -92,10 +166,11 @@ header .subtitle {
 
 /* Section styles */
 section {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 10px;
     padding: 25px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px var(--shadow-color);
+    transition: background-color 0.3s ease;
 }
 
 .section-header {
@@ -107,7 +182,7 @@ section {
 
 .section-header h2 {
     font-size: 1.3rem;
-    color: #2d3748;
+    color: var(--text-primary);
 }
 
 /* Table styles */
@@ -119,24 +194,25 @@ table {
 th, td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 th {
-    background-color: #f7fafc;
+    background-color: var(--bg-tertiary);
     font-weight: 600;
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 tr:hover {
-    background-color: #f7fafc;
+    background-color: var(--table-hover);
 }
 
 td {
     font-size: 0.95rem;
+    color: var(--text-primary);
 }
 
 .actions-cell {
@@ -166,7 +242,7 @@ td {
 .loading, .empty-state {
     text-align: center;
     padding: 40px;
-    color: #718096;
+    color: var(--text-tertiary);
 }
 
 .loading::before {
@@ -174,7 +250,7 @@ td {
 }
 
 .empty-state {
-    background-color: #f7fafc;
+    background-color: var(--bg-tertiary);
     border-radius: 8px;
 }
 
@@ -219,13 +295,13 @@ td {
 }
 
 .modal-content {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
     width: 90%;
     max-width: 550px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 40px var(--shadow-hover);
 }
 
 .modal-small {
@@ -237,25 +313,25 @@ td {
     justify-content: space-between;
     align-items: center;
     padding: 20px 25px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .modal-header h2 {
     font-size: 1.2rem;
-    color: #2d3748;
+    color: var(--text-primary);
 }
 
 .btn-close {
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: #a0aec0;
+    color: var(--text-tertiary);
     cursor: pointer;
     line-height: 1;
 }
 
 .btn-close:hover {
-    color: #4a5568;
+    color: var(--text-secondary);
 }
 
 /* Form styles */
@@ -271,7 +347,7 @@ form {
     display: block;
     margin-bottom: 6px;
     font-weight: 500;
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 0.95rem;
 }
 
@@ -281,10 +357,12 @@ form {
 .form-group select {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--input-border);
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.2s;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
 }
 
 .form-group input:focus,
@@ -297,7 +375,7 @@ form {
 .form-group small {
     display: block;
     margin-top: 5px;
-    color: #718096;
+    color: var(--text-tertiary);
     font-size: 0.85rem;
 }
 
@@ -323,7 +401,7 @@ form {
 }
 
 .form-section {
-    background-color: #f7fafc;
+    background-color: var(--bg-tertiary);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -331,7 +409,7 @@ form {
 
 .form-section h3 {
     font-size: 1rem;
-    color: #4a5568;
+    color: var(--text-secondary);
     margin-bottom: 15px;
 }
 
@@ -340,7 +418,7 @@ form {
     justify-content: flex-end;
     gap: 10px;
     padding-top: 15px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--border-color);
 }
 
 /* Test result */
@@ -389,6 +467,17 @@ form {
     display: none !important;
 }
 
+/* Warning text used in modals/forms to indicate potential SSH agent prompts */
+.warning-text {
+    color: var(--warning-text);
+    background-color: var(--warning-bg);
+    border-left: 4px solid var(--warning-border);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 0.95rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row {
@@ -420,11 +509,73 @@ form {
 .delete-confirmation p {
     margin-bottom: 10px;
     font-size: 1rem;
+    color: var(--text-primary);
 }
 
 .delete-confirmation .warning-text {
     color: #c53030;
     font-size: 0.9rem;
     font-style: italic;
+}
+
+/* Encrypt confirmation modal */
+.encrypt-confirmation {
+    padding: 25px;
+    text-align: center;
+}
+
+.encrypt-confirmation p {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.encrypt-confirmation .form-group {
+    text-align: left;
+    margin-top: 20px;
+}
+
+/* Shutdown button */
+.shutdown-button-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.btn-shutdown {
+    background-color: #c53030;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(197, 48, 48, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-shutdown:hover {
+    background-color: #9b2c2c;
+    box-shadow: 0 6px 16px rgba(197, 48, 48, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Shutdown confirmation modal */
+.shutdown-confirmation {
+    padding: 25px;
+    text-align: center;
+}
+
+.shutdown-confirmation p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.shutdown-confirmation .countdown-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #c53030;
+    margin-top: 15px;
 }
 

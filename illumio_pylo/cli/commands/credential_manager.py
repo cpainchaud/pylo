@@ -64,6 +64,11 @@ def fill_parser(parser: argparse.ArgumentParser):
     delete_parser.add_argument('--yes', '-y', action='store_true', default=False,
                                help='Skip confirmation prompt')
 
+    # Encrypt sub-command
+    encrypt_parser = sub_parser.add_parser('encrypt', help='Encrypt an existing credential API key')
+    encrypt_parser.add_argument('--name', required=False, type=str, default=None,
+                                help='Name of the credential to encrypt')
+
     # Web editor sub-command
     web_editor_parser = sub_parser.add_parser('web-editor', help='Start web-based credential editor')
     web_editor_parser.add_argument('--host', required=False, type=str, default='127.0.0.1',
@@ -317,6 +322,79 @@ def __main(args, **kwargs):
         connector.objects_label_dimension_get()
         print("OK!")
 
+    elif args['sub_command'] == 'encrypt':
+        # Check if encryption is available first
+        if not is_encryption_available():
+            print("Encryption is not available. Please ensure an SSH agent is running with RSA or Ed25519 keys added.")
+            sys.exit(1)
+
+        # if name is not provided, prompt for it
+        wanted_name = args['name']
+        if wanted_name is None:
+            wanted_name = click.prompt('> Input a Profile Name to encrypt (ie: prod-pce)', type=str)
+
+        # find the credential by name
+        found_profile = get_credentials_from_file(wanted_name, fail_with_an_exception=False)
+        if found_profile is None:
+            print("Cannot find a profile named '{}'".format(wanted_name))
+            print("Available profiles:")
+            credentials = get_all_credentials()
+            for credential in credentials:
+                print(" - {}".format(credential.name))
+            sys.exit(1)
+
+        print("Found profile '{}' in file '{}'".format(found_profile.name, found_profile.originating_file))
+        print(" - FQDN: {}".format(found_profile.fqdn))
+        print(" - Port: {}".format(found_profile.port))
+        print(" - Org ID: {}".format(found_profile.org_id))
+        print(" - API User: {}".format(found_profile.api_user))
+
+        # Check if already encrypted
+        if found_profile.is_api_key_encrypted():
+            print("ERROR: The API key for profile '{}' is already encrypted.".format(found_profile.name))
+            sys.exit(1)
+
+        print()
+        print("Available SSH keys (ECDSA NISTPXXX keys and a few others are not supported and will be filtered out):")
+        ssh_keys = get_supported_keys_from_ssh_agent()
+
+        if len(ssh_keys) == 0:
+            print("No supported SSH keys found in the agent.")
+            sys.exit(1)
+
+        # display a table of keys
+        print_keys(keys=ssh_keys, display_index=True)
+        print()
+
+        index_of_selected_key = click.prompt('> Select key by ID#', type=click.IntRange(0, len(ssh_keys)-1))
+        selected_ssh_key = ssh_keys[index_of_selected_key]
+        print("Selected key: {} | {} | {}".format(selected_ssh_key.get_name(),
+                                                  selected_ssh_key.get_fingerprint().hex(),
+                                                  selected_ssh_key.comment))
+        print(" * encrypting API key with selected key (you may be prompted by your SSH agent for confirmation or PIN code) ...", flush=True, end="")
+        encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(ssh_key=selected_ssh_key, api_key=found_profile.api_key)
+        print("OK!")
+        print(" * trying to decrypt the encrypted API key...", flush=True, end="")
+        decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(encrypted_api_key_payload=encrypted_api_key)
+        if decrypted_api_key != found_profile.api_key:
+            raise pylo.PyloEx("Decrypted API key does not match original API key")
+        print("OK!")
+
+        credentials_data: CredentialFileEntry = {
+            "name": found_profile.name,
+            "fqdn": found_profile.fqdn,
+            "port": found_profile.port,
+            "org_id": found_profile.org_id,
+            "api_user": found_profile.api_user,
+            "verify_ssl": found_profile.verify_ssl,
+            "api_key": encrypted_api_key
+        }
+
+        print("* Updating credential in file '{}'...".format(found_profile.originating_file), flush=True, end="")
+        create_credential_in_file(file_full_path=found_profile.originating_file, data=credentials_data, overwrite_existing_profile=True)
+        print("OK!")
+        print("API key for profile '{}' has been encrypted successfully.".format(found_profile.name))
+
     elif args['sub_command'] == 'web-editor':
         run_web_editor(host=args['host'], port=args['port'])
 
@@ -359,6 +437,7 @@ def print_keys(keys: list[paramiko.AgentKey], display_index=True) -> None:
 def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
     """Start the Flask web server for credential management."""
     try:
+        # noinspection PyUnusedImports
         from flask import Flask, jsonify, request, send_from_directory
     except ImportError:
         print("Flask is not installed. Please install it with: pip install flask")
@@ -397,6 +476,7 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
                 'org_id': cred.org_id,
                 'api_user': cred.api_user,
                 'verify_ssl': cred.verify_ssl,
+                'api_key_encrypted': cred.is_api_key_encrypted(),
                 'originating_file': cred.originating_file
             })
         return jsonify(result)
@@ -414,6 +494,7 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
             'org_id': found_profile.org_id,
             'api_user': found_profile.api_user,
             'verify_ssl': found_profile.verify_ssl,
+            'api_key_encrypted': found_profile.is_api_key_encrypted(),
             'originating_file': found_profile.originating_file
         })
 
@@ -584,6 +665,101 @@ def run_web_editor(host: str = '127.0.0.1', port: int = 5000) -> None:
     @app.route('/api/encryption-status', methods=['GET'])
     def api_encryption_status():
         return jsonify({'available': is_encryption_available()})
+
+    # API: Encrypt a credential's API key
+    @app.route('/api/credentials/<name>/encrypt', methods=['POST'])
+    def api_encrypt_credential(name):
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        if not is_encryption_available():
+            return jsonify({'error': 'Encryption is not available. Please ensure an SSH agent is running with RSA or Ed25519 keys added.'}), 400
+
+        found_profile = get_credentials_from_file(name, fail_with_an_exception=False)
+        if found_profile is None:
+            return jsonify({'error': 'Credential not found'}), 404
+
+        # Check if already encrypted
+        if found_profile.is_api_key_encrypted():
+            return jsonify({'error': 'API key is already encrypted'}), 400
+
+        # Get the SSH key index
+        if 'ssh_key_index' not in data:
+            return jsonify({'error': 'ssh_key_index is required'}), 400
+
+        try:
+            ssh_keys = get_supported_keys_from_ssh_agent()
+            key_index = int(data['ssh_key_index'])
+            if key_index < 0 or key_index >= len(ssh_keys):
+                return jsonify({'error': 'Invalid SSH key index'}), 400
+
+            selected_ssh_key = ssh_keys[key_index]
+            encrypted_api_key = encrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(
+                ssh_key=selected_ssh_key, api_key=found_profile.api_key)
+
+            # Verify encryption
+            decrypted_api_key = decrypt_api_key_with_paramiko_ssh_key_chacha20poly1305(
+                encrypted_api_key_payload=encrypted_api_key)
+            if decrypted_api_key != found_profile.api_key:
+                return jsonify({'error': 'Encryption verification failed'}), 500
+
+            # Update the credential
+            credentials_data: CredentialFileEntry = {
+                "name": found_profile.name,
+                "fqdn": found_profile.fqdn,
+                "port": found_profile.port,
+                "org_id": found_profile.org_id,
+                "api_user": found_profile.api_user,
+                "verify_ssl": found_profile.verify_ssl,
+                "api_key": encrypted_api_key
+            }
+
+            create_credential_in_file(file_full_path=found_profile.originating_file,
+                                      data=credentials_data, overwrite_existing_profile=True)
+            return jsonify({'success': True, 'message': f"API key for '{name}' encrypted successfully"})
+        except Exception as e:
+            return jsonify({'error': f'Encryption failed: {str(e)}'}), 500
+
+    # Flag to track shutdown request
+    shutdown_requested = {'value': False}
+
+    # API: Request server shutdown
+    @app.route('/api/shutdown', methods=['POST'])
+    def api_shutdown():
+        shutdown_requested['value'] = True
+        return jsonify({'success': True, 'message': 'Shutdown acknowledged. Server will stop shortly.'})
+
+    # Shutdown check and security headers after each request
+    @app.after_request
+    def check_shutdown(response):
+        # Add security headers to prevent XSS and other attacks
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "font-src 'self'; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'"
+        )
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+        if shutdown_requested['value']:
+            # Schedule shutdown after response is sent
+            def shutdown():
+                import time
+                time.sleep(1)  # Give time for the response to be sent
+                print("\nShutdown requested via web UI. Stopping server...")
+                os._exit(0)
+            import threading
+            threading.Thread(target=shutdown, daemon=True).start()
+        return response
 
     print(f"Starting web editor at http://{host}:{port}")
     print("Press Ctrl+C to stop the server")

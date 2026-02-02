@@ -5,6 +5,7 @@ from datetime import datetime
 
 import illumio_pylo as pylo
 from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
+from illumio_pylo.FilterQuery import FilterQuery, get_workload_filter_registry
 from .utils.misc import make_filename_with_timestamp
 from . import Command
 
@@ -42,6 +43,14 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='')
 
+    parser.add_argument('--filter-query', '-q', type=str, required=False, default=None,
+                        help='Filter workloads using a SQL-like query expression. '
+                             'Supports: ==, !=, <, >, <=, >=, contains, matches (regex), and/or/not, parentheses. '
+                             'Available fields: name, hostname, description, online, managed, deleted, '
+                             'ip_address, last_heartbeat, mode, env, app, role, loc, os_id, etc. '
+                             'Examples: "name contains \'prod\'" or "env == \'Production\' and online == true" '
+                             'or "(name == \'srv1\' or name == \'srv2\') and last_heartbeat <= \'2024-01-01\'"')
+
     parser.add_argument('--filter-file', '-i', type=str, required=False, default=None,
                         help='CSV or Excel input filename')
     parser.add_argument('--filter-file-delimiter', type=str, required=False, default=',',
@@ -60,8 +69,10 @@ def fill_parser(parser: argparse.ArgumentParser):
     for extra_column in extra_columns:
         extra_column.apply_cli_args(parser)
 
+
 def __main(args, org: pylo.Organization, **kwargs):
 
+    filter_query_string = args['filter_query']
     filter_file = args['filter_file']
     filter_file_delimiter = args['filter_file_delimiter']
     filter_fields = args['filter_fields']
@@ -116,6 +127,24 @@ def __main(args, org: pylo.Organization, **kwargs):
     csv_sheet = csv_report.create_sheet('workloads', csv_report_headers, force_all_wrap_text=True)
 
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
+
+    # Apply filter query if provided
+    if filter_query_string is not None:
+        print(" * Applying filter query: '{}'".format(filter_query_string))
+        try:
+            # Pass org to get registry with all configured label types for this PCE
+            registry = get_workload_filter_registry(org)
+            filter_query = FilterQuery(registry)
+
+            matching_workloads = filter_query.execute(filter_query_string, list(all_workloads.values()))
+
+            # Convert back to dict by href
+            all_workloads = {w.href: w for w in matching_workloads}
+            print("   - Filter query matched {} workload(s)".format(len(all_workloads)))
+        except pylo.PyloEx as e:
+            pylo.log.error("Filter query error: {}".format(e))
+            sys.exit(1)
+
     used_filters = {}
 
     def add_workload_to_report(wkl: pylo.Workload = None, filter=None, filter_append_prefix='_'):
