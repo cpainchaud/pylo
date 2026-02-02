@@ -69,6 +69,7 @@ def fill_parser(parser: argparse.ArgumentParser):
     for extra_column in extra_columns:
         extra_column.apply_cli_args(parser)
 
+
 def __main(args, org: pylo.Organization, **kwargs):
 
     filter_query_string = args['filter_query']

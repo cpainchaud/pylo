@@ -1,17 +1,27 @@
-from typing import Union
+from typing import TYPE_CHECKING
 from .Exception import PyloEx
 from .LabelStore import LabelStore
+
+if TYPE_CHECKING:
+    from .LabelDimension import LabelDimension
 
 
 class LabelCommon:
 
     __slots__ = ['owner', 'name', 'href', 'type']
 
-    def __init__(self, name: str, href: str, label_type: str, owner: LabelStore):
+    def __init__(self, name: str, href: str, label_type: str, owner: LabelStore) -> None:
         self.owner: LabelStore = owner
         self.name: str = name
         self.href: str = href
-        self.type = label_type
+        self.type: str = label_type
+
+    def get_dimension(self) -> 'LabelDimension':
+        """Get the LabelDimension object for this label's type from the owning LabelStore."""
+        dimension: 'LabelDimension | None' = self.owner.get_dimension(self.type)
+        if dimension is None:
+            raise PyloEx(f"Dimension '{self.type}' not found in LabelStore")
+        return dimension
 
     def is_label(self) -> bool:
         raise PyloEx("not implemented")

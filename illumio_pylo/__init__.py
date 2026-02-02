@@ -16,6 +16,7 @@ from .API.Explorer import (ExplorerResultSetV1, ExplorerResultSetV2, RuleCoverag
                            ExplorerFilterSetV2, ExplorerQuery, ExplorerQueryV2, ExplorerResultV2)
 from .API.AuditLog import AuditLogQuery, AuditLogQueryResultSet, AuditLogFilterSet
 from .API.CredentialsManager import get_credentials_from_file
+from .LabelDimension import LabelDimension, DIMENSION_KEY_ROLE, DIMENSION_KEY_APP, DIMENSION_KEY_ENV, DIMENSION_KEY_LOC
 from .LabelCommon import LabelCommon
 from .Label import Label
 from .LabelGroup import LabelGroup
