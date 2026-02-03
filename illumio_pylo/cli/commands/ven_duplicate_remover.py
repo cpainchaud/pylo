@@ -26,10 +26,18 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Actually operate deletions. Considered as a dry-run if not specified.')
     parser.add_argument('--do-not-require-deletion-confirmation', action='store_true',
                         help='Ask for confirmation for each deletion')
+
+    # * pre filters: this utility will only look at workloads matching these filters and then apply its logic to them
     parser.add_argument('--filter-label', '-fl', action='append',
                         help='Only look at workloads matching specified labels')
     parser.add_argument('--ignore-unmanaged-workloads', '-iuw', action='store_true',
                         help='Do not touch unmanaged workloads nor include them to detect duplicates')
+
+    # New option: keep only workloads matching a regular expression
+    parser.add_argument('--keep-only-workloads-matching-regex', type=str, default=None,
+                        help='Keep only workloads whose hostname/name matches the specified regular expression (case-insensitive). Others will be ignored for duplicate detection.')
+    # * end pre filters
+
     parser.add_argument('--report-format', '-rf', action='append', type=str, choices=['csv', 'xlsx'], default=None,
                         help='Which report formats you want to produce (repeat option to have several)')
     parser.add_argument('--do-not-delete-the-most-recent-workload', '-nrc', action='store_true',
@@ -50,10 +58,6 @@ def fill_parser(parser: argparse.ArgumentParser):
     # New option: ignore PCE online status and allow online workloads to be considered for deletion
     parser.add_argument('--ignore-pce-online-status', action='store_true',
                         help='Bypass the logic that keeps online workloads; when set online workloads will be treated like offline ones for deletion decisions')
-
-    # New option: keep only workloads matching a regular expression
-    parser.add_argument('--keep-only-workloads-matching-regex', type=str, default=None,
-                        help='Keep only workloads whose hostname/name matches the specified regular expression (case-insensitive). Others will be ignored for duplicate detection.')
 
     parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
                         help='Directory where to write the report file(s)')
@@ -78,7 +82,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_ignore_pce_online_status = args['ignore_pce_online_status'] is True
     arg_do_not_delete_if_labels_mismatch = args['do_not_delete_if_labels_mismatch'] is True
     arg_keep_only_workloads_matching_regex = args['keep_only_workloads_matching_regex']
-    arg_report_output_dir: str = args['output_dir']
+    arg_report_output_dir: str = args['output_dir'] 
 
     # Determine output filename behavior: user provided filename/basename or use timestamped prefix
     arg_output_filename: Optional[str] = args.get('output_filename')
@@ -127,13 +131,13 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
             regex_pattern = re.compile(arg_keep_only_workloads_matching_regex, re.IGNORECASE)
         except re.error as e:
             raise pylo.PyloEx("Invalid regular expression: {}".format(str(e)))
-
+        
         filtered_workloads = []
         for workload in all_workloads:
             workload_name = workload.get_name_stripped_fqdn()
             if regex_pattern.search(workload_name):
                 filtered_workloads.append(workload)
-
+        
         all_workloads = filtered_workloads
         print("OK! {} workloads left after regex filtering".format(len(all_workloads)))
 
