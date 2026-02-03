@@ -1,3 +1,7 @@
+"""
+Usage documentation for this command can be found in docs/cli/ven-duplicate-remover.md
+"""
+
 from typing import Dict, List, Literal, Optional
 import datetime
 import click
