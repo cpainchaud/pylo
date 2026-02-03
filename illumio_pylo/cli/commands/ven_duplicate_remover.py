@@ -7,6 +7,7 @@ import datetime
 import click
 import argparse
 import os
+import re
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
@@ -50,6 +51,10 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--ignore-pce-online-status', action='store_true',
                         help='Bypass the logic that keeps online workloads; when set online workloads will be treated like offline ones for deletion decisions')
 
+    # New option: keep only workloads matching a regular expression
+    parser.add_argument('--keep-only-workloads-matching-regex', type=str, default=None,
+                        help='Keep only workloads whose hostname/name matches the specified regular expression (case-insensitive). Others will be ignored for duplicate detection.')
+
     parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
                         help='Directory where to write the report file(s)')
     parser.add_argument('--output-filename', type=str, default=None,
@@ -72,7 +77,8 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
     arg_ignore_pce_online_status = args['ignore_pce_online_status'] is True
     arg_do_not_delete_if_labels_mismatch = args['do_not_delete_if_labels_mismatch'] is True
-    arg_report_output_dir: str = args['output_dir'] 
+    arg_keep_only_workloads_matching_regex = args['keep_only_workloads_matching_regex']
+    arg_report_output_dir: str = args['output_dir']
 
     # Determine output filename behavior: user provided filename/basename or use timestamped prefix
     arg_output_filename: Optional[str] = args.get('output_filename')
@@ -113,6 +119,23 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     # if some label filters were used, we will apply them at later stage
     all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
     print("OK! {} workloads left after filtering".format(len(all_workloads)))
+
+    # Apply regex filter if specified
+    if arg_keep_only_workloads_matching_regex is not None:
+        print("* Applying regex filter to workload names... ", end='', flush=True)
+        try:
+            regex_pattern = re.compile(arg_keep_only_workloads_matching_regex, re.IGNORECASE)
+        except re.error as e:
+            raise pylo.PyloEx("Invalid regular expression: {}".format(str(e)))
+
+        filtered_workloads = []
+        for workload in all_workloads:
+            workload_name = workload.get_name_stripped_fqdn()
+            if regex_pattern.search(workload_name):
+                filtered_workloads.append(workload)
+
+        all_workloads = filtered_workloads
+        print("OK! {} workloads left after regex filtering".format(len(all_workloads)))
 
     def add_workload_to_report(workload: pylo.Workload, action: str):
         url_link_to_pce = workload.get_pce_ui_url()

@@ -251,7 +251,7 @@ pylo ven-duplicate-remover \
     --proceed-with-deletion
 ```
 
-### Example 10: Aggressive Cleanup (Include Online Workloads)
+### Example 12: Aggressive Cleanup (Include Online Workloads)
 
 ⚠️ **Caution**: This bypasses the safety mechanism that protects online workloads:
 
@@ -262,7 +262,7 @@ pylo ven-duplicate-remover \
     --proceed-with-deletion
 ```
 
-### Example 11: Production-Safe Workflow
+### Example 13: Production-Safe Workflow
 
 Recommended for production environments:
 
@@ -395,6 +395,31 @@ pylo ven-duplicate-remover \
     --output-dir "C:\Logs\PCE_Maintenance"
 ```
 
+### Scenario 5: Targeted Cleanup by Naming Convention
+
+**Problem**: Your organization follows naming conventions, and you want to clean up specific tiers or types of systems.
+
+**Solution**: Use regex to target specific patterns:
+
+```bash
+# Target only database tier duplicates
+pylo ven-duplicate-remover \
+    --keep-only-workloads-matching-regex "^db-.*|.*-db-[0-9]+" \
+    --do-not-delete-the-most-recent-workload \
+    --proceed-with-deletion
+
+# Target only temporary/ephemeral systems
+pylo ven-duplicate-remover \
+    --keep-only-workloads-matching-regex "^(ephemeral|temporary|tmp)-.*" \
+    --ignore-pce-online-status \
+    --proceed-with-deletion
+
+# Target specific numbered range of servers
+pylo ven-duplicate-remover \
+    --keep-only-workloads-matching-regex "^web-(0[1-9]|1[0-9])$" \
+    --proceed-with-deletion
+```
+
 ## Troubleshooting
 
 ### No Duplicates Found
@@ -402,6 +427,7 @@ pylo ven-duplicate-remover \
 If the command reports no duplicates:
 - Verify workloads are loaded correctly
 - Check if label filters are too restrictive
+- Check if regex filter is too restrictive or has an error
 - Ensure you're not excluding the workloads with `--ignore-unmanaged-workloads`
 
 ### Duplicates Not Being Deleted
@@ -421,6 +447,64 @@ If you see many "IGNORED: there is no VEN online" messages:
 - This is a safety feature - at least one VEN should be online
 - If you need to delete offline duplicates, use `--ignore-pce-online-status` (carefully!)
 - Or adjust the offline timer with `--override-pce-offline-timer-to`
+
+### Regex Pattern Not Matching Expected Workloads
+
+If your regex filter isn't matching the workloads you expect:
+
+**Problem**: Regex filters out too many or too few workloads
+
+**Solutions**:
+1. **Test your regex pattern first** - Use an online regex tester (regex101.com) with sample hostnames
+2. **Remember it's case-insensitive** - "WEB-01" matches "^web-.*"
+3. **Pattern matches anywhere** - "web" matches "my-web-server" (use `^web` to match only at start)
+4. **Check stripped hostnames** - The regex applies to hostname WITHOUT domain suffix
+   - Example: "web-01.company.com" is matched as just "web-01"
+5. **Escape special characters** - Use `\.` for literal dots in patterns
+6. **Check the filtering output** - The command shows: "OK! X workloads left after regex filtering"
+
+**Testing approach**:
+```bash
+# Step 1: Dry run with regex to see how many match
+pylo ven-duplicate-remover --keep-only-workloads-matching-regex "YOUR_PATTERN"
+
+# Step 2: Check the output line:
+#   "OK! X workloads left after regex filtering"
+#   If X is 0, your pattern matched nothing
+#   If X is too high, your pattern is too broad
+
+# Step 3: Adjust pattern and retry until X is reasonable
+```
+
+**Common regex mistakes**:
+- ❌ `web-.*` - Matches ANY hostname containing "web-" anywhere (too broad)
+- ✅ `^web-.*` - Matches hostnames STARTING with "web-"
+- ❌ `-prod` - Matches anywhere: "web-production-server", "prod-web"
+- ✅ `-prod$` - Matches ONLY if ending with "-prod"
+- ❌ `test|dev` - Matches "test" OR "dev" anywhere (might catch "testing", "device")
+- ✅ `^(test|dev)-` - Matches starting with "test-" OR "dev-"
+- ❌ `web-*` - Invalid regex (needs .* not just *)
+- ✅ `^web-.*` - Correct: "web-" followed by any characters
+
+### Invalid Regular Expression Error
+
+If you see "Invalid regular expression" error:
+- Check for unescaped special characters: `( ) [ ] { } . * + ? ^ $ | \`
+- Use online regex validators (regex101.com) to test your pattern
+- Common fixes:
+  - `^web-.*` not `^web-*` (use `.*` for "any characters", `*` alone is invalid)
+  - `(test|dev)` not `(test,dev)` (use `|` not `,` for OR)
+  - Escape dots in IP patterns: `10\.0\.0\.1` not `10.0.0.1`
+  - Close all parentheses: `^(web|app)` not `^(web|app`
+
+**Example error and fix**:
+```bash
+# Error: Invalid regular expression: nothing to repeat at position 5
+pylo ven-duplicate-remover --keep-only-workloads-matching-regex "^web-*"
+
+# Fix: Use .* instead of just *
+pylo ven-duplicate-remover --keep-only-workloads-matching-regex "^web-.*"
+```
 
 ## Related Commands
 
