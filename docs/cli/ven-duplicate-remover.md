@@ -34,12 +34,20 @@ pylo ven-duplicate-remover [options]
 | `--do-not-require-deletion-confirmation` | - | Skip interactive confirmation prompt before deleting workloads |
 | `--verbose` | `-v` | Enable verbose output for detailed processing information |
 
-### Filtering Options
+### Pre-Filter Options
+
+Pre-filters reduce the initial set of workloads that the command will process **before** duplicate detection and protection logic is applied. These are useful for:
+- Limiting scope to specific environments, applications, or locations
+- Targeting specific hostname patterns or naming conventions
+- Excluding certain workload types from consideration
+
+**Key Difference from Protection Options**: Pre-filters determine which workloads are considered for processing, while protection options (below) determine which workloads are kept safe during deletion decisions.
 
 | Option | Short | Description |
 |--------|-------|-------------|
-| `--filter-label` | `-fl` | Only process workloads matching specified labels (can be repeated for multiple labels) |
-| `--ignore-unmanaged-workloads` | `-iuw` | Exclude unmanaged workloads from duplicate detection and deletion |
+| `--filter-in-label` | `-fil` | Only process workloads matching specified labels (can be repeated for multiple labels). Workloads without these labels are excluded from all processing |
+| `--filter-in-hostname-regex` | - | Only process workloads whose hostname matches the specified regular expression (case-insensitive). Hostnames not matching this pattern are completely excluded |
+| `--filter-out-unmanaged` | - | Exclude unmanaged workloads from duplicate detection and deletion processing |
 
 ### Protection Options
 
@@ -70,15 +78,17 @@ These options prevent specific workloads from being deleted:
 
 ## Logic Flow
 
-### 1. Workload Loading and Filtering
+### 1. Workload Loading and Pre-Filtering
 ```
 Load all workloads from PCE
     ↓
-Apply label filters (if specified)
+Apply label pre-filters (--filter-in-label, if specified)
+    ↓
+Apply hostname regex pre-filter (--filter-in-hostname-regex, if specified)
     ↓
 Exclude deleted workloads
     ↓
-Optionally exclude unmanaged workloads
+Optionally exclude unmanaged workloads (--filter-out-unmanaged)
     ↓
 Group remaining workloads by hostname (case-insensitive)
 ```
@@ -192,7 +202,7 @@ pylo ven-duplicate-remover --proceed-with-deletion --do-not-require-deletion-con
 Only process workloads with specific labels:
 
 ```bash
-pylo ven-duplicate-remover --filter-label "App:WebServers" --filter-label "Env:Production"
+pylo ven-duplicate-remover --filter-in-label "App:WebServers" --filter-in-label "Env:Production"
 ```
 
 ### Example 5: Protect Recent Workloads
@@ -216,7 +226,7 @@ pylo ven-duplicate-remover \
     --do-not-delete-the-most-recently-heartbeating-workload \
     --do-not-delete-if-last-heartbeat-is-more-recent-than 90 \
     --do-not-delete-if-labels-mismatch \
-    --ignore-unmanaged-workloads \
+    --filter-out-unmanaged \
     --proceed-with-deletion
 ```
 
@@ -269,14 +279,14 @@ Recommended for production environments:
 ```bash
 # Step 1: Discovery
 pylo ven-duplicate-remover \
-    --filter-label "Env:Production" \
+    --filter-in-label "Env:Production" \
     --output-filename "prod_duplicates_discovery"
 
 # Step 2: Review the generated report manually
 
 # Step 3: Conservative deletion with protections
 pylo ven-duplicate-remover \
-    --filter-label "Env:Production" \
+    --filter-in-label "Env:Production" \
     --do-not-delete-the-most-recent-workload \
     --do-not-delete-the-most-recently-heartbeating-workload \
     --do-not-delete-if-last-heartbeat-is-more-recent-than 60 \
@@ -363,7 +373,7 @@ pylo ven-duplicate-remover \
 **Solution**:
 ```bash
 pylo ven-duplicate-remover \
-    --filter-label "Loc:OldDatacenter" \
+    --filter-in-label "Loc:OldDatacenter" \
     --override-pce-offline-timer-to 30 \
     --proceed-with-deletion
 ```
@@ -404,19 +414,19 @@ pylo ven-duplicate-remover \
 ```bash
 # Target only database tier duplicates
 pylo ven-duplicate-remover \
-    --keep-only-workloads-matching-regex "^db-.*|.*-db-[0-9]+" \
+    --filter-in-hostname-regex "^db-.*|.*-db-[0-9]+" \
     --do-not-delete-the-most-recent-workload \
     --proceed-with-deletion
 
 # Target only temporary/ephemeral systems
 pylo ven-duplicate-remover \
-    --keep-only-workloads-matching-regex "^(ephemeral|temporary|tmp)-.*" \
+    --filter-in-hostname-regex "^(ephemeral|temporary|tmp)-.*" \
     --ignore-pce-online-status \
     --proceed-with-deletion
 
 # Target specific numbered range of servers
 pylo ven-duplicate-remover \
-    --keep-only-workloads-matching-regex "^web-(0[1-9]|1[0-9])$" \
+    --filter-in-hostname-regex "^web-(0[1-9]|1[0-9])$" \
     --proceed-with-deletion
 ```
 
@@ -426,9 +436,9 @@ pylo ven-duplicate-remover \
 
 If the command reports no duplicates:
 - Verify workloads are loaded correctly
-- Check if label filters are too restrictive
-- Check if regex filter is too restrictive or has an error
-- Ensure you're not excluding the workloads with `--ignore-unmanaged-workloads`
+- Check if label pre-filters are too restrictive (`--filter-in-label`)
+- Check if hostname regex pre-filter is too restrictive or has an error (`--filter-in-hostname-regex`)
+- Ensure you're not excluding the workloads with `--filter-out-unmanaged`
 
 ### Duplicates Not Being Deleted
 
@@ -466,7 +476,7 @@ If your regex filter isn't matching the workloads you expect:
 **Testing approach**:
 ```bash
 # Step 1: Dry run with regex to see how many match
-pylo ven-duplicate-remover --keep-only-workloads-matching-regex "YOUR_PATTERN"
+pylo ven-duplicate-remover --filter-in-hostname-regex "YOUR_PATTERN"
 
 # Step 2: Check the output line:
 #   "OK! X workloads left after regex filtering"
@@ -500,10 +510,10 @@ If you see "Invalid regular expression" error:
 **Example error and fix**:
 ```bash
 # Error: Invalid regular expression: nothing to repeat at position 5
-pylo ven-duplicate-remover --keep-only-workloads-matching-regex "^web-*"
+pylo ven-duplicate-remover --filter-in-hostname-regex "^web-*"
 
 # Fix: Use .* instead of just *
-pylo ven-duplicate-remover --keep-only-workloads-matching-regex "^web-.*"
+pylo ven-duplicate-remover --filter-in-hostname-regex "^web-.*"
 ```
 
 ## Related Commands

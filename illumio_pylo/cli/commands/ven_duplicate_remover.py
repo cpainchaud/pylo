@@ -28,14 +28,12 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Ask for confirmation for each deletion')
 
     # * pre filters: this utility will only look at workloads matching these filters and then apply its logic to them
-    parser.add_argument('--filter-label', '-fl', action='append',
-                        help='Only look at workloads matching specified labels')
-    parser.add_argument('--ignore-unmanaged-workloads', '-iuw', action='store_true',
-                        help='Do not touch unmanaged workloads nor include them to detect duplicates')
-
-    # New option: keep only workloads matching a regular expression
-    parser.add_argument('--keep-only-workloads-matching-regex', type=str, default=None,
-                        help='Keep only workloads whose hostname/name matches the specified regular expression (case-insensitive). Others will be ignored for duplicate detection.')
+    parser.add_argument('--filter-in-label', '-fil', action='append',
+                        help='Pre-filter: only process workloads matching specified labels (can be repeated)')
+    parser.add_argument('--filter-in-hostname-regex', type=str, default=None,
+                        help='Pre-filter: only process workloads whose hostname matches the specified regular expression (case-insensitive)')
+    parser.add_argument('--filter-out-unmanaged', action='store_true',
+                        help='Pre-filter: exclude unmanaged workloads from duplicate detection and processing')
     # * end pre filters
 
     parser.add_argument('--report-format', '-rf', action='append', type=str, choices=['csv', 'xlsx'], default=None,
@@ -73,7 +71,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_verbose = args['verbose']
     arg_proceed_with_deletion = args['proceed_with_deletion'] is True
     arg_do_not_require_deletion_confirmation = args['do_not_require_deletion_confirmation'] is True
-    arg_ignore_unmanaged_workloads = args['ignore_unmanaged_workloads'] is True
+    arg_filter_out_unmanaged = args['filter_out_unmanaged'] is True
     arg_do_not_delete_the_most_recent_workload = args['do_not_delete_the_most_recent_workload'] is True
     arg_do_not_delete_the_most_recently_heartbeating_workload = args['do_not_delete_the_most_recently_heartbeating_workload'] is True
     arg_do_not_delete_if_last_heartbeat_is_more_recent_than = args['do_not_delete_if_last_heartbeat_is_more_recent_than']
@@ -81,8 +79,8 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_limit_number_of_deleted_workloads = args['limit_number_of_deleted_workloads']
     arg_ignore_pce_online_status = args['ignore_pce_online_status'] is True
     arg_do_not_delete_if_labels_mismatch = args['do_not_delete_if_labels_mismatch'] is True
-    arg_keep_only_workloads_matching_regex = args['keep_only_workloads_matching_regex']
-    arg_report_output_dir: str = args['output_dir'] 
+    arg_filter_in_hostname_regex = args['filter_in_hostname_regex']
+    arg_report_output_dir: str = args['output_dir']
 
     # Determine output filename behavior: user provided filename/basename or use timestamped prefix
     arg_output_filename: Optional[str] = args.get('output_filename')
@@ -111,24 +109,24 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
 
     filter_labels: List[pylo.Label] = []  # the list of labels to filter the workloads against
-    if args['filter_label'] is not None:
-        for label_name in args['filter_label']:
+    if args['filter_in_label'] is not None:
+        for label_name in args['filter_in_label']:
             label = org.LabelStore.find_label_by_name(label_name)
             if label is None:
                 raise pylo.PyloEx("Cannot find label '{}' in the PCE".format(label_name))
             filter_labels.append(label)
 
     # if some filters were used, let's apply them now
-    print("* Filtering workloads loaded based on their labels... ", end='', flush=True)
+    print("* Pre-filter: applying label filters... ", end='', flush=True)
     # if some label filters were used, we will apply them at later stage
     all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
     print("OK! {} workloads left after filtering".format(len(all_workloads)))
 
     # Apply regex filter if specified
-    if arg_keep_only_workloads_matching_regex is not None:
-        print("* Applying regex filter to workload names... ", end='', flush=True)
+    if arg_filter_in_hostname_regex is not None:
+        print("* Pre-filter: applying hostname regex filter... ", end='', flush=True)
         try:
-            regex_pattern = re.compile(arg_keep_only_workloads_matching_regex, re.IGNORECASE)
+            regex_pattern = re.compile(arg_filter_in_hostname_regex, re.IGNORECASE)
         except re.error as e:
             raise pylo.PyloEx("Invalid regular expression: {}".format(str(e)))
         
@@ -164,7 +162,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     for workload in all_workloads:
         if workload.deleted:
             continue
-        if workload.unmanaged and arg_ignore_unmanaged_workloads:
+        if workload.unmanaged and arg_filter_out_unmanaged:
             continue
 
         duplicated_hostnames.add_workload(workload)
