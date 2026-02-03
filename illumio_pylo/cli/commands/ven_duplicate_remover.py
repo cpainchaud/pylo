@@ -117,10 +117,13 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
             filter_labels.append(label)
 
     # if some filters were used, let's apply them now
-    print("* Pre-filter: applying label filters... ", end='', flush=True)
-    # if some label filters were used, we will apply them at later stage
-    all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
-    print("OK! {} workloads left after filtering".format(len(all_workloads)))
+    if len(filter_labels) > 0:
+        print("* Pre-filter: applying label filters... ", end='', flush=True)
+        all_workloads: List[pylo.Workload] = list((org.WorkloadStore.find_workloads_matching_all_labels(filter_labels)).values())
+        print("OK! {} workloads left after filtering".format(len(all_workloads)))
+    else:
+        all_workloads: List[pylo.Workload] = org.WorkloadStore.workloads.copy()
+        print("* No pre-filter on labels applied, {} workloads to process".format(len(all_workloads)))
 
     # Apply regex filter if specified
     if arg_filter_in_hostname_regex is not None:
