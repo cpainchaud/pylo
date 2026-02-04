@@ -1,3 +1,7 @@
+"""
+Usage documentation for this command can be found in docs/cli/traffic-export.md
+"""
+
 import argparse
 from datetime import datetime
 import os
