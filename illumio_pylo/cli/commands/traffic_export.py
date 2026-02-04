@@ -94,7 +94,7 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
         for filter_value in filter_values:
             # a single filter may be made of multiple comma-separated values which will be processed individually
             value_parts = [part.strip() for part in filter_value.split(',') if part.strip() != '']
-            if descriptor=='source':
+            if descriptor == 'source':
                 filter = filter_set.new_source_filter()
             else:
                 filter = filter_set.new_destination_filter()
