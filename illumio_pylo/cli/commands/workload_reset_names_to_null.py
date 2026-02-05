@@ -49,15 +49,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     print(f" - Found {len(workloads_with_forced_names)} Workloads with Forced Names")
     print(f" - Found {len(workloads_with_mismatching_names)} Workloads with Mismatching Forced Names")
 
-    # <editor-fold desc="JSON Payloads generation">
-
-    # for each batch of workloads, generate a JSON payload to send to the PCE to reset name to null
-    # the payload will be a list of objects with the following structure:
-    #  {
-    #      "href": "string",
-    #      "name": null
-    # }
-
     if not confirmed_changes:
         print(colorama.Fore.YELLOW + "Changes have not been confirmed. Use the --confirm flag to confirm the changes and push to the PCE")
         # reset colorama colors
@@ -75,7 +66,6 @@ def __main(args, org: pylo.Organization, **kwargs):
 
         org.connector.objects_workload_update_bulk(payload)
 
-    # </editor-fold>
 
 
 command_object = Command(command_name, __main, fill_parser, objects_load_filter)
