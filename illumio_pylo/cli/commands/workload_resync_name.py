@@ -45,13 +45,14 @@ def __main(args, org: pylo.Organization, **kwargs):
     else:
         output_file_prefix = None
 
-    csv_report_headers = pylo.ExcelHeaderSet(['name', 'status', 'reason', 'href'])
+    csv_report_headers = pylo.ExcelHeaderSet(['name', 'hostname', 'status', 'reason', 'href'])
     csv_report = pylo.ArraysToExcel()
     sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('resync_names', csv_report_headers, force_all_wrap_text=True)
 
     def add_workload_to_report(workload: pylo.Workload, status: str, reason: str = ''):
         sheet.add_line_from_object({
-            'name': workload.forced_name,
+            'name': workload.name,
+            'hostname': workload.hostname,
             'status': status,
             'reason': reason,
             'href': workload.href
