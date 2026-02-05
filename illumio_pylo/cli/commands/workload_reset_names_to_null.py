@@ -10,6 +10,12 @@ objects_load_filter = ['workloads', 'labels']
 
 
 def fill_parser(parser: argparse.ArgumentParser):
+    parser.description = ("This command looks for Managed workloads that have a forced name that doesn't match their"
+                          " hostname and resets the name to be null (which will cause the PCE to recalculate the name"
+                          " based on hostname and labels). This is useful for fixing workloads that had their names"
+                          " forced in the past but now have a hostname that matches what you want the name to be."
+                          " The command will first do an analysis and show you how many workloads would be changed,"
+                          " then you can confirm to implement the changes in the PCE.")
     parser.add_argument('--confirm', action='store_true',
                         help="No change will be implemented in the PCE until you use this function to confirm you're good with them after review")
     parser.add_argument('--batch-size', type=int, required=False, default=500,
