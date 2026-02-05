@@ -55,16 +55,42 @@ def __main(args, org: pylo.Organization, **kwargs):
         print(colorama.Style.RESET_ALL)
         return
 
+    failed_workloads = 0
     # for loop for each batch of workloads
     for i in range(math.ceil(len(workloads_with_mismatching_names) / batch_size)):
         # get the next batch of workloads
         batch = workloads_with_mismatching_names[i * batch_size: (i + 1) * batch_size]
-        # create a list of objects with the structure described above
-        payload = [{"href": wkl.href, "name": wkl.static_name_stripped_fqdn(wkl.hostname)} for wkl in batch]
+        payload = []
+        for wkl in batch:
+            stripped_hostname = wkl.static_name_stripped_fqdn(wkl.hostname)
+            payload.append({"href": wkl.href, "name": stripped_hostname})
         # debug display
         print(f"Sending payload for batch {i + 1} of {math.ceil(len(workloads_with_mismatching_names) / batch_size)} ({len(payload)} workloads)")
 
-        org.connector.objects_workload_update_bulk(payload)
+        update_bulk_status = org.connector.objects_workload_update_bulk(payload)
+        # check each response entry for success/failure and surface any errors
+        if isinstance(update_bulk_status, list):
+            batch_failed = False
+            for status_entry in update_bulk_status:
+                href = status_entry.get('href', 'unknown href')
+                status = status_entry.get('status', 'unknown status')
+                message = status_entry.get('message', '')
+                workload_object = org.WorkloadStore.itemsByHRef.get(href)
+                display_name = workload_object.name if workload_object and workload_object.name else status_entry.get('name', 'unknown workload')
+                if status == 'updated':
+                    print(colorama.Fore.GREEN + f" - Updated {display_name} ({href})" + colorama.Style.RESET_ALL)
+                else:
+                    batch_failed = True
+                    failed_workloads += 1
+                    print(colorama.Fore.RED + f" - Failed to update {display_name} ({href}): {status}" + colorama.Style.RESET_ALL)
+                    if message:
+                        print(f"   {message}")
+            if batch_failed:
+                print(colorama.Fore.YELLOW + "One or more workloads in this batch failed to update." + colorama.Style.RESET_ALL)
+        else:
+            print(colorama.Fore.RED + "Bulk update response was not a list, unable to verify each workload." + colorama.Style.RESET_ALL)
+    if failed_workloads:
+        print(colorama.Fore.YELLOW + f"\nTotal failed workloads: {failed_workloads}" + colorama.Style.RESET_ALL)
 
 
 
