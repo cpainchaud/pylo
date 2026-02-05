@@ -5,7 +5,7 @@ import math
 import colorama
 from . import Command
 
-command_name = 'workload-reset-ven-names-to-null'
+command_name = 'workload-resync-names'
 objects_load_filter = ['workloads', 'labels']
 
 
