@@ -3,8 +3,8 @@ from typing import Dict
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
-from .utils.report_writer import ReportWriter
 from . import Command
+from .utils.report_writer import ReportWriter
 
 command_name = 'rule-export'
 
@@ -109,14 +109,8 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
             sheet.add_line_from_object(data)
 
     # Always write report (even if empty)
-    json_data = []
-    for line in sheet._lines:
-        row_dict = {}
-        for idx, header in enumerate(sheet._headers):
-            row_dict[header.name] = line[idx]
-        json_data.append(row_dict)
-
-    report_writer.write_reports(json_data=json_data)
+    # JSON is now generated from the populated sheet inside ReportWriter
+    report_writer.write_reports()
 
 
 command_object = Command(command_name, __main, fill_parser)

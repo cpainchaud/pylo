@@ -7,10 +7,9 @@ from typing import Optional, List
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
-
+from illumio_pylo.API.JsonPayloadTypes import LabelObjectJsonStructure
 from . import Command
 from .utils.report_writer import ReportWriter
-from illumio_pylo.API.JsonPayloadTypes import LabelObjectJsonStructure
 
 command_name = "label-delete-unused"
 objects_load_filter = []  # No need to load any objects from PCE
@@ -116,14 +115,8 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
             print(f"Deletion completed: {success_count} labels deleted successfully, {errors_count} errors encountered.")
 
     # Write report to disk (always generate report, even if empty)
-    json_data = []
-    for line in sheet._lines:
-        row_dict = {}
-        for idx, header in enumerate(sheet._headers):
-            row_dict[header.name] = line[idx]
-        json_data.append(row_dict)
-
-    report_writer.write_reports(json_data=json_data, sort_by=['type', 'value'])
+    # JSON is generated from the populated sheet inside ReportWriter
+    report_writer.write_reports(sort_by=['type', 'value'])
 
 
 def add_label_to_report(label_json: LabelObjectJsonStructure, sheet: pylo.ArraysToExcel.Sheet,

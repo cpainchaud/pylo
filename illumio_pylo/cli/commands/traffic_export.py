@@ -9,8 +9,8 @@ from zoneinfo import ZoneInfo
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader, ExplorerResultV2
-from .utils.report_writer import ReportWriter
 from . import Command
+from .utils.report_writer import ReportWriter
 
 command_name = 'traffic-export'
 objects_load_filter: List[pylo.ObjectTypes] = ['labels', 'labelgroups', 'iplists', 'services']
@@ -87,12 +87,6 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     settings_label_separator: str = args['label_separator']
     settings_disable_wrap_text: bool = args['disable_wrap_text']
     settings_omit_columns: List[str] | None = args['omit_columns']
-
-    # Build headers first and create a ReportWriter to create workbook/sheet
-    # Build headers first and create a ReportWriter to create workbook/sheet
-    # Initialize report writer
-    report_writer = ReportWriter()
-    report_writer.initialize_from_args(args, sheet_name='traffic')
 
     explorer_query = org.connector.new_explorer_query_v2(max_results=settings_records_count_limit, draft_mode_enabled=settings_draft_mode_enabled)
 
@@ -247,7 +241,6 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
 
     report_writer = ReportWriter(headers=csv_report_headers, sheet_name='traffic', filename_prefix='traffic-export', force_all_wrap_text=not settings_disable_wrap_text, multivalues_cell_delimiter=',')
     report_writer.initialize_from_args(args)
-    csv_report = report_writer.excel_workbook
     sheet = report_writer.sheet
 
     def _protocol_display(proto: str | int | None) -> str | int | None:
@@ -350,14 +343,8 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
         print("\n** WARNING: no traffic records matched the filters !\n")
 
     # Always write report (even if empty)
-    json_data = []
-    for line in sheet._lines:
-        row_dict = {}
-        for idx, header in enumerate(sheet._headers):
-            row_dict[header.name] = line[idx]
-        json_data.append(row_dict)
-
-    report_writer.write_reports(json_data=json_data)
+    # JSON is generated from the populated sheet inside ReportWriter
+    report_writer.write_reports()
 
 
 command_object = Command(command_name, __main, fill_parser, load_specific_objects_only=objects_load_filter)

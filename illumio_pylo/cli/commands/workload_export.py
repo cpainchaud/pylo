@@ -1,13 +1,13 @@
-from typing import List, Dict
 import argparse
 import sys
 from datetime import datetime
+from typing import List, Dict
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
+from illumio_pylo import ExcelHeader, ExcelHeaderSet
 from illumio_pylo.FilterQuery import FilterQuery, get_workload_filter_registry
-from .utils.report_writer import ReportWriter
 from . import Command
+from .utils.report_writer import ReportWriter
 
 command_name = 'workload-export'
 
@@ -266,15 +266,9 @@ def __main(args, org: pylo.Organization, **kwargs):
         print("\n** WARNING: no workload matched your filters !\n")
 
     # Always write report (even if empty)
-    json_data = []
-    for line in csv_sheet._lines:
-        row_dict = {}
-        for idx, header in enumerate(csv_sheet._headers):
-            row_dict[header.name] = line[idx]
-        json_data.append(row_dict)
-
+    # JSON is generated from the populated sheet inside ReportWriter
     print()
-    report_writer.write_reports(json_data=json_data)
+    report_writer.write_reports()
 
 
 command_object = Command(command_name, __main, fill_parser)

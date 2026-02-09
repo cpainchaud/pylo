@@ -13,7 +13,6 @@ from typing import List, Literal, Optional, Callable, Dict, Any
 import illumio_pylo as pylo
 from .misc import make_filename_with_timestamp
 
-
 ReportFormat = Literal['csv', 'xlsx', 'json']
 
 
@@ -76,6 +75,7 @@ class ReportWriter:
         parser: argparse.ArgumentParser,
         default_prefix: Optional[str] = None,
         default_sheet_name: str = "report",
+        default_format: Optional[ReportFormat] = None,
         format_help: Optional[str] = None,
         output_dir_help: Optional[str] = None,
         output_filename_help: Optional[str] = None,
@@ -87,7 +87,9 @@ class ReportWriter:
         does not modify any ReportWriter instance state.
         """
         if format_help is None:
-            format_help = 'Report format to generate (can be repeated for multiple formats). Default: csv'
+            default_str = default_format if default_format is not None else 'csv'
+            format_help = (f'Report format to generate (can be repeated for multiple formats). '
+                           f'Default: {default_str}')
         if output_dir_help is None:
             output_dir_help = 'Directory where to write the report file(s)'
         if output_filename_help is None:
@@ -95,8 +97,13 @@ class ReportWriter:
                                    'timestamped filename. If multiple formats are requested, the provided path\'s '
                                    'extension will be replaced/added per format.')
 
+        # Do not set a per-argument default (append + list default leads to merged defaults).
+        # Instead, store the desired default on the parser itself so initialize_from_args
+        # can decide to use it only when the flag was not provided.
         parser.add_argument('--report-format', '-rf', action='append', type=str,
                             choices=['csv', 'xlsx', 'json'], default=None, help=format_help)
+        # Attach parser-level default for later consumption by initialize_from_args
+        parser.set_defaults(report_format_default=default_format)
         parser.add_argument(
             '--output-dir', '-o',
             type=str,
@@ -121,6 +128,7 @@ class ReportWriter:
         parser: argparse.ArgumentParser,
         default_prefix: Optional[str] = None,
         default_sheet_name: str = "report",
+        default_format: Optional[ReportFormat] = None,
         format_help: Optional[str] = None,
         output_dir_help: Optional[str] = None,
         output_filename_help: Optional[str] = None,
@@ -139,6 +147,7 @@ class ReportWriter:
             parser,
             default_prefix=default_prefix,
             default_sheet_name=default_sheet_name,
+            default_format=default_format,
             format_help=format_help,
             output_dir_help=output_dir_help,
             output_filename_help=output_filename_help,
@@ -159,10 +168,20 @@ class ReportWriter:
             filename_prefix: Override the filename prefix (if not provided during add_arguments_to_parser)
             sheet_name: Override the sheet name (if not provided during add_arguments_to_parser)
         """
-        # Get formats from args, default to ['csv'] if none specified
+        # Get formats from args. If none specified, prefer parser-provided default (report_format_default)
         report_formats = args.get('report_format')
         if report_formats is None or len(report_formats) == 0:
-            self.formats = ['csv']
+            # parser may have attached a default value under 'report_format_default'
+            parser_default = args.get('report_format_default')
+            if parser_default is not None:
+                # Normalize to list
+                if isinstance(parser_default, list):
+                    self.formats = parser_default
+                else:
+                    self.formats = [parser_default]
+            else:
+                # Fallback to historic default
+                self.formats = ['csv']
         else:
             self.formats = report_formats
 
@@ -224,7 +243,6 @@ class ReportWriter:
 
     def write_reports(
         self,
-        json_data: Optional[List[Dict[str, Any]]] = None,
         sort_by: Optional[List[str]] = None
     ):
         """
@@ -232,8 +250,12 @@ class ReportWriter:
         the instance's created workbook and sheet will be used.
 
         Args:
-            json_data: List of dictionaries for JSON format (required for JSON format)
             sort_by: Optional list of column names to sort by before writing
+
+        Note:
+            JSON output is now always generated from the current sheet contents. Callers
+            should update the `sheet` (or `excel_workbook`) on the ReportWriter instance
+            before calling `write_reports` if they need to customize JSON output.
         """
         # Use instance workbook/sheet
         sheet = self.sheet
@@ -242,15 +264,6 @@ class ReportWriter:
         # Sort data if requested
         if sort_by is not None and sheet is not None:
             sheet.reorder_lines(sort_by)
-
-            # Regenerate JSON data from sorted sheet if JSON format is requested
-            if 'json' in self.formats and json_data is not None and len(json_data) > 0:
-                json_data = []
-                for line in sheet._lines:
-                    row_dict = {}
-                    for idx, header in enumerate(sheet._headers):
-                        row_dict[header.name] = line[idx]
-                    json_data.append(row_dict)
 
         # Write each format
         for report_format in self.formats:
@@ -271,8 +284,17 @@ class ReportWriter:
                     excel_workbook.write_to_excel(output_filename)
 
                 elif report_format == 'json':
-                    if json_data is None:
-                        raise pylo.PyloEx("json_data parameter is required for JSON format")
+                    # JSON is now derived from the current sheet contents. Require sheet.
+                    if sheet is None:
+                        raise pylo.PyloEx("sheet is not available for JSON format")
+
+                    json_data: List[Dict[str, Any]] = []
+                    for line in sheet._lines:
+                        row_dict: Dict[str, Any] = {}
+                        for idx, header in enumerate(sheet._headers):
+                            row_dict[header.name] = line[idx]
+                        json_data.append(row_dict)
+
                     with open(output_filename, 'w', encoding='utf-8') as f:
                         json.dump(json_data, f, indent=2, ensure_ascii=False)
 

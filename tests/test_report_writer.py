@@ -8,12 +8,12 @@ This script tests the report writer functionality including:
 - Custom filename handling
 - Report writing in CSV, XLSX, and JSON formats
 """
-import sys
-import os
-import tempfile
-import shutil
-import json
 import argparse
+import json
+import os
+import shutil
+import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
@@ -100,6 +100,49 @@ def test_argument_parsing():
     print("  [OK] Custom filename parsed correctly")
 
     print("\n[OK] All argument parsing tests passed!")
+
+
+def test_default_format_behavior():
+    """Test that providing `default_format` to the argument helper sets the parser default
+
+    Happy path: when no --report-format is passed, parser should have the default value.
+    Edge case: when an explicit --report-format is passed it should override the default.
+    """
+    print("\n" + "=" * 60)
+    print("Testing default_format behavior")
+    print("=" * 60)
+
+    # Happy path: default_format='json' should become the parser default
+    parser = argparse.ArgumentParser()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
+    ReportWriter.add_arguments_to_parser(parser, default_format='json')
+
+    args = parser.parse_args([])
+    args_dict = vars(args)
+    # The parser stores the provided default at the parser level (report_format_default)
+    # and the per-argument value remains None when the flag is not passed.
+    assert args_dict.get('report_format') is None, f"Expected no explicit report_format in args, got {args_dict.get('report_format')}"
+    assert args_dict.get('report_format_default') == 'json', f"Expected parser-level default 'json', got {args_dict.get('report_format_default')}"
+
+    # initialize_from_args should pick up the parser-level default when the flag wasn't provided
+    report_writer.initialize_from_args(args_dict)
+    assert report_writer.formats == ['json'], f"Expected initialized formats ['json'], got {report_writer.formats}"
+    print("  [OK] default_format provided is used when no flag is passed")
+
+    # Edge case: explicit flag should override the default_format
+    parser = argparse.ArgumentParser()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
+    ReportWriter.add_arguments_to_parser(parser, default_format='csv')
+
+    args = parser.parse_args(['--report-format', 'xlsx'])
+    args_dict = vars(args)
+    # When an explicit flag is provided, it should appear in report_format and override the parser default
+    assert args_dict.get('report_format') == ['xlsx'], f"Expected explicit ['xlsx'] in args, got {args_dict.get('report_format')}"
+    report_writer.initialize_from_args(args_dict)
+    assert report_writer.formats == ['xlsx'], f"Expected ['xlsx'] when explicit flag provided, got {report_writer.formats}"
+    print("  [OK] Explicit --report-format overrides default_format")
+
+    print("\n[OK] default_format behavior tests passed!")
 
 
 def test_filename_generation():
@@ -267,21 +310,13 @@ def test_report_writing():
         for row in test_data:
             sheet.add_line_from_object(row)
 
-        # Prepare JSON data
-        json_data = []
-        for line in sheet._lines:
-            row_dict = {}
-            for idx, header in enumerate(sheet._headers):
-                row_dict[header.name] = line[idx]
-            json_data.append(row_dict)
-
         # Test 1: Write CSV format (use writer that contains the populated sheet)
         print("\nTest 1: Write CSV format")
         data_writer.formats = ['csv']
         data_writer.output_dir = temp_dir
         data_writer.output_filename = 'test_report.csv'
 
-        data_writer.write_reports(json_data=json_data)
+        data_writer.write_reports()
 
         csv_path = os.path.join(temp_dir, 'test_report.csv')
         assert os.path.exists(csv_path), f"CSV file should exist: {csv_path}"
@@ -300,7 +335,7 @@ def test_report_writing():
         data_writer.output_dir = temp_dir
         data_writer.output_filename = 'test_report.xlsx'
 
-        data_writer.write_reports(json_data=json_data)
+        data_writer.write_reports()
 
         xlsx_path = os.path.join(temp_dir, 'test_report.xlsx')
         assert os.path.exists(xlsx_path), f"XLSX file should exist: {xlsx_path}"
@@ -313,7 +348,7 @@ def test_report_writing():
         data_writer.output_dir = temp_dir
         data_writer.output_filename = 'test_report.json'
 
-        data_writer.write_reports(json_data=json_data)
+        data_writer.write_reports()
 
         json_path = os.path.join(temp_dir, 'test_report.json')
         assert os.path.exists(json_path), f"JSON file should exist: {json_path}"
@@ -334,7 +369,7 @@ def test_report_writing():
         data_writer.output_dir = temp_dir
         data_writer.output_filename = 'multi_format'
 
-        data_writer.write_reports(json_data=json_data)
+        data_writer.write_reports()
 
         multi_csv = os.path.join(temp_dir, 'multi_format.csv')
         multi_xlsx = os.path.join(temp_dir, 'multi_format.xlsx')
@@ -360,8 +395,8 @@ def test_report_writing():
         report_writer.output_dir = temp_dir
         report_writer.output_filename = 'empty_report'
 
-        empty_json_data = []
-        report_writer.write_reports(json_data=empty_json_data)
+        # Ensure sheet is empty (no lines added)
+        report_writer.write_reports()
 
         empty_csv = os.path.join(temp_dir, 'empty_report.csv')
         empty_json = os.path.join(temp_dir, 'empty_report.json')
@@ -397,20 +432,12 @@ def test_report_writing():
         for row in sort_data:
             sort_sheet.add_line_from_object(row)
 
-        # Prepare JSON data
-        sorted_json_data = []
-        for line in sort_sheet._lines:
-            row_dict = {}
-            for idx, header in enumerate(sort_sheet._headers):
-                row_dict[header.name] = line[idx]
-            sorted_json_data.append(row_dict)
-
         # Use sort_writer (which contains the populated sheet) to write sorted JSON
         sort_writer.formats = ['json']
         sort_writer.output_dir = temp_dir
         sort_writer.output_filename = 'sorted_report.json'
 
-        sort_writer.write_reports(json_data=sorted_json_data, sort_by=['type', 'name'])
+        sort_writer.write_reports(sort_by=['type', 'name'])
 
         sorted_json = os.path.join(temp_dir, 'sorted_report.json')
         with open(sorted_json, 'r') as f:
@@ -462,7 +489,7 @@ def test_error_handling():
     try:
         # Simulate missing sheet by removing it from the ReportWriter instance
         report_writer.sheet = None
-        report_writer.write_reports(json_data=None)
+        report_writer.write_reports()
         assert False, "Should have raised PyloEx"
     except pylo.PyloEx as e:
         assert 'sheet' in str(e).lower(), f"Error message should mention sheet: {e}"
@@ -482,7 +509,7 @@ def test_error_handling():
     try:
         # Simulate missing excel_workbook by removing it from the instance
         report_writer.excel_workbook = None
-        report_writer.write_reports(json_data=None)
+        report_writer.write_reports()
         assert False, "Should have raised PyloEx"
     except pylo.PyloEx as e:
         assert 'excel_workbook' in str(e).lower(), f"Error message should mention excel_workbook: {e}"
@@ -496,11 +523,13 @@ def test_error_handling():
     report_writer.output_filename = 'test.json'
 
     try:
-        report_writer.write_reports(json_data=None)
+        # Simulate missing sheet for JSON format (json_data parameter removed)
+        report_writer.sheet = None
+        report_writer.write_reports()
         assert False, "Should have raised PyloEx"
     except pylo.PyloEx as e:
-        assert 'json_data' in str(e).lower(), f"Error message should mention json_data: {e}"
-        print("  [OK] Correctly raises error when json_data is missing for JSON")
+        assert 'sheet' in str(e).lower(), f"Error message should mention sheet: {e}"
+        print("  [OK] Correctly raises error when sheet is missing for JSON")
 
     print("\n[OK] All error handling tests passed!")
 
@@ -564,16 +593,8 @@ def test_integration():
         for item in sample_data:
             sheet.add_line_from_object(item)
 
-        # Step 5: Prepare JSON data
-        json_data = []
-        for line in sheet._lines:
-            row_dict = {}
-            for idx, header in enumerate(sheet._headers):
-                row_dict[header.name] = line[idx]
-            json_data.append(row_dict)
-
         # Step 6: Write reports
-        real_writer.write_reports(json_data=json_data, sort_by=['status', 'name'])
+        real_writer.write_reports(sort_by=['status', 'name'])
 
         # Step 7: Verify outputs
         csv_file = os.path.join(temp_dir, 'report.csv')
@@ -616,6 +637,7 @@ def run_all_tests():
 
     tests = [
         ("Argument Parsing", test_argument_parsing),
+        ("Default Format Behavior", test_default_format_behavior),
         ("Filename Generation", test_filename_generation),
         ("Report Structure Creation", test_report_structure_creation),
         ("Report Writing", test_report_writing),
