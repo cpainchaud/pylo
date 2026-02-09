@@ -21,14 +21,16 @@ class ReportWriter:
     Handles report generation for CLI commands with support for multiple formats.
 
     Usage:
-        # 1. Construct with headers
-        report_writer = ReportWriter(headers)
-        report_writer.add_arguments_to_parser(parser, default_prefix='my-command')
+       # 1. add typical arguments to the CLI argument parser (can be done in a shared helper or directly in the command's fill_parser)
+       report_writer.add_arguments_to_parser(parser, default_prefix='my-command')
 
-        # 2. Initialize from parsed arguments
+        # 2. Construct with headers
+        report_writer = ReportWriter(headers)
+
+        # 3. Initialize from parsed arguments
         report_writer.initialize_from_args(args)
 
-        # 3. Write reports
+        # 4. Write reports
         report_writer.write_reports()
     """
 

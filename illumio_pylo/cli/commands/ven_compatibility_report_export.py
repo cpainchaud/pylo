@@ -4,7 +4,7 @@ from typing import Dict, List
 from prettytable import PrettyTable
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
+from illumio_pylo import ExcelHeader, ExcelHeaderSet
 from . import Command
 from .utils.misc import make_filename_with_timestamp
 
