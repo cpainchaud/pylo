@@ -48,7 +48,6 @@ python tests/test_workload_export.py
 
 ```bash
 pytest tests/test_workload_export.py -v
-pytest tests/test_workload_export_standalone.py -v
 ```
 
 ## Mock Objects

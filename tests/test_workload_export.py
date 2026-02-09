@@ -26,24 +26,29 @@ from illumio_pylo.cli.commands.workload_export import (
 
 
 # ============================================================================
-# Mock Classes
+# Mock Classes - Inheriting from real pylo classes
 # ============================================================================
 
-class MockLabel:
-    """Mock Label for testing"""
+class MockLabel(pylo.Label):
+    """Mock Label for testing - inherits from real Label class"""
     def __init__(self, name: str, label_type: str):
-        self.name = name
-        self.type = label_type
+        # Create a minimal mock LabelStore
+        mock_store = type('MockLabelStore', (), {'owner': None})()
+        # Initialize parent with required positional args: name, href, label_type, owner
+        super().__init__(name, f'/labels/{name}', label_type, mock_store)
 
 
-class MockVENAgent:
-    """Mock VEN Agent for testing"""
+class MockVENAgent(pylo.VENAgent):
+    """Mock VEN Agent for testing - inherits from real VENAgent class"""
     def __init__(self, last_heartbeat=None, policy_applied_at=None,
                  sync_state='synced', href='/agents/test'):
+        # Create minimal mock AgentStore
+        mock_store = type('MockAgentStore', (), {'owner': None})()
+        # Initialize parent
+        super().__init__(href=href, owner=mock_store)
         self._last_heartbeat = last_heartbeat
         self._policy_applied_at = policy_applied_at
         self._sync_state = sync_state
-        self.href = href
 
     def get_last_heartbeat_date(self):
         return self._last_heartbeat
@@ -55,56 +60,67 @@ class MockVENAgent:
         return self._sync_state
 
 
-class MockInterface:
-    """Mock Workload Interface for testing"""
-    def __init__(self, ip: str):
-        self.ip = ip
-        self.name = 'eth0'
+class MockInterface(pylo.WorkloadInterface):
+    """Mock Workload Interface for testing - inherits from real WorkloadInterface class"""
+    def __init__(self, ip: str, owner=None):
+        # Initialize parent with minimal args
+        super().__init__(
+            owner=owner,
+            name='eth0',
+            ip=ip,
+            network='',
+            gateway='',
+            ignored=False
+        )
 
 
-class MockLabelStore:
-    """Mock LabelStore for testing"""
+class MockOrganization(pylo.Organization):
+    """Mock Organization for testing - inherits from real Organization class"""
     def __init__(self, label_types=None):
-        self.label_types = label_types or ['role', 'app', 'env', 'loc']
+        # Initialize parent
+        super().__init__(org_id=1)
+        # Override label dimensions if provided
+        if label_types:
+            # Convert string keys to LabelDimension objects
+            dimensions = []
+            for label_type in label_types:
+                dimension = pylo.LabelDimension(
+                    key=label_type,
+                    display_name=label_type.title(),
+                    href=f'/orgs/1/label_dimensions/{label_type}'
+                )
+                dimensions.append(dimension)
+            # Set dimensions directly on the LabelStore
+            self.LabelStore._dimensions = dimensions
+            # Clear caches
+            self.LabelStore._label_types_cache = None
+            self.LabelStore._label_types_as_set_cache = None
 
 
-class MockOrganization:
-    """Mock Organization for testing"""
-    def __init__(self, label_types=None):
-        self.LabelStore = MockLabelStore(label_types)
-
-
-class MockWorkload:
-    """Mock Workload for testing"""
+class MockWorkload(pylo.Workload):
+    """Mock Workload for testing - inherits from real Workload class"""
     def __init__(self, name: str, hostname: str = None,
                  online: bool = True, unmanaged: bool = False,
                  interfaces=None, labels=None, ven_agent=None):
+        # Create minimal mock WorkloadStore
+        mock_org = type('MockOrg', (), {'LabelStore': type('LS', (), {'label_types': ['role', 'app', 'env', 'loc']})()})()
+        mock_store = type('MockWorkloadStore', (), {'owner': mock_org})()
+
+        # Initialize parent
+        super().__init__(name=name, href=f'/workloads/{name.lower()}', owner=mock_store)
+
+        # Set properties
         self.forced_name = name
         self.hostname = hostname or name
-        self.href = f'/workloads/{name.lower()}'
         self.online = online
         self.unmanaged = unmanaged
         self.interfaces = interfaces or []
         self.ven_agent = ven_agent
-        self._labels = labels or {}
 
-        # Set label properties
-        self.role_label = self._labels.get('role')
-        self.app_label = self._labels.get('app')
-        self.env_label = self._labels.get('env')
-        self.loc_label = self._labels.get('loc')
-
-    def get_status_string(self):
-        if self.online:
-            return 'online'
-        return 'offline'
-
-    def get_label_name(self, label_type: str):
-        label = self._labels.get(label_type)
-        return label.name if label else None
-
-    def get_labels_str_list(self):
-        return [label.name for label in self._labels.values()]
+        # Set labels using the parent class's set_label() method
+        if labels:
+            for label in labels.values():
+                self.set_label(label)
 
 
 class MockFilterData:
@@ -181,7 +197,7 @@ def test_build_workload_row():
     assert row['hostname'] == 'test-server.example.com', f"Expected hostname 'test-server.example.com', got '{row['hostname']}'"
     assert row['online'] is True, "Expected online to be True"
     assert row['managed'] is True, "Expected managed to be True"
-    assert row['status'] == 'online', f"Expected status 'online', got '{row['status']}'"
+    assert row['status'] == 'not-applicable', f"Expected status 'not-applicable' (no VEN agent), got '{row['status']}'"
     assert row['label_role'] == 'Web', f"Expected label_role 'Web', got '{row['label_role']}'"
     assert row['label_app'] == 'MyApp', f"Expected label_app 'MyApp', got '{row['label_app']}'"
     assert row['label_env'] == 'Production', f"Expected label_env 'Production', got '{row['label_env']}'"
@@ -386,6 +402,7 @@ def test_find_matching_filters_for_workload():
         interfaces=[MockInterface('192.168.1.100')],
         labels={'app': MockLabel('WebApp', 'app')}
     )
+    workload = workload
 
     filter_data = MockFilterData([
         {'hostname': 'test-server', 'app': 'WebApp', '*line*': 1},
@@ -448,8 +465,9 @@ def test_extra_column_registry():
     # Create mock extra columns
     class MockExtraColumn(ExtraColumn):
         def __init__(self, col_name: str):
+            # Intentionally NOT calling super().__init__() to avoid global registration
+            # noinspection PyMissingConstructor
             self.col_name = col_name
-            # Don't call super().__init__() to avoid global registration
 
         def column_description(self):
             return ExtraColumn.ColumnDescription(self.col_name, self.col_name.title())
