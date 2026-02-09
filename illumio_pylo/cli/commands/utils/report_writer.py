@@ -24,8 +24,8 @@ class ReportWriter:
        # 1. add typical arguments to the CLI argument parser in the command's fill_parser() function
        ReportWriter.add_arguments_to_parser(parser, default_prefix='my-command')
 
-        # 2. Construct with headers (optionally pass parsed args to the constructor)
-        report_writer = ReportWriter(headers, args=vars(args), filename_prefix='my-command')
+        # 2. Construct with headers (optionally/recommended pass parsed args to the constructor)
+        report_writer = ReportWriter(headers, args=vars(args), filename_prefix='my-command', args=args)
 
         # 3. Write reports
         report_writer.write_reports()
