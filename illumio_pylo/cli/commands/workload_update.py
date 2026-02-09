@@ -29,9 +29,6 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--label-type-header-prefix', type=str, required=False, default=default_label_columns_prefix,
                         help='Prefix for the label type headers in the CSV/Excel file')
 
-    parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
-                        help='Output directory for the report files')
-
     parser.add_argument('--match-on-hostname', action='store_true',
                         help="In order to be updated, a workload must match a HOSTNAME entry from the CSV file")
     parser.add_argument('--match-on-ip', action='store_true',
