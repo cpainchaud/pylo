@@ -1,14 +1,15 @@
-from typing import Dict, TypedDict, Optional, List, Union
-import click
 import argparse
 import sys
+from typing import Dict, TypedDict, Optional, List, Union
+
+import click
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeaderSet
-from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
-from .utils.misc import make_filename_with_timestamp, default_label_columns_prefix
+from illumio_pylo import ExcelHeaderSet, ExcelHeader
 from . import Command
-
+from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
+from .utils.misc import default_label_columns_prefix
+from .utils.report_writer import ReportWriter
 
 command_name = 'workload-update'
 objects_load_filter = ['workloads', 'labels']
@@ -48,6 +49,14 @@ def fill_parser(parser: argparse.ArgumentParser):
 
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to update per API call')
+
+    # Add standard report arguments
+    ReportWriter.add_arguments_to_parser(
+        parser,
+        default_prefix='workload-update',
+        default_sheet_name='Workloads Update Report',
+        format_help='Report format to generate (csv, xlsx, or json). Can be repeated for multiple formats. Default: csv'
+    )
 
 
 class ContextSingleton:
@@ -93,10 +102,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     input_match_on_ip = args['match_on_ip']
     input_match_on_href = args['match_on_href']
 
-    output_file_prefix = make_filename_with_timestamp('workload-update-results_', settings_output_dir)
-    output_file_csv = output_file_prefix + '.csv'
-    output_file_excel = output_file_prefix + '.xlsx'
-
     context.ignored_workloads_count = 0
 
     csv_report_headers = ExcelHeaderSet(['name', 'hostname'])
@@ -104,10 +109,15 @@ def __main(args, org: pylo.Organization, **kwargs):
         csv_report_headers.append(f'{context.settings_label_type_header_prefix}{label_type}')
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'new_{label_type}')
-    csv_report_headers.extend(['**updated**', '**reason**', 'href'])
+    # replace extend of string headers with ExcelHeader append calls so types match ExcelHeaderSet expectations
+    csv_report_headers.append(ExcelHeader(name='**updated**'))
+    csv_report_headers.append(ExcelHeader(name='**reason**'))
+    csv_report_headers.append(ExcelHeader(name='href'))
 
-    context.csv_report = ArraysToExcel()
-    context.csv_report_sheet = context.csv_report.create_sheet('Workloads Update Report', csv_report_headers)
+    # Use ReportWriter instead of ArraysToExcel
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='Workloads Update Report', filename_prefix='workload-update', args=args)
+    context.csv_report = report_writer.excel_workbook
+    context.csv_report_sheet = report_writer.sheet
 
     # <editor-fold desc="CSV input file data extraction">
     csv_expected_fields = [
@@ -208,10 +218,10 @@ def __main(args, org: pylo.Organization, **kwargs):
 
                         batch_cursor += settings_batch_size
                     print("  * DONE - {} workloads labels updated with success, {} failures and {} ignored. A report was created in {} and {}".
-                          format(total_created_count, total_failed_count, context.ignored_workloads_count, output_file_csv, output_file_excel))
+                          format(total_created_count, total_failed_count, context.ignored_workloads_count, 'csv/xlsx', 'csv/xlsx'))
 
-                    context.csv_report_sheet.write_to_csv(output_file_csv)
-                    context.csv_report.write_to_excel(output_file_excel)
+                    # persist reports via ReportWriter
+                    report_writer.write_reports()
 
         if not workload_update_happened:
             print("\n*************")
@@ -225,11 +235,8 @@ def __main(args, org: pylo.Organization, **kwargs):
                 # new_labels = workloads_list_changed_labels_for_report[workload]))
     # </editor-fold>
 
-    print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
-    context.csv_report_sheet.write_to_csv(output_file_csv)
-    print("DONE")
-    print(" * Writing report file '{}' ... ".format(output_file_excel), end='', flush=True)
-    context.csv_report.write_to_excel(output_file_excel)
+    # Ensure sheet has lines added for any skipped items
+    report_writer.write_reports()
     print("DONE")
 
 

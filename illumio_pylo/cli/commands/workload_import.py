@@ -1,15 +1,16 @@
-from typing import Dict, List, Any
-from dataclasses import dataclass
-import sys
 import argparse
+import sys
+from dataclasses import dataclass
+from typing import Dict, List, Any
 
 import click
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeaderSet, ExcelHeader
-from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
-from .utils.misc import make_filename_with_timestamp, default_label_columns_prefix
+from illumio_pylo import ExcelHeaderSet, ExcelHeader
 from . import Command
+from .utils.LabelCreation import generate_list_of_labels_to_create, create_labels
+from .utils.misc import default_label_columns_prefix
+from .utils.report_writer import ReportWriter
 
 command_name = 'workload-import'
 objects_load_filter = ['workloads', 'labels']
@@ -51,6 +52,14 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--no-confirmation-required', '-n', action='store_true',
                         help='If set, the script will proceed with the creation of the workloads and labels without asking for confirmation')
 
+    # Add standard report arguments (filename/format/output-dir)
+    ReportWriter.add_arguments_to_parser(
+        parser,
+        default_prefix='import-umw-results',
+        default_sheet_name='Workloads',
+        format_help='Report format to generate (csv, xlsx, or json). Can be repeated for multiple formats. Default: csv'
+    )
+
 
 def __main(args, org: pylo.Organization, **kwargs):
     input_file = args['input_file']
@@ -67,13 +76,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     batch_size = args['batch_size']
 
-    output_file_prefix = make_filename_with_timestamp('import-umw-results_', settings_output_dir)
-    output_file_csv = output_file_prefix + '.csv'
-    output_file_excel = output_file_prefix + '.xlsx'
-
-    pylo.file_clean(output_file_csv)
-    pylo.file_clean(output_file_excel)
-
+    # Build expected CSV headers
     csv_expected_fields: List[Dict] = [
         {'name': 'name', 'optional': True, 'default': ''},
         {'name': 'hostname', 'optional': False},
@@ -92,8 +95,9 @@ def __main(args, org: pylo.Organization, **kwargs):
     csv_report_headers.append(ExcelHeader(name='**not_created_reason**'))
     csv_report_headers.append(ExcelHeader(name='href', max_width=15))
 
-    csv_report = ArraysToExcel()
-    csv_sheet = csv_report.create_sheet('Workloads', csv_report_headers)
+    # Use ReportWriter instead of ArraysToExcel
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='Workloads', filename_prefix='import-umw-results', args=args)
+    csv_sheet = report_writer.sheet
 
     print(" * Loading CSV input file '{}'...".format(input_file), flush=True, end='')
     csv_data = pylo.CsvExcelToObject(input_file, expected_headers=csv_expected_fields, csv_delimiter=input_file_delimiter)
@@ -179,14 +183,12 @@ def __main(args, org: pylo.Organization, **kwargs):
     # </editor-fold>
 
     print()
-    print(" * A CSV report was created in {}".format(output_file_csv))
-    print(" * An Excel report was created in {}".format(output_file_excel))
 
     for data in csv_data.objects():
         csv_sheet.add_line_from_object(data)
 
-    csv_sheet.write_to_csv(output_file_csv)
-    csv_report.write_to_excel(output_file_excel)
+    # Write reports via ReportWriter (it will handle CSV/XLSX/JSON formats)
+    report_writer.write_reports()
 
 
 def prepare_workload_creation_data(csv_objects_to_create, org: pylo.Organization, header_label_prefix: str) \
@@ -360,4 +362,4 @@ def detect_ip_collisions(csv_data, org: pylo.Organization, ignore_all_sorts_coll
     print("  * DONE")
 
 
-command_object = Command(command_name, __main, fill_parser, objects_load_filter)
+command_object = Command(command_name, __main, fill_parser)
