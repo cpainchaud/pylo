@@ -53,7 +53,6 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
 
     report_writer = ReportWriter(headers=report_headers, sheet_name='unused_labels', filename_prefix='label-delete-unused', force_all_wrap_text=True, multivalues_cell_delimiter=',')
     report_writer.initialize_from_args(args)
-    report = report_writer.excel_workbook
     sheet = report_writer.sheet
 
     print("Fetching all Labels from the PCE... ", end='', flush=True)
@@ -125,7 +124,6 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
         json_data.append(row_dict)
 
     report_writer.write_reports(json_data=json_data, sort_by=['type', 'value'])
-
 
 
 def add_label_to_report(label_json: LabelObjectJsonStructure, sheet: pylo.ArraysToExcel.Sheet,
