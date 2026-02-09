@@ -24,103 +24,14 @@ from illumio_pylo.cli.commands.workload_export import (
     FILTER_FIELD_IP,
 )
 
-
-# ============================================================================
-# Mock Classes - Inheriting from real pylo classes
-# ============================================================================
-
-class MockLabel(pylo.Label):
-    """Mock Label for testing - inherits from real Label class"""
-    def __init__(self, name: str, label_type: str):
-        # Create a minimal mock LabelStore
-        mock_store = type('MockLabelStore', (), {'owner': None})()
-        # Initialize parent with required positional args: name, href, label_type, owner
-        super().__init__(name, f'/labels/{name}', label_type, mock_store)
-
-
-class MockVENAgent(pylo.VENAgent):
-    """Mock VEN Agent for testing - inherits from real VENAgent class"""
-    def __init__(self, last_heartbeat=None, policy_applied_at=None,
-                 sync_state='synced', href='/agents/test'):
-        # Create minimal mock AgentStore
-        mock_store = type('MockAgentStore', (), {'owner': None})()
-        # Initialize parent
-        super().__init__(href=href, owner=mock_store)
-        self._last_heartbeat = last_heartbeat
-        self._policy_applied_at = policy_applied_at
-        self._sync_state = sync_state
-
-    def get_last_heartbeat_date(self):
-        return self._last_heartbeat
-
-    def get_status_security_policy_applied_at(self):
-        return self._policy_applied_at
-
-    def get_status_security_policy_sync_state(self):
-        return self._sync_state
-
-
-class MockInterface(pylo.WorkloadInterface):
-    """Mock Workload Interface for testing - inherits from real WorkloadInterface class"""
-    def __init__(self, ip: str, owner=None):
-        # Initialize parent with minimal args
-        super().__init__(
-            owner=owner,
-            name='eth0',
-            ip=ip,
-            network='',
-            gateway='',
-            ignored=False
-        )
-
-
-class MockOrganization(pylo.Organization):
-    """Mock Organization for testing - inherits from real Organization class"""
-    def __init__(self, label_types=None):
-        # Initialize parent
-        super().__init__(org_id=1)
-        # Override label dimensions if provided
-        if label_types:
-            # Convert string keys to LabelDimension objects
-            dimensions = []
-            for label_type in label_types:
-                dimension = pylo.LabelDimension(
-                    key=label_type,
-                    display_name=label_type.title(),
-                    href=f'/orgs/1/label_dimensions/{label_type}'
-                )
-                dimensions.append(dimension)
-            # Set dimensions directly on the LabelStore
-            self.LabelStore._dimensions = dimensions
-            # Clear caches
-            self.LabelStore._label_types_cache = None
-            self.LabelStore._label_types_as_set_cache = None
-
-
-class MockWorkload(pylo.Workload):
-    """Mock Workload for testing - inherits from real Workload class"""
-    def __init__(self, name: str, hostname: str = None,
-                 online: bool = True, unmanaged: bool = False,
-                 interfaces=None, labels=None, ven_agent=None):
-        # Create minimal mock WorkloadStore
-        mock_org = type('MockOrg', (), {'LabelStore': type('LS', (), {'label_types': ['role', 'app', 'env', 'loc']})()})()
-        mock_store = type('MockWorkloadStore', (), {'owner': mock_org})()
-
-        # Initialize parent
-        super().__init__(name=name, href=f'/workloads/{name.lower()}', owner=mock_store)
-
-        # Set properties
-        self.forced_name = name
-        self.hostname = hostname or name
-        self.online = online
-        self.unmanaged = unmanaged
-        self.interfaces = interfaces or []
-        self.ven_agent = ven_agent
-
-        # Set labels using the parent class's set_label() method
-        if labels:
-            for label in labels.values():
-                self.set_label(label)
+# Import shared test fixtures
+from test_fixtures import (
+    MockLabel,
+    MockVENAgent,
+    MockInterface,
+    MockOrganization,
+    MockWorkload,
+)
 
 
 class MockFilterData:
