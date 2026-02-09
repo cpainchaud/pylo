@@ -60,6 +60,8 @@ class LabelObjectJsonStructure(TypedDict):
     key: str
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+    external_data_set: Optional[str]
+    external_data_reference: Optional[str]
     usage: Optional[LabelObjectUsageJsonStructure]
     value: str
 
