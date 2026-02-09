@@ -22,26 +22,57 @@ class ReportWriter:
     Handles report generation for CLI commands with support for multiple formats.
 
     Usage:
-        # 1. Add arguments to parser
-        report_writer = ReportWriter()
+        # 1. Construct with headers
+        report_writer = ReportWriter(headers)
         report_writer.add_arguments_to_parser(parser, default_prefix='my-command')
 
         # 2. Initialize from parsed arguments
         report_writer.initialize_from_args(args)
 
         # 3. Write reports
-        report_writer.write_reports(sheet, excel_workbook)
+        report_writer.write_reports()
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        headers: pylo.ExcelHeaderSet,
+        sheet_name: str = "report",
+        filename_prefix: Optional[str] = None,
+        force_all_wrap_text: bool = True,
+        multivalues_cell_delimiter: str = ','
+    ):
+        """
+        Initialize the ReportWriter with headers and create an ArraysToExcel workbook + sheet.
+
+        Args:
+            headers: Header definitions for the report (required)
+            sheet_name: Name for the created Excel sheet
+            filename_prefix: Optional filename prefix used when auto-generating filenames
+            force_all_wrap_text: Whether to enable wrap text on all cells for the created sheet
+            multivalues_cell_delimiter: Delimiter used for multi-value cells
+        """
         self.formats: List[ReportFormat] = []
         self.output_dir: str = "output"
         self.output_filename: Optional[str] = None
-        self.filename_prefix: Optional[str] = None
-        self.sheet_name: str = "report"
+        self.filename_prefix: Optional[str] = filename_prefix
 
-    def add_arguments_to_parser(
-        self,
+        # Store sheet configuration
+        self.sheet_name: str = sheet_name
+        self.headers = headers
+        self.force_all_wrap_text = force_all_wrap_text
+        self.multivalues_cell_delimiter = multivalues_cell_delimiter
+
+        # Create workbook and the initial sheet
+        self.excel_workbook: pylo.ArraysToExcel = pylo.ArraysToExcel()
+        self.sheet: pylo.ArraysToExcel.Sheet = self.excel_workbook.create_sheet(
+            self.sheet_name,
+            self.headers,
+            force_all_wrap_text=self.force_all_wrap_text,
+            multivalues_cell_delimiter=self.multivalues_cell_delimiter
+        )
+
+    @staticmethod
+    def add_arguments_to_parser_static(
         parser: argparse.ArgumentParser,
         default_prefix: Optional[str] = None,
         default_sheet_name: str = "report",
@@ -50,21 +81,11 @@ class ReportWriter:
         output_filename_help: Optional[str] = None,
         populate_arguments_hook: Optional[Callable[[argparse.ArgumentParser], None]] = None
     ):
-        """
-        Add standard report-related arguments to an ArgumentParser.
+        """Add standard report-related arguments to an ArgumentParser.
 
-        Args:
-            parser: The argument parser to add arguments to
-            default_prefix: Default prefix for auto-generated filenames (e.g., 'command-name')
-            default_sheet_name: Default Excel sheet name
-            format_help: Custom help text for --report-format option
-            output_dir_help: Custom help text for --output-dir option
-            output_filename_help: Custom help text for --output-filename option
-            populate_arguments_hook: Optional callback to add custom arguments
+        This static helper only attaches CLI options to the provided parser and
+        does not modify any ReportWriter instance state.
         """
-        self.filename_prefix = default_prefix
-        self.sheet_name = default_sheet_name
-
         if format_help is None:
             format_help = 'Report format to generate (can be repeated for multiple formats). Default: csv'
         if output_dir_help is None:
@@ -74,14 +95,8 @@ class ReportWriter:
                                    'timestamped filename. If multiple formats are requested, the provided path\'s '
                                    'extension will be replaced/added per format.')
 
-        parser.add_argument(
-            '--report-format', '-rf',
-            action='append',
-            type=str,
-            choices=['csv', 'xlsx', 'json'],
-            default=None,
-            help=format_help
-        )
+        parser.add_argument('--report-format', '-rf', action='append', type=str,
+                            choices=['csv', 'xlsx', 'json'], default=None, help=format_help)
         parser.add_argument(
             '--output-dir', '-o',
             type=str,
@@ -99,6 +114,48 @@ class ReportWriter:
         # Call hook if provided for command-specific arguments
         if populate_arguments_hook is not None:
             populate_arguments_hook(parser)
+
+    # Expose a convenience instance method that preserves backward compatibility
+    def add_arguments_to_parser(
+        self,
+        parser: argparse.ArgumentParser,
+        default_prefix: Optional[str] = None,
+        default_sheet_name: str = "report",
+        format_help: Optional[str] = None,
+        output_dir_help: Optional[str] = None,
+        output_filename_help: Optional[str] = None,
+        populate_arguments_hook: Optional[Callable[[argparse.ArgumentParser], None]] = None
+    ):
+        """Instance wrapper that registers CLI args and optionally updates defaults on the instance.
+
+        This keeps backward compatibility for code that calls the instance method to
+        set default filename prefix and sheet name.
+        """
+        # If caller provided defaults, update instance state so initialize_from_args
+        # will pick them up later.
+        if default_prefix is not None:
+            self.filename_prefix = default_prefix
+        if default_sheet_name is not None and default_sheet_name != self.sheet_name:
+            self.sheet_name = default_sheet_name
+            # Recreate sheet on the existing workbook with the current headers
+            self.excel_workbook = self.excel_workbook or pylo.ArraysToExcel()
+            self.sheet = self.excel_workbook.create_sheet(
+                self.sheet_name,
+                self.headers,
+                force_all_wrap_text=self.force_all_wrap_text,
+                multivalues_cell_delimiter=self.multivalues_cell_delimiter
+            )
+
+        # Delegate to static helper to register arguments
+        ReportWriter.add_arguments_to_parser_static(
+            parser,
+            default_prefix=default_prefix,
+            default_sheet_name=default_sheet_name,
+            format_help=format_help,
+            output_dir_help=output_dir_help,
+            output_filename_help=output_filename_help,
+            populate_arguments_hook=populate_arguments_hook
+        )
 
     def initialize_from_args(
         self,
@@ -127,8 +184,15 @@ class ReportWriter:
         # Override prefix and sheet name if provided
         if filename_prefix is not None:
             self.filename_prefix = filename_prefix
-        if sheet_name is not None:
+        if sheet_name is not None and sheet_name != self.sheet_name:
             self.sheet_name = sheet_name
+            # Recreate sheet with new name
+            self.sheet = self.excel_workbook.create_sheet(
+                self.sheet_name,
+                self.headers,
+                force_all_wrap_text=self.force_all_wrap_text,
+                multivalues_cell_delimiter=self.multivalues_cell_delimiter
+            )
 
     def get_output_filename(self, report_format: ReportFormat) -> str:
         """
@@ -172,20 +236,21 @@ class ReportWriter:
 
     def write_reports(
         self,
-        sheet: Optional[pylo.ArraysToExcel.Sheet] = None,
-        excel_workbook: Optional[pylo.ArraysToExcel] = None,
         json_data: Optional[List[Dict[str, Any]]] = None,
         sort_by: Optional[List[str]] = None
     ):
         """
-        Write reports in all requested formats.
+        Write reports in all requested formats. If sheet or excel_workbook are not provided,
+        the instance's created workbook and sheet will be used.
 
         Args:
-            sheet: The Excel sheet object (required for CSV and XLSX formats)
-            excel_workbook: The Excel workbook object (required for XLSX format)
             json_data: List of dictionaries for JSON format (required for JSON format)
             sort_by: Optional list of column names to sort by before writing
         """
+        # Use instance workbook/sheet
+        sheet = self.sheet
+        excel_workbook = self.excel_workbook
+
         # Sort data if requested
         if sort_by is not None and sheet is not None:
             sheet.reorder_lines(sort_by)
@@ -209,12 +274,12 @@ class ReportWriter:
             try:
                 if report_format == 'csv':
                     if sheet is None:
-                        raise pylo.PyloEx("sheet parameter is required for CSV format")
+                        raise pylo.PyloEx("sheet is not available for CSV format")
                     sheet.write_to_csv(output_filename)
 
                 elif report_format == 'xlsx':
                     if excel_workbook is None:
-                        raise pylo.PyloEx("excel_workbook parameter is required for XLSX format")
+                        raise pylo.PyloEx("excel_workbook is not available for XLSX format")
                     excel_workbook.write_to_excel(output_filename)
 
                 elif report_format == 'json':
@@ -231,32 +296,4 @@ class ReportWriter:
             except Exception as e:
                 print(f"ERROR: {e}")
                 raise
-
-
-def create_standard_report_structure(
-    sheet_name: str,
-    headers: pylo.ExcelHeaderSet,
-    force_all_wrap_text: bool = True,
-    multivalues_cell_delimiter: str = ','
-) -> tuple[pylo.ArraysToExcel, pylo.ArraysToExcel.Sheet]:
-    """
-    Create a standard Excel report structure with a single sheet.
-
-    Args:
-        sheet_name: Name of the Excel sheet
-        headers: Header definitions for the report
-        force_all_wrap_text: Whether to wrap text in all cells
-        multivalues_cell_delimiter: Delimiter for multi-value cells
-
-    Returns:
-        Tuple of (excel_workbook, sheet)
-    """
-    report = pylo.ArraysToExcel()
-    sheet = report.create_sheet(
-        sheet_name,
-        headers,
-        force_all_wrap_text=force_all_wrap_text,
-        multivalues_cell_delimiter=multivalues_cell_delimiter
-    )
-    return report, sheet
 

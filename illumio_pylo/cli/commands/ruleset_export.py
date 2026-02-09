@@ -3,7 +3,7 @@ from typing import Dict
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
-from .utils.report_writer import ReportWriter, create_standard_report_structure
+from .utils.report_writer import ReportWriter
 from . import Command
 
 command_name = 'rule-export'
@@ -21,9 +21,8 @@ def fill_parser(parser: argparse.ArgumentParser):
                              "Private_Networks\n" +
                              "Public_NATed")
 
-    # Add standard report arguments
-    report_writer = ReportWriter()
-    report_writer.add_arguments_to_parser(
+    # Add standard report arguments (static helper)
+    ReportWriter.add_arguments_to_parser(
         parser,
         default_prefix='rule-export',
         default_sheet_name='rulesets'
@@ -34,9 +33,7 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     setting_prefix_objects_with_type: bool | str = args['prefix_objects_with_type']
     setting_object_types_as_section: bool = args['prefix_objects_with_type']
 
-    # Initialize report writer
-    report_writer = ReportWriter()
-    report_writer.initialize_from_args(args, sheet_name='rulesets')
+    # Initialize report writer will be created after headers are known below
 
     if setting_prefix_objects_with_type is False:
         print(" * Prefix for object types are disabled")
@@ -60,12 +57,12 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
         ExcelHeader(name='ruleset_url', max_width=40, wrap_text=False),
         ExcelHeader(name='ruleset_href', max_width=30, wrap_text=False)
     ])
-    csv_report, sheet = create_standard_report_structure(
-        report_writer.sheet_name,
-        csv_report_headers,
-        force_all_wrap_text=True,
-        multivalues_cell_delimiter=','
-    )
+
+    # Create report writer and its sheet using the header definitions
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='rulesets', filename_prefix='rule-export')
+    report_writer.initialize_from_args(args)
+    csv_report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     for ruleset in org.RulesetStore.rulesets:
         for rule in ruleset.rules_ordered_by_type:
@@ -119,12 +116,7 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
             row_dict[header.name] = line[idx]
         json_data.append(row_dict)
 
-    report_writer.write_reports(
-        sheet=sheet,
-        excel_workbook=csv_report,
-        json_data=json_data
-    )
-
+    report_writer.write_reports(json_data=json_data)
 
 
 command_object = Command(command_name, __main, fill_parser)

@@ -14,12 +14,11 @@ import tempfile
 import shutil
 import json
 import argparse
-from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import illumio_pylo as pylo
-from illumio_pylo.cli.commands.utils.report_writer import ReportWriter, create_standard_report_structure
+from illumio_pylo.cli.commands.utils.report_writer import ReportWriter
 
 
 def test_argument_parsing():
@@ -31,7 +30,7 @@ def test_argument_parsing():
     # Test 1: Default arguments
     print("\nTest 1: Default arguments (no format specified)")
     parser = argparse.ArgumentParser()
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.add_arguments_to_parser(
         parser,
         default_prefix='test-command',
@@ -52,7 +51,7 @@ def test_argument_parsing():
     # Test 2: Single format specified
     print("\nTest 2: Single format (xlsx)")
     parser = argparse.ArgumentParser()
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['--report-format', 'xlsx'])
     args_dict = vars(args)
@@ -64,7 +63,7 @@ def test_argument_parsing():
     # Test 3: Multiple formats specified
     print("\nTest 3: Multiple formats (csv, xlsx, json)")
     parser = argparse.ArgumentParser()
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['-rf', 'csv', '-rf', 'xlsx', '-rf', 'json'])
     args_dict = vars(args)
@@ -76,7 +75,7 @@ def test_argument_parsing():
     # Test 4: Custom output directory
     print("\nTest 4: Custom output directory")
     parser = argparse.ArgumentParser()
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['--output-dir', '/tmp/reports'])
     args_dict = vars(args)
@@ -88,7 +87,7 @@ def test_argument_parsing():
     # Test 5: Custom filename
     print("\nTest 5: Custom filename")
     parser = argparse.ArgumentParser()
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['--output-filename', 'myreport.csv'])
     args_dict = vars(args)
@@ -108,7 +107,7 @@ def test_filename_generation():
 
     # Test 1: Auto-generated filenames
     print("\nTest 1: Auto-generated filenames")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv', 'xlsx', 'json']
     report_writer.output_dir = 'output'
     report_writer.output_filename = None
@@ -128,7 +127,7 @@ def test_filename_generation():
 
     # Test 2: Custom filename with single format
     print("\nTest 2: Custom filename with single format")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv']
     report_writer.output_dir = 'output'
     report_writer.output_filename = 'myreport.csv'
@@ -140,7 +139,7 @@ def test_filename_generation():
 
     # Test 3: Custom filename with multiple formats
     print("\nTest 3: Custom filename with multiple formats")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv', 'xlsx', 'json']
     report_writer.output_dir = 'output'
     report_writer.output_filename = 'myreport.csv'
@@ -162,7 +161,7 @@ def test_filename_generation():
 
     # Test 4: Custom filename without extension
     print("\nTest 4: Custom filename without extension")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv', 'xlsx']
     report_writer.output_dir = 'output'
     report_writer.output_filename = 'myreport'
@@ -190,7 +189,10 @@ def test_report_structure_creation():
     # Test 1: Simple headers
     print("\nTest 1: Simple headers")
     headers = pylo.ExcelHeaderSet(['name', 'value', 'type'])
-    report, sheet = create_standard_report_structure('test_sheet', headers)
+    report_writer = ReportWriter(headers=headers, sheet_name='test_sheet')
+
+    report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     assert sheet is not None, "Sheet should not be None"
     assert sheet._headers is not None, "Sheet headers should not be None"
@@ -205,7 +207,10 @@ def test_report_structure_creation():
         pylo.ExcelHeader(name='url', max_width=15, url_text='Click', is_url=True),
         'simple_column'
     ])
-    report, sheet = create_standard_report_structure('complex_sheet', headers)
+    report_writer = ReportWriter(headers=headers, sheet_name='complex_sheet')
+
+    report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     assert sheet is not None, "Sheet should not be None"
     assert len(sheet._headers) == 4, f"Expected 4 headers, got {len(sheet._headers)}"
@@ -214,7 +219,10 @@ def test_report_structure_creation():
     # Test 3: Add data to sheet
     print("\nTest 3: Add data to sheet")
     headers = pylo.ExcelHeaderSet(['col1', 'col2', 'col3'])
-    report, sheet = create_standard_report_structure('data_sheet', headers)
+    report_writer = ReportWriter(headers=headers, sheet_name='data_sheet')
+
+    report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     sheet.add_line_from_object({'col1': 'value1', 'col2': 'value2', 'col3': 'value3'})
     sheet.add_line_from_object({'col1': 'value4', 'col2': 'value5', 'col3': 'value6'})
@@ -242,7 +250,10 @@ def test_report_writing():
             pylo.ExcelHeader(name='value', max_width=20),
             pylo.ExcelHeader(name='count', max_width=10)
         ])
-        report, sheet = create_standard_report_structure('test_data', headers)
+        data_writer = ReportWriter(headers=headers, sheet_name='test_data')
+
+        report = data_writer.excel_workbook
+        sheet = data_writer.sheet
 
         test_data = [
             {'name': 'Item 1', 'value': 'Value A', 'count': '10'},
@@ -261,14 +272,13 @@ def test_report_writing():
                 row_dict[header.name] = line[idx]
             json_data.append(row_dict)
 
-        # Test 1: Write CSV format
+        # Test 1: Write CSV format (use writer that contains the populated sheet)
         print("\nTest 1: Write CSV format")
-        report_writer = ReportWriter()
-        report_writer.formats = ['csv']
-        report_writer.output_dir = temp_dir
-        report_writer.output_filename = 'test_report.csv'
+        data_writer.formats = ['csv']
+        data_writer.output_dir = temp_dir
+        data_writer.output_filename = 'test_report.csv'
 
-        report_writer.write_reports(sheet=sheet, excel_workbook=report, json_data=json_data)
+        data_writer.write_reports(json_data=json_data)
 
         csv_path = os.path.join(temp_dir, 'test_report.csv')
         assert os.path.exists(csv_path), f"CSV file should exist: {csv_path}"
@@ -283,12 +293,11 @@ def test_report_writing():
 
         # Test 2: Write XLSX format
         print("\nTest 2: Write XLSX format")
-        report_writer = ReportWriter()
-        report_writer.formats = ['xlsx']
-        report_writer.output_dir = temp_dir
-        report_writer.output_filename = 'test_report.xlsx'
+        data_writer.formats = ['xlsx']
+        data_writer.output_dir = temp_dir
+        data_writer.output_filename = 'test_report.xlsx'
 
-        report_writer.write_reports(sheet=sheet, excel_workbook=report, json_data=json_data)
+        data_writer.write_reports(json_data=json_data)
 
         xlsx_path = os.path.join(temp_dir, 'test_report.xlsx')
         assert os.path.exists(xlsx_path), f"XLSX file should exist: {xlsx_path}"
@@ -297,12 +306,11 @@ def test_report_writing():
 
         # Test 3: Write JSON format
         print("\nTest 3: Write JSON format")
-        report_writer = ReportWriter()
-        report_writer.formats = ['json']
-        report_writer.output_dir = temp_dir
-        report_writer.output_filename = 'test_report.json'
+        data_writer.formats = ['json']
+        data_writer.output_dir = temp_dir
+        data_writer.output_filename = 'test_report.json'
 
-        report_writer.write_reports(sheet=sheet, excel_workbook=report, json_data=json_data)
+        data_writer.write_reports(json_data=json_data)
 
         json_path = os.path.join(temp_dir, 'test_report.json')
         assert os.path.exists(json_path), f"JSON file should exist: {json_path}"
@@ -319,12 +327,11 @@ def test_report_writing():
 
         # Test 4: Write multiple formats
         print("\nTest 4: Write multiple formats (csv, xlsx, json)")
-        report_writer = ReportWriter()
-        report_writer.formats = ['csv', 'xlsx', 'json']
-        report_writer.output_dir = temp_dir
-        report_writer.output_filename = 'multi_format'
+        data_writer.formats = ['csv', 'xlsx', 'json']
+        data_writer.output_dir = temp_dir
+        data_writer.output_filename = 'multi_format'
 
-        report_writer.write_reports(sheet=sheet, excel_workbook=report, json_data=json_data)
+        data_writer.write_reports(json_data=json_data)
 
         multi_csv = os.path.join(temp_dir, 'multi_format.csv')
         multi_xlsx = os.path.join(temp_dir, 'multi_format.xlsx')
@@ -341,15 +348,17 @@ def test_report_writing():
         # Test 5: Write empty report
         print("\nTest 5: Write empty report")
         empty_headers = pylo.ExcelHeaderSet(['col1', 'col2'])
-        empty_report, empty_sheet = create_standard_report_structure('empty', empty_headers)
+        empty_writer = ReportWriter(headers=empty_headers, sheet_name='empty')
+        empty_report = empty_writer.excel_workbook
+        empty_sheet = empty_writer.sheet
 
-        report_writer = ReportWriter()
+        report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
         report_writer.formats = ['csv', 'json']
         report_writer.output_dir = temp_dir
         report_writer.output_filename = 'empty_report'
 
         empty_json_data = []
-        report_writer.write_reports(sheet=empty_sheet, excel_workbook=empty_report, json_data=empty_json_data)
+        report_writer.write_reports(json_data=empty_json_data)
 
         empty_csv = os.path.join(temp_dir, 'empty_report.csv')
         empty_json = os.path.join(temp_dir, 'empty_report.json')
@@ -372,7 +381,9 @@ def test_report_writing():
         # Test 6: Test sorting
         print("\nTest 6: Test sorting")
         sort_headers = pylo.ExcelHeaderSet(['type', 'name', 'value'])
-        sort_report, sort_sheet = create_standard_report_structure('sorted', sort_headers)
+        sort_writer = ReportWriter(headers=sort_headers, sheet_name='sorted')
+        sort_report = sort_writer.excel_workbook
+        sort_sheet = sort_writer.sheet
 
         sort_data = [
             {'type': 'B', 'name': 'Item 2', 'value': '20'},
@@ -391,17 +402,12 @@ def test_report_writing():
                 row_dict[header.name] = line[idx]
             sorted_json_data.append(row_dict)
 
-        report_writer = ReportWriter()
-        report_writer.formats = ['json']
-        report_writer.output_dir = temp_dir
-        report_writer.output_filename = 'sorted_report.json'
+        # Use sort_writer (which contains the populated sheet) to write sorted JSON
+        sort_writer.formats = ['json']
+        sort_writer.output_dir = temp_dir
+        sort_writer.output_filename = 'sorted_report.json'
 
-        report_writer.write_reports(
-            sheet=sort_sheet,
-            excel_workbook=sort_report,
-            json_data=sorted_json_data,
-            sort_by=['type', 'name']
-        )
+        sort_writer.write_reports(json_data=sorted_json_data, sort_by=['type', 'name'])
 
         sorted_json = os.path.join(temp_dir, 'sorted_report.json')
         with open(sorted_json, 'r') as f:
@@ -430,7 +436,7 @@ def test_error_handling():
 
     # Test 1: Missing filename_prefix
     print("\nTest 1: Missing filename_prefix when needed")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv']
     report_writer.output_dir = 'output'
     report_writer.output_filename = None
@@ -445,13 +451,15 @@ def test_error_handling():
 
     # Test 2: Missing sheet parameter for CSV
     print("\nTest 2: Missing sheet parameter for CSV format")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv']
     report_writer.output_dir = 'output'
     report_writer.output_filename = 'test.csv'
 
     try:
-        report_writer.write_reports(sheet=None, excel_workbook=None, json_data=None)
+        # Simulate missing sheet by removing it from the ReportWriter instance
+        report_writer.sheet = None
+        report_writer.write_reports(json_data=None)
         assert False, "Should have raised PyloEx"
     except pylo.PyloEx as e:
         assert 'sheet' in str(e).lower(), f"Error message should mention sheet: {e}"
@@ -460,15 +468,18 @@ def test_error_handling():
     # Test 3: Missing excel_workbook parameter for XLSX
     print("\nTest 3: Missing excel_workbook parameter for XLSX format")
     headers = pylo.ExcelHeaderSet(['col1'])
-    _, sheet = create_standard_report_structure('test', headers)
+    temp_writer = ReportWriter(headers=headers, sheet_name='test')
+    _, sheet = temp_writer.excel_workbook, temp_writer.sheet
 
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['xlsx']
     report_writer.output_dir = 'output'
     report_writer.output_filename = 'test.xlsx'
 
     try:
-        report_writer.write_reports(sheet=sheet, excel_workbook=None, json_data=None)
+        # Simulate missing excel_workbook by removing it from the instance
+        report_writer.excel_workbook = None
+        report_writer.write_reports(json_data=None)
         assert False, "Should have raised PyloEx"
     except pylo.PyloEx as e:
         assert 'excel_workbook' in str(e).lower(), f"Error message should mention excel_workbook: {e}"
@@ -476,13 +487,13 @@ def test_error_handling():
 
     # Test 4: Missing json_data parameter for JSON
     print("\nTest 4: Missing json_data parameter for JSON format")
-    report_writer = ReportWriter()
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['json']
     report_writer.output_dir = 'output'
     report_writer.output_filename = 'test.json'
 
     try:
-        report_writer.write_reports(sheet=None, excel_workbook=None, json_data=None)
+        report_writer.write_reports(json_data=None)
         assert False, "Should have raised PyloEx"
     except pylo.PyloEx as e:
         assert 'json_data' in str(e).lower(), f"Error message should mention json_data: {e}"
@@ -506,7 +517,7 @@ def test_integration():
 
         # Step 1: Parse arguments
         parser = argparse.ArgumentParser()
-        report_writer = ReportWriter()
+        report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
         report_writer.add_arguments_to_parser(
             parser,
             default_prefix='my-command',
@@ -531,12 +542,11 @@ def test_integration():
             pylo.ExcelHeader(name='description', max_width=50)
         ])
 
-        report, sheet = create_standard_report_structure(
-            report_writer.sheet_name,
-            headers,
-            force_all_wrap_text=True,
-            multivalues_cell_delimiter=','
-        )
+        # Create report writer bound to the real headers and recreate sheet
+        real_writer = ReportWriter(headers=headers, sheet_name='my_data', filename_prefix='my-command', force_all_wrap_text=True, multivalues_cell_delimiter=',')
+        real_writer.initialize_from_args(vars(args))
+        report = real_writer.excel_workbook
+        sheet = real_writer.sheet
 
         # Step 4: Add data (simulating command processing)
         sample_data = [
@@ -558,12 +568,7 @@ def test_integration():
             json_data.append(row_dict)
 
         # Step 6: Write reports
-        report_writer.write_reports(
-            sheet=sheet,
-            excel_workbook=report,
-            json_data=json_data,
-            sort_by=['status', 'name']
-        )
+        real_writer.write_reports(json_data=json_data, sort_by=['status', 'name'])
 
         # Step 7: Verify outputs
         csv_file = os.path.join(temp_dir, 'report.csv')
@@ -646,12 +651,5 @@ def run_all_tests():
 
 if __name__ == '__main__':
     sys.exit(run_all_tests())
-
-
-
-
-
-
-
 
 

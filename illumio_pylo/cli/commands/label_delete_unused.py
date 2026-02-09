@@ -9,7 +9,7 @@ import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
 
 from . import Command
-from .utils.report_writer import ReportWriter, create_standard_report_structure
+from .utils.report_writer import ReportWriter
 from illumio_pylo.API.JsonPayloadTypes import LabelObjectJsonStructure
 
 command_name = "label-delete-unused"
@@ -22,9 +22,8 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--limit', type=int, required=False, default=None,
                         help='Maximum number of unused labels to delete (default: all found unused labels)')
 
-    # Add standard report arguments
-    report_writer = ReportWriter()
-    report_writer.add_arguments_to_parser(
+    # Add standard report arguments (static helper)
+    ReportWriter.add_arguments_to_parser(
         parser,
         default_prefix='label-delete-unused',
         default_sheet_name='unused_labels'
@@ -36,11 +35,7 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
     settings_confirmed_changes: bool = args['confirm']
     settings_limit_deletions: Optional[int] = args['limit']
 
-    # Initialize report writer
-    report_writer = ReportWriter()
-    report_writer.initialize_from_args(args, sheet_name='unused_labels')
-
-    # Initialize report structure
+    # Initialize report structure and writer
     report_headers = pylo.ExcelHeaderSet([
         ExcelHeader(name='key', max_width=25, wrap_text=False),
         ExcelHeader(name='value', max_width=40),
@@ -56,12 +51,10 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
         ExcelHeader(name='href', max_width=60, wrap_text=False)
     ])
 
-    report, sheet = create_standard_report_structure(
-        report_writer.sheet_name,
-        report_headers,
-        force_all_wrap_text=True,
-        multivalues_cell_delimiter=','
-    )
+    report_writer = ReportWriter(headers=report_headers, sheet_name='unused_labels', filename_prefix='label-delete-unused', force_all_wrap_text=True, multivalues_cell_delimiter=',')
+    report_writer.initialize_from_args(args)
+    report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     print("Fetching all Labels from the PCE... ", end='', flush=True)
     # pylo.log_set_debug()
@@ -131,12 +124,7 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
             row_dict[header.name] = line[idx]
         json_data.append(row_dict)
 
-    report_writer.write_reports(
-        sheet=sheet,
-        excel_workbook=report,
-        json_data=json_data,
-        sort_by=['type', 'value']
-    )
+    report_writer.write_reports(json_data=json_data, sort_by=['type', 'value'])
 
 
 

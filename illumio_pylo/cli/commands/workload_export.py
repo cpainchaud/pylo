@@ -60,9 +60,8 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--save-location', type=str, required=False, default='./',
                         help='The folder where this script will save generated Excel report')
 
-    # Add standard report arguments
-    report_writer = ReportWriter()
-    report_writer.add_arguments_to_parser(
+    # Add standard report arguments (static helper)
+    ReportWriter.add_arguments_to_parser(
         parser,
         default_prefix='workload-export',
         default_sheet_name='workloads'
@@ -81,10 +80,7 @@ def __main(args, org: pylo.Organization, **kwargs):
     filter_keep_in_report = args['keep_filters_in_report']
     verbose = args['verbose']
 
-    # Initialize report writer
-    report_writer = ReportWriter()
-    report_writer.initialize_from_args(args, sheet_name='workloads')
-
+    # Create headers first, then instantiate ReportWriter to create sheet
     csv_report_headers = ExcelHeaderSet(['name', 'hostname'])
     for label_type in org.LabelStore.label_types:
         csv_report_headers.append(f'label_{label_type}')
@@ -98,6 +94,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     for extra_column in extra_columns:
         csv_report_headers.append(extra_column.column_description().name)
         print(" - adding extra column from external plugin: " + extra_column.column_description().name)
+
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='workloads', filename_prefix='workload-export', force_all_wrap_text=True)
+    report_writer.initialize_from_args(args)
+    csv_report = report_writer.excel_workbook
+    csv_sheet = report_writer.sheet
 
     filter_csv_expected_fields = []
     filter_data = None
@@ -120,9 +121,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     if filter_keep_in_report:
         for field in filter_data._detected_headers:
             csv_report_headers.append('_' + field)
-
-    csv_report = ArraysToExcel()
-    csv_sheet = csv_report.create_sheet('workloads', csv_report_headers, force_all_wrap_text=True)
 
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
 
@@ -276,11 +274,7 @@ def __main(args, org: pylo.Organization, **kwargs):
         json_data.append(row_dict)
 
     print()
-    report_writer.write_reports(
-        sheet=csv_sheet,
-        excel_workbook=csv_report,
-        json_data=json_data
-    )
+    report_writer.write_reports(json_data=json_data)
 
 
 command_object = Command(command_name, __main, fill_parser)

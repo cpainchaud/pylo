@@ -8,7 +8,7 @@ from typing import Dict, List, Literal
 from zoneinfo import ZoneInfo
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeader, ExplorerResultV2
+from illumio_pylo import ExcelHeader, ExplorerResultV2
 from .utils.report_writer import ReportWriter
 from . import Command
 
@@ -64,9 +64,8 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--omit-columns', '-oc', required=False, type=str, nargs='+', default=None,
                         help=_generate_omit_columns_help())
 
-    # Add standard report arguments
-    report_writer = ReportWriter()
-    report_writer.add_arguments_to_parser(
+    # Add standard report arguments (static helper)
+    ReportWriter.add_arguments_to_parser(
         parser,
         default_prefix='traffic-export',
         default_sheet_name='traffic',
@@ -89,6 +88,8 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     settings_disable_wrap_text: bool = args['disable_wrap_text']
     settings_omit_columns: List[str] | None = args['omit_columns']
 
+    # Build headers first and create a ReportWriter to create workbook/sheet
+    # Build headers first and create a ReportWriter to create workbook/sheet
     # Initialize report writer
     report_writer = ReportWriter()
     report_writer.initialize_from_args(args, sheet_name='traffic')
@@ -239,16 +240,15 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
             header_definitions[f'src_{label_type}'] = ExcelHeader(name=f'src_{label_type}', max_width=25)
             header_definitions[f'dst_{label_type}'] = ExcelHeader(name=f'dst_{label_type}', max_width=25)
 
+    # Build CSV/XLSX header set in the desired column order
     csv_report_headers = pylo.ExcelHeaderSet([
         header_definitions[col] for col in columns_to_include
     ])
-    csv_report = ArraysToExcel()
-    sheet = csv_report.create_sheet(
-        'traffic',
-        csv_report_headers,
-        force_all_wrap_text=not settings_disable_wrap_text,
-        multivalues_cell_delimiter=','
-    )
+
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='traffic', filename_prefix='traffic-export', force_all_wrap_text=not settings_disable_wrap_text, multivalues_cell_delimiter=',')
+    report_writer.initialize_from_args(args)
+    csv_report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     def _protocol_display(proto: str | int | None) -> str | int | None:
         """Return a human-readable protocol name when known; otherwise the original value."""
@@ -357,11 +357,7 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
             row_dict[header.name] = line[idx]
         json_data.append(row_dict)
 
-    report_writer.write_reports(
-        sheet=sheet,
-        excel_workbook=csv_report,
-        json_data=json_data
-    )
+    report_writer.write_reports(json_data=json_data)
 
 
 command_object = Command(command_name, __main, fill_parser, load_specific_objects_only=objects_load_filter)
