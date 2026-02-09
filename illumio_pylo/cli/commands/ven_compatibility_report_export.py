@@ -6,7 +6,7 @@ from prettytable import PrettyTable
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader, ExcelHeaderSet
 from . import Command
-from .utils.misc import make_filename_with_timestamp
+from .utils.report_writer import ReportWriter
 
 command_name = "ven-compatibility-report-export"
 objects_load_filter = ['workloads', 'labels']
@@ -18,25 +18,24 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--limit', '-l', type=int, required=False, default=None,
                         help='Limit the number of workloads/agents to process')
 
-    parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
-                        help='Directory where the output files will be saved')
+    # Add standard report arguments (similar to traffic_export)
+    ReportWriter.add_arguments_to_parser(
+        parser,
+        default_prefix='ven-compatibility-reports',
+        default_sheet_name='duplicates',
+        default_format='csv',
+        format_help='Report format to generate (csv, xlsx, or json). Can be repeated for multiple formats. Default: csv'
+    )
 
 
 def __main(args, org: pylo.Organization, **kwargs):
 
-    settings_output_dir: str = args['output_dir']
-    settings_filter_labels: List[str] = args['filter_label']
-    settings_limit: int = args['limit']
+    settings_output_dir: str = args.get('output_dir')
+    settings_filter_labels: List[str] = args.get('filter_label')
+    settings_limit: int = args.get('limit')
 
     # <editor-fold desc="Prepare the output files and CSV/Excel Object">
-    output_file_prefix = make_filename_with_timestamp('ven-compatibility-reports_', settings_output_dir)
-    output_filename_csv = output_file_prefix + '.csv'
-    output_filename_xls = output_file_prefix + '.xlsx'
-
-    # clean the files if they exist, also to check if we have write access to the directory/files
-    pylo.file_clean(output_filename_csv)
-    pylo.file_clean(output_filename_xls)
-
+    # Build headers
     csv_report_headers = ExcelHeaderSet([
         ExcelHeader(name='name', max_width=40),
         ExcelHeader(name='hostname', max_width=40)
@@ -53,8 +52,19 @@ def __main(args, org: pylo.Organization, **kwargs):
         ExcelHeader(name='link_to_pce', max_width=15, wrap_text=False, url_text='See in PCE', is_url=True),
         ExcelHeader(name='href', max_width=15, wrap_text=False)
     ])
-    csv_report = pylo.ArraysToExcel()
-    sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
+
+    # Create a ReportWriter instead of raw ArraysToExcel
+    report_writer = ReportWriter(
+        headers=csv_report_headers,
+        sheet_name='duplicates',
+        filename_prefix='ven-compatibility-reports',
+        force_all_wrap_text=True,
+        multivalues_cell_delimiter=','
+    )
+
+    # Initialize from CLI args (will set formats, output_dir, output_filename, etc.)
+    report_writer.initialize_from_args(args)
+    sheet: pylo.ArraysToExcel.Sheet = report_writer.sheet
     # </editor-fold desc="Prepare the output files and CSV/Excel Object">
 
     agents: Dict[str, pylo.VENAgent] = {}
@@ -155,11 +165,7 @@ def __main(args, org: pylo.Organization, **kwargs):
 
         sheet.add_line_from_object(export_row)
 
-    print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_csv), end='', flush=True)
-    sheet.write_to_csv(output_filename_csv)
-    print("OK!")
-    print("\n**** Saving Compatibility Reports to '{}' ****".format(output_filename_xls), end='', flush=True)
-    csv_report.write_to_excel(output_filename_xls)
+    report_writer.write_reports()
     print("OK!")
 
     print("\n\n*** Statistics ***\n")
