@@ -22,9 +22,6 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--input-file-delimiter', type=str, required=False, default=',',
                         help='CSV field delimiter')
 
-    parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
-                        help='Directory where the output files will be saved')
-
     parser.add_argument('--ignore-missing-headers', action='store_true',
                         help='Ignore missing headers in the CSV/Excel file for label types')
 
