@@ -23,7 +23,6 @@ def fill_parser(parser: argparse.ArgumentParser):
         parser,
         default_prefix='ven-compatibility-reports',
         default_sheet_name='duplicates',
-        default_format='csv',
         format_help='Report format to generate (csv, xlsx, or json). Can be repeated for multiple formats. Default: csv'
     )
 
