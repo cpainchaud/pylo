@@ -21,7 +21,7 @@ class ReportWriter:
     Handles report generation for CLI commands with support for multiple formats.
 
     Usage:
-       # 1. add typical arguments to the CLI argument parser (can be done in a shared helper or directly in the command's fill_parser)
+       # 1. add typical arguments to the CLI argument parser in the command's fill_parser() function
        report_writer.add_arguments_to_parser(parser, default_prefix='my-command')
 
         # 2. Construct with headers
@@ -86,7 +86,8 @@ class ReportWriter:
         """Add standard report-related arguments to an ArgumentParser.
 
         This static helper only attaches CLI options to the provided parser and
-        does not modify any ReportWriter instance state.
+        does not modify any ReportWriter instance state. Typically used in a Command's fill_parser()
+        function.
         """
         if format_help is None:
             default_str = default_format if default_format is not None else 'csv'
