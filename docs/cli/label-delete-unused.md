@@ -32,11 +32,16 @@ pylo label-delete-unused [options]
 
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
-| `--report-format` | `-rf` | choice | `csv` | Report format: `csv` or `xlsx` (can be repeated for multiple formats) |
+| `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated for multiple formats) |
 | `--output-dir` | `-o` | string | `output` | Directory where to write the report file(s) |
 | `--output-filename` | - | string | Auto-generated | Custom filename for the report. If multiple formats are requested, the extension is adjusted per format |
 
-**Note**: When `--output-filename` is not specified, a timestamped filename is automatically generated in the format: `label-delete-unused_YYYYMMDD_HHMMSS.<format>`
+**Note**: When `--output-filename` is not specified, a timestamped filename is automatically generated in the format: `label-delete-unused_YYYYMMDD-HHMMSS.<format>`
+
+**Report Formats**:
+- **CSV**: Comma-separated values, suitable for Excel and data processing tools
+- **XLSX**: Native Excel format with proper formatting and clickable links
+- **JSON**: Flat array of objects, one per label, with all columns as properties
 
 ## Label Usage Detection
 
@@ -165,18 +170,45 @@ Identify unused labels and generate an Excel report:
 pylo label-delete-unused --report-format xlsx
 ```
 
-### Example 3: Dry-Run with Both CSV and Excel Reports
-Generate both report formats:
+### Example 3: Generate JSON Report
+Identify unused labels and generate a JSON report:
 
 ```bash
-pylo label-delete-unused --report-format csv --report-format xlsx
+pylo label-delete-unused --report-format json
+```
+
+**Output**: JSON file with flat array structure:
+```json
+[
+  {
+    "key": "app",
+    "value": "Old-App",
+    "type": "app",
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z",
+    "external_data_set": "",
+    "external_data_reference": "",
+    "usage_list": "",
+    "action": "TO BE DELETED (no confirm option used)",
+    "error_message": "",
+    "link_to_pce": "https://pce.example.com/orgs/1/labels/123",
+    "href": "/orgs/1/labels/123"
+  }
+]
+```
+
+### Example 4: Dry-Run with Multiple Formats
+Generate CSV, Excel, and JSON reports:
+
+```bash
+pylo label-delete-unused --report-format csv --report-format xlsx --report-format json
 ```
 or using the short option:
 ```bash
-pylo label-delete-unused -rf csv -rf xlsx
+pylo label-delete-unused -rf csv -rf xlsx -rf json
 ```
 
-### Example 4: Delete All Unused Labels (Confirmed)
+### Example 5: Delete All Unused Labels (Confirmed)
 Actually delete all unused labels found:
 
 ```bash
@@ -203,7 +235,7 @@ Deletion completed: 45 labels deleted successfully, 2 errors encountered.
  * Writing report file 'output/label-delete-unused_20260204_143025.csv' ... DONE
 ```
 
-### Example 5: Limited Deletion
+### Example 6: Limited Deletion
 Delete only the first 10 unused labels:
 
 ```bash

@@ -4,13 +4,12 @@ Usage documentation for this command can be found in docs/cli/traffic-export.md
 
 import argparse
 from datetime import datetime
-import os
 from typing import Dict, List, Literal
 from zoneinfo import ZoneInfo
 
 import illumio_pylo as pylo
 from illumio_pylo import ArraysToExcel, ExcelHeader, ExplorerResultV2
-from .utils.misc import make_filename_with_timestamp
+from .utils.report_writer import ReportWriter
 from . import Command
 
 command_name = 'traffic-export'
@@ -35,11 +34,6 @@ def _generate_omit_columns_help() -> str:
 
 def fill_parser(parser: argparse.ArgumentParser):
     parser.description = "Export traffic records from the PCE based on specified filters and settings."
-
-    parser.add_argument('--format', '-f', required=False, default='excel', choices=['csv', 'excel'],
-                        help='Output file format')
-    parser.add_argument('--output-dir', '-o', required=False, default='output',
-                        help='Directory where to save the output file')
 
     parser.add_argument('--source-filters', '-sf', required=False, type=str, nargs='+', default=None,
                         help='Source filters to apply (e.g. label:Web, iplist:Private_Networks)')
@@ -70,10 +64,17 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--omit-columns', '-oc', required=False, type=str, nargs='+', default=None,
                         help=_generate_omit_columns_help())
 
+    # Add standard report arguments
+    report_writer = ReportWriter()
+    report_writer.add_arguments_to_parser(
+        parser,
+        default_prefix='traffic-export',
+        default_sheet_name='traffic',
+        format_help='Report format to generate (csv, xlsx, or json). Can be repeated for multiple formats. Default: csv'
+    )
+
 
 def __main(args: Dict, org: pylo.Organization, **kwargs):
-    settings_output_file_format: Literal['csv', 'excel'] = args['format']
-    settings_output_dir: str = args['output_dir']
     settings_source_filters: List[str] | None = args['source_filters']
     settings_destination_filters: List[str] | None = args['destination_filters']
     settings_since_timestamp: str | None = args['since_timestamp']
@@ -87,6 +88,10 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     settings_label_separator: str = args['label_separator']
     settings_disable_wrap_text: bool = args['disable_wrap_text']
     settings_omit_columns: List[str] | None = args['omit_columns']
+
+    # Initialize report writer
+    report_writer = ReportWriter()
+    report_writer.initialize_from_args(args, sheet_name='traffic')
 
     explorer_query = org.connector.new_explorer_query_v2(max_results=settings_records_count_limit, draft_mode_enabled=settings_draft_mode_enabled)
 
@@ -342,21 +347,21 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
         sheet.add_line_from_object(csv_record)
 
     if sheet.lines_count() < 1:
-        print("No traffic records matched the filters; nothing to export.")
-        return
+        print("\n** WARNING: no traffic records matched the filters !\n")
 
-    os.makedirs(settings_output_dir, exist_ok=True)
-    output_filename_base = make_filename_with_timestamp('traffic-export_', settings_output_dir)
+    # Always write report (even if empty)
+    json_data = []
+    for line in sheet._lines:
+        row_dict = {}
+        for idx, header in enumerate(sheet._headers):
+            row_dict[header.name] = line[idx]
+        json_data.append(row_dict)
 
-    if settings_output_file_format == 'csv':
-        output_filename = output_filename_base + '.csv'
-        print(f"Writing CSV report to '{output_filename}' ... ", end='', flush=True)
-        sheet.write_to_csv(output_filename)
-    else:
-        output_filename = output_filename_base + '.xlsx'
-        print(f"Writing Excel report to '{output_filename}' ... ", end='', flush=True)
-        csv_report.write_to_excel(output_filename)
-    print("DONE")
+    report_writer.write_reports(
+        sheet=sheet,
+        excel_workbook=csv_report,
+        json_data=json_data
+    )
 
 
 command_object = Command(command_name, __main, fill_parser, load_specific_objects_only=objects_load_filter)

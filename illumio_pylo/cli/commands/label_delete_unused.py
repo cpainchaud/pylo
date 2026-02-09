@@ -3,14 +3,13 @@ Usage documentation for this command can be found in docs/cli/label-delete-unuse
 """
 
 import argparse
-import os
-from typing import Optional, List, Literal
+from typing import Optional, List
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
 
 from . import Command
-from .utils.misc import make_filename_with_timestamp
+from .utils.report_writer import ReportWriter, create_standard_report_structure
 from illumio_pylo.API.JsonPayloadTypes import LabelObjectJsonStructure
 
 command_name = "label-delete-unused"
@@ -22,12 +21,14 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='No change will be implemented in the PCE until you use this function to confirm you\'re good with them after review')
     parser.add_argument('--limit', type=int, required=False, default=None,
                         help='Maximum number of unused labels to delete (default: all found unused labels)')
-    parser.add_argument('--report-format', '-rf', action='append', type=str, choices=['csv', 'xlsx'], default=None,
-                        help='Which report formats you want to produce (repeat option to have several)')
-    parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
-                        help='Directory where to write the report file(s)')
-    parser.add_argument('--output-filename', type=str, default=None,
-                        help='Write report to the specified file (or basename) instead of using the default timestamped filename. If multiple formats are requested, the provided path\'s extension will be replaced/added per format.')
+
+    # Add standard report arguments
+    report_writer = ReportWriter()
+    report_writer.add_arguments_to_parser(
+        parser,
+        default_prefix='label-delete-unused',
+        default_sheet_name='unused_labels'
+    )
 
 
 def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = None, config_data=None, **kwargs):
@@ -35,17 +36,9 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
     settings_confirmed_changes: bool = args['confirm']
     settings_limit_deletions: Optional[int] = args['limit']
 
-    report_wanted_format: List[Literal['csv', 'xlsx']] = args['report_format']
-    if report_wanted_format is None:
-        report_wanted_format = ['csv']
-
-    arg_report_output_dir: str = args['output_dir']
-    arg_output_filename: Optional[str] = args.get('output_filename')
-
-    if arg_output_filename is None:
-        output_file_prefix = make_filename_with_timestamp('label-delete-unused_', arg_report_output_dir)
-    else:
-        output_file_prefix = None
+    # Initialize report writer
+    report_writer = ReportWriter()
+    report_writer.initialize_from_args(args, sheet_name='unused_labels')
 
     # Initialize report structure
     report_headers = pylo.ExcelHeaderSet([
@@ -63,8 +56,12 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
         ExcelHeader(name='href', max_width=60, wrap_text=False)
     ])
 
-    report = pylo.ArraysToExcel()
-    sheet: pylo.ArraysToExcel.Sheet = report.create_sheet('unused_labels', report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
+    report, sheet = create_standard_report_structure(
+        report_writer.sheet_name,
+        report_headers,
+        force_all_wrap_text=True,
+        multivalues_cell_delimiter=','
+    )
 
     print("Fetching all Labels from the PCE... ", end='', flush=True)
     # pylo.log_set_debug()
@@ -125,36 +122,22 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
 
             print()
             print(f"Deletion completed: {success_count} labels deleted successfully, {errors_count} errors encountered.")
-    else:
-        print("\n** WARNING: no unused labels found !\n")
 
-    # Write report to disk
-    sheet.reorder_lines(['type', 'value'])  # sort by type and value for better readability
-    for report_format in report_wanted_format:
-        # Choose output filename depending on whether user provided --output-filename
-        if arg_output_filename is None:
-            output_filename = output_file_prefix + '.' + report_format
-        else:
-            # If only one format requested, use the provided filename as-is
-            if len(report_wanted_format) == 1:
-                output_filename = arg_output_filename
-            else:
-                base = os.path.splitext(arg_output_filename)[0]
-                output_filename = base + '.' + report_format
+    # Write report to disk (always generate report, even if empty)
+    json_data = []
+    for line in sheet._lines:
+        row_dict = {}
+        for idx, header in enumerate(sheet._headers):
+            row_dict[header.name] = line[idx]
+        json_data.append(row_dict)
 
-        # Ensure parent directory exists
-        output_directory = os.path.dirname(output_filename)
-        if output_directory:
-            os.makedirs(output_directory, exist_ok=True)
+    report_writer.write_reports(
+        sheet=sheet,
+        excel_workbook=report,
+        json_data=json_data,
+        sort_by=['type', 'value']
+    )
 
-        print(f" * Writing report file '{output_filename}' ... ", end='', flush=True)
-        if report_format == 'csv':
-            sheet.write_to_csv(output_filename)
-        elif report_format == 'xlsx':
-            report.write_to_excel(output_filename)
-        else:
-            raise pylo.PyloEx(f"Unknown format for report: '{report_format}'")
-        print("DONE")
 
 
 def add_label_to_report(label_json: LabelObjectJsonStructure, sheet: pylo.ArraysToExcel.Sheet,

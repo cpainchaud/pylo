@@ -6,7 +6,7 @@ from datetime import datetime
 import illumio_pylo as pylo
 from illumio_pylo import ArraysToExcel, ExcelHeader, ExcelHeaderSet
 from illumio_pylo.FilterQuery import FilterQuery, get_workload_filter_registry
-from .utils.misc import make_filename_with_timestamp
+from .utils.report_writer import ReportWriter
 from . import Command
 
 command_name = 'workload-export'
@@ -38,8 +38,6 @@ extra_columns: List[ExtraColumn] = []
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--output-dir', required=False, default='output')
-
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='')
 
@@ -61,10 +59,14 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
     parser.add_argument('--save-location', type=str, required=False, default='./',
                         help='The folder where this script will save generated Excel report')
-    parser.add_argument('--csv-output-only', action='store_true',
-                        help='Generate only the CSV output file, no Excel file')
-    parser.add_argument('--excel-output-only', action='store_true',
-                        help='Generate only the Excel output file, no CSV file')
+
+    # Add standard report arguments
+    report_writer = ReportWriter()
+    report_writer.add_arguments_to_parser(
+        parser,
+        default_prefix='workload-export',
+        default_sheet_name='workloads'
+    )
 
     for extra_column in extra_columns:
         extra_column.apply_cli_args(parser)
@@ -77,15 +79,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     filter_file_delimiter = args['filter_file_delimiter']
     filter_fields = args['filter_fields']
     filter_keep_in_report = args['keep_filters_in_report']
-    settings_output_dir = args['output_dir']
     verbose = args['verbose']
-    csv_output_only = args['csv_output_only']
-    excel_output_only = args['excel_output_only']
-    # print(args['filter_fields'])
 
-    output_file_prefix = make_filename_with_timestamp('workload_export_', output_directory=settings_output_dir)
-    output_file_csv = output_file_prefix + '.csv'
-    output_file_excel = output_file_prefix + '.xlsx'
+    # Initialize report writer
+    report_writer = ReportWriter()
+    report_writer.initialize_from_args(args, sheet_name='workloads')
 
     csv_report_headers = ExcelHeaderSet(['name', 'hostname'])
     for label_type in org.LabelStore.label_types:
@@ -266,22 +264,23 @@ def __main(args, org: pylo.Organization, **kwargs):
                 add_workload_to_report(wkl=None, filter=filter_data_row)
         print(" DONE! ({} found)".format(count_unused_filters))
 
-    print()
-    print(" * Writing report file '{}' ... ".format(output_file_csv), end='', flush=True)
-    if not excel_output_only:
-        csv_sheet.write_to_csv(output_file_csv)
-        print("DONE")
-    else:
-        print("SKIPPED (use --csv-output-only to write CSV file or no option for both)")
-    print(" * Writing report file '{}' ... ".format(output_file_excel), end='', flush=True)
-    if not csv_output_only:
-        csv_report.write_to_excel(output_file_excel)
-        print("DONE")
-    else:
-        print("SKIPPED (use --excel-output-only to write Excel file or no option for both)")
-
     if csv_sheet.lines_count() < 1:
-        print("\n** WARNING: no entry matched your filters so reports are empty !\n")
+        print("\n** WARNING: no workload matched your filters !\n")
+
+    # Always write report (even if empty)
+    json_data = []
+    for line in csv_sheet._lines:
+        row_dict = {}
+        for idx, header in enumerate(csv_sheet._headers):
+            row_dict[header.name] = line[idx]
+        json_data.append(row_dict)
+
+    print()
+    report_writer.write_reports(
+        sheet=csv_sheet,
+        excel_workbook=csv_report,
+        json_data=json_data
+    )
 
 
 command_object = Command(command_name, __main, fill_parser)
