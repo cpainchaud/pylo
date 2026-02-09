@@ -31,7 +31,10 @@ def test_argument_parsing():
     print("\nTest 1: Default arguments (no format specified)")
     parser = argparse.ArgumentParser()
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
-    report_writer.add_arguments_to_parser(
+    # Register arguments using the static helper and explicitly pass the
+    # desired defaults into initialize_from_args since the static helper no
+    # longer mutates instance state.
+    ReportWriter.add_arguments_to_parser(
         parser,
         default_prefix='test-command',
         default_sheet_name='test_sheet'
@@ -39,7 +42,7 @@ def test_argument_parsing():
 
     args = parser.parse_args([])
     args_dict = vars(args)
-    report_writer.initialize_from_args(args_dict)
+    report_writer.initialize_from_args(args_dict, filename_prefix='test-command', sheet_name='test_sheet')
 
     assert report_writer.formats == ['csv'], f"Expected ['csv'], got {report_writer.formats}"
     assert report_writer.output_dir == 'output', f"Expected 'output', got {report_writer.output_dir}"
@@ -52,7 +55,7 @@ def test_argument_parsing():
     print("\nTest 2: Single format (xlsx)")
     parser = argparse.ArgumentParser()
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
-    report_writer.add_arguments_to_parser(parser, default_prefix='test')
+    ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['--report-format', 'xlsx'])
     args_dict = vars(args)
     report_writer.initialize_from_args(args_dict)
@@ -64,7 +67,7 @@ def test_argument_parsing():
     print("\nTest 3: Multiple formats (csv, xlsx, json)")
     parser = argparse.ArgumentParser()
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
-    report_writer.add_arguments_to_parser(parser, default_prefix='test')
+    ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['-rf', 'csv', '-rf', 'xlsx', '-rf', 'json'])
     args_dict = vars(args)
     report_writer.initialize_from_args(args_dict)
@@ -76,7 +79,7 @@ def test_argument_parsing():
     print("\nTest 4: Custom output directory")
     parser = argparse.ArgumentParser()
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
-    report_writer.add_arguments_to_parser(parser, default_prefix='test')
+    ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['--output-dir', '/tmp/reports'])
     args_dict = vars(args)
     report_writer.initialize_from_args(args_dict)
@@ -88,7 +91,7 @@ def test_argument_parsing():
     print("\nTest 5: Custom filename")
     parser = argparse.ArgumentParser()
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
-    report_writer.add_arguments_to_parser(parser, default_prefix='test')
+    ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
     args = parser.parse_args(['--output-filename', 'myreport.csv'])
     args_dict = vars(args)
     report_writer.initialize_from_args(args_dict)
@@ -518,21 +521,23 @@ def test_integration():
         # Step 1: Parse arguments
         parser = argparse.ArgumentParser()
         report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
-        report_writer.add_arguments_to_parser(
+        ReportWriter.add_arguments_to_parser(
             parser,
             default_prefix='my-command',
             default_sheet_name='my_data'
         )
 
         args = parser.parse_args([
-            '-rf', 'csv',
-            '-rf', 'json',
-            '-o', temp_dir,
-            '--output-filename', 'report'
-        ])
+             '-rf', 'csv',
+             '-rf', 'json',
+             '-o', temp_dir,
+             '--output-filename', 'report'
+         ])
 
-        # Step 2: Initialize report writer
-        report_writer.initialize_from_args(vars(args), sheet_name='my_data')
+        # Step 2: Initialize report writer. Pass filename_prefix/sheet_name so
+        # the instance picks up the expected defaults (the static arg parser
+        # helper does not mutate instance state).
+        report_writer.initialize_from_args(vars(args), filename_prefix='my-command', sheet_name='my_data')
 
         # Step 3: Create report structure
         headers = pylo.ExcelHeaderSet([
@@ -544,7 +549,7 @@ def test_integration():
 
         # Create report writer bound to the real headers and recreate sheet
         real_writer = ReportWriter(headers=headers, sheet_name='my_data', filename_prefix='my-command', force_all_wrap_text=True, multivalues_cell_delimiter=',')
-        real_writer.initialize_from_args(vars(args))
+        real_writer.initialize_from_args(vars(args), filename_prefix='my-command')
         report = real_writer.excel_workbook
         sheet = real_writer.sheet
 
@@ -651,5 +656,4 @@ def run_all_tests():
 
 if __name__ == '__main__':
     sys.exit(run_all_tests())
-
 

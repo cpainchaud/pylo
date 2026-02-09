@@ -116,8 +116,8 @@ class ReportWriter:
             populate_arguments_hook(parser)
 
     # Expose a convenience instance method that preserves backward compatibility
+    @staticmethod
     def add_arguments_to_parser(
-        self,
         parser: argparse.ArgumentParser,
         default_prefix: Optional[str] = None,
         default_sheet_name: str = "report",
@@ -126,27 +126,15 @@ class ReportWriter:
         output_filename_help: Optional[str] = None,
         populate_arguments_hook: Optional[Callable[[argparse.ArgumentParser], None]] = None
     ):
-        """Instance wrapper that registers CLI args and optionally updates defaults on the instance.
+        """Static wrapper that registers CLI args.
 
-        This keeps backward compatibility for code that calls the instance method to
-        set default filename prefix and sheet name.
+        Note: this method is intentionally static and does NOT modify any
+        ReportWriter instance state. If you previously relied on calling the
+        instance method with `default_prefix`/`default_sheet_name` to update
+        the instance, please pass `filename_prefix`/`sheet_name` to
+        `initialize_from_args` instead.
         """
-        # If caller provided defaults, update instance state so initialize_from_args
-        # will pick them up later.
-        if default_prefix is not None:
-            self.filename_prefix = default_prefix
-        if default_sheet_name is not None and default_sheet_name != self.sheet_name:
-            self.sheet_name = default_sheet_name
-            # Recreate sheet on the existing workbook with the current headers
-            self.excel_workbook = self.excel_workbook or pylo.ArraysToExcel()
-            self.sheet = self.excel_workbook.create_sheet(
-                self.sheet_name,
-                self.headers,
-                force_all_wrap_text=self.force_all_wrap_text,
-                multivalues_cell_delimiter=self.multivalues_cell_delimiter
-            )
-
-        # Delegate to static helper to register arguments
+        # Delegate to the existing static helper
         ReportWriter.add_arguments_to_parser_static(
             parser,
             default_prefix=default_prefix,
