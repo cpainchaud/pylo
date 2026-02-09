@@ -103,82 +103,83 @@ def __main(args, org: pylo.Organization, **kwargs):
 
     print("OK! {} Agents left after filtering".format(len(agents)))
 
-    print()
-    print(" ** Request Compatibility Report for each Agent in IDLE mode **", flush=True)
+    if len(agents) > 0:
+        print()
+        print(" ** Request Compatibility Report for each Agent in IDLE mode **", flush=True)
 
-    stats_agent_count = 0
-    stats_agent_green_count = 0
-    stats_agent_mode_changed_count = 0
-    stats_agent_skipped_not_online = 0
-    stats_agent_has_no_report_count = 0
-    stats_agent_report_failed_count = 0
+        stats_agent_count = 0
+        stats_agent_green_count = 0
+        stats_agent_mode_changed_count = 0
+        stats_agent_skipped_not_online = 0
+        stats_agent_has_no_report_count = 0
+        stats_agent_report_failed_count = 0
 
-    for agent in agents.values():
-        stats_agent_count += 1
+        for agent in agents.values():
+            stats_agent_count += 1
 
-        print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(stats_agent_count, len(agents), agent.workload.get_name(),
-                                                                        agent.workload.href,
-                                                                        agent.workload.get_labels_str())
-              )
-        if not agent.workload.online:
-            print("    - Agent is not ONLINE so we're skipping it")
-            stats_agent_skipped_not_online += 1
-            continue
+            print(" - Agent #{}/{}: wkl NAME:'{}' HREF:{} Labels:{}".format(stats_agent_count, len(agents), agent.workload.get_name(),
+                                                                            agent.workload.href,
+                                                                            agent.workload.get_labels_str())
+                  )
+            if not agent.workload.online:
+                print("    - Agent is not ONLINE so we're skipping it")
+                stats_agent_skipped_not_online += 1
+                continue
 
-        export_row = {
-            'name': agent.workload.get_name(),
-            'hostname': agent.workload.hostname,
-            'operating_system': agent.workload.os_id,
-            'link_to_pce': agent.workload.get_pce_ui_url(),
-            'href': agent.workload.href
-        }
+            export_row = {
+                'name': agent.workload.get_name(),
+                'hostname': agent.workload.hostname,
+                'operating_system': agent.workload.os_id,
+                'link_to_pce': agent.workload.get_pce_ui_url(),
+                'href': agent.workload.href
+            }
 
-        for label_type in org.LabelStore.label_types:
-            label = agent.workload.get_label(label_type)
-            export_row['label_'+label_type] = label.name if label else ''
+            for label_type in org.LabelStore.label_types:
+                label = agent.workload.get_label(label_type)
+                export_row['label_'+label_type] = label.name if label else ''
 
-        print("    - Downloading report (it may be delayed by API flood protection)...", flush=True, end='')
-        report = org.connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
-        print('OK')
+            print("    - Downloading report (it may be delayed by API flood protection)...", flush=True, end='')
+            report = org.connector.agent_get_compatibility_report(agent_href=agent.href, return_raw_json=False)
+            print('OK')
 
-        if report.empty:
-            print("    - Report does not exist")
-            stats_agent_has_no_report_count += 1
-            export_row['report_failed'] = 'not-available'
-        else:
-            print("    - Report status is '{}'".format(report.global_status))
-            if report.global_status == 'green':
-                stats_agent_green_count += 1
-                export_row['report_failed'] = 'no'
+            if report.empty:
+                print("    - Report does not exist")
+                stats_agent_has_no_report_count += 1
+                export_row['report_failed'] = 'not-available'
             else:
-                export_row['report_failed'] = 'yes'
-                failed_items_texts = []
-                for failed_item in report.get_failed_items().values():
-                    if failed_item.extra_debug_message is None:
-                        failed_items_texts.append(failed_item.name)
-                    else:
-                        failed_items_texts.append('{}({})'.format(failed_item.name, failed_item.extra_debug_message))
-                failed_items = pylo.string_list_to_text(failed_items_texts)
-                stats_agent_report_failed_count += 1
-                export_row['details'] = failed_items
+                print("    - Report status is '{}'".format(report.global_status))
+                if report.global_status == 'green':
+                    stats_agent_green_count += 1
+                    export_row['report_failed'] = 'no'
+                else:
+                    export_row['report_failed'] = 'yes'
+                    failed_items_texts = []
+                    for failed_item in report.get_failed_items().values():
+                        if failed_item.extra_debug_message is None:
+                            failed_items_texts.append(failed_item.name)
+                        else:
+                            failed_items_texts.append('{}({})'.format(failed_item.name, failed_item.extra_debug_message))
+                    failed_items = pylo.string_list_to_text(failed_items_texts)
+                    stats_agent_report_failed_count += 1
+                    export_row['details'] = failed_items
 
-        sheet.add_line_from_object(export_row)
+            sheet.add_line_from_object(export_row)
+
+        print("\n\n*** Statistics ***\n")
+        table = PrettyTable()
+        table.field_names = ["item", "Value"]
+        table.align["item"] = "l"
+        table.align["Value"] = "r"
+
+        table.add_row(["IDLE Agents count", stats_agent_count])
+        table.add_row(["Agents with successful report count", stats_agent_green_count])
+        table.add_row(["SKIPPED because not online count", stats_agent_skipped_not_online])
+        table.add_row(["SKIPPED because report was not found", stats_agent_has_no_report_count])
+        table.add_row(["Agents with failed reports", stats_agent_report_failed_count])
+        print(table)
 
     report_writer.write_reports()
     print("OK!")
-
-    print("\n\n*** Statistics ***\n")
-    table = PrettyTable()
-    table.field_names = ["item", "Value"]
-    table.align["item"] = "l"
-    table.align["Value"] = "r"
-
-    table.add_row(["IDLE Agents count", stats_agent_count])
-    table.add_row(["Agents with successful report count", stats_agent_green_count])
-    table.add_row(["SKIPPED because not online count", stats_agent_skipped_not_online])
-    table.add_row(["SKIPPED because report was not found", stats_agent_has_no_report_count])
-    table.add_row(["Agents with failed reports", stats_agent_report_failed_count])
-    print(table)
 
     print()
 
