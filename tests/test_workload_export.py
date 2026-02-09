@@ -375,6 +375,7 @@ def test_extra_column_registry():
 
     # Create mock extra columns
     class MockExtraColumn(ExtraColumn):
+        # noinspection PyMissingConstructor
         def __init__(self, col_name: str):
             # Intentionally NOT calling super().__init__() to avoid global registration
             # noinspection PyMissingConstructor

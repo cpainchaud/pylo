@@ -290,6 +290,7 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
                 names.append(iplist.href)
         if not names:
             return None
+        # noinspection PyTypeChecker
         return ','.join(sorted(set(names), key=str.lower))
 
     for record in records:
