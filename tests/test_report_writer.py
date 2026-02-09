@@ -488,6 +488,7 @@ def test_error_handling():
 
     try:
         # Simulate missing sheet by removing it from the ReportWriter instance
+        # noinspection PyTypeChecker
         report_writer.sheet = None
         report_writer.write_reports()
         assert False, "Should have raised PyloEx"
@@ -508,6 +509,7 @@ def test_error_handling():
 
     try:
         # Simulate missing excel_workbook by removing it from the instance
+        # noinspection PyTypeChecker
         report_writer.excel_workbook = None
         report_writer.write_reports()
         assert False, "Should have raised PyloEx"
@@ -524,6 +526,7 @@ def test_error_handling():
 
     try:
         # Simulate missing sheet for JSON format (json_data parameter removed)
+        # noinspection PyTypeChecker
         report_writer.sheet = None
         report_writer.write_reports()
         assert False, "Should have raised PyloEx"

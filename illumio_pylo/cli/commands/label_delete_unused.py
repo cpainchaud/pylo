@@ -131,8 +131,8 @@ def add_label_to_report(label_json: LabelObjectJsonStructure, sheet: pylo.Arrays
     :param error_message: Optional error message if deletion failed
     """
     # Build PCE UI URL for the label
-    pce_hostname = connector.pce_hostname
-    pce_port = connector.pce_port
+    pce_hostname = connector.fqdn
+    pce_port = connector.port
     org_id = connector.org_id
     label_href = label_json.get('href', '')
 
