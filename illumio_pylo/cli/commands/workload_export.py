@@ -95,8 +95,8 @@ def __main(args, org: pylo.Organization, **kwargs):
         csv_report_headers.append(extra_column.column_description().name)
         print(" - adding extra column from external plugin: " + extra_column.column_description().name)
 
-    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='workloads', filename_prefix='workload-export', force_all_wrap_text=True)
-    report_writer.initialize_from_args(args)
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='workloads', filename_prefix='workload-export', force_all_wrap_text=True, args=args)
+    # ReportWriter initialized from CLI args via constructor
     csv_report = report_writer.excel_workbook
     csv_sheet = report_writer.sheet
 

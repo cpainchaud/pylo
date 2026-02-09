@@ -22,15 +22,12 @@ class ReportWriter:
 
     Usage:
        # 1. add typical arguments to the CLI argument parser in the command's fill_parser() function
-       report_writer.add_arguments_to_parser(parser, default_prefix='my-command')
+       ReportWriter.add_arguments_to_parser(parser, default_prefix='my-command')
 
-        # 2. Construct with headers
-        report_writer = ReportWriter(headers)
+        # 2. Construct with headers (optionally pass parsed args to the constructor)
+        report_writer = ReportWriter(headers, args=vars(args), filename_prefix='my-command')
 
-        # 3. Initialize from parsed arguments
-        report_writer.initialize_from_args(args)
-
-        # 4. Write reports
+        # 3. Write reports
         report_writer.write_reports()
     """
 
@@ -40,7 +37,8 @@ class ReportWriter:
         sheet_name: str = "report",
         filename_prefix: Optional[str] = None,
         force_all_wrap_text: bool = True,
-        multivalues_cell_delimiter: str = ','
+        multivalues_cell_delimiter: str = ',',
+        args: Optional[Dict[str, Any]] = None,
     ):
         """
         Initialize the ReportWriter with headers and create an ArraysToExcel workbook + sheet.
@@ -51,6 +49,7 @@ class ReportWriter:
             filename_prefix: Optional filename prefix used when auto-generating filenames
             force_all_wrap_text: Whether to enable wrap text on all cells for the created sheet
             multivalues_cell_delimiter: Delimiter used for multi-value cells
+            args: Optional parsed argparse namespace converted to dict (will be used to initialize formats/output settings)
         """
         self.formats: List[ReportFormat] = []
         self.output_dir: str = "output"
@@ -71,6 +70,17 @@ class ReportWriter:
             force_all_wrap_text=self.force_all_wrap_text,
             multivalues_cell_delimiter=self.multivalues_cell_delimiter
         )
+
+        # If args were passed to constructor, initialize state from them.
+        if args is not None:
+            # allow callers to pass either argparse Namespace or dict
+            if not isinstance(args, dict):
+                try:
+                    args = vars(args)
+                except Exception:
+                    # fall back to expecting a mapping
+                    args = dict(args)
+            self.initialize_from_args(args)
 
     @staticmethod
     def add_arguments_to_parser_static(
@@ -143,7 +153,7 @@ class ReportWriter:
         ReportWriter instance state. If you previously relied on calling the
         instance method with `default_prefix`/`default_sheet_name` to update
         the instance, please pass `filename_prefix`/`sheet_name` to
-        `initialize_from_args` instead.
+        the constructor instead.
         """
         # Delegate to the existing static helper
         ReportWriter.add_arguments_to_parser_static(
@@ -160,16 +170,12 @@ class ReportWriter:
     def initialize_from_args(
         self,
         args: Dict[str, Any],
-        filename_prefix: Optional[str] = None,
-        sheet_name: Optional[str] = None
     ):
         """
         Initialize the report writer from parsed command-line arguments.
 
         Args:
             args: Parsed arguments dictionary
-            filename_prefix: Override the filename prefix (if not provided during add_arguments_to_parser)
-            sheet_name: Override the sheet name (if not provided during add_arguments_to_parser)
         """
         # Get formats from args. If none specified, prefer parser-provided default (report_format_default)
         report_formats = args.get('report_format')
@@ -191,18 +197,7 @@ class ReportWriter:
         self.output_dir = args.get('output_dir', 'output')
         self.output_filename = args.get('output_filename')
 
-        # Override prefix and sheet name if provided
-        if filename_prefix is not None:
-            self.filename_prefix = filename_prefix
-        if sheet_name is not None and sheet_name != self.sheet_name:
-            self.sheet_name = sheet_name
-            # Recreate sheet with new name
-            self.sheet = self.excel_workbook.create_sheet(
-                self.sheet_name,
-                self.headers,
-                force_all_wrap_text=self.force_all_wrap_text,
-                multivalues_cell_delimiter=self.multivalues_cell_delimiter
-            )
+        # Note: filename_prefix and sheet_name should be set via constructor parameters
 
     def get_output_filename(self, report_format: ReportFormat) -> str:
         """

@@ -59,8 +59,9 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     ])
 
     # Create report writer and its sheet using the header definitions
-    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='rulesets', filename_prefix='rule-export')
-    report_writer.initialize_from_args(args)
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='rulesets', filename_prefix='rule-export', args=args)
+
+    # ReportWriter initialized with CLI args via constructor
     csv_report = report_writer.excel_workbook
     sheet = report_writer.sheet
 

@@ -50,8 +50,9 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
         ExcelHeader(name='href', max_width=60, wrap_text=False)
     ])
 
-    report_writer = ReportWriter(headers=report_headers, sheet_name='unused_labels', filename_prefix='label-delete-unused', force_all_wrap_text=True, multivalues_cell_delimiter=',')
-    report_writer.initialize_from_args(args)
+    report_writer = ReportWriter(headers=report_headers, sheet_name='unused_labels', filename_prefix='label-delete-unused', force_all_wrap_text=True, multivalues_cell_delimiter=',', args=args)
+
+    # ReportWriter initialized from CLI args via constructor
     sheet = report_writer.sheet
 
     print("Fetching all Labels from the PCE... ", end='', flush=True)

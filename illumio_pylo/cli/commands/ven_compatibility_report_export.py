@@ -58,11 +58,11 @@ def __main(args, org: pylo.Organization, **kwargs):
         sheet_name='duplicates',
         filename_prefix='ven-compatibility-reports',
         force_all_wrap_text=True,
-        multivalues_cell_delimiter=','
+        multivalues_cell_delimiter=',',
+        args=args
     )
 
-    # Initialize from CLI args (will set formats, output_dir, output_filename, etc.)
-    report_writer.initialize_from_args(args)
+    # ReportWriter initialized from CLI args via constructor
     sheet: pylo.ArraysToExcel.Sheet = report_writer.sheet
     # </editor-fold desc="Prepare the output files and CSV/Excel Object">
 

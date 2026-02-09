@@ -239,8 +239,8 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
         header_definitions[col] for col in columns_to_include
     ])
 
-    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='traffic', filename_prefix='traffic-export', force_all_wrap_text=not settings_disable_wrap_text, multivalues_cell_delimiter=',')
-    report_writer.initialize_from_args(args)
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='traffic', filename_prefix='traffic-export', force_all_wrap_text=not settings_disable_wrap_text, multivalues_cell_delimiter=',', args=args)
+    # ReportWriter initialized from CLI args via constructor
     sheet = report_writer.sheet
 
     def _protocol_display(proto: str | int | None) -> str | int | None:

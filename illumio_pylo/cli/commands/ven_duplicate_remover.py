@@ -2,18 +2,17 @@
 Usage documentation for this command can be found in docs/cli/ven-duplicate-remover.md
 """
 
-from typing import Dict, List, Literal, Optional
-import datetime
-import click
 import argparse
-import os
+import datetime
 import re
+from typing import Dict, List, Optional
+
+import click
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
-
-from .utils.misc import make_filename_with_timestamp
 from . import Command
+from .utils.report_writer import ReportWriter
 
 command_name = 'ven-duplicate-remover'
 objects_load_filter = ['labels', 'workloads']
@@ -36,8 +35,15 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Pre-filter: exclude unmanaged workloads from duplicate detection and processing')
     # * end pre filters
 
-    parser.add_argument('--report-format', '-rf', action='append', type=str, choices=['csv', 'xlsx'], default=None,
-                        help='Which report formats you want to produce (repeat option to have several)')
+    # Standard report-related CLI arguments (default format kept as 'xlsx' to preserve historic behavior)
+    ReportWriter.add_arguments_to_parser(
+        parser,
+        default_prefix='ven-duplicate-removal',
+        default_sheet_name='duplicates',
+        default_format='xlsx',
+        format_help='Report format to generate (csv, xlsx, or json). Can be repeated for multiple formats. Default: xlsx'
+    )
+
     parser.add_argument('--do-not-delete-the-most-recent-workload', '-nrc', action='store_true',
                         help='Workload which was created the last will not be deleted')
     parser.add_argument('--do-not-delete-the-most-recently-heartbeating-workload', '-nrh', action='store_true',
@@ -57,17 +63,8 @@ def fill_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--ignore-pce-online-status', action='store_true',
                         help='Bypass the logic that keeps online workloads; when set online workloads will be treated like offline ones for deletion decisions')
 
-    parser.add_argument('--output-dir', '-o', type=str, required=False, default="output",
-                        help='Directory where to write the report file(s)')
-    parser.add_argument('--output-filename', type=str, default=None,
-                        help='Write report to the specified file (or basename) instead of using the default timestamped filename. If multiple formats are requested, the provided path\'s extension will be replaced/added per format.')
-
 
 def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
-    report_wanted_format: List[Literal['csv', 'xlsx']] = args['report_format']
-    if report_wanted_format is None:
-        report_wanted_format = ['xlsx']
-
     arg_verbose = args['verbose']
     arg_proceed_with_deletion = args['proceed_with_deletion'] is True
     arg_do_not_require_deletion_confirmation = args['do_not_require_deletion_confirmation'] is True
@@ -82,13 +79,7 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_filter_in_hostname_regex = args['filter_in_hostname_regex']
     arg_report_output_dir: str = args['output_dir']
 
-    # Determine output filename behavior: user provided filename/basename or use timestamped prefix
-    arg_output_filename: Optional[str] = args.get('output_filename')
-    if arg_output_filename is None:
-        output_file_prefix = make_filename_with_timestamp('ven-duplicate-removal_', arg_report_output_dir)
-    else:
-        output_file_prefix = None
-
+    # Prepare the report writer (replaces direct ArraysToExcel usage)
     csv_report_headers = pylo.ExcelHeaderSet([
         ExcelHeader(name='name', max_width=40),
         ExcelHeader(name='hostname', max_width=40)
@@ -105,8 +96,17 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         ExcelHeader(name='link_to_pce', max_width=15, wrap_text=False, url_text='See in PCE', is_url=True),
         ExcelHeader(name='href', max_width=15, wrap_text=False)
     ])
-    csv_report = pylo.ArraysToExcel()
-    sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('duplicates', csv_report_headers, force_all_wrap_text=True, multivalues_cell_delimiter=',')
+    report_writer = ReportWriter(
+        headers=csv_report_headers,
+        sheet_name='duplicates',
+        filename_prefix='ven-duplicate-removal',
+        force_all_wrap_text=True,
+        multivalues_cell_delimiter=',',
+        args=args
+    )
+
+    # ReportWriter initialized from CLI args via constructor
+    sheet: pylo.ArraysToExcel.Sheet = report_writer.sheet
 
     filter_labels: List[pylo.Label] = []  # the list of labels to filter the workloads against
     if args['filter_in_label'] is not None:
@@ -313,38 +313,10 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
         for wkl in delete_tracker.workloads:
             add_workload_to_report(wkl, "TO BE DELETED (no confirm option used)")
 
-    # if report is not empty, write it to disk
+    # if report is not empty, write it to disk using ReportWriter
     if sheet.lines_count() >= 1:
-        if len(report_wanted_format) < 1:
-            print(" * No report format was specified, no report will be generated")
-        else:
-            sheet.reorder_lines(['hostname'])  # sort by hostname for better readability
-            for report_format in report_wanted_format:
-                # Choose output filename depending on whether user provided --output-filename
-                if arg_output_filename is None:
-                    output_filename = output_file_prefix + '.' + report_format
-                else:
-                    # If only one format requested, use the provided filename as-is
-                    if len(report_wanted_format) == 1:
-                        output_filename = arg_output_filename
-                    else:
-                        base = os.path.splitext(arg_output_filename)[0]
-                        output_filename = base + '.' + report_format
-
-                # Ensure parent directory exists
-                output_directory = os.path.dirname(output_filename)
-                if output_directory:
-                    os.makedirs(output_directory, exist_ok=True)
-
-                print(" * Writing report file '{}' ... ".format(output_filename), end='', flush=True)
-                if report_format == 'csv':
-                    sheet.write_to_csv(output_filename)
-                elif report_format == 'xlsx':
-                    csv_report.write_to_excel(output_filename)
-                else:
-                    raise pylo.PyloEx("Unknown format for report: '{}'".format(report_format))
-                print("DONE")
-
+        # sort by hostname for better readability then write requested formats
+        report_writer.write_reports(sort_by=['hostname'])
     else:
         print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
 
