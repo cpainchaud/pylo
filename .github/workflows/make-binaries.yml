@@ -10,11 +10,18 @@ on:
 
 
 jobs:
+
   build_and_publish:
-
     runs-on: ubuntu-latest
-
     steps:
+      - uses: ArcticLampyrid/action-wait-for-workflow@v1.3.0
+        timeout-minutes: 5
+        with:
+          workflow: pytest.yml          # required, e.g. build.yml
+          wait-interval: 30              # seconds (min 5)
+          allowed-conclusions: |         # succeeds if conclusion is allowed, and fails if not
+            success
+
       - uses: actions/checkout@v4
 
       - name: Change Pylo Version if this is a DEV build

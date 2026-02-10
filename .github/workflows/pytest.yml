@@ -2,9 +2,9 @@ name: CI - pytest
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, dev ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, dev ]
 
 jobs:
   test:
@@ -25,8 +25,11 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
+          # install dev dependencies for testing
+          if [ -f dev-requirements.txt ]; then pip install -r dev-requirements.txt; fi
+          pip install -e .
 
       - name: Run tests
         run: |
-          pytest -q
+          python -m pytest -q
 
