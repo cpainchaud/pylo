@@ -28,12 +28,20 @@
 - Integration tests use __main() function testing pattern
 - Test fixtures are shared across test modules
 
-### Test Organization
+### Code Folder Organization
+- **`/illumio_pylo/`**: Core library code
+- **`/illumio_pylo/API/`**: Low level API interactions and data models to communicate with the PCE
+- **`/illumio_pylo/cli/`**: CLI command implementations which utilizes core library functions. A README.md file in this directory provides some information about the CLI code structure. Usage documentation for end users for CLI commands is located in the `/docs/cli/` directory.
+- **`/tests/`**: Test suites for core library and CLI commands, organized by functionality
+- **`/docs/`**: Documentation for the project, including usage guides and API references
+- **`/docs/cli`**: Documentation specific to CLI usage and commands
+
+### Tests Organization
 - **`tests/` (root)**: Tests for core components only (filters, queries, report writers, credentials, etc.)
 - **`tests/cli/`**: CLI commands and integration tests
 - This separation ensures core library tests remain distinct from CLI-specific tests
 
-### Important Files
+#### Important Files
 - `test_fixtures.py`: Shared mock classes and test utilities
 - Test files follow naming convention: `test_*.py`
 - `tests/README_test_fixtures.md`: Documentation for test fixtures and organization
