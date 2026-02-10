@@ -426,6 +426,232 @@ def test_extra_column_registry():
     print("\n[PASS] All ExtraColumnRegistry tests passed!\n")
 
 
+def test_report_writing():
+    """Test CSV, Excel, and JSON report writing"""
+    import tempfile
+    import csv
+    import json as json_lib
+    from pathlib import Path
+
+    print("=" * 60)
+    print("Testing Report Writing")
+    print("=" * 60)
+
+    # Create a temporary directory for test outputs
+    with tempfile.TemporaryDirectory() as temp_dir:
+        print(f"Using temp directory: {temp_dir}")
+
+        # Setup test data
+        org = MockOrganization(label_types=['role', 'app', 'env'])
+        workloads = [
+            MockWorkload(
+                name='web-server-1',
+                hostname='web-1.example.com',
+                online=True,
+                interfaces=[MockInterface('192.168.1.100')],
+                labels={
+                    'role': MockLabel('Web', 'role'),
+                    'app': MockLabel('MyApp', 'app'),
+                    'env': MockLabel('Production', 'env')
+                }
+            ),
+            MockWorkload(
+                name='db-server-1',
+                hostname='db-1.example.com',
+                online=True,
+                interfaces=[MockInterface('192.168.1.200')],
+                labels={
+                    'role': MockLabel('Database', 'role'),
+                    'app': MockLabel('MyApp', 'app'),
+                    'env': MockLabel('Production', 'env')
+                }
+            ),
+            MockWorkload(
+                name='test-server',
+                hostname='test.example.com',
+                online=False,
+                unmanaged=True,
+                interfaces=[MockInterface('192.168.1.50')]
+            )
+        ]
+
+        # Build report data
+        from illumio_pylo.cli.commands.utils.report_writer import ReportWriter
+
+        headers = build_report_headers(org, include_extra_columns=False)
+
+        # Test CSV format
+        print("\n[TEST] CSV format...")
+        csv_args = {
+            'report_format': ['csv'],
+            'output_dir': temp_dir,
+            'output_filename': 'test-workloads.csv'
+        }
+
+        csv_writer = ReportWriter(
+            headers=headers,
+            sheet_name='workloads',
+            filename_prefix='test-csv',
+            args=csv_args
+        )
+
+        # Add workload data
+        for workload in workloads:
+            row = build_workload_row(workload, org)
+            csv_writer.sheet.add_line_from_object(row)
+
+        # Write CSV
+        csv_writer.write_reports()
+
+        # Verify CSV file exists and has correct content
+        csv_file = Path(temp_dir) / 'test-workloads.csv'
+        assert csv_file.exists(), f"CSV file not created: {csv_file}"
+
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            assert len(rows) == 3, f"Expected 3 rows, got {len(rows)}"
+            assert rows[0]['name'] == 'web-server-1', "First workload name mismatch"
+            assert rows[1]['name'] == 'db-server-1', "Second workload name mismatch"
+            assert rows[2]['name'] == 'test-server', "Third workload name mismatch"
+            assert rows[0]['label_role'] == 'Web', "Label data missing in CSV"
+
+        print("[PASS] CSV file created and validated")
+
+        # Test XLSX format
+        print("\n[TEST] XLSX format...")
+        xlsx_args = {
+            'report_format': ['xlsx'],
+            'output_dir': temp_dir,
+            'output_filename': 'test-workloads.xlsx'
+        }
+
+        xlsx_writer = ReportWriter(
+            headers=headers,
+            sheet_name='workloads',
+            filename_prefix='test-xlsx',
+            args=xlsx_args
+        )
+
+        # Add workload data
+        for workload in workloads:
+            row = build_workload_row(workload, org)
+            xlsx_writer.sheet.add_line_from_object(row)
+
+        # Write XLSX
+        xlsx_writer.write_reports()
+
+        # Verify XLSX file exists
+        xlsx_file = Path(temp_dir) / 'test-workloads.xlsx'
+        assert xlsx_file.exists(), f"XLSX file not created: {xlsx_file}"
+        assert xlsx_file.stat().st_size > 0, "XLSX file is empty"
+
+        print("[PASS] XLSX file created")
+
+        # Test JSON format
+        print("\n[TEST] JSON format...")
+        json_args = {
+            'report_format': ['json'],
+            'output_dir': temp_dir,
+            'output_filename': 'test-workloads.json'
+        }
+
+        json_writer = ReportWriter(
+            headers=headers,
+            sheet_name='workloads',
+            filename_prefix='test-json',
+            args=json_args
+        )
+
+        # Add workload data
+        for workload in workloads:
+            row = build_workload_row(workload, org)
+            json_writer.sheet.add_line_from_object(row)
+
+        # Write JSON
+        json_writer.write_reports()
+
+        # Verify JSON file exists and has correct content
+        json_file = Path(temp_dir) / 'test-workloads.json'
+        assert json_file.exists(), f"JSON file not created: {json_file}"
+
+        with open(json_file, 'r', encoding='utf-8') as f:
+            json_data = json_lib.load(f)
+            assert isinstance(json_data, list), "JSON data should be a list"
+            assert len(json_data) == 3, f"Expected 3 items, got {len(json_data)}"
+            assert json_data[0]['name'] == 'web-server-1', "First workload name mismatch in JSON"
+            assert json_data[1]['name'] == 'db-server-1', "Second workload name mismatch in JSON"
+            assert json_data[2]['name'] == 'test-server', "Third workload name mismatch in JSON"
+            assert json_data[0]['label_role'] == 'Web', "Label data missing in JSON"
+
+        print("[PASS] JSON file created and validated")
+
+        # Test multiple formats at once
+        print("\n[TEST] Multiple formats...")
+        multi_args = {
+            'report_format': ['csv', 'xlsx', 'json'],
+            'output_dir': temp_dir,
+            'output_filename': 'test-multi'
+        }
+
+        multi_writer = ReportWriter(
+            headers=headers,
+            sheet_name='workloads',
+            filename_prefix='test-multi',
+            args=multi_args
+        )
+
+        # Add workload data
+        for workload in workloads:
+            row = build_workload_row(workload, org)
+            multi_writer.sheet.add_line_from_object(row)
+
+        # Write all formats
+        multi_writer.write_reports()
+
+        # Verify all files exist
+        csv_multi = Path(temp_dir) / 'test-multi.csv'
+        xlsx_multi = Path(temp_dir) / 'test-multi.xlsx'
+        json_multi = Path(temp_dir) / 'test-multi.json'
+
+        assert csv_multi.exists(), "CSV not created in multi-format"
+        assert xlsx_multi.exists(), "XLSX not created in multi-format"
+        assert json_multi.exists(), "JSON not created in multi-format"
+
+        print("[PASS] All formats created simultaneously")
+
+        # Test empty report
+        print("\n[TEST] Empty report...")
+        empty_args = {
+            'report_format': ['csv'],
+            'output_dir': temp_dir,
+            'output_filename': 'test-empty.csv'
+        }
+
+        empty_writer = ReportWriter(
+            headers=headers,
+            sheet_name='workloads',
+            filename_prefix='test-empty',
+            args=empty_args
+        )
+
+        # Don't add any data
+        empty_writer.write_reports()
+
+        # Verify empty CSV has headers only
+        empty_file = Path(temp_dir) / 'test-empty.csv'
+        assert empty_file.exists(), "Empty CSV not created"
+
+        with open(empty_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            assert len(rows) == 0, f"Expected 0 data rows, got {len(rows)}"
+
+        print("[PASS] Empty report handled correctly")
+
+    print("\n[PASS] All report writing tests passed!\n")
+
+
 # ============================================================================
 # Main Test Runner
 # ============================================================================
@@ -441,6 +667,7 @@ if __name__ == '__main__':
         test_build_report_headers()
         test_find_matching_filters_for_workload()
         test_extra_column_registry()
+        test_report_writing()
         success = True
     except AssertionError as ae:
         print(f"\n[FAIL] Test failure: {ae}")

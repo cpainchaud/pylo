@@ -217,16 +217,11 @@ def __main(args: Dict[str, Any], org: pylo.Organization, logger=None, **kwargs) 
     filter_keep_in_report = args['keep_filters_in_report']
     verbose = args['verbose']
 
-    # Create headers first, then instantiate ReportWriter to create sheet
+    # Create headers first
     csv_report_headers = build_report_headers(org, include_extra_columns=True)
 
     for extra_column in extra_columns:
         print(" - adding extra column from external plugin: " + extra_column.column_description().name)
-
-    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='workloads', filename_prefix='workload-export', force_all_wrap_text=True, args=args)
-    # ReportWriter initialized from CLI args via constructor
-    csv_report = report_writer.excel_workbook
-    csv_sheet = report_writer.sheet
 
     filter_csv_expected_fields = []
     filter_data = None
@@ -249,6 +244,12 @@ def __main(args: Dict[str, Any], org: pylo.Organization, logger=None, **kwargs) 
     if filter_keep_in_report:
         for field in filter_data._detected_headers:
             csv_report_headers.append('_' + field)
+
+    # Create ReportWriter AFTER all headers have been finalized
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='workloads', filename_prefix='workload-export', force_all_wrap_text=True, args=args)
+    # ReportWriter initialized from CLI args via constructor
+    csv_report = report_writer.excel_workbook
+    csv_sheet = report_writer.sheet
 
     all_workloads = org.WorkloadStore.itemsByHRef.copy()
 
