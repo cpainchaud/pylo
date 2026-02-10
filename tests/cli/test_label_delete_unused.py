@@ -16,10 +16,6 @@ from illumio_pylo.cli.commands.label_delete_unused import (
     add_label_to_report,
 )
 
-# Import shared test fixtures
-from test_fixtures import MockOrganization
-
-
 class MockAPIConnector:
     """Mock API connector for testing"""
     def __init__(self, fqdn='pce.example.com', port=443, org_id=1):
