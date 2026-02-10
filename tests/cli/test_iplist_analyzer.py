@@ -17,7 +17,7 @@ from illumio_pylo.cli.commands.iplist_analyzer import (
 )
 
 # Import shared test fixtures
-from test_fixtures import MockOrganization, MockWorkload, MockInterface
+from ..test_fixtures import MockOrganization, MockWorkload
 
 
 class MockIP4Map:

@@ -18,7 +18,7 @@ import illumio_pylo as pylo
 # Import command module
 from illumio_pylo.cli.commands.iplist_analyzer import __main as iplist_analyzer_main
 # Import test fixtures
-from test_fixtures import MockOrganization, MockWorkload, MockInterface
+from ..test_fixtures import MockOrganization, MockWorkload
 
 
 # Reuse mocks from unit tests
