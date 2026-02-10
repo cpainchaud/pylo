@@ -330,12 +330,20 @@ class MockNewClass(pylo.RealClass):
 
 ---
 
+## Test Organization
+
+The test suite is organized as follows:
+- **`tests/` (root)** - Tests for core components (filters, queries, report writers, credentials, etc.)
+- **`tests/cli/`** - Tests for CLI commands and integration tests
+
+This separation ensures that core library tests remain distinct from CLI/command-specific tests.
+
 ## Related Files
 
 - `test_fixtures.py` - The fixture implementation
-- `test_workload_export.py` - Example usage
+- `cli/test_workload_export.py` - Example usage
 - `conftest.py` - Pytest configuration
-- `README_workload_export_tests.md` - Test documentation
+- `cli/README_workload_export_tests.md` - Test documentation
 
 ---
 
