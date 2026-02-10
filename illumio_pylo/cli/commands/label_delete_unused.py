@@ -3,7 +3,7 @@ Usage documentation for this command can be found in docs/cli/label-delete-unuse
 """
 
 import argparse
-from typing import Optional, List
+from typing import Optional, List, Tuple, Dict
 
 import illumio_pylo as pylo
 from illumio_pylo import ExcelHeader
@@ -27,6 +27,98 @@ def fill_parser(parser: argparse.ArgumentParser):
         default_prefix='label-delete-unused',
         default_sheet_name='unused_labels'
     )
+
+
+def find_unused_labels(labels_json: List[LabelObjectJsonStructure]) -> List[LabelObjectJsonStructure]:
+    """
+    Identify labels that have no usage.
+
+    Args:
+        labels_json: List of label JSON structures from API
+
+    Returns:
+        List of unused label JSON structures
+    """
+    unused_labels = []
+    for label_json in labels_json:
+        usage_json = label_json.get('usage', {})
+        if not any(usage_json.values()):
+            unused_labels.append(label_json)
+    return unused_labels
+
+
+def apply_deletion_limit(unused_labels: List[LabelObjectJsonStructure],
+                         limit: Optional[int]) -> Tuple[List[LabelObjectJsonStructure], List[LabelObjectJsonStructure]]:
+    """
+    Split unused labels into to-delete and ignored based on limit.
+
+    Args:
+        unused_labels: List of unused labels
+        limit: Maximum number to delete, or None for all
+
+    Returns:
+        Tuple of (labels_to_delete, labels_ignored)
+    """
+    if limit is None:
+        return unused_labels, []
+    return unused_labels[:limit], unused_labels[limit:]
+
+
+def build_pce_url(connector: pylo.APIConnector, label_href: str) -> str:
+    """
+    Build PCE UI URL for a label.
+
+    Args:
+        connector: API connector with PCE connection info
+        label_href: Label href from API
+
+    Returns:
+        Full URL to label in PCE UI
+    """
+    pce_hostname = connector.fqdn
+    pce_port = connector.port
+    org_id = connector.org_id
+
+    if pce_port == 443:
+        return f"https://{pce_hostname}/orgs/{org_id}{label_href}"
+    else:
+        return f"https://{pce_hostname}:{pce_port}/orgs/{org_id}{label_href}"
+
+
+def delete_labels_and_collect_results(unused_labels: List[LabelObjectJsonStructure],
+                                       connector: pylo.APIConnector) -> Dict:
+    """
+    Execute label deletion and collect results.
+
+    Args:
+        unused_labels: Labels to delete
+        connector: API connector
+
+    Returns:
+        Dict with 'successful', 'failed', and 'errors' keys
+    """
+    tracker = connector.new_tracker_for_label_multi_deletion()
+
+    for label_json in unused_labels:
+        tracker.add_label(label_json['href'])
+
+    tracker.execute_deletion()
+
+    results = {
+        'successful': [],
+        'failed': [],
+        'errors': {}
+    }
+
+    for label_json in unused_labels:
+        error = tracker.get_error(label_json['href'])
+        if error is not None:
+            results['failed'].append(label_json)
+            results['errors'][label_json['href']] = error
+        else:
+            results['successful'].append(label_json)
+
+    return results
 
 
 def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = None, config_data=None, **kwargs):
@@ -61,59 +153,57 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
     print("OK!")
 
     print(f"Analyzing {len(labels_json)} labels to find unused ones... ")
-    unused_labels: List[LabelObjectJsonStructure] = []
+    unused_labels = find_unused_labels(labels_json)
 
+    # Print debug info for each label
     for label_json in labels_json:
         usage_json = label_json.get('usage', {})
-        label_is_used = False
-
-        for usage_type, usage_confirmed in usage_json.items():
-            if usage_confirmed:
-                label_is_used = True
-                print(f"Label '{label_json.get('value')}' is used in '{usage_type}', skipping deletion.")
-                break
-
-        if not label_is_used:
+        if any(usage_json.values()):
+            for usage_type, usage_confirmed in usage_json.items():
+                if usage_confirmed:
+                    print(f"Label '{label_json.get('value')}' is used in '{usage_type}', skipping deletion.")
+                    break
+        else:
             print(f"Label '{label_json.get('value')}' is unused, marking for deletion.")
-            unused_labels.append(label_json)
 
     print()
     print(f"Found {len(unused_labels)} unused labels vs total of {len(labels_json)} labels.")
 
-    if len(unused_labels) > 0:
-        if not settings_confirmed_changes:
-            print("No change will be implemented in the PCE until you use the '--confirm' flag to confirm you're good with them after review.")
-            for label_json in unused_labels:
-                add_label_to_report(label_json, sheet, connector, "TO BE DELETED (no confirm option used)")
-        else:
-            print()
-            print(f"Proceeding to delete unused labels up to the limit of '{settings_limit_deletions if settings_limit_deletions is not None else 'all'}'...")
-            tracker = connector.new_tracker_for_label_multi_deletion()
+    if len(unused_labels) == 0:
+        print("No unused labels found.")
+    elif not settings_confirmed_changes:
+        print("No change will be implemented in the PCE until you use the '--confirm' flag to confirm you're good with them after review.")
+        for label_json in unused_labels:
+            pce_url = build_pce_url(connector, label_json.get('href', ''))
+            add_label_to_report(label_json, sheet, pce_url, "TO BE DELETED (no confirm option used)")
+    else:
+        # Apply deletion limit
+        labels_to_delete, labels_ignored = apply_deletion_limit(unused_labels, settings_limit_deletions)
 
-            if settings_limit_deletions is not None:
-                # Add labels beyond the limit to the report as ignored
-                for label_json in unused_labels[settings_limit_deletions:]:
-                    add_label_to_report(label_json, sheet, connector, "ignored (limit reached)")
-                unused_labels = unused_labels[:settings_limit_deletions]
+        # Add ignored labels to report
+        for label_json in labels_ignored:
+            pce_url = build_pce_url(connector, label_json.get('href', ''))
+            add_label_to_report(label_json, sheet, pce_url, "ignored (limit reached)")
 
-            for label_json in unused_labels:
-                tracker.add_label(label_json['href'])
+        # Execute deletion
+        print()
+        print(f"Proceeding to delete {len(labels_to_delete)} unused labels...")
+        results = delete_labels_and_collect_results(labels_to_delete, connector)
 
-            tracker.execute_deletion()
-            errors_count = tracker.get_errors_count()
-            success_count = len(unused_labels) - errors_count
+        # Add results to report
+        for label_json in results['successful']:
+            pce_url = build_pce_url(connector, label_json.get('href', ''))
+            add_label_to_report(label_json, sheet, pce_url, "deleted")
+            print(f" - SUCCESS deleting label '{label_json.get('value')}'")
 
-            for label_json in unused_labels:
-                error = tracker.get_error(label_json['href'])
-                if error is not None:
-                    print(f" - ERROR deleting label '{label_json.get('value')}': {error}")
-                    add_label_to_report(label_json, sheet, connector, "API error", error)
-                else:
-                    print(f" - SUCCESS deleting label '{label_json.get('value')}'")
-                    add_label_to_report(label_json, sheet, connector, "deleted")
+        for label_json in results['failed']:
+            error = results['errors'][label_json.get('href', '')]
+            pce_url = build_pce_url(connector, label_json.get('href', ''))
+            add_label_to_report(label_json, sheet, pce_url, "API error", error)
+            print(f" - ERROR deleting label '{label_json.get('value')}': {error}")
 
-            print()
-            print(f"Deletion completed: {success_count} labels deleted successfully, {errors_count} errors encountered.")
+        print()
+        print(f"Deletion completed: {len(results['successful'])} labels deleted successfully, {len(results['failed'])} errors encountered.")
 
     # Write report to disk (always generate report, even if empty)
     # JSON is generated from the populated sheet inside ReportWriter
@@ -121,27 +211,17 @@ def __main(args, org: pylo.Organization = None, connector: pylo.APIConnector = N
 
 
 def add_label_to_report(label_json: LabelObjectJsonStructure, sheet: pylo.ArraysToExcel.Sheet,
-                        connector: pylo.APIConnector, action: str, error_message: str = ''):
+                        pce_url: str, action: str, error_message: str = ''):
     """
     Add a label to the report sheet.
 
-    :param label_json: The label JSON structure from the API
-    :param sheet: The Excel sheet to add the label to
-    :param connector: The API connector to get PCE information
-    :param action: The action taken on the label
-    :param error_message: Optional error message if deletion failed
+    Args:
+        label_json: The label JSON structure from the API
+        sheet: The Excel sheet to add the label to
+        pce_url: Pre-built PCE URL for the label
+        action: The action taken on the label
+        error_message: Optional error message if deletion failed
     """
-    # Build PCE UI URL for the label
-    pce_hostname = connector.fqdn
-    pce_port = connector.port
-    org_id = connector.org_id
-    label_href = label_json.get('href', '')
-
-    if pce_port == 443:
-        url_link_to_pce = f"https://{pce_hostname}/orgs/{org_id}{label_href}"
-    else:
-        url_link_to_pce = f"https://{pce_hostname}:{pce_port}/orgs/{org_id}{label_href}"
-
     # Generate usage list from usage dictionary
     usage_list = ', '.join([k for k, v in label_json.get('usage', {}).items() if v])
 
@@ -156,8 +236,8 @@ def add_label_to_report(label_json: LabelObjectJsonStructure, sheet: pylo.Arrays
         'usage_list': usage_list,
         'action': action,
         'error_message': error_message,
-        'href': label_href,
-        'link_to_pce': url_link_to_pce
+        'href': label_json.get('href', ''),
+        'link_to_pce': pce_url
     }
 
     sheet.add_line_from_object(new_row)
