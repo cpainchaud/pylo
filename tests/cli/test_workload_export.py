@@ -25,7 +25,7 @@ from illumio_pylo.cli.commands.workload_export import (
 )
 
 # Import shared test fixtures
-from test_fixtures import (
+from ..test_fixtures import (
     MockLabel,
     MockVENAgent,
     MockInterface,
