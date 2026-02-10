@@ -2,7 +2,7 @@
 
 ## Development Agents
 
-### Claude Code
+### Coding Agents
 - **Purpose**: Primary development assistant for code generation, refactoring, and testing
 - **Usage**: Interactive coding sessions, test generation, documentation
 - **Access**: Via IDE integration or CLI
@@ -31,7 +31,7 @@
 ### Code Folder Organization
 - **`/illumio_pylo/`**: Core library code
 - **`/illumio_pylo/API/`**: Low level API interactions and data models to communicate with the PCE
-- **`/illumio_pylo/cli/`**: CLI command implementations which utilizes core library functions. A README.md file in this directory provides some information about the CLI code structure. Usage documentation for end users for CLI commands is located in the `/docs/cli/` directory.
+- **`/illumio_pylo/cli/`**: CLI command implementations which utilizes core library functions. A specific `/illumio_pylo/cli/README.md` file in this directory provides some information about the CLI/Commands code structure and instructions while usage documentation for end users for CLI commands is located in the `/docs/cli/` directory.
 - **`/tests/`**: Test suites for core library and CLI commands, organized by functionality
 - **`/docs/`**: Documentation for the project, including usage guides and API references
 - **`/docs/cli`**: Documentation specific to CLI usage and commands

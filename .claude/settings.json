@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Read context from README.md and AGENTS.md"
+          }
+        ]
+      }
+    ]
+  }
+}
