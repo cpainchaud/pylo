@@ -1,9 +1,10 @@
-import os
-from typing import Optional, Dict
-import time
-import datetime
-import sys
 import argparse
+import datetime
+import os
+import sys
+import time
+from typing import Optional, Dict
+
 from .NativeParsers import BaseParser
 
 # in case user wants to run this utility while having a version of pylo already installed
@@ -48,24 +49,36 @@ def run(forced_command_name: Optional[str] = None):
     parser.add_argument('--include-deleted-workloads', action='store_true',
                         help='Include deleted workloads when loading data from the PCE')
     parser.add_argument('--version', action='store_true', help='Prints the version of the Pylo CLI')
+    parser.add_argument('--web', action='store_true', help='Start web UI server (will not run a CLI command)')
 
     selected_command = None
 
     if forced_command_name is None:
-        sub_parsers = parser.add_subparsers(dest='command', required=True)
-        for command in commands.available_commands.values():
+        # Make subparsers not strictly required here — we will enforce requirement later unless --web was used
+        sub_parsers = parser.add_subparsers(dest='command', required=False)
+        # Iterate commands in alphabetical order to present a sorted list in help
+        for command in sorted(commands.available_commands.values(), key=lambda c: c.name):
             sub_parser = sub_parsers.add_parser(command.name, help='')
             command.fill_parser(sub_parser)
             if command.native_parsers is not None:
                 add_native_parser_to_argparse(sub_parser, command.native_parsers)
     else:
-        for command in commands.available_commands.values():
-            if forced_command_name is not None and command.name != forced_command_name:
-                continue
+        # When forcing a command, locate it directly (no particular order needed)
+        if forced_command_name is not None and forced_command_name in commands.available_commands:
+            command = commands.available_commands[forced_command_name]
             command.fill_parser(parser)
             if command.native_parsers is not None:
                 add_native_parser_to_argparse(parser, command.native_parsers)
             selected_command = command
+        else:
+            # fallback to original behavior if name not found
+            for command in commands.available_commands.values():
+                if forced_command_name is not None and command.name != forced_command_name:
+                    continue
+                command.fill_parser(parser)
+                if command.native_parsers is not None:
+                    add_native_parser_to_argparse(parser, command.native_parsers)
+                selected_command = command
 
     # version is a special command that does not require a PCE
     # if first argument is --version, we print the version and exit
@@ -75,7 +88,21 @@ def run(forced_command_name: Optional[str] = None):
             print("Pylo CLI version {}".format(pylo.__version__))
             return
 
+    # parse arguments
     args = vars(parser.parse_args())
+
+    # If web mode was requested, start web server and return
+    if args.get('web'):
+        # Lazy import to keep CLI lightweight
+        try:
+            from illumio_pylo.cli import web as web_module
+        except Exception as e:
+            print('Web UI dependencies are missing: {}'.format(e))
+            print("To use --web mode, please install FastAPI and Uvicorn in your environment.")
+            return
+        print("* Starting Pylo Web UI server (bound to http://127.0.0.1:8000 by default)")
+        web_module.start_server()
+        return
 
     if args['debug']:
         pylo.log_set_debug()
@@ -85,8 +112,11 @@ def run(forced_command_name: Optional[str] = None):
     include_deleted_workloads = args['include_deleted_workloads']
     org: Optional[pylo.Organization] = None
 
-    # We are getting the command object associated to the command name if it was not already set (via forced_command_name)
+    # Enforce that a command was provided when not in web mode
     if selected_command is None:
+        selected_name = args.get('command')
+        if selected_name is None:
+            raise pylo.PyloEx("The --pce argument is required for this command or a command name must be provided")
         selected_command = commands.available_commands[args['command']]
         if selected_command is None:
             raise pylo.PyloEx("Cannot find command named '{}'".format(args['command']))
