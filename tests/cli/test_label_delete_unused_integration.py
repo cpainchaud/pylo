@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 # Import command module
 from illumio_pylo.cli.commands.label_delete_unused import __main as label_delete_unused_main
 # Import test fixtures
-from test_fixtures import MockOrganization
+from ..test_fixtures import MockOrganization
 
 
 class MockAPIConnector:
