@@ -2,13 +2,25 @@
 
 # Pylo
 
+## Overview / Index
+A quick index to help you navigate this repository:
+
+- [Introduction](#introduction) — what Pylo is and its intent.
+- [API Framework](#api-framework) — short code examples showing common tasks.
+- [CLI Tools](#cli-tools) — pointers to example scripts and how-to docs for automation utilities.
+- Docs: [docs/cli/label-delete-unused.md](docs/cli/label-delete-unused.md) — developer and CLI documentation (see `docs/cli/`).
+- Example scipts: [examples/](examples/) — runnable example scripts demonstrating library usage.
+- Tests: [tests/README_test_fixtures.md](tests/README_test_fixtures.md) — pytest-based tests and fixtures.
+- License: [LICENSE](LICENSE) — project license and attribution.
+
+
 ## Introduction
-A framework and set of utilities to interact with Illumio's PCE (Policy Compute Engine)
+A Python API Framework and set of tools to interact with Illumio's PCE (Policy Compute Engine)
 
 
-## Example
+## API Framework
 
-###  Remove TCP/3389 from all rules using fully object oriented framework
+### Remove TCP/3389 from all rules using fully object oriented framework
 ```python
 import illumio_pylo as pylo
 
@@ -47,7 +59,7 @@ pce_hostname = 'pce212-beauty-contest.illumio.microsegment.io'
 connector = pylo.APIConnector.create_from_credentials_in_file(pce_hostname, request_if_missing=True)
 
 if connector is None:
-    print("****ERROR**** No cached credentials found for PCE {}".format())
+    print("****ERROR**** No cached credentials found for PCE {}".format(pce_hostname))
     exit(1)
 
 print("PCE Software version is {}".format(connector.get_software_version_string()))
@@ -80,3 +92,21 @@ print("OK! created with HREF={}".format(result['href']))
 print()
 
 ```
+
+## CLI Tools
+
+Pylo includes several documented command-like utilities intended for operational tasks against an Illumio PCE. Full, detailed usage (options, examples, and flags) is available in the `docs/cli/` directory.
+
+## Binary distribution
+Windows binaries: Prebuilt standalone Windows executables are provided so you can run the CLI tools without installing Python or any dependencies. Check the project's [Releases page](https://github.com/cpainchaud/pylo/releases) for all numbered releases but also:
+- [Latest release](https://github.com/cpainchaud/pylo/releases/tag/latest) — includes the most recent stable version with all CLI tools and documentation.
+- [DEV release](https://github.com/cpainchaud/pylo/releases/tag/dev-latest) — includes the most recent development version with experimental features and bug fixes.
+
+## Documented CLI utilities
+- `label-delete-unused` — Identify unused labels across the PCE and optionally delete them; generates CSV/XLSX/JSON reports and runs in dry-run mode by default.
+- `traffic-export` — Export traffic records from the PCE with flexible filtering (labels, IP lists, time ranges), formatting, and column customization.
+- `ven-duplicate-remover` — Detect and help remove duplicate workload/VEN entries that share the same hostname; includes protection rules and dry-run by default.
+
+Where to find full usage
+- See the individual command docs in `docs/cli/` for complete option lists, examples, and recommended safe workflows (each doc contains usage examples and notes).
+- Most commands provide their own `--help` output; consult the corresponding `docs/cli/<command>.md` file for the exact invocation and flags.
