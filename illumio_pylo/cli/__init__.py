@@ -50,6 +50,10 @@ def run(forced_command_name: Optional[str] = None):
                         help='Include deleted workloads when loading data from the PCE')
     parser.add_argument('--version', action='store_true', help='Prints the version of the Pylo CLI')
     parser.add_argument('--web', action='store_true', help='Start web UI server (will not run a CLI command)')
+    parser.add_argument('--webview', type=str, choices=['auto', 'native', 'browser'], default='auto',
+                        help="Control how the web UI is opened: 'auto' (try native webview then browser), 'native' (require pywebview), or 'browser' (open system browser)")
+    parser.add_argument('--no-webview', action='store_true',
+                        help='Do not open any webview or browser when starting the web UI (runs server only)')
 
     selected_command = None
 
@@ -101,7 +105,10 @@ def run(forced_command_name: Optional[str] = None):
             print("To use --web mode, please install FastAPI and Uvicorn in your environment.")
             return
         print("* Starting Pylo Web UI server (bound to http://127.0.0.1:8000 by default)")
-        web_module.start_server()
+        # Determine webview mode: --no-webview overrides --webview
+        webview_mode = 'none' if args.get('no_webview') else args.get('webview', 'auto')
+        # start_server accepts an optional webview_mode parameter (auto/native/browser/none)
+        web_module.start_server(webview_mode=webview_mode)
         return
 
     if args['debug']:

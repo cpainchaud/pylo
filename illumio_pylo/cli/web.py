@@ -23,6 +23,7 @@ import io
 import os
 import sys
 import threading
+import webbrowser
 from typing import Dict, Any
 
 import illumio_pylo as pylo
@@ -169,7 +170,7 @@ if FASTAPI_AVAILABLE:
                 src = ''
 
             if src:
-                for m in re.finditer(r"args\[['\"]([a-zA-Z0-9_\-]+)['\"]]", src):
+                for m in re.finditer(r"args\[['\"]([a-zA-Z0-9_\-]+)['\"]]\)", src):
                      key = m.group(1)
                      # argparse dests normally replace '-' with '_' but code may use either; normalize both
                      norm_key = key.replace('-', '_')
@@ -198,13 +199,132 @@ if FASTAPI_AVAILABLE:
         return JSONResponse({'stdout': stdout_capture.getvalue(), 'stderr': stderr_capture.getvalue()})
 
 
-    def start_server(host: str = '127.0.0.1', port: int = 8000):
+    def start_server(host: str = '127.0.0.1', port: int = 8000, webview_mode: str = 'auto'):
         # import uvicorn lazily
         try:
             import uvicorn
         except Exception as e:
             raise RuntimeError('Missing uvicorn dependency: {}'.format(e))
-        uvicorn.run(app, host=host, port=port)
+        url = f'http://{host}:{port}/'
+
+        # Determine desired mode: 'auto' (try native then browser), 'native' (require pywebview), 'browser' (open system browser), 'none' (do not open any UI)
+        mode = (webview_mode or 'auto').lower()
+
+        # Try to import webview only if mode allows it
+        has_webview = False
+        webview_module = None
+        if mode in ('auto', 'native'):
+            try:
+                import webview as webview_module
+                has_webview = True
+            except Exception:
+                has_webview = False
+
+        if mode == 'none':
+            # Explicitly do not open any UI; just run the server in current process
+            print(f"* Starting Pylo Web UI server (no UI) at {url}")
+            uvicorn.run(app, host=host, port=port)
+            return
+
+        if has_webview and mode in ('auto', 'native'):
+            # Run uvicorn in a background daemon thread so we can open a native window on the main thread.
+            def _run_uvicorn():
+                try:
+                    uvicorn.run(app, host=host, port=port)
+                except Exception:
+                    # If uvicorn fails, ensure we don't crash silently
+                    import traceback
+                    traceback.print_exc()
+
+            uvicorn_thread = threading.Thread(target=_run_uvicorn, daemon=True)
+            uvicorn_thread.start()
+
+            # Wait briefly for the server to bind (best-effort). Use socket connect loop for robustness.
+            try:
+                import time, socket
+                for _ in range(30):
+                    try:
+                        s = socket.create_connection((host, port), timeout=0.5)
+                        s.close()
+                        break
+                    except Exception:
+                        time.sleep(0.1)
+            except Exception:
+                # ignore timing/connect issues; webview will try to load the url anyway
+                pass
+
+            print(f"* Starting Pylo Web UI in native window at {url}")
+            try:
+                # create_window is non-blocking; start() will block until window closed
+                # Keep a reference to the window so we can attach event handlers
+                try:
+                    window = webview_module.create_window('Pylo', url)
+                except Exception:
+                    # Some pywebview variants may require positional args only
+                    window = webview_module.create_window('Pylo', url)
+
+                # When the window is closed we want to terminate the whole process
+                def _on_window_closed(*args, **kwargs):
+                    try:
+                        os._exit(0)
+                    except Exception:
+                        # If os._exit is not available for some reason, attempt sys.exit
+                        try:
+                            sys.exit(0)
+                        except Exception:
+                            pass
+
+                # Attach to common event names across pywebview versions; be tolerant if they don't exist
+                try:
+                    window.events.closed += _on_window_closed
+                except Exception:
+                    try:
+                        window.events.closing += _on_window_closed
+                    except Exception:
+                        try:
+                            window.events.destroyed += _on_window_closed
+                        except Exception:
+                            # If none of the events exist, rely on start() returning and the final os._exit(0) below.
+                            pass
+
+                webview_module.start()
+            except Exception:
+                # If webview fails at runtime, fallback to opening external browser
+                try:
+                    webbrowser.open_new_tab(url)
+                except Exception:
+                    pass
+            finally:
+                try:
+                    # Exit the process when the webview window is closed to ensure uvicorn thread stops
+                    pylo.log.info('Web UI window closed; shutting down server...')
+                    os._exit(0)
+                except Exception:
+                    try:
+                        pylo.log.info()
+                        sys.exit(0)
+                    except Exception:
+                        pass
+
+        else:
+            # No pywebview available or mode explicitly set to 'browser': open the system browser (best-effort) and run uvicorn in current process.
+            if mode == 'native' and not has_webview:
+                print("* Requested native webview but pywebview is not available; falling back to system browser")
+
+            def _open_browser():
+                try:
+                    webbrowser.open_new_tab(url)
+                except Exception:
+                    # best-effort only; do not fail startup if browser can't be opened
+                    pass
+            try:
+                # schedule browser open in background
+                threading.Timer(1.0, _open_browser).start()
+            except Exception:
+                pass
+
+            print(f"* Starting Pylo Web UI server and opening {url}")
+            uvicorn.run(app, host=host, port=port)
 
 else:
     def start_server(host: str = '127.0.0.1', port: int = 8000):
