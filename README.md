@@ -103,9 +103,20 @@ Windows binaries: Prebuilt standalone Windows executables are provided so you ca
 - [DEV release](https://github.com/cpainchaud/pylo/releases/tag/dev-latest) — includes the most recent development version with experimental features and bug fixes.
 
 ## Documented CLI utilities
-- `label-delete-unused` — Identify unused labels across the PCE and optionally delete them; generates CSV/XLSX/JSON reports and runs in dry-run mode by default.
-- `traffic-export` — Export traffic records from the PCE with flexible filtering (labels, IP lists, time ranges), formatting, and column customization.
-- `ven-duplicate-remover` — Detect and help remove duplicate workload/VEN entries that share the same hostname; includes protection rules and dry-run by default.
+- [`cred-manager`](docs/cli/cred-manager.md) — Manage cached PCE credentials used by the CLI utilities (create, update, delete, list).
+- [`iplist-analyzer`](docs/cli/iplist-analyzer.md) — Analyze IP lists to find overlaps, gaps, and statistics for IP range usage.
+- [`iplist-import`](docs/cli/iplist-import.md) — Import IP ranges into the PCE as IPList objects from CSV/JSON sources.
+- [`label-delete-unused`](docs/cli/label-delete-unused.md) — Identify unused labels across the PCE and optionally delete them; generates CSV/XLSX/JSON reports and runs in dry-run mode by default.
+- [`pce-objects-cache-updater`](docs/cli/pce-objects-cache-updater.md) — Refresh or rebuild the local cache of PCE objects used by offline/CLI tools.
+- [`rule-export`](docs/cli/rule-export.md) — Export firewall/security rules from the PCE into CSV/JSON formats for reporting or migration.
+- [`traffic-export`](docs/cli/traffic-export.md) — Export traffic records from the PCE with flexible filtering (labels, IP lists, time ranges), formatting, and column customization.
+- [`ven-compatibility-report-export`](docs/cli/ven-compatibility-report-export.md) — Generate compatibility reports for VENs (visibility/compatibility across versions or configurations).
+- [`ven-duplicate-remover`](docs/cli/ven-duplicate-remover.md) — Detect and help remove duplicate workload/VEN entries that share the same hostname; includes protection rules and dry-run by default.
+- [`ven-idle-to-visibility`](docs/cli/ven-idle-to-visibility.md) — Convert idle VENs to visible state or generate reports to recover idle VENs (visibility management utilities).
+- [`ven-upgrade`](docs/cli/ven-upgrade.md) — Assist with VEN upgrade workflows (reporting and helper steps to prepare VENs for upgrades).
+- [`workload-export`](docs/cli/workload-export.md) — Export workload objects and related metadata from the PCE.
+- [`workload-import`](docs/cli/workload-import.md) — Import workloads into the PCE from structured CSV/JSON inputs.
+- [`workload-resync-names`](docs/cli/workload-resync-names.md) — Resynchronize workload names (useful when hostnames or naming conventions change).
 
 Where to find full usage
 - See the individual command docs in `docs/cli/` for complete option lists, examples, and recommended safe workflows (each doc contains usage examples and notes).
