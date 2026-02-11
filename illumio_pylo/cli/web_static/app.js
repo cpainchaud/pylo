@@ -105,7 +105,7 @@ async function selectCommand(name){
   form.appendChild(pceLabel); form.appendChild(pceSelect); form.appendChild(document.createElement('br'));
 
   // populate credentials and if only one pre-select it
-  (async () => {
+  await (async () => {
     try {
       const credRes = await fetch('/api/credentials');
       let creds;

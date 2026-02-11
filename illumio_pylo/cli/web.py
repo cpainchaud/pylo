@@ -39,7 +39,6 @@ if FASTAPI_AVAILABLE:
         # Mount static files under /static so API endpoints are not shadowed.
         app.mount('/static', StaticFiles(directory=static_dir, html=True), name='static')
 
-
     # Serve index.html at root for SPA
     @app.get('/')
     def root_index():
