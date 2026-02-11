@@ -557,8 +557,13 @@ try { if (typeof window !== 'undefined') { window.updateCliPreview = updateCliPr
 // closing the params panel on Escape).
 function showPanel(name) {
   try {
+    const paramsPanel = document.getElementById('panel-params');
     if (name === 'params') {
       document.body.classList.add('params-visible');
+      if (paramsPanel) {
+        paramsPanel.hidden = false;
+        paramsPanel.classList.remove('hidden');
+      }
       // update current command name from the preview data if present
       try {
         const preview = document.getElementById('cli-preview');
@@ -571,6 +576,10 @@ function showPanel(name) {
       try { const back = document.getElementById('back-btn'); if (back && back.focus) back.focus(); } catch (e) {}
     } else {
       document.body.classList.remove('params-visible');
+      if (paramsPanel) {
+        paramsPanel.hidden = true;
+        paramsPanel.classList.add('hidden');
+      }
       // focus search box if present
       try { const search = document.getElementById('command-search'); if (search && search.focus) search.focus(); } catch (e) {}
     }
