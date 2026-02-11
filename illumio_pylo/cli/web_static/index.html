@@ -5,33 +5,88 @@
   <title>Pylo Web UI (experimental)</title>
   <style>
     body { font-family: Arial, Helvetica, sans-serif; margin: 20px; }
-    .commands { margin-bottom: 20px; }
-    .log { white-space: pre; background:#f5f5f5; padding:10px; border:1px solid #ddd; height:300px; overflow:auto }
-    textarea.cli-preview { width: 100%; height: 80px; font-family: monospace; }
+
+    /* Panel visibility helper */
+    .hidden { display: none; }
+
+    /* Ensure params panel is hidden by default to avoid flash */
+    #panel-params { display: none; }
+    /* When body has .params-visible, show params and hide landing. Using a body-level
+       class avoids fighting inline !important styles and makes toggling clean. */
+    body.params-visible #panel-params { display: flex !important; }
+    body.params-visible #panel-landing { display: none !important; }
+
+    /* Landing (cards) */
+    #panel-landing { }
+    /* search box: full width up to 60% of viewport, minimum 250px */
+    #command-search { margin-bottom: 12px; padding:6px; width:100%; max-width:60vw; min-width:250px; box-sizing:border-box }
+    .cards { display:flex; flex-wrap:wrap; gap:8px; }
+    .card { border:1px solid #ddd; padding:10px; border-radius:6px; min-width:220px; max-width:320px; cursor:pointer; }
+    .card:hover, .card:focus { outline:2px solid #5b9dd9; }
+    .card-title { font-weight:600; }
+    .card-desc { color:#555; font-size:0.9em; margin-top:6px }
+
+    /* Params panel layout: header, options row, big content area */
+    #panel-params { /* layout properties applied when shown */; flex-direction:column; gap:12px }
+    #params-header { display:flex; align-items:center; gap:12px }
+    #back-btn { padding:6px 10px; }
+    #current-command-name { font-weight:700; font-size:1.1em }
+
+    #options-row { /* will contain the options form */ }
+
+    /* content area: CLI preview above logs (vertical stack) */
+    #content-area { display:flex; flex-direction:column; gap:12px; align-items:stretch }
+    /* preview starts small (min height), JS will autosize to fit content */
+    #cli-preview { width:100%; min-height:2.4em; font-family:monospace; box-sizing:border-box; overflow:hidden }
+    #logs { width:100%; white-space: pre; background:#f5f5f5; padding:10px; border:1px solid #ddd; height:300px; overflow:auto }
+
+    textarea.cli-preview { width: 100%; font-family: monospace; box-sizing:border-box; resize:vertical; overflow:hidden }
   </style>
 </head>
 <body>
   <h1>Pylo Web UI (experimental)</h1>
-  <div class="commands">
+
+  <!-- Panel 1: Landing (command cards + search) -->
+  <div id="panel-landing">
     <h2>Available commands</h2>
-    <ul id="commands"></ul>
+    <input id="command-search" placeholder="Search commands by name..." />
+    <div class="cards" id="commands"></div>
   </div>
-  <div id="command-form"></div>
-  <div>
-    <h3>CLI preview</h3>
-    <div style="display:flex; gap:8px; align-items:flex-start;">
-      <textarea id="cli-preview" class="cli-preview" readonly></textarea>
+
+  <!-- Panel 2: Parameters & logs (hidden by default) -->
+  <div id="panel-params" class="hidden" hidden>
+    <div id="params-header">
+      <button id="back-btn">⟵ Back</button>
+      <div id="current-command-name">(no command)</div>
+    </div>
+
+    <div id="options-row">
+      <div id="command-form"></div>
+    </div>
+
+    <div id="content-area">
       <div>
-        <button id="copy-cli">Copy CLI</button>
-        <div id="copy-cli-status" style="color:green; margin-top:8px; display:none;">Copied!</div>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h3 style="margin:0;">CLI preview</h3>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="copy-cli">Copy CLI</button>
+            <div id="copy-cli-status" style="color:green; display:none;">Copied!</div>
+          </div>
+        </div>
+        <textarea id="cli-preview" class="cli-preview" readonly rows="2" data-command=""></textarea>
+      </div>
+
+      <div>
+        <h3>Logs</h3>
+        <div id="logs" class="log"></div>
       </div>
     </div>
   </div>
-  <div>
-    <h3>Logs</h3>
-    <div id="logs" class="log"></div>
-  </div>
 
+  <!-- panel-params is hidden by default via CSS; toggling uses body.params-visible -->
+
+  <!-- In production the FastAPI app mounts static files under /static; use that path so
+       this file works both with the real server and the mock server which also supports /static/ -->
   <script src="/static/app.js"></script>
 </body>
 </html>
