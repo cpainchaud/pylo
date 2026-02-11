@@ -529,9 +529,9 @@ async function fetchCommands(){
 
       function onSelect() {
         // update preview data and show params panel
-        showPanel('params');
         const previewEl = document.getElementById('cli-preview');
         if (previewEl) previewEl.setAttribute('data-command', c.name);
+        showPanel('params');
         selectCommand(c.name);
       }
 
