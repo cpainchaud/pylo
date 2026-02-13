@@ -14,13 +14,10 @@ import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock
 
-# Add parent directory to path for test_fixtures import
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
 # Import pylo and command module
 from illumio_pylo.cli.commands.workload_export import __main as workload_export_main
 # Import test fixtures
-from test_fixtures import MockOrganization, MockWorkload, MockLabel, MockInterface, MockVENAgent
+from ..test_fixtures import MockOrganization, MockWorkload, MockLabel, MockInterface, MockVENAgent
 
 
 class MockWorkloadStore:

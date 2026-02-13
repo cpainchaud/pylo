@@ -6,19 +6,15 @@ report generation for various scenarios.
 """
 import csv
 import os
-import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock
-
-# Add parent directory to path for test_fixtures import
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import illumio_pylo as pylo
 # Import command module
 from illumio_pylo.cli.commands.traffic_export import __main as traffic_export_main
 # Import test fixtures
-from test_fixtures import MockOrganization, MockLabel
+from ..test_fixtures import MockOrganization, MockLabel
 
 
 class MockIPList(pylo.IPList):
