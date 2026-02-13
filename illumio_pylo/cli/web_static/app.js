@@ -11,7 +11,7 @@ async function runCommand(name, form, meta){
     if (pceEl && pceEl.value) data.pce = pceEl.value;
   }
 
-  // iterate metadata to collect and coerce values properly
+  // iterate metadata to collect and coerce values properly@
   for (const arg of meta.arguments) {
     const name = arg.dest;
     // check for explicit null checkbox first
@@ -228,7 +228,7 @@ async function selectCommand(name){
         const isNull = document.createElement('input'); isNull.type = 'checkbox'; isNull.name = arg.dest + '__isnull';
         isNull.id = arg.dest + '__isnull';
         isNull.title = 'Uncheck to override with a custom value';
-        const isNullLabel = document.createElement('label'); isNullLabel.htmlFor = isNull.id; isNullLabel.textContent = ' null';
+        const isNullLabel = document.createElement('label'); isNullLabel.htmlFor = isNull.id; isNullLabel.textContent = '';
         // If default is null, check the box and disable input by default
         isNull.checked = true;
         input.value = '';
@@ -271,7 +271,7 @@ async function selectCommand(name){
         const isNull = document.createElement('input'); isNull.type = 'checkbox'; isNull.name = arg.dest + '__isnull';
         isNull.id = arg.dest + '__isnull';
         isNull.title = 'Uncheck to override with a custom value';
-        const isNullLabel = document.createElement('label'); isNullLabel.htmlFor = isNull.id; isNullLabel.textContent = ' null';
+        const isNullLabel = document.createElement('label'); isNullLabel.htmlFor = isNull.id; isNullLabel.textContent = '';
         // If default is null, check the box and disable the input by default
         isNull.checked = true;
         input.value = '';
