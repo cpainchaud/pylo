@@ -239,7 +239,12 @@ async function selectCommand(name){
     // fallback to text input
     else {
       const input = document.createElement('input'); input.name = arg.dest; input.type = 'text';
-      input.placeholder = arg.help || '';
+      // Set placeholder based on default: if null, show '<default> </default>', otherwise show the default value
+      if (arg.default === null) {
+        input.placeholder = '<empty>';
+      } else {
+        try { input.placeholder = String(arg.default); } catch (e) { input.placeholder = '' + arg.default; }
+      }
       if (arg.default !== null && arg.default !== undefined) {
         try { input.value = String(arg.default); } catch (e) { input.value = '' + arg.default; }
       }
