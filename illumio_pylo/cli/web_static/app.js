@@ -1,6 +1,3 @@
-// VERSION: 2026-02-13-GRID-FIX - Cache busting timestamp
-console.log('✅ app.js loaded with grid layout (2026-02-13)');
-
 // Ensure runCommand is available early so form.onsubmit handlers can reference it
 async function runCommand(name, form, meta){
   const data = { command: name, args: {} };
@@ -179,11 +176,31 @@ async function selectCommand(name){
       control.name = arg.dest;
       const emptyOpt = document.createElement('option'); emptyOpt.value = ''; emptyOpt.textContent = '-- none --';
       control.appendChild(emptyOpt);
+
+      // Normalize the default value: convert string representations of null to actual null
+      // Note: arg.default might be actual null (from JSON), a string "null", "None", or an empty string
+      let defaultValue = arg.default;
+      if (defaultValue === null || defaultValue === undefined || defaultValue === "null" || defaultValue === "None" || defaultValue === "") {
+        defaultValue = null;
+      }
+
+      // Only convert to string if defaultValue is not null
+      const defaultStr = defaultValue !== null && defaultValue !== undefined ? String(defaultValue) : null;
+
       arg.choices.forEach(choice => {
-        const o = document.createElement('option'); o.value = choice; o.textContent = choice; control.appendChild(o);
+        const choiceStr = String(choice);
+        const o = document.createElement('option'); o.value = choiceStr; o.textContent = choiceStr;
+
+        // Check if this choice matches the default
+        if (defaultStr !== null && choiceStr === defaultStr) {
+          o.selected = true;
+        }
+        control.appendChild(o);
       });
-      if (arg.default !== null && arg.default !== undefined) {
-        control.value = String(arg.default);
+
+      // Ensure the select value is properly set after DOM manipulation
+      if (defaultStr !== null) {
+        control.value = defaultStr;
       }
     }
     // boolean defaults -> checkbox

@@ -62,6 +62,20 @@ if FASTAPI_AVAILABLE:
                 'default': getattr(action, 'default', None),
                 'required': getattr(action, 'required', False),
             }
+
+            # Check for parser-level defaults (e.g., report_format_default)
+            # If the action default is None but there's a parser-level default, use that
+            if arg['default'] is None and hasattr(parser, '_defaults'):
+                # Look for a parser-level default with the pattern {dest}_default
+                parser_level_default = parser._defaults.get(action.dest + '_default')
+                if parser_level_default is not None:
+                    arg['default'] = parser_level_default
+                # Special case: for report_format, if no explicit default was set, use 'csv' as the implicit default
+                elif action.dest == 'report_format' and 'report_format_default' in parser._defaults:
+                    # The key exists but value is None, which means no explicit default was provided
+                    # In this case, the code will use 'csv' as fallback at runtime
+                    arg['default'] = 'csv'
+
             # type is not always available; use str
             try:
                 arg['type'] = action.type.__name__ if action.type is not None else 'str'
@@ -71,6 +85,7 @@ if FASTAPI_AVAILABLE:
                 arg['choices'] = list(action.choices)
             args.append(arg)
         return {'arguments': args}
+
 
 
     @app.get('/api/commands')
