@@ -1,3 +1,6 @@
+// VERSION: 2026-02-13-GRID-FIX - Cache busting timestamp
+console.log('✅ app.js loaded with grid layout (2026-02-13)');
+
 // Ensure runCommand is available early so form.onsubmit handlers can reference it
 async function runCommand(name, form, meta){
   const data = { command: name, args: {} };
@@ -96,13 +99,25 @@ async function selectCommand(name){
     form.addEventListener('change', () => updateCliPreview(form, meta));
   } catch (e) { /* ignore attach errors */ }
 
-  // pce dropdown (populated from /api/credentials)
+  // Create PCE section
+  const pceSection = document.createElement('div');
+  pceSection.className = 'form-section';
+  const pceTitle = document.createElement('h3');
+  pceTitle.className = 'form-section-title';
+  pceTitle.textContent = 'PCE Configuration';
+  pceSection.appendChild(pceTitle);
+
+  const pceContent = document.createElement('div');
+  pceContent.className = 'form-section-content';
+  pceSection.appendChild(pceContent);
+  form.appendChild(pceSection);
+
   const pceLabel = document.createElement('label'); pceLabel.textContent = 'PCE profile (if required): ';
   const pceSelect = document.createElement('select'); pceSelect.name = 'pce';
   const loadingOption = document.createElement('option'); loadingOption.value = '';
   loadingOption.textContent = 'Loading...';
   pceSelect.appendChild(loadingOption);
-  form.appendChild(pceLabel); form.appendChild(pceSelect); form.appendChild(document.createElement('br'));
+  pceContent.appendChild(pceLabel); pceContent.appendChild(pceSelect);
 
   // populate credentials and if only one pre-select it
   await (async () => {
@@ -134,13 +149,28 @@ async function selectCommand(name){
       const fallback = document.createElement('option'); fallback.value = ''; fallback.textContent = '-- none (or enter manually) --';
       pceSelect.appendChild(fallback);
       const manual = document.createElement('input'); manual.type = 'text'; manual.name = 'pce_manual'; manual.placeholder = 'Type PCE profile name';
-      form.insertBefore(manual, pceSelect.nextSibling);
-      form.insertBefore(document.createElement('br'), manual.nextSibling);
+      pceContent.appendChild(manual);
     }
   })();
 
+  // Create arguments grid
+  const argsGrid = document.createElement('div');
+  argsGrid.className = 'arguments-grid';
+  form.appendChild(argsGrid);
+  console.log('✅ Created arguments grid, adding', meta.arguments.length, 'argument cards');
+
   meta.arguments.forEach(arg => {
-    const lbl = document.createElement('label'); lbl.textContent = arg.dest + ': ';
+    const argCard = document.createElement('div');
+    argCard.className = 'argument-card';
+
+    const lbl = document.createElement('label');
+    lbl.className = 'argument-label';
+    lbl.textContent = arg.dest;
+    argCard.appendChild(lbl);
+
+    const controlDiv = document.createElement('div');
+    controlDiv.className = 'argument-control';
+
     let control;
 
     // If choices exist, use a select control
@@ -238,7 +268,18 @@ async function selectCommand(name){
       }
     }
 
-    form.appendChild(lbl); form.appendChild(control); form.appendChild(document.createElement('br'));
+    controlDiv.appendChild(control);
+    argCard.appendChild(controlDiv);
+
+    // Add help text if available
+    if (arg.help) {
+      const helpText = document.createElement('p');
+      helpText.className = 'argument-help';
+      helpText.textContent = arg.help;
+      argCard.appendChild(helpText);
+    }
+
+    argsGrid.appendChild(argCard);
 
     // Add input/change listeners to controls to update CLI preview
     try {
