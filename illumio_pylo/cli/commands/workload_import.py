@@ -69,7 +69,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     settings_ignore_empty_ip_entries: bool = args['ignore_empty_ip_entries']
     settings_proceed_with_creation: bool = args['proceed_with_creation']
     settings_no_confirmation_required: bool = args['no_confirmation_required']
-    settings_output_dir: str = args['output_dir']
 
     batch_size = args['batch_size']
 
@@ -344,7 +343,7 @@ def detect_ip_collisions(csv_data, org: pylo.Organization, ignore_all_sorts_coll
             else:
                 count_duplicate_ip_addresses_in_csv += 1
                 if not ignore_all_sorts_collisions and not settings_ignore_ip_collision:
-                    pylo.log.warn(
+                    pylo.log.warning(
                         indent + "Duplicate IP address {} found in the PCE and CSV/Excel at line #{} (name={}  hostname={}). "
                                  "(look for --options to bypass this if you know what you are doing)"
                         .format(ip, csv_object['*line*'], csv_object['name'], csv_object['hostname']))

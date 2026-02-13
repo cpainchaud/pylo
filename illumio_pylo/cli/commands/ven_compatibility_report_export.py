@@ -29,7 +29,6 @@ def fill_parser(parser: argparse.ArgumentParser):
 
 def __main(args, org: pylo.Organization, **kwargs):
 
-    settings_output_dir: str = args.get('output_dir')
     settings_filter_labels: List[str] = args.get('filter_label')
     settings_limit: int = args.get('limit')
 

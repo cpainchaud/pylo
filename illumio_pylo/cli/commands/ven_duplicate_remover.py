@@ -77,7 +77,6 @@ def __main(args, org: pylo.Organization, pce_cache_was_used: bool, **kwargs):
     arg_ignore_pce_online_status = args['ignore_pce_online_status'] is True
     arg_do_not_delete_if_labels_mismatch = args['do_not_delete_if_labels_mismatch'] is True
     arg_filter_in_hostname_regex = args['filter_in_hostname_regex']
-    arg_report_output_dir: str = args['output_dir']
 
     # Prepare the report writer (replaces direct ArraysToExcel usage)
     csv_report_headers = pylo.ExcelHeaderSet([

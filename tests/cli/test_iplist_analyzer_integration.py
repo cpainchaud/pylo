@@ -163,8 +163,8 @@ def test_main_basic_analysis():
         # Create test arguments
         args = {
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-basic.csv'
+            'output_file': os.path.join(temp_dir, 'test-basic.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -216,8 +216,8 @@ def test_main_with_json_output():
         # Create test arguments with JSON format
         args = {
             'report_format': ['json'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-json.json'
+            'output_file': os.path.join(temp_dir, 'test-json.json'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -258,8 +258,8 @@ def test_main_with_multiple_formats():
         # Create test arguments with multiple formats
         args = {
             'report_format': ['csv', 'json', 'xlsx'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-multi'
+            'output_file': os.path.join(temp_dir, 'test-multi.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -314,8 +314,8 @@ def test_main_with_no_workloads():
         # Create test arguments
         args = {
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-no-workloads.csv'
+            'output_file': os.path.join(temp_dir, 'test-no-workloads.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -365,8 +365,8 @@ def test_main_with_no_iplists():
         # Create test arguments
         args = {
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-no-iplists.csv'
+            'output_file': os.path.join(temp_dir, 'test-no-iplists.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()

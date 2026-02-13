@@ -484,8 +484,8 @@ def test_report_writing():
         print("\n[TEST] CSV format...")
         csv_args = {
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-workloads.csv'
+            'output_file': os.path.join(temp_dir, 'test-workloads.csv'),
+            'output_file_timestamp': False
         }
 
         csv_writer = ReportWriter(
@@ -517,13 +517,12 @@ def test_report_writing():
             assert rows[0]['label_role'] == 'Web', "Label data missing in CSV"
 
         print("[PASS] CSV file created and validated")
-
         # Test XLSX format
         print("\n[TEST] XLSX format...")
         xlsx_args = {
             'report_format': ['xlsx'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-workloads.xlsx'
+            'output_file': os.path.join(temp_dir, 'test-workloads.xlsx'),
+            'output_file_timestamp': False
         }
 
         xlsx_writer = ReportWriter(
@@ -552,8 +551,8 @@ def test_report_writing():
         print("\n[TEST] JSON format...")
         json_args = {
             'report_format': ['json'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-workloads.json'
+            'output_file': os.path.join(temp_dir, 'test-workloads.json'),
+            'output_file_timestamp': False
         }
 
         json_writer = ReportWriter(
@@ -590,8 +589,8 @@ def test_report_writing():
         print("\n[TEST] Multiple formats...")
         multi_args = {
             'report_format': ['csv', 'xlsx', 'json'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-multi'
+            'output_file': os.path.join(temp_dir, 'test-multi.csv'),
+            'output_file_timestamp': False
         }
 
         multi_writer = ReportWriter(
@@ -624,8 +623,8 @@ def test_report_writing():
         print("\n[TEST] Empty report...")
         empty_args = {
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-empty.csv'
+            'output_file': os.path.join(temp_dir, 'test-empty.csv'),
+            'output_file_timestamp': False
         }
 
         empty_writer = ReportWriter(

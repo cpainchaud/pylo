@@ -191,8 +191,8 @@ def test_main_basic_import():
             'proceed_with_creation': True,
             'no_confirmation_required': True,
             'batch_size': 500,
-            'output_dir': temp_dir,
-            'output_filename': 'test-import',
+            'output_file': os.path.join(temp_dir, 'test-import.csv'),
+            'output_file_timestamp': False,
             'report_format': ['csv']
         }
 
@@ -266,8 +266,8 @@ def test_main_with_collisions():
             'proceed_with_creation': True,
             'no_confirmation_required': True,
             'batch_size': 500,
-            'output_dir': temp_dir,
-            'output_filename': 'test-collisions',
+            'output_file': os.path.join(temp_dir, 'test-collisions.csv'),
+            'output_file_timestamp': False,
             'report_format': ['csv']
         }
 
@@ -332,8 +332,8 @@ def test_main_with_empty_ip_handling():
             'proceed_with_creation': True,
             'no_confirmation_required': True,
             'batch_size': 500,
-            'output_dir': temp_dir,
-            'output_filename': 'test-empty-ip',
+            'output_file': os.path.join(temp_dir, 'test-empty-ip.csv'),
+            'output_file_timestamp': False,
             'report_format': ['csv']
         }
 

@@ -54,8 +54,8 @@ class ReportWriter:
             args: Optional parsed argparse namespace converted to dict (will be used to initialize formats/output settings)
         """
         self.formats: List[ReportFormat] = []
-        self.output_dir: str = "output"
-        self.output_filename: Optional[str] = None
+        self.output_file: Optional[str] = None
+        self.use_timestamp: bool = False
         self.filename_prefix: Optional[str] = filename_prefix
 
         # Store sheet configuration
@@ -91,8 +91,7 @@ class ReportWriter:
         default_sheet_name: str = "report",
         default_format: Optional[ReportFormat] = None,
         format_help: Optional[str] = None,
-        output_dir_help: Optional[str] = None,
-        output_filename_help: Optional[str] = None,
+        output_file_help: Optional[str] = None,
         populate_arguments_hook: Optional[Callable[[argparse.ArgumentParser], None]] = None
     ):
         """Add standard report-related arguments to an ArgumentParser.
@@ -105,12 +104,10 @@ class ReportWriter:
             default_str = default_format if default_format is not None else 'csv'
             format_help = (f'Report format to generate (can be repeated for multiple formats). '
                            f'Default: {default_str}')
-        if output_dir_help is None:
-            output_dir_help = 'Directory where to write the report file(s)'
-        if output_filename_help is None:
-            output_filename_help = ('Write report to the specified file (or basename) instead of using the default '
-                                   'timestamped filename. If multiple formats are requested, the provided path\'s '
-                                   'extension will be replaced/added per format.')
+        if output_file_help is None:
+            output_file_help = ('Output file path for the report. Can be absolute or relative to ./output/. '
+                               'If not specified, auto-generates filename using command prefix. '
+                               'For multiple formats, the file extension will be adjusted per format.')
 
         # Do not set a per-argument default (append + list default leads to merged defaults).
         # Instead, store the desired default on the parser itself so initialize_from_args
@@ -120,17 +117,17 @@ class ReportWriter:
         # Attach parser-level default for later consumption by initialize_from_args
         parser.set_defaults(report_format_default=default_format)
         parser.add_argument(
-            '--output-dir', '-o',
+            '--output-file', '-o',
             type=str,
             required=False,
-            default=DEFAULT_OUTPUT_DIR,
-            help=output_dir_help
+            default=None,
+            help=output_file_help
         )
         parser.add_argument(
-            '--output-filename',
-            type=str,
-            default=None,
-            help=output_filename_help
+            '--output-file-timestamp', '-oft',
+            action='store_true',
+            default=False,
+            help='Append timestamp to the output filename (only used when --output-file is specified)'
         )
 
         # Call hook if provided for command-specific arguments
@@ -145,8 +142,7 @@ class ReportWriter:
         default_sheet_name: str = "report",
         default_format: Optional[ReportFormat] = None,
         format_help: Optional[str] = None,
-        output_dir_help: Optional[str] = None,
-        output_filename_help: Optional[str] = None,
+        output_file_help: Optional[str] = None,
         populate_arguments_hook: Optional[Callable[[argparse.ArgumentParser], None]] = None
     ):
         """Static wrapper that registers CLI args.
@@ -164,8 +160,7 @@ class ReportWriter:
             default_sheet_name=default_sheet_name,
             default_format=default_format,
             format_help=format_help,
-            output_dir_help=output_dir_help,
-            output_filename_help=output_filename_help,
+            output_file_help=output_file_help,
             populate_arguments_hook=populate_arguments_hook
         )
 
@@ -196,8 +191,8 @@ class ReportWriter:
         else:
             self.formats = report_formats
 
-        self.output_dir = args.get('output_dir', DEFAULT_OUTPUT_DIR)
-        self.output_filename = args.get('output_filename')
+        self.output_file = args.get('output_file')
+        self.use_timestamp = args.get('output_file_timestamp', False)
 
         # Note: filename_prefix and sheet_name should be set via constructor parameters
 
@@ -211,29 +206,37 @@ class ReportWriter:
         Returns:
             Full path to the output file
         """
-        if self.output_filename is None:
-            # Generate timestamped filename
+        if self.output_file is None:
+            # Auto-generate filename using filename_prefix with timestamp
             if self.filename_prefix is None:
                 raise pylo.PyloEx("filename_prefix must be set before calling get_output_filename")
 
-            output_file_prefix = make_filename_with_timestamp(self.filename_prefix + '_', self.output_dir)
+            output_file_prefix = make_filename_with_timestamp(self.filename_prefix + '_', DEFAULT_OUTPUT_DIR)
             return output_file_prefix + '.' + report_format
         else:
-            # Use provided filename
-            if len(self.formats) == 1:
-                # Single format: use filename as-is, but prepend directory if it's not an absolute path
-                if os.path.isabs(self.output_filename):
-                    return self.output_filename
-                else:
-                    return os.path.join(self.output_dir, self.output_filename)
+            # Use provided output_file path
+            base_path = self.output_file
+
+            # If use_timestamp is True, insert timestamp before extension
+            if self.use_timestamp:
+                base_without_ext = os.path.splitext(base_path)[0]
+                ext = os.path.splitext(base_path)[1]
+                # Use make_filename_with_timestamp to insert timestamp
+                base_dir = os.path.dirname(base_path) or DEFAULT_OUTPUT_DIR
+                base_name = os.path.basename(base_without_ext)
+                base_path = make_filename_with_timestamp(base_name + '_', base_dir)
+                base_path = base_path + (ext if ext else '')
+
+            # Handle multiple formats: replace extension per format
+            if len(self.formats) > 1:
+                base_without_ext = os.path.splitext(base_path)[0]
+                base_path = base_without_ext + '.' + report_format
+
+            # If relative path, prepend DEFAULT_OUTPUT_DIR
+            if not os.path.isabs(base_path):
+                return os.path.join(DEFAULT_OUTPUT_DIR, base_path)
             else:
-                # Multiple formats: replace extension
-                base = os.path.splitext(self.output_filename)[0]
-                filename = base + '.' + report_format
-                if os.path.isabs(filename):
-                    return filename
-                else:
-                    return os.path.join(self.output_dir, filename)
+                return base_path
 
     def _ensure_directory_exists(self, filename: str):
         """Ensure the parent directory of a file exists."""

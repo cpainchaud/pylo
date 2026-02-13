@@ -81,7 +81,6 @@ def __main(args, org: pylo.Organization, **kwargs):
     settings_input_file: str = args['input_file']
     settings_input_file_delimiter: str = args['input_file_delimiter']
     context.settings_label_type_header_prefix = args['label_type_header_prefix']
-    settings_output_dir: str = args['output_dir']
 
     settings_batch_size = args['batch_size']
     settings_proceed_with_update = args['proceed_with_update']

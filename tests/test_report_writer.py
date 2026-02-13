@@ -45,8 +45,8 @@ def test_argument_parsing():
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]), filename_prefix='test-command', sheet_name='test_sheet', args=args_dict)
 
     assert report_writer.formats == ['csv'], f"Expected ['csv'], got {report_writer.formats}"
-    assert report_writer.output_dir == DEFAULT_OUTPUT_DIR, f"Expected 'output', got {report_writer.output_dir}"
-    assert report_writer.output_filename is None, f"Expected None, got {report_writer.output_filename}"
+    assert report_writer.output_file is None, f"Expected None, got {report_writer.output_file}"
+    assert report_writer.use_timestamp is False, f"Expected False, got {report_writer.use_timestamp}"
     assert report_writer.filename_prefix == 'test-command', f"Expected 'test-command', got {report_writer.filename_prefix}"
     assert report_writer.sheet_name == 'test_sheet', f"Expected 'test_sheet', got {report_writer.sheet_name}"
     print("  [OK] Default arguments parsed correctly")
@@ -73,27 +73,39 @@ def test_argument_parsing():
     assert report_writer.formats == ['csv', 'xlsx', 'json'], f"Expected ['csv', 'xlsx', 'json'], got {report_writer.formats}"
     print("  [OK] Multiple formats parsed correctly")
 
-    # Test 4: Custom output directory
-    print("\nTest 4: Custom output directory")
+    # Test 4: Custom output file (relative path)
+    print("\nTest 4: Custom output file (relative path)")
     parser = argparse.ArgumentParser()
     ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
-    args = parser.parse_args(['--output-dir', '/tmp/reports'])
+    args = parser.parse_args(['--output-file', 'myreport.csv'])
     args_dict = vars(args)
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]), args=args_dict)
 
-    assert report_writer.output_dir == '/tmp/reports', f"Expected '/tmp/reports', got {report_writer.output_dir}"
-    print("  [OK] Custom output directory parsed correctly")
+    assert report_writer.output_file == 'myreport.csv', f"Expected 'myreport.csv', got {report_writer.output_file}"
+    print("  [OK] Custom output file (relative) parsed correctly")
 
-    # Test 5: Custom filename
-    print("\nTest 5: Custom filename")
+    # Test 5: Custom output file (absolute path)
+    print("\nTest 5: Custom output file (absolute path)")
     parser = argparse.ArgumentParser()
     ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
-    args = parser.parse_args(['--output-filename', 'myreport.csv'])
+    args = parser.parse_args(['--output-file', '/tmp/reports/myreport.csv'])
     args_dict = vars(args)
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]), args=args_dict)
 
-    assert report_writer.output_filename == 'myreport.csv', f"Expected 'myreport.csv', got {report_writer.output_filename}"
-    print("  [OK] Custom filename parsed correctly")
+    assert report_writer.output_file == '/tmp/reports/myreport.csv', f"Expected '/tmp/reports/myreport.csv', got {report_writer.output_file}"
+    print("  [OK] Custom output file (absolute) parsed correctly")
+
+    # Test 6: Output file with timestamp flag
+    print("\nTest 6: Output file with timestamp flag")
+    parser = argparse.ArgumentParser()
+    ReportWriter.add_arguments_to_parser(parser, default_prefix='test')
+    args = parser.parse_args(['--output-file', 'myreport.csv', '--output-file-timestamp'])
+    args_dict = vars(args)
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]), args=args_dict)
+
+    assert report_writer.output_file == 'myreport.csv', f"Expected 'myreport.csv', got {report_writer.output_file}"
+    assert report_writer.use_timestamp is True, f"Expected True, got {report_writer.use_timestamp}"
+    print("  [OK] Output file with timestamp flag parsed correctly")
 
     print("\n[OK] All argument parsing tests passed!")
 
@@ -145,12 +157,11 @@ def test_filename_generation():
     print("Testing Filename Generation")
     print("=" * 60)
 
-    # Test 1: Auto-generated filenames
-    print("\nTest 1: Auto-generated filenames")
+    # Test 1: Auto-generated filenames (no output_file specified)
+    print("\nTest 1: Auto-generated filenames (no output_file specified)")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv', 'xlsx', 'json']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = None
+    report_writer.output_file = None
     report_writer.filename_prefix = 'test-command'
 
     csv_filename = report_writer.get_output_filename('csv')
@@ -161,36 +172,37 @@ def test_filename_generation():
     assert xlsx_filename.endswith('.xlsx'), f"XLSX filename should end with .xlsx: {xlsx_filename}"
     assert json_filename.endswith('.json'), f"JSON filename should end with .json: {json_filename}"
     assert 'test-command' in csv_filename, f"Filename should contain prefix: {csv_filename}"
+    assert 'output' in csv_filename, f"Filename should be in output directory: {csv_filename}"
     print(f"  [OK] CSV:  {csv_filename}")
     print(f"  [OK] XLSX: {xlsx_filename}")
     print(f"  [OK] JSON: {json_filename}")
 
-    # Test 2: Custom filename with single format
-    print("\nTest 2: Custom filename with single format")
+    # Test 2: Custom output file (relative path, single format)
+    print("\nTest 2: Custom output file (relative path, single format)")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = 'myreport.csv'
+    report_writer.output_file = 'myreport.csv'
+    report_writer.use_timestamp = False
 
     filename = report_writer.get_output_filename('csv')
-    expected = os.path.join('output', 'myreport.csv')
+    expected = os.path.join(DEFAULT_OUTPUT_DIR, 'myreport.csv')
     assert filename == expected, f"Expected '{expected}', got {filename}"
     print(f"  [OK] Single format: {filename}")
 
-    # Test 3: Custom filename with multiple formats
-    print("\nTest 3: Custom filename with multiple formats")
+    # Test 3: Custom output file (relative path, multiple formats)
+    print("\nTest 3: Custom output file (relative path, multiple formats)")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv', 'xlsx', 'json']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = 'myreport.csv'
+    report_writer.output_file = 'myreport.csv'
+    report_writer.use_timestamp = False
 
     csv_filename = report_writer.get_output_filename('csv')
     xlsx_filename = report_writer.get_output_filename('xlsx')
     json_filename = report_writer.get_output_filename('json')
 
-    expected_csv = os.path.join('output', 'myreport.csv')
-    expected_xlsx = os.path.join('output', 'myreport.xlsx')
-    expected_json = os.path.join('output', 'myreport.json')
+    expected_csv = os.path.join(DEFAULT_OUTPUT_DIR, 'myreport.csv')
+    expected_xlsx = os.path.join(DEFAULT_OUTPUT_DIR, 'myreport.xlsx')
+    expected_json = os.path.join(DEFAULT_OUTPUT_DIR, 'myreport.json')
 
     assert csv_filename == expected_csv, f"Expected '{expected_csv}', got {csv_filename}"
     assert xlsx_filename == expected_xlsx, f"Expected '{expected_xlsx}', got {xlsx_filename}"
@@ -199,24 +211,40 @@ def test_filename_generation():
     print(f"  [OK] XLSX: {xlsx_filename}")
     print(f"  [OK] JSON: {json_filename}")
 
-    # Test 4: Custom filename without extension
-    print("\nTest 4: Custom filename without extension")
+    # Test 4: Custom output file (absolute path)
+    print("\nTest 4: Custom output file (absolute path)")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv', 'xlsx']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = 'myreport'
+    report_writer.output_file = '/tmp/reports/myreport.csv'
+    report_writer.use_timestamp = False
 
     csv_filename = report_writer.get_output_filename('csv')
     xlsx_filename = report_writer.get_output_filename('xlsx')
 
-    expected_csv = os.path.join('output', 'myreport.csv')
-    expected_xlsx = os.path.join('output', 'myreport.xlsx')
+    expected_csv = '/tmp/reports/myreport.csv'
+    expected_xlsx = '/tmp/reports/myreport.xlsx'
 
     assert csv_filename == expected_csv, f"Expected '{expected_csv}', got {csv_filename}"
     assert xlsx_filename == expected_xlsx, f"Expected '{expected_xlsx}', got {xlsx_filename}"
     print(f"  [OK] CSV:  {csv_filename}")
     print(f"  [OK] XLSX: {xlsx_filename}")
 
+    # Test 5: Custom output file with timestamp flag
+    print("\nTest 5: Custom output file with timestamp flag (relative path)")
+    report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
+    report_writer.formats = ['csv']
+    report_writer.output_file = 'myreport.csv'
+    report_writer.use_timestamp = True
+    report_writer.filename_prefix = None  # Not needed when output_file is set
+
+    csv_filename = report_writer.get_output_filename('csv')
+    # With timestamp, should be in output directory and have timestamp
+    assert 'output' in csv_filename, f"Filename should be in output directory: {csv_filename}"
+    assert 'myreport' in csv_filename, f"Filename should contain 'myreport': {csv_filename}"
+    assert csv_filename.endswith('.csv'), f"Filename should end with .csv: {csv_filename}"
+    # Should have timestamp (pattern: myreport_YYYYMMDD_HHMMSS.csv or similar)
+    assert '_' in csv_filename.split('/')[-1] or '_' in csv_filename.split('\\')[-1], f"Filename should contain timestamp: {csv_filename}"
+    print(f"  [OK] With timestamp: {csv_filename}")
     print("\n[OK] All filename generation tests passed!")
 
 
@@ -307,8 +335,8 @@ def test_report_writing():
         # Test 1: Write CSV format (use writer that contains the populated sheet)
         print("\nTest 1: Write CSV format")
         data_writer.formats = ['csv']
-        data_writer.output_dir = temp_dir
-        data_writer.output_filename = 'test_report.csv'
+        data_writer.output_file = os.path.join(temp_dir, 'test_report.csv')
+        data_writer.use_timestamp = False
 
         data_writer.write_reports()
 
@@ -326,8 +354,8 @@ def test_report_writing():
         # Test 2: Write XLSX format
         print("\nTest 2: Write XLSX format")
         data_writer.formats = ['xlsx']
-        data_writer.output_dir = temp_dir
-        data_writer.output_filename = 'test_report.xlsx'
+        data_writer.output_file = os.path.join(temp_dir, 'test_report.xlsx')
+        data_writer.use_timestamp = False
 
         data_writer.write_reports()
 
@@ -339,8 +367,8 @@ def test_report_writing():
         # Test 3: Write JSON format
         print("\nTest 3: Write JSON format")
         data_writer.formats = ['json']
-        data_writer.output_dir = temp_dir
-        data_writer.output_filename = 'test_report.json'
+        data_writer.output_file = os.path.join(temp_dir, 'test_report.json')
+        data_writer.use_timestamp = False
 
         data_writer.write_reports()
 
@@ -360,8 +388,8 @@ def test_report_writing():
         # Test 4: Write multiple formats
         print("\nTest 4: Write multiple formats (csv, xlsx, json)")
         data_writer.formats = ['csv', 'xlsx', 'json']
-        data_writer.output_dir = temp_dir
-        data_writer.output_filename = 'multi_format'
+        data_writer.output_file = os.path.join(temp_dir, 'multi_format.csv')
+        data_writer.use_timestamp = False
 
         data_writer.write_reports()
 
@@ -386,8 +414,8 @@ def test_report_writing():
 
         report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
         report_writer.formats = ['csv', 'json']
-        report_writer.output_dir = temp_dir
-        report_writer.output_filename = 'empty_report'
+        report_writer.output_file = os.path.join(temp_dir, 'empty_report.csv')
+        report_writer.use_timestamp = False
 
         # Ensure sheet is empty (no lines added)
         report_writer.write_reports()
@@ -428,8 +456,8 @@ def test_report_writing():
 
         # Use sort_writer (which contains the populated sheet) to write sorted JSON
         sort_writer.formats = ['json']
-        sort_writer.output_dir = temp_dir
-        sort_writer.output_filename = 'sorted_report.json'
+        sort_writer.output_file = os.path.join(temp_dir, 'sorted_report.json')
+        sort_writer.use_timestamp = False
 
         sort_writer.write_reports(sort_by=['type', 'name'])
 
@@ -462,8 +490,7 @@ def test_error_handling():
     print("\nTest 1: Missing filename_prefix when needed")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = None
+    report_writer.output_file = None
     report_writer.filename_prefix = None  # Not set!
 
     try:
@@ -477,8 +504,8 @@ def test_error_handling():
     print("\nTest 2: Missing sheet parameter for CSV format")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['csv']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = 'test.csv'
+    report_writer.output_file = 'test.csv'
+    report_writer.use_timestamp = False
 
     try:
         # Simulate missing sheet by removing it from the ReportWriter instance
@@ -498,8 +525,8 @@ def test_error_handling():
 
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['xlsx']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = 'test.xlsx'
+    report_writer.output_file = 'test.xlsx'
+    report_writer.use_timestamp = False
 
     try:
         # Simulate missing excel_workbook by removing it from the instance
@@ -515,8 +542,8 @@ def test_error_handling():
     print("\nTest 4: Missing json_data parameter for JSON format")
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]))
     report_writer.formats = ['json']
-    report_writer.output_dir = 'output'
-    report_writer.output_filename = 'test.json'
+    report_writer.output_file = 'test.json'
+    report_writer.use_timestamp = False
 
     try:
         # Simulate missing sheet for JSON format (json_data parameter removed)
@@ -542,7 +569,7 @@ def test_integration():
 
     try:
         # Simulate a CLI command processing
-        print("\nSimulating: pylo my-command -rf csv -rf json -o temp_dir --output-filename report")
+        print("\nSimulating: pylo my-command -rf csv -rf json -o report")
 
         # Step 1: Parse arguments
         parser = argparse.ArgumentParser()
@@ -555,8 +582,7 @@ def test_integration():
         args = parser.parse_args([
              '-rf', 'csv',
              '-rf', 'json',
-             '-o', temp_dir,
-             '--output-filename', 'report'
+             '-o', 'report'
          ])
 
         # Step 2: Initialize report writer. Pass filename_prefix/sheet_name so
@@ -574,6 +600,11 @@ def test_integration():
 
         # Create report writer bound to the real headers and recreate sheet
         real_writer = ReportWriter(headers=headers, sheet_name='my_data', filename_prefix='my-command', force_all_wrap_text=True, multivalues_cell_delimiter=',', args=vars(args))
+
+        # Override output_file to use the temp directory with absolute path
+        real_writer.output_file = os.path.join(temp_dir, 'report.csv')
+        real_writer.use_timestamp = False
+
         report = real_writer.excel_workbook
         sheet = real_writer.sheet
 

@@ -124,8 +124,8 @@ def test_main_no_unused_labels():
             'confirm': False,
             'limit': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-no-unused.csv'
+            'output_file': os.path.join(temp_dir, 'test-no-unused.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -172,8 +172,8 @@ def test_main_unused_labels_without_confirm():
             'confirm': False,
             'limit': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-no-confirm.csv'
+            'output_file': os.path.join(temp_dir, 'test-no-confirm.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -230,8 +230,8 @@ def test_main_unused_labels_with_confirm():
             'confirm': True,
             'limit': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-with-confirm.csv'
+            'output_file': os.path.join(temp_dir, 'test-with-confirm.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -284,10 +284,10 @@ def test_main_with_limit():
         # Create test arguments with limit
         args = {
             'confirm': True,
-            'limit': 2,  # Only delete 2 labels
+            'limit': 2,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-with-limit.csv'
+            'output_file': os.path.join(temp_dir, 'test-with-limit.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -341,13 +341,13 @@ def test_main_with_deletion_errors():
             '/sec_policy/draft/labels/3': 'Label is locked',
         })
 
-        # Create test arguments with confirm
+        # Create test arguments
         args = {
             'confirm': True,
             'limit': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-with-errors.csv'
+            'output_file': os.path.join(temp_dir, 'test-with-errors.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -407,8 +407,8 @@ def test_main_with_json_output():
             'confirm': False,
             'limit': None,
             'report_format': ['json'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-json-output.json'
+            'output_file': os.path.join(temp_dir, 'test-json-output.json'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -451,8 +451,8 @@ def test_main_with_multiple_formats():
             'confirm': True,
             'limit': None,
             'report_format': ['csv', 'json'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-multi-format'
+            'output_file': os.path.join(temp_dir, 'test-multi-format.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()

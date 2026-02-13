@@ -185,8 +185,8 @@ def test_main_basic_export():
             'disable_wrap_text': False,
             'omit_columns': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-traffic-export.csv'
+            'output_file': os.path.join(temp_dir, 'test-traffic-export.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -242,8 +242,8 @@ def test_main_with_protocol_names():
             'disable_wrap_text': False,
             'omit_columns': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-protocol-names.csv'
+            'output_file': os.path.join(temp_dir, 'test-protocol-names.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -294,8 +294,8 @@ def test_main_with_consolidate_labels():
             'disable_wrap_text': False,
             'omit_columns': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-consolidated-labels.csv'
+            'output_file': os.path.join(temp_dir, 'test-consolidated-labels.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -349,10 +349,10 @@ def test_main_with_omit_columns():
             'consolidate_labels': False,
             'label_separator': ',',
             'disable_wrap_text': False,
-            'omit_columns': ['protocol', 'port'],  # Omit these columns
+            'omit_columns': ['src_workload', 'dst_workload'],
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-omit-columns.csv'
+            'output_file': os.path.join(temp_dir, 'test-omit-columns.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -370,8 +370,8 @@ def test_main_with_omit_columns():
             headers = reader.fieldnames
 
             # Verify omitted columns are not in headers
-            assert 'protocol' not in headers, "protocol column should be omitted"
-            assert 'port' not in headers, "port column should be omitted"
+            assert 'src_workload' not in headers, "src_workload column should be omitted"
+            assert 'dst_workload' not in headers, "dst_workload column should be omitted"
 
             # Verify other columns still exist
             assert 'src_ip' in headers, "src_ip column should exist"
@@ -408,8 +408,8 @@ def test_main_with_draft_mode():
             'disable_wrap_text': False,
             'omit_columns': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-draft-mode.csv'
+            'output_file': os.path.join(temp_dir, 'test-draft-mode.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()
@@ -462,8 +462,8 @@ def test_main_with_since_timestamp():
             'disable_wrap_text': False,
             'omit_columns': None,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-since-timestamp.csv'
+            'output_file': os.path.join(temp_dir, 'test-since-timestamp.csv'),
+            'output_file_timestamp': False
         }
 
         # Execute __main()

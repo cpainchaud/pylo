@@ -121,9 +121,9 @@ def test_main_basic_export():
             'filter_file_delimiter': ',',
             'filter_fields': None,
             'keep_filters_in_report': False,
-            'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-basic-export.csv'
+            'report_format': ['csv', 'json', 'xlsx'],
+            'output_file': os.path.join(temp_dir, 'test-basic-export.csv'),
+            'output_file_timestamp': False
         }
 
         # Mock logger
@@ -175,8 +175,8 @@ def test_main_with_filter_query():
             'filter_fields': None,
             'keep_filters_in_report': False,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-filtered-export.csv'
+            'output_file': os.path.join(temp_dir, 'test-filtered-export.csv'),
+            'output_file_timestamp': False
         }
 
         # Mock logger
@@ -238,8 +238,8 @@ def test_main_with_filter_file():
             'filter_fields': ['hostname', 'app'],
             'keep_filters_in_report': False,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-filter-file-export.csv'
+            'output_file': os.path.join(temp_dir, 'test-filter-file-export.csv'),
+            'output_file_timestamp': False
         }
 
         # Mock logger
@@ -298,8 +298,8 @@ def test_main_with_filter_file_keep_in_report():
             'filter_fields': ['hostname', 'app'],
             'keep_filters_in_report': True,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-keep-filters-export.csv'
+            'output_file': os.path.join(temp_dir, 'test-keep-filters-export.csv'),
+            'output_file_timestamp': False
         }
 
         # Mock logger
@@ -362,8 +362,8 @@ def test_main_multiple_formats():
             'filter_fields': None,
             'keep_filters_in_report': False,
             'report_format': ['csv', 'xlsx', 'json'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-multi-format'
+            'output_file': os.path.join(temp_dir, 'test-multi-format.csv'),
+            'output_file_timestamp': False
         }
 
         # Mock logger
@@ -412,8 +412,8 @@ def test_main_empty_result():
             'filter_fields': None,
             'keep_filters_in_report': False,
             'report_format': ['csv'],
-            'output_dir': temp_dir,
-            'output_filename': 'test-empty-export.csv'
+            'output_file': os.path.join(temp_dir, 'test-empty-export.csv'),
+            'output_file_timestamp': False
         }
 
         # Mock logger
