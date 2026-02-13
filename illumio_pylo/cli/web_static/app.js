@@ -210,17 +210,21 @@ async function selectCommand(name){
       if (arg.default === null) {
         const isNull = document.createElement('input'); isNull.type = 'checkbox'; isNull.name = arg.dest + '__isnull';
         isNull.id = arg.dest + '__isnull';
+        isNull.title = 'Uncheck to override with a custom value';
         const isNullLabel = document.createElement('label'); isNullLabel.htmlFor = isNull.id; isNullLabel.textContent = ' null';
         // If default is null, check the box and disable input by default
         isNull.checked = true;
         input.value = '';
         input.disabled = true;
+        input.title = 'Uncheck the null checkbox to enable this field and provide a custom value';
         isNull.addEventListener('change', () => {
           if (isNull.checked) {
             input.value = '';
             input.disabled = true;
+            input.title = 'Uncheck the null checkbox to enable this field and provide a custom value';
           } else {
             input.disabled = false;
+            input.title = '';
           }
           updateCliPreview(form, meta);
         });
@@ -244,17 +248,21 @@ async function selectCommand(name){
       if (arg.default === null) {
         const isNull = document.createElement('input'); isNull.type = 'checkbox'; isNull.name = arg.dest + '__isnull';
         isNull.id = arg.dest + '__isnull';
+        isNull.title = 'Uncheck to override with a custom value';
         const isNullLabel = document.createElement('label'); isNullLabel.htmlFor = isNull.id; isNullLabel.textContent = ' null';
         // If default is null, check the box and disable the input by default
         isNull.checked = true;
         input.value = '';
         input.disabled = true;
+        input.title = 'Uncheck the null checkbox to enable this field and provide a custom value';
         isNull.addEventListener('change', () => {
           if (isNull.checked) {
             input.value = '';
             input.disabled = true;
+            input.title = 'Uncheck the null checkbox to enable this field and provide a custom value';
           } else {
             input.disabled = false;
+            input.title = '';
           }
           updateCliPreview(form, meta);
         });
