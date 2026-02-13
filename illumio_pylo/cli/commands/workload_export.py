@@ -192,8 +192,6 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help='Fields on which you want to filter on')
     parser.add_argument('--keep-filters-in-report', action='store_true',
                         help='If you want to keep filters information in the export file (to do a table joint for example)')
-    parser.add_argument('--save-location', type=str, required=False, default='./',
-                        help='The folder where this script will save generated Excel report')
 
     # Add standard report arguments (static helper)
     ReportWriter.add_arguments_to_parser(
