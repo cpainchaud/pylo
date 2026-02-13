@@ -15,6 +15,8 @@ from .misc import make_filename_with_timestamp
 
 ReportFormat = Literal['csv', 'xlsx', 'json']
 
+DEFAULT_OUTPUT_DIR = "./output/"
+
 
 class ReportWriter:
     """
@@ -121,7 +123,7 @@ class ReportWriter:
             '--output-dir', '-o',
             type=str,
             required=False,
-            default="output",
+            default=DEFAULT_OUTPUT_DIR,
             help=output_dir_help
         )
         parser.add_argument(
@@ -194,7 +196,7 @@ class ReportWriter:
         else:
             self.formats = report_formats
 
-        self.output_dir = args.get('output_dir', './output')
+        self.output_dir = args.get('output_dir', DEFAULT_OUTPUT_DIR)
         self.output_filename = args.get('output_filename')
 
         # Note: filename_prefix and sheet_name should be set via constructor parameters

@@ -18,7 +18,7 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import illumio_pylo as pylo
-from illumio_pylo.cli.commands.utils.report_writer import ReportWriter
+from illumio_pylo.cli.commands.utils.report_writer import ReportWriter, DEFAULT_OUTPUT_DIR
 
 
 def test_argument_parsing():
@@ -45,7 +45,7 @@ def test_argument_parsing():
     report_writer = ReportWriter(headers=pylo.ExcelHeaderSet([]), filename_prefix='test-command', sheet_name='test_sheet', args=args_dict)
 
     assert report_writer.formats == ['csv'], f"Expected ['csv'], got {report_writer.formats}"
-    assert report_writer.output_dir == 'output', f"Expected 'output', got {report_writer.output_dir}"
+    assert report_writer.output_dir == DEFAULT_OUTPUT_DIR, f"Expected 'output', got {report_writer.output_dir}"
     assert report_writer.output_filename is None, f"Expected None, got {report_writer.output_filename}"
     assert report_writer.filename_prefix == 'test-command', f"Expected 'test-command', got {report_writer.filename_prefix}"
     assert report_writer.sheet_name == 'test_sheet', f"Expected 'test_sheet', got {report_writer.sheet_name}"
