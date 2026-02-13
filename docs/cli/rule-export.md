@@ -17,10 +17,10 @@ pylo rule-export [OPTIONS]
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated for multiple formats) |
-| `--output-dir` | `-o` | string | `output` | Directory where to save the output file(s) |
-| `--output-filename` | - | string | Auto-generated | Custom filename for the report |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path) |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
-**Note**: When `--output-filename` is not specified, a timestamped filename is automatically generated in the format: `rule-export_YYYYMMDD-HHMMSS.<format>`
+**Note**: When `--output-file` is not specified, a timestamped filename is automatically generated in the format: `rule-export_YYYYMMDD-HHMMSS.<format>`. Use `--output-file-timestamp` to add timestamps when providing a custom filename.
 
 ### Object Display Options
 
@@ -145,8 +145,7 @@ Save to specific directory with custom filename:
 
 ```bash
 pylo rule-export \
-  --output-dir /path/to/exports \
-  --output-filename policy-rules-2024 \
+  --output-file /path/to/exports/policy-rules-2024.xlsx \
   --report-format xlsx
 ```
 
@@ -157,8 +156,7 @@ pylo rule-export \
   --prefix-objects-with-type \
   --report-format xlsx \
   --report-format csv \
-  --output-dir ./policy-exports \
-  --output-filename current-rules
+  --output-file ./policy-exports/current-rules.csv
 ```
 
 ## Output Examples

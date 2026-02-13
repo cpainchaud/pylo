@@ -31,8 +31,8 @@ When workloads have forced names that don't match their hostnames, this command:
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format (csv, xlsx, json) |
-| `--output-dir` | `-o` | string | `output` | Output directory |
-| `--output-filename` | - | string | Auto-generated | Custom filename |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path) |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
 ## How It Works
 

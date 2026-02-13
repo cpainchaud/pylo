@@ -25,10 +25,10 @@ pylo iplist-analyzer [OPTIONS]
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated for multiple formats) |
-| `--output-dir` | `-o` | string | `output` | Directory where to save the output file(s) |
-| `--output-filename` | - | string | Auto-generated | Custom filename for the report |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path) |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
-**Note**: When `--output-filename` is not specified, a timestamped filename is automatically generated in the format: `iplist-analyzer_YYYYMMDD-HHMMSS.<format>`
+**Note**: When `--output-file` is not specified, a timestamped filename is automatically generated in the format: `iplist-analyzer_YYYYMMDD-HHMMSS.<format>`. Use `--output-file-timestamp` to add timestamps when providing a custom filename.
 
 ## Report Columns
 

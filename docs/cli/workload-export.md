@@ -17,8 +17,8 @@ pylo workload-export [OPTIONS]
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated) |
-| `--output-dir` | `-o` | string | `output` | Directory where to save output files |
-| `--output-filename` | - | string | Auto-generated | Custom filename for the report |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path) |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
 ### Filter Options
 

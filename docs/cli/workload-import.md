@@ -48,7 +48,8 @@ pylo workload-import --input-file FILE [OPTIONS]
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format (csv, xlsx, json) |
-| `--output-dir` | `-o` | string | `output` | Output directory |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path) |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
 ## Input File Format
 

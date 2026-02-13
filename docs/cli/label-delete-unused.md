@@ -33,10 +33,10 @@ pylo label-delete-unused [options]
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated for multiple formats) |
-| `--output-dir` | `-o` | string | `output` | Directory where to write the report file(s) |
-| `--output-filename` | - | string | Auto-generated | Custom filename for the report. If multiple formats are requested, the extension is adjusted per format |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path). If multiple formats are requested, the extension is adjusted per format |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
-**Note**: When `--output-filename` is not specified, a timestamped filename is automatically generated in the format: `label-delete-unused_YYYYMMDD-HHMMSS.<format>`
+**Note**: When `--output-file` is not specified, a timestamped filename is automatically generated in the format: `label-delete-unused_YYYYMMDD-HHMMSS.<format>`. Use `--output-file-timestamp` to add timestamps when providing a custom filename.
 
 **Report Formats**:
 - **CSV**: Comma-separated values, suitable for Excel and data processing tools
@@ -253,7 +253,7 @@ Labels beyond the limit will be included in the report with action: "ignored (li
 Save report to a custom directory with a specific filename:
 
 ```bash
-pylo label-delete-unused --output-dir reports/labels --output-filename cleanup-2026-02.xlsx -rf xlsx
+pylo label-delete-unused --output-file reports/labels/cleanup-2026-02.xlsx -rf xlsx
 ```
 
 ### Example 7: Complete Production Cleanup
@@ -261,7 +261,7 @@ Review first, then delete with multiple report formats:
 
 **Step 1 - Review**:
 ```bash
-pylo label-delete-unused -rf xlsx -o cleanup-reports --output-filename unused-labels-review
+pylo label-delete-unused -rf xlsx -o cleanup-reports/unused-labels-review.xlsx
 ```
 Review the Excel file, verify the labels are truly unused.
 
@@ -428,7 +428,7 @@ The command is suitable for automated cleanup:
 ```powershell
 # Example: Weekly cleanup script
 $date = Get-Date -Format "yyyyMMdd"
-pylo label-delete-unused --confirm --report-format xlsx --output-dir "\\reports\labels" --output-filename "cleanup-$date"
+pylo label-delete-unused --confirm --report-format xlsx --output-file "\\reports\labels\cleanup-$date.xlsx"
 ```
 
 **Recommendations for Automation**:

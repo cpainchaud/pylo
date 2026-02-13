@@ -33,8 +33,8 @@ Before moving VEN agents from IDLE mode to BUILD or TEST mode (illumination), it
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
 | `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated) |
-| `--output-dir` | `-o` | string | `output` | Directory where to save output files |
-| `--output-filename` | - | string | Auto-generated | Custom filename for the report |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path) |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
 
 ## Report Columns
 
@@ -120,8 +120,7 @@ pylo ven-compatibility-report-export \
 
 ```bash
 pylo ven-compatibility-report-export \
-  --output-dir /reports/ven-compatibility \
-  --output-filename ven-readiness-check \
+  --output-file /reports/ven-compatibility/ven-readiness-check.xlsx \
   --report-format xlsx
 ```
 
@@ -134,7 +133,7 @@ pylo ven-compatibility-report-export \
   --limit 50 \
   --report-format xlsx \
   --report-format csv \
-  --output-dir ./ven-reports
+  --output-file ./ven-reports/compatibility-report.csv
 ```
 
 ## Workflow
