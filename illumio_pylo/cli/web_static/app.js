@@ -256,14 +256,35 @@ async function selectCommand(name){
     // fallback to text input
     else {
       const input = document.createElement('input'); input.name = arg.dest; input.type = 'text';
-      // Set placeholder based on default: if null, show '<default> </default>', otherwise show the default value
-      if (arg.default === null) {
-        input.placeholder = '<empty>';
-      } else {
-        try { input.placeholder = String(arg.default); } catch (e) { input.placeholder = '' + arg.default; }
-      }
+      
+      // If the argument has a default value that is a string, use placeholder pattern
       if (arg.default !== null && arg.default !== undefined) {
-        try { input.value = String(arg.default); } catch (e) { input.value = '' + arg.default; }
+        const defaultStr = String(arg.default);
+        // Use placeholder pattern for string defaults
+        input.placeholder = defaultStr + ' <default click to edit>';
+        input.value = '';
+        
+        // Store the actual default value for when focus occurs
+        input.dataset.defaultValue = defaultStr;
+        
+        // Add focus event to replace placeholder with actual value
+        input.addEventListener('focus', () => {
+          if (input.value === '') {
+            input.value = input.dataset.defaultValue;
+            input.placeholder = '';
+          }
+        });
+        
+        // Add blur event to restore placeholder if value matches default
+        input.addEventListener('blur', () => {
+          if (input.value === input.dataset.defaultValue) {
+            input.value = '';
+            input.placeholder = input.dataset.defaultValue + ' <default, click to edit>';
+          }
+        });
+      } else {
+        // For null defaults, show '<empty>' placeholder
+        input.placeholder = '<empty>';
       }
 
       // If the argument can be null (default is explicitly null), add a 'null' checkbox that blanks and disables the input
@@ -415,6 +436,12 @@ function updateCliPreview(form, meta) {
     const el = form.elements[name];
     if (!el) continue;
     let value = el.value;
+    
+    // For text inputs with default values, if value is empty, use the default
+    if (value === '' && arg.default !== null && arg.default !== undefined && el.type === 'text') {
+      value = String(arg.default);
+    }
+    
     if (value === '') continue;
 
     const numericField = isNumericArgType(arg, el);
