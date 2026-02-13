@@ -193,9 +193,15 @@ The command form uses a **responsive 2-column grid** for argument organization:
 
 - `selectCommand()` creates appropriate controls based on argument type:
   - **Text inputs**: Basic text input with optional null checkbox
+    - **Default Value Display**: When a string parameter has a default value, shows placeholder like `"default_value <click to edit>"` instead of the actual value
+    - **Focus Behavior**: Clicking the input replaces placeholder with actual default value
+    - **Blur Behavior**: If unchanged, restores placeholder on blur
   - **Number inputs**: Number input with optional null checkbox
   - **Dropdowns**: Select element for arguments with predefined choices
   - **Checkboxes**: Boolean flags with hidden fallback for unchecked state
+    - **Inline Label**: Checkbox now has inline label with parameter name
+    - **Layout**: Checkbox appears before label on same horizontal line
+    - **Click Behavior**: Clicking label text toggles checkbox
 
 - **Null Checkbox Pattern**: For arguments with default value of `null`:
   - Creates checkbox with name `{arg_name}__isnull`
@@ -241,6 +247,7 @@ The command form uses a **responsive 2-column grid** for argument organization:
 - `.argument-label` - Argument name label (bold)
 - `.argument-control` - Control wrapper (input, select, checkbox)
 - `.argument-help` - Help text (muted, smaller font)
+- `.checkbox-container` - Flex container for boolean checkboxes with inline labels
 - `body.params-visible` - State class for showing params panel
 
 **Responsive Breakpoints:**
