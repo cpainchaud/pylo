@@ -3,45 +3,22 @@
 <head>
   <meta charset="utf-8">
   <title>Pylo Web UI (experimental)</title>
-  <style>
-    body { font-family: Arial, Helvetica, sans-serif; margin: 20px; }
-
-    /* Panel visibility helper */
-    .hidden { display: none; }
-
-    /* Ensure params panel is hidden by default to avoid flash */
-    #panel-params { display: none; }
-    /* When body has .params-visible, show params and hide landing. Using a body-level
-       class avoids fighting inline !important styles and makes toggling clean. */
-    body.params-visible #panel-params { display: flex !important; }
-    body.params-visible #panel-landing { display: none !important; }
-
-    /* Landing (cards) */
-    #panel-landing { }
-    /* search box: full width up to 60% of viewport, minimum 250px */
-    #command-search { margin-bottom: 12px; padding:6px; width:100%; max-width:60vw; min-width:250px; box-sizing:border-box }
-    .cards { display:flex; flex-wrap:wrap; gap:8px; }
-    .card { border:1px solid #ddd; padding:10px; border-radius:6px; min-width:220px; max-width:320px; cursor:pointer; }
-    .card:hover, .card:focus { outline:2px solid #5b9dd9; }
-    .card-title { font-weight:600; }
-    .card-desc { color:#555; font-size:0.9em; margin-top:6px }
-
-    /* Params panel layout: header, options row, big content area */
-    #panel-params { /* layout properties applied when shown */; flex-direction:column; gap:12px }
-    #params-header { display:flex; align-items:center; gap:12px }
-    #back-btn { padding:6px 10px; }
-    #current-command-name { font-weight:700; font-size:1.1em }
-
-    #options-row { /* will contain the options form */ }
-
-    /* content area: CLI preview above logs (vertical stack) */
-    #content-area { display:flex; flex-direction:column; gap:12px; align-items:stretch }
-    /* preview starts small (min height), JS will autosize to fit content */
-    #cli-preview { width:100%; min-height:2.4em; font-family:monospace; box-sizing:border-box; overflow:hidden }
-    #logs { width:100%; white-space: pre; background:#f5f5f5; padding:10px; border:1px solid #ddd; height:300px; overflow:auto }
-
-    textarea.cli-preview { width: 100%; font-family: monospace; box-sizing:border-box; resize:vertical; overflow:hidden }
-  </style>
+  <script>
+    (function() {
+      const root = document.documentElement;
+      if (!root) return;
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const applyTheme = isDark => root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      applyTheme(mediaQuery.matches);
+      const listener = event => applyTheme(event.matches);
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', listener);
+      } else if (mediaQuery.addListener) {
+        mediaQuery.addListener(listener);
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
   <h1>Pylo Web UI (experimental)</h1>
@@ -66,11 +43,11 @@
 
     <div id="content-area">
       <div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <h3 style="margin:0;">CLI preview</h3>
-          <div style="display:flex; gap:8px; align-items:center;">
+        <div class="section-heading">
+          <h3>CLI preview</h3>
+          <div class="heading-actions">
             <button id="copy-cli">Copy CLI</button>
-            <div id="copy-cli-status" style="color:green; display:none;">Copied!</div>
+            <div id="copy-cli-status">Copied!</div>
           </div>
         </div>
         <textarea id="cli-preview" class="cli-preview" readonly rows="2" data-command=""></textarea>
