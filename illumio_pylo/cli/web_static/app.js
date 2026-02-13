@@ -160,10 +160,13 @@ async function selectCommand(name){
     const argCard = document.createElement('div');
     argCard.className = 'argument-card';
 
-    const lbl = document.createElement('label');
-    lbl.className = 'argument-label';
-    lbl.textContent = arg.dest;
-    argCard.appendChild(lbl);
+    // For boolean checkboxes, skip the top label since checkbox will have inline label
+    if (!(typeof arg.default === 'boolean')) {
+      const lbl = document.createElement('label');
+      lbl.className = 'argument-label';
+      lbl.textContent = arg.dest;
+      argCard.appendChild(lbl);
+    }
 
     const controlDiv = document.createElement('div');
     controlDiv.className = 'argument-control';
@@ -209,9 +212,17 @@ async function selectCommand(name){
       const hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = arg.dest; hidden.value = 'false';
       const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.name = arg.dest; checkbox.value = 'true';
       if (arg.default === true) checkbox.checked = true;
+      
+      // Create a label for the checkbox with the argument name
+      const label = document.createElement('label');
+      label.textContent = arg.dest;
+      label.htmlFor = checkbox.name; // Associate label with checkbox
+      
       control = document.createElement('span');
+      control.className = 'checkbox-container';
       control.appendChild(hidden);
       control.appendChild(checkbox);
+      control.appendChild(label);
     }
     // numeric types
     else if (arg.type === 'int' || arg.type === 'float' || arg.type === 'number') {

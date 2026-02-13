@@ -322,6 +322,12 @@ label {
   width: auto;
 }
 
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .argument-help {
   font-size: 0.8em;
   color: var(--muted-text);
