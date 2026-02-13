@@ -194,7 +194,7 @@ class ReportWriter:
         else:
             self.formats = report_formats
 
-        self.output_dir = args.get('output_dir', 'output')
+        self.output_dir = args.get('output_dir', './output')
         self.output_filename = args.get('output_filename')
 
         # Note: filename_prefix and sheet_name should be set via constructor parameters
