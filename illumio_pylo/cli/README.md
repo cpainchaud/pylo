@@ -32,6 +32,7 @@ python -m illumio_pylo.cli --web
 Notes:
 - This is an experimental, lightweight implementation intended for local development. It executes commands synchronously and captures stdout/stderr. It is not hardened for production use.
 - By default the server binds to 127.0.0.1:8000. Do not expose this process on public networks without adding authentication and TLS.
+- **Cache Control**: The server disables caching for all responses to ensure you always get the latest changes during development. Cache busting is implemented via HTTP headers.
 
 ## Web UI Architecture & Workflow
 
@@ -255,6 +256,31 @@ The command form uses a **responsive 2-column grid** for argument organization:
 - **Mobile** (< 640px): 1 column, full-width cards
 - **Tablet** (640px - 1000px): 2 columns
 - **Desktop** (> 1000px): 2-3 columns with optimal spacing
+
+### Cache Control & Development
+
+The web server implements cache busting via HTTP headers to ensure developers always see the latest changes:
+
+**HTTP Headers:**
+- `Cache-Control: no-cache, no-store, must-revalidate`
+- `Pragma: no-cache`
+- `Expires: 0`
+
+**Implementation:**
+- Global middleware applies cache control headers to all responses
+- Clean approach using only HTTP headers (no compression, no query parameters)
+
+**Development Workflow:**
+- No manual cache clearing needed during development
+- Changes to CSS/JS are immediately visible on page reload
+- API responses are never cached
+
+**Troubleshooting:**
+If you still see cached content:
+1. Try Ctrl+F5 (hard refresh) in your browser
+2. Open browser in incognito/private mode
+3. Clear browser cache manually
+4. Restart the development server
 
 ### API Endpoints (Expected Backend)
 

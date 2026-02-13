@@ -33,6 +33,16 @@ from illumio_pylo.cli import commands
 if FASTAPI_AVAILABLE:
     app = FastAPI()
 
+    # Add middleware for cache control
+    @app.middleware("http")
+    async def add_cache_control_header(request: Request, call_next):
+        response = await call_next(request)
+        # Disable caching for all responses in development mode
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+
     # mount static folder
     static_dir = os.path.join(os.path.dirname(__file__), 'web_static')
     if os.path.isdir(static_dir):
