@@ -1,6 +1,6 @@
+import getpass
 import json
 import time
-import getpass
 
 from .CredentialsManager import is_api_key_encrypted, decrypt_api_key, CredentialProfile
 from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreationJsonStructure, \
@@ -10,8 +10,7 @@ from .JsonPayloadTypes import LabelGroupObjectJsonStructure, LabelObjectCreation
     WorkloadHrefRef, IPListHrefRef, VirtualServiceHrefRef, RuleDirectServiceReferenceObjectJsonStructure, \
     RulesetObjectJsonStructure, WorkloadObjectJsonStructure, SecurityPrincipalObjectJsonStructure, \
     LabelDimensionObjectStructure, AuditLogApiReplyEventJsonStructure, WorkloadsGetQueryLabelFilterJsonStructure, \
-    NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, HrefReference, \
-    WorkloadObjectCreateJsonStructure, WorkloadObjectMultiCreateJsonRequestPayload, \
+    NetworkDeviceObjectJsonStructure, NetworkDeviceEndpointObjectJsonStructure, WorkloadObjectCreateJsonStructure, \
     WorkloadBulkUpdateEntryJsonStructure, WorkloadBulkUpdateResponseEntry, VenObjectJsonStructure, \
     VENUnpairApiResponseObjectJsonStructure
 
@@ -116,14 +115,16 @@ class APIConnector:
 
     @staticmethod
     def create_from_credentials_in_file(fqdn_or_profile_name: str, request_if_missing: bool = False,
-                                        credential_file: Optional[str] = None) -> Optional['APIConnector']:
+                                        credential_file: Optional[str] = None, fail_with_an_exception=True) -> Optional['APIConnector']:
 
-        credentials = pylo.get_credentials_from_file(fqdn_or_profile_name, credential_file)
+        credentials = pylo.get_credentials_from_file(fqdn_or_profile_name, credential_file, fail_with_an_exception=fail_with_an_exception)
 
         if credentials is not None:
             return APIConnector.create_from_credentials_object(credentials)
 
         if not request_if_missing:
+            if fail_with_an_exception:
+                raise pylo.PyloEx('No credentials found for host "{}"'.format(fqdn_or_profile_name))
             return None
 
         print('Cannot find credentials for host "{}".\nPlease input an API user:'.format(fqdn_or_profile_name), end='')
