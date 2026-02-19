@@ -120,3 +120,13 @@ Best practice examples to reference when creating new tests:
   - **Integration tests**: `tests/cli/test_workload_export_integration.py`
   - **Documentation**: `tests/cli/README_workload_export_tests.md`
   - **Patterns demonstrated**: Filter matching, extensibility patterns, report generation
+
+## Running test helper scripts directly
+
+If you run some helper scripts in `tests/` directly (for example `tests/test_env_credentials.py`) from the repository root, make sure Python can import the local package by setting `PYTHONPATH` to the repository root first. In PowerShell you can do:
+
+```powershell
+$env:PYTHONPATH='.'; python tests/test_env_credentials.py
+```
+
+This is necessary because some test helper scripts import `illumio_pylo` as a top-level package and rely on the project root being on `sys.path` when executed directly. CI jobs that run tests via `pytest` do not require this, because `pytest` adjusts import paths accordingly.

@@ -121,3 +121,6 @@ Windows binaries: Prebuilt standalone Windows executables are provided so you ca
 Where to find full usage
 - See the individual command docs in `docs/cli/` for complete option lists, examples, and recommended safe workflows (each doc contains usage examples and notes).
 - Most commands provide their own `--help` output; consult the corresponding `docs/cli/<command>.md` file for the exact invocation and flags.
+
+## System CA Certificates
+Pylo loads the `pip-system-certs` helper by default so any HTTPS call understands and uses the operating system's CA certificate store; this ensures the bundled CLI and library mirror the host trust settings. Set `PYLO_DISABLE_SYSTEM_CA` to one of `true`, `yes`, `1`, or `on` to prevent the injection when you want to rely on the bundled CA file instead.
