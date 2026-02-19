@@ -2,9 +2,9 @@ import typing
 from typing import Optional, List, Union, Dict, Any, NewType
 
 import illumio_pylo as pylo
-from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
 from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList, PortMap
+from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
 
 RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
 
@@ -710,3 +710,14 @@ class RuleHostContainer(pylo.Referencer):
         :return: True if "All Workloads" is referenced by this container
         """
         return self._hasAllWorkloads
+
+    def contains_label(self, label: Union[pylo.Label, pylo.LabelGroup]) -> bool:
+        """
+        Check if this container contains a specific Label or LabelGroup
+        :param label: Label or LabelGroup to check
+        :return: True if the container contains the label, False otherwise
+        """
+        if label in self._items:
+            return True
+
+        return False
