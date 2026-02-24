@@ -240,7 +240,7 @@ class APIConnector:
 
         while True:
 
-            log.info("Request URL: " + url)
+            log.debug("Request URL: " + url)
 
             try:
                 req = self._cached_session.request(method, url, headers=headers, auth=(self.api_user, self.api_key),
@@ -250,11 +250,11 @@ class APIConnector:
                 raise pylo.PyloApiEx("PCE connectivity or low level issue: {}".format(e))
 
             answer_size = len(req.content) / 1024
-            log.info("URL downloaded (size "+str(int(answer_size))+"KB) Reply headers:\n" +
+            log.debug("URL downloaded (size "+str(int(answer_size))+"KB) Reply headers:\n" +
                      "HTTP " + method + " " + url + " STATUS " + str(req.status_code) + " " + req.reason)
-            log.info(req.headers)
-            # log.info("Request Body:" + pylo.nice_json(json_arguments))
-            # log.info("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
+            log.debug(req.headers)
+            # log.debug("Request Body:" + pylo.nice_json(json_arguments))
+            # log.debug("Request returned code "+ str(req.status_code) + ". Raw output:\n" + req.text[0:2000])
 
             if async_call:
                 if (method == 'GET' or method == 'POST') and req.status_code != 202:
@@ -275,7 +275,7 @@ class APIConnector:
                 retry_loop_times = 0
 
                 while True:
-                    log.info(
+                    log.debug(
                         "Sleeping " + str(retry_interval) + " seconds before polling for job status, elapsed " + str(
                             retry_interval * retry_loop_times) + " seconds so far")
                     retry_loop_times += 1
@@ -300,9 +300,9 @@ class APIConnector:
                         result_href = job_poll['result']['href']
                         break
 
-                    log.info("Job status is " + job_poll_status)
+                    log.debug("Job status is " + job_poll_status)
 
-                log.info("Job is done, we will now download the resulting dataset")
+                log.debug("Job is done, we will now download the resulting dataset")
                 dataset = self.do_get_call(result_href, include_org_id=False, return_headers=return_headers)
 
                 return dataset
@@ -326,7 +326,7 @@ class APIConnector:
                                         'API has hit DOS protection limit (X calls per minute)', json_out)
 
                                 retry_count_if_api_call_limit_reached = retry_count_if_api_call_limit_reached - 1
-                                log.info(
+                                log.debug(
                                     "API has returned 'too_many_requests_error', we will sleep for {} seconds and retry {} more times".format(
                                         retry_wait_time_if_api_call_limit_reached,
                                         retry_count_if_api_call_limit_reached))
@@ -342,14 +342,14 @@ class APIConnector:
                                      + '" and error message: ' + req.text)
 
             if json_output_expected:
-                log.info("Parsing API answer to JSON (with a size of " + str(int(answer_size)) + "KB)")
+                log.debug("Parsing API answer to JSON (with a size of " + str(int(answer_size)) + "KB)")
                 json_out = req.json()
-                log.info("Done!")
+                log.debug("Done!")
                 if answer_size < 5:
-                    log.info("Resulting JSON object:")
-                    log.info(json.dumps(json_out, indent=2, sort_keys=True))
+                    log.debug("Resulting JSON object:")
+                    log.debug(json.dumps(json_out, indent=2, sort_keys=True))
                 else:
-                    log.info("Answer is too large to be printed")
+                    log.debug("Answer is too large to be printed")
                 if return_headers:
                     return json_out, req.headers
                 return json_out
