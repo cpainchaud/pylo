@@ -4,7 +4,8 @@ from typing import Optional, List, Union, Dict, Any, NewType
 import illumio_pylo as pylo
 from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList, PortMap
-from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
+from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, \
+    RuleDirectServiceReferenceObjectJsonStructure, RuleObjectJsonStructure
 
 RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
 
@@ -45,10 +46,10 @@ class Rule:
         self.stateless: bool = False
         self.machine_auth: bool = False
 
-        self.raw_json: Optional[Dict[str, Any]] = None
+        self.raw_json: Optional[RuleObjectJsonStructure] = None
         self.batch_update_stack: Optional[RuleApiUpdateStack] = None
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: RuleObjectJsonStructure):
         self.raw_json = data
 
         self.href = data['href']
