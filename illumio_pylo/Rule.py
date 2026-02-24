@@ -35,7 +35,7 @@ class Rule:
 
     __slots__ = ['owner', 'description', 'services', 'providers', 'consumers', 'consuming_principals', 'href', 'enabled',
                  'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack',
-                 'resolve_provider_labels_as', 'resolve_consumer_labels_as', 'network_type']
+                 'resolve_provider_labels_as', 'resolve_consumer_labels_as', 'network_type', 'deleted']
 
     def __init__(self, owner: 'Ruleset'):
         self.owner: Ruleset = owner
@@ -46,6 +46,7 @@ class Rule:
         self.consuming_principals: RuleSecurityPrincipalContainer = RuleSecurityPrincipalContainer(self)
         self.href: Optional[str] = None
         self.enabled: bool = True
+        self.deleted: bool = False  # This property is not part of the API but it will be set to True if the rule is deleted in the API to avoid further API calls on it and to know that it should be ignored in the UI for example
         self.secure_connect: bool = False
         self.unscoped_consumers: bool = False
         self.stateless: bool = False  # Stateless means no session is maintained
@@ -125,6 +126,10 @@ class Rule:
             if network_type not in ALLOWED_NETWORK_TYPES:
                 raise PyloEx(f"Invalid 'network_type' value '{network_type}' in rule href '{data.get('href')}'")
             self.network_type = network_type
+
+        # id deleted_at is not null, we consider the rule as deleted. Only possible in draft version of rulesets
+        if data.get('deleted_at') is not None:
+            self.deleted = True
 
     def is_extra_scope(self):
         return self.unscoped_consumers

@@ -242,8 +242,8 @@ class RulesResolveLabelsAsJsonStructure(TypedDict):
 class RuleObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
-    deleted_at: NotRequired[Optional[str]]
-    deleted_by: NotRequired[Optional[HrefReferenceWithName]]
+    deleted_at: Optional[str]
+    deleted_by: Optional[HrefReferenceWithName]
     href: str
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
