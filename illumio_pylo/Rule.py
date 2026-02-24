@@ -436,7 +436,7 @@ class RuleServiceContainer(pylo.Referencer):
 
 class RuleHostContainer(pylo.Referencer):
 
-    __slots__ = ['owner', '_items', 'name', '_hasAllWorkloads']
+    __slots__ = ['owner', '_items', 'name', '_hasAllWorkloads', '_excluded_labels']
 
     def __init__(self, owner: 'pylo.Rule', name: str):
         Referencer.__init__(self)
@@ -444,6 +444,7 @@ class RuleHostContainer(pylo.Referencer):
         self._items: Dict[RuleActorsAcceptableTypes, RuleActorsAcceptableTypes] = {}
         self.name = name
         self._hasAllWorkloads = False
+        self._excluded_labels: Dict[Union[Label, LabelGroup], Union[Label, LabelGroup]] = {}
 
     def load_from_json(self, data: List[RuleEndpointEntryJsonStructure]):
         """
@@ -462,6 +463,7 @@ class RuleHostContainer(pylo.Referencer):
 
         for host_data in data:
             find_object = None
+            exclusion = bool(host_data.get('exclusion', False))
             if 'label' in host_data:
                 href = host_data['label'].get('href')
                 if href is None:
@@ -514,7 +516,10 @@ class RuleHostContainer(pylo.Referencer):
                 raise PyloEx("Unsupported reference type", host_data)
 
             if find_object is not None:
-                self._items[find_object] = find_object
+                if exclusion:
+                    self._excluded_labels[find_object] = find_object
+                else:
+                    self._items[find_object] = find_object
                 find_object.add_reference(self)
 
     def has_workloads(self) -> bool:
@@ -545,11 +550,15 @@ class RuleHostContainer(pylo.Referencer):
         for item in self._items.values():
             if isinstance(item, Label) or isinstance(item, LabelGroup):
                 return True
+
+        for item in self._excluded_labels.values():
+            if isinstance(item, Label) or isinstance(item, LabelGroup):
+                return True
         return False
 
     def get_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
-        Get a list Labels and LabelGroups which are part of this container
+        Get a list Labels and LabelGroups which are part of this container, but not the excluded ones
         :return:
         """
         result = []
@@ -559,6 +568,13 @@ class RuleHostContainer(pylo.Referencer):
                 result.append(item)
 
         return result
+
+    def get_excluded_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
+        """
+        Get a list of excluded Labels and LabelGroups which are part of this container
+        :return:
+        """
+        return list(self._excluded_labels.values())
 
     def get_role_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
@@ -757,13 +773,20 @@ class RuleHostContainer(pylo.Referencer):
         """
         return self._hasAllWorkloads
 
-    def contains_label(self, label: Union[pylo.Label, pylo.LabelGroup]) -> bool:
+    def references_label(self, label: Union[pylo.Label, pylo.LabelGroup]) -> bool:
         """
-        Check if this container contains a specific Label or LabelGroup
+        Check if this container references a specific Label or LabelGroup
         :param label: Label or LabelGroup to check
         :return: True if the container contains the label, False otherwise
         """
         if label in self._items:
             return True
-
+        if label in self._excluded_labels:
+            return True
         return False
+
+    @property
+    def excluded_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
+        """Expose the labels that were explicitly excluded from this container."""
+        return list(self._excluded_labels.values())
+
