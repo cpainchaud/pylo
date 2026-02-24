@@ -1,5 +1,5 @@
 import typing
-from typing import Optional, List, Union, Dict, Any, NewType
+from typing import Optional, List, Union, Dict, Any, Literal
 
 import illumio_pylo as pylo
 from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
@@ -7,7 +7,7 @@ from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, Secur
 from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, \
     RuleDirectServiceReferenceObjectJsonStructure, RuleObjectJsonStructure
 
-RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
+RuleActorsAcceptableTypes = Union[Workload, Label, LabelGroup, IPList, VirtualService]
 
 
 class RuleApiUpdateStack:
@@ -30,7 +30,8 @@ class RuleApiUpdateStack:
 class Rule:
 
     __slots__ = ['owner', 'description', 'services', 'providers', 'consumers', 'consuming_principals', 'href', 'enabled',
-                 'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack']
+                 'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack',
+                 'resolve_provider_labels_as', 'resolve_consumer_labels_as']
 
     def __init__(self, owner: 'Ruleset'):
         self.owner: Ruleset = owner
@@ -48,6 +49,9 @@ class Rule:
 
         self.raw_json: Optional[RuleObjectJsonStructure] = None
         self.batch_update_stack: Optional[RuleApiUpdateStack] = None
+
+        self.resolve_provider_labels_as: List[Literal['workloads', 'virtual_services']] = ['workloads']  # Default value is 'workloads' but it will be overwritten by the actual value from the API when loading the rule JSON
+        self.resolve_consumer_labels_as: List[Literal['workloads', 'virtual_services']] = ['workloads']  # Default value is 'workloads' but it will be overwritten by the actual value from the API when loading the rule JSON
 
     def load_from_json(self, data: RuleObjectJsonStructure):
         self.raw_json = data
@@ -79,6 +83,21 @@ class Rule:
         unscoped_consumers = data.get('unscoped_consumers')
         if unscoped_consumers is not None:
             self.unscoped_consumers = unscoped_consumers
+
+        # resolve_labels_as must always be present in the rule JSON payload per API contract
+        if 'resolve_labels_as' not in data:
+            raise PyloEx(f"Missing required 'resolve_labels_as' in rule JSON for rule href '{data.get('href')}'")
+
+        resolve_labels_as = data['resolve_labels_as']
+        # Validate structure and values
+        if not isinstance(resolve_labels_as, dict):
+            raise PyloEx("Invalid 'resolve_labels_as' payload: must be an object")
+
+        providers = resolve_labels_as.get('providers')
+        consumers = resolve_labels_as.get('consumers')
+
+        if consumers is None or providers is None:
+            raise PyloEx(f"Missing 'providers' or 'consumers' in 'resolve_labels_as' for rule href '{data.get('href')}'")
 
         self.providers.load_from_json(data['providers'])
         self.consumers.load_from_json(data['consumers'])
