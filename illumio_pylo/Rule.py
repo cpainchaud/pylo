@@ -5,7 +5,7 @@ import illumio_pylo as pylo
 from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList, PortMap
 from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, \
-    RuleDirectServiceReferenceObjectJsonStructure, RuleObjectJsonStructure
+    RuleDirectServiceReferenceObjectJsonStructure, RuleObjectJsonStructure, RuleEndpointEntryJsonStructure
 
 # Performance: use frozenset for O(1) membership checks and module-level constants
 ALLOWED_NETWORK_TYPES = frozenset(['brn', 'all', 'non_brn'])
@@ -445,17 +445,20 @@ class RuleHostContainer(pylo.Referencer):
         self.name = name
         self._hasAllWorkloads = False
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: List[RuleEndpointEntryJsonStructure]):
         """
         Parse from a JSON payload.
         *For developers only*
 
         :param data: JSON payload to parse
         """
-        workload_store = self.owner.owner.owner.owner.WorkloadStore  # make it a local variable for fast lookups
-        label_store = self.owner.owner.owner.owner.LabelStore  # make it a local variable for fast lookups
-        virtual_service_store = self.owner.owner.owner.owner.VirtualServiceStore  # make it a local variable for fast lookups
-        iplist_store = self.owner.owner.owner.owner.IPListStore  # make it a local variable for fast lookups
+
+        # Performance optimization: store references to stores in local variables to avoid repeated attribute lookups in loops
+        org = self.owner.owner.owner.owner
+        workload_store = org.WorkloadStore  # make it a local variable for fast lookups
+        label_store = org.LabelStore  # make it a local variable for fast lookups
+        virtual_service_store = org.VirtualServiceStore  # make it a local variable for fast lookups
+        iplist_store = org.IPListStore  # make it a local variable for fast lookups
 
         for host_data in data:
             find_object = None
