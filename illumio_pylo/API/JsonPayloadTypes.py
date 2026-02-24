@@ -257,7 +257,7 @@ class RuleObjectJsonStructure(TypedDict):
     stateless: bool
     machine_auth: bool
     unscoped_consumers: bool
-    network_type: Literal['brn']
+    network_type: Literal['brn', 'all', 'non_brn']  # brn means corporate network, non_brn means non-corporate network, all means both
     use_workload_subnets: List[HrefReference]
     # ingress/egress services can be service references, direct service definitions, or full service objects
     ingress_services: List[Union[RuleDirectServiceReferenceObjectJsonStructure, RuleServiceReferenceObjectJsonStructure]]

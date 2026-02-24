@@ -7,6 +7,10 @@ from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, Secur
 from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, \
     RuleDirectServiceReferenceObjectJsonStructure, RuleObjectJsonStructure
 
+# Performance: use frozenset for O(1) membership checks and module-level constants
+ALLOWED_NETWORK_TYPES = frozenset(['brn', 'all', 'non_brn'])
+ALLOWED_RESOLVE_LABELS_AS = frozenset(['workloads', 'virtual_services'])
+
 RuleActorsAcceptableTypes = Union[Workload, Label, LabelGroup, IPList, VirtualService]
 
 
@@ -31,7 +35,7 @@ class Rule:
 
     __slots__ = ['owner', 'description', 'services', 'providers', 'consumers', 'consuming_principals', 'href', 'enabled',
                  'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack',
-                 'resolve_provider_labels_as', 'resolve_consumer_labels_as']
+                 'resolve_provider_labels_as', 'resolve_consumer_labels_as', 'network_type']
 
     def __init__(self, owner: 'Ruleset'):
         self.owner: Ruleset = owner
@@ -44,8 +48,9 @@ class Rule:
         self.enabled: bool = True
         self.secure_connect: bool = False
         self.unscoped_consumers: bool = False
-        self.stateless: bool = False
+        self.stateless: bool = False  # Stateless means no session is maintained
         self.machine_auth: bool = False
+        self.network_type: Literal['brn', 'all', 'non_brn'] = 'brn' #  brn means corporate network, non_brn means non-corporate network, all means both
 
         self.raw_json: Optional[RuleObjectJsonStructure] = None
         self.batch_update_stack: Optional[RuleApiUpdateStack] = None
@@ -99,9 +104,27 @@ class Rule:
         if consumers is None or providers is None:
             raise PyloEx(f"Missing 'providers' or 'consumers' in 'resolve_labels_as' for rule href '{data.get('href')}'")
 
+        for v in providers:
+            if v not in ALLOWED_RESOLVE_LABELS_AS:
+                raise PyloEx(f"Invalid resolve_labels_as.providers value '{v}' for rule href '{data.get('href')}'")
+        for v in consumers:
+            if v not in ALLOWED_RESOLVE_LABELS_AS:
+                raise PyloEx(f"Invalid resolve_labels_as.consumers value '{v}' for rule href '{data.get('href')}'")
+
+        # store resolved preferences
+        self.resolve_provider_labels_as = providers.copy()
+        self.resolve_consumer_labels_as = consumers.copy()
+
         self.providers.load_from_json(data['providers'])
         self.consumers.load_from_json(data['consumers'])
         self.consuming_principals.load_from_json(data['consuming_security_principals'])
+
+        # Read network_type from JSON if present and validate using module-level constant
+        network_type = data.get('network_type')
+        if network_type is not None:
+            if network_type not in ALLOWED_NETWORK_TYPES:
+                raise PyloEx(f"Invalid 'network_type' value '{network_type}' in rule href '{data.get('href')}'")
+            self.network_type = network_type
 
     def is_extra_scope(self):
         return self.unscoped_consumers
