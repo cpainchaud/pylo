@@ -496,7 +496,9 @@ function escapeArg(v) {
   // For strings, quote if it contains whitespace or special chars
   if (typeof v === 'string') {
     if (/\s|"|'|\\/.test(v)) {
-      return '"' + v.replace(/"/g, '\\"') + '"';
+      // First escape backslashes, then escape double quotes
+      const escaped = v.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      return '"' + escaped + '"';
     }
     return v;
   }
