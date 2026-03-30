@@ -1,12 +1,17 @@
 import typing
-from typing import Optional, List, Union, Dict, Any, NewType
+from typing import Optional, List, Union, Dict, Any, Literal
 
 import illumio_pylo as pylo
-from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, RuleDirectServiceReferenceObjectJsonStructure
 from illumio_pylo import Workload, Label, LabelGroup, Ruleset, Referencer, SecurityPrincipal, PyloEx, \
     Service, nice_json, string_list_to_text, find_connector_or_die, VirtualService, IPList, PortMap
+from .API.JsonPayloadTypes import RuleServiceReferenceObjectJsonStructure, \
+    RuleDirectServiceReferenceObjectJsonStructure, RuleObjectJsonStructure, RuleEndpointEntryJsonStructure
 
-RuleActorsAcceptableTypes = NewType('RuleActorsAcceptableTypes', Union[Workload, Label, LabelGroup, IPList, VirtualService])
+# Performance: use frozenset for O(1) membership checks and module-level constants
+ALLOWED_NETWORK_TYPES = frozenset(['brn', 'all', 'non_brn'])
+ALLOWED_RESOLVE_LABELS_AS = frozenset(['workloads', 'virtual_services'])
+
+RuleActorsAcceptableTypes = Union[Workload, Label, LabelGroup, IPList, VirtualService]
 
 
 class RuleApiUpdateStack:
@@ -29,7 +34,8 @@ class RuleApiUpdateStack:
 class Rule:
 
     __slots__ = ['owner', 'description', 'services', 'providers', 'consumers', 'consuming_principals', 'href', 'enabled',
-                 'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack']
+                 'secure_connect', 'unscoped_consumers', 'stateless', 'machine_auth', 'raw_json', 'batch_update_stack',
+                 'resolve_provider_labels_as', 'resolve_consumer_labels_as', 'network_type', 'deleted']
 
     def __init__(self, owner: 'Ruleset'):
         self.owner: Ruleset = owner
@@ -40,15 +46,20 @@ class Rule:
         self.consuming_principals: RuleSecurityPrincipalContainer = RuleSecurityPrincipalContainer(self)
         self.href: Optional[str] = None
         self.enabled: bool = True
+        self.deleted: bool = False  # This property is not part of the API but it will be set to True if the rule is deleted in the API to avoid further API calls on it and to know that it should be ignored in the UI for example
         self.secure_connect: bool = False
         self.unscoped_consumers: bool = False
-        self.stateless: bool = False
+        self.stateless: bool = False  # Stateless means no session is maintained
         self.machine_auth: bool = False
+        self.network_type: Literal['brn', 'all', 'non_brn'] = 'brn' #  brn means corporate network, non_brn means non-corporate network, all means both
 
-        self.raw_json: Optional[Dict[str, Any]] = None
+        self.raw_json: Optional[RuleObjectJsonStructure] = None
         self.batch_update_stack: Optional[RuleApiUpdateStack] = None
 
-    def load_from_json(self, data):
+        self.resolve_provider_labels_as: List[Literal['workloads', 'virtual_services']] = ['workloads']  # Default value is 'workloads' but it will be overwritten by the actual value from the API when loading the rule JSON
+        self.resolve_consumer_labels_as: List[Literal['workloads', 'virtual_services']] = ['workloads']  # Default value is 'workloads' but it will be overwritten by the actual value from the API when loading the rule JSON
+
+    def load_from_json(self, data: RuleObjectJsonStructure):
         self.raw_json = data
 
         self.href = data['href']
@@ -79,9 +90,46 @@ class Rule:
         if unscoped_consumers is not None:
             self.unscoped_consumers = unscoped_consumers
 
+        # resolve_labels_as must always be present in the rule JSON payload per API contract
+        if 'resolve_labels_as' not in data:
+            raise PyloEx(f"Missing required 'resolve_labels_as' in rule JSON for rule href '{data.get('href')}'")
+
+        resolve_labels_as = data['resolve_labels_as']
+        # Validate structure and values
+        if not isinstance(resolve_labels_as, dict):
+            raise PyloEx("Invalid 'resolve_labels_as' payload: must be an object")
+
+        providers = resolve_labels_as.get('providers')
+        consumers = resolve_labels_as.get('consumers')
+
+        if consumers is None or providers is None:
+            raise PyloEx(f"Missing 'providers' or 'consumers' in 'resolve_labels_as' for rule href '{data.get('href')}'")
+
+        for v in providers:
+            if v not in ALLOWED_RESOLVE_LABELS_AS:
+                raise PyloEx(f"Invalid resolve_labels_as.providers value '{v}' for rule href '{data.get('href')}'")
+        for v in consumers:
+            if v not in ALLOWED_RESOLVE_LABELS_AS:
+                raise PyloEx(f"Invalid resolve_labels_as.consumers value '{v}' for rule href '{data.get('href')}'")
+
+        # store resolved preferences
+        self.resolve_provider_labels_as = providers.copy()
+        self.resolve_consumer_labels_as = consumers.copy()
+
         self.providers.load_from_json(data['providers'])
         self.consumers.load_from_json(data['consumers'])
         self.consuming_principals.load_from_json(data['consuming_security_principals'])
+
+        # Read network_type from JSON if present and validate using module-level constant
+        network_type = data.get('network_type')
+        if network_type is not None:
+            if network_type not in ALLOWED_NETWORK_TYPES:
+                raise PyloEx(f"Invalid 'network_type' value '{network_type}' in rule href '{data.get('href')}'")
+            self.network_type = network_type
+
+        # id deleted_at is not null, we consider the rule as deleted. Only possible in draft version of rulesets
+        if data.get('deleted_at') is not None:
+            self.deleted = True
 
     def is_extra_scope(self):
         return self.unscoped_consumers
@@ -393,7 +441,7 @@ class RuleServiceContainer(pylo.Referencer):
 
 class RuleHostContainer(pylo.Referencer):
 
-    __slots__ = ['owner', '_items', 'name', '_hasAllWorkloads']
+    __slots__ = ['owner', '_items', 'name', '_hasAllWorkloads', '_excluded_labels']
 
     def __init__(self, owner: 'pylo.Rule', name: str):
         Referencer.__init__(self)
@@ -401,21 +449,26 @@ class RuleHostContainer(pylo.Referencer):
         self._items: Dict[RuleActorsAcceptableTypes, RuleActorsAcceptableTypes] = {}
         self.name = name
         self._hasAllWorkloads = False
+        self._excluded_labels: Dict[Union[Label, LabelGroup], Union[Label, LabelGroup]] = {}
 
-    def load_from_json(self, data):
+    def load_from_json(self, data: List[RuleEndpointEntryJsonStructure]):
         """
         Parse from a JSON payload.
         *For developers only*
 
         :param data: JSON payload to parse
         """
-        workload_store = self.owner.owner.owner.owner.WorkloadStore  # make it a local variable for fast lookups
-        label_store = self.owner.owner.owner.owner.LabelStore  # make it a local variable for fast lookups
-        virtual_service_store = self.owner.owner.owner.owner.VirtualServiceStore  # make it a local variable for fast lookups
-        iplist_store = self.owner.owner.owner.owner.IPListStore  # make it a local variable for fast lookups
+
+        # Performance optimization: store references to stores in local variables to avoid repeated attribute lookups in loops
+        org = self.owner.owner.owner.owner
+        workload_store = org.WorkloadStore  # make it a local variable for fast lookups
+        label_store = org.LabelStore  # make it a local variable for fast lookups
+        virtual_service_store = org.VirtualServiceStore  # make it a local variable for fast lookups
+        iplist_store = org.IPListStore  # make it a local variable for fast lookups
 
         for host_data in data:
             find_object = None
+            exclusion = bool(host_data.get('exclusion', False))
             if 'label' in host_data:
                 href = host_data['label'].get('href')
                 if href is None:
@@ -468,7 +521,10 @@ class RuleHostContainer(pylo.Referencer):
                 raise PyloEx("Unsupported reference type", host_data)
 
             if find_object is not None:
-                self._items[find_object] = find_object
+                if exclusion:
+                    self._excluded_labels[find_object] = find_object
+                else:
+                    self._items[find_object] = find_object
                 find_object.add_reference(self)
 
     def has_workloads(self) -> bool:
@@ -499,11 +555,15 @@ class RuleHostContainer(pylo.Referencer):
         for item in self._items.values():
             if isinstance(item, Label) or isinstance(item, LabelGroup):
                 return True
+
+        for item in self._excluded_labels.values():
+            if isinstance(item, Label) or isinstance(item, LabelGroup):
+                return True
         return False
 
     def get_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
-        Get a list Labels and LabelGroups which are part of this container
+        Get a list Labels and LabelGroups which are part of this container, but not the excluded ones
         :return:
         """
         result = []
@@ -513,6 +573,13 @@ class RuleHostContainer(pylo.Referencer):
                 result.append(item)
 
         return result
+
+    def get_excluded_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
+        """
+        Get a list of excluded Labels and LabelGroups which are part of this container
+        :return:
+        """
+        return list(self._excluded_labels.values())
 
     def get_role_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
         """
@@ -710,3 +777,21 @@ class RuleHostContainer(pylo.Referencer):
         :return: True if "All Workloads" is referenced by this container
         """
         return self._hasAllWorkloads
+
+    def references_label(self, label: Union[pylo.Label, pylo.LabelGroup]) -> bool:
+        """
+        Check if this container references a specific Label or LabelGroup
+        :param label: Label or LabelGroup to check
+        :return: True if the container contains the label, False otherwise
+        """
+        if label in self._items:
+            return True
+        if label in self._excluded_labels:
+            return True
+        return False
+
+    @property
+    def excluded_labels(self) -> List[Union[pylo.Label, pylo.LabelGroup]]:
+        """Expose the labels that were explicitly excluded from this container."""
+        return list(self._excluded_labels.values())
+

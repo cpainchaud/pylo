@@ -19,17 +19,24 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.11'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools wheel twine pkginfo
-        pip install build
-    - name: Build package
-      run: python -m build
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+      - uses: ArcticLampyrid/action-wait-for-workflow@v1.3.0
+        timeout-minutes: 5
+        with:
+          workflow: pytest.yml          # required, e.g. build.yml
+          wait-interval: 30              # seconds (min 5)
+          allowed-conclusions: |         # succeeds if conclusion is allowed, and fails if not
+            success
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel twine pkginfo
+          pip install build
+      - name: Build package
+        run: python -m build
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
 

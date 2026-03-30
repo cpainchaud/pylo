@@ -73,8 +73,8 @@ These options prevent specific workloads from being deleted:
 | Option | Short | Description |
 |--------|-------|-------------|
 | `--report-format` | `-rf` | Report format: `csv` or `xlsx` (can be repeated for multiple formats). Default: `xlsx` |
-| `--output-dir` | `-o` | Directory for report files. Default: `output` |
-| `--output-filename` | - | Custom filename for the report (extension adjusted per format if multiple formats requested) |
+| `--output-file` | `-o` | Output file path (relative to `./output/` or absolute path). Default: Auto-generated |
+| `--output-file-timestamp` | `-oft` | Append timestamp to output filename |
 
 ## Logic Flow
 
@@ -247,8 +247,7 @@ Generate both CSV and Excel reports in a custom location:
 ```bash
 pylo ven-duplicate-remover \
     -rf csv -rf xlsx \
-    --output-dir "C:\Reports\VEN_Cleanup" \
-    --output-filename "duplicate_cleanup_2026-02-03"
+    --output-file "C:\Reports\VEN_Cleanup\duplicate_cleanup_2026-02-03.csv"
 ```
 
 ### Example 9: Override Offline Timer
@@ -402,7 +401,7 @@ pylo ven-duplicate-remover \
     --do-not-delete-if-labels-mismatch \
     --do-not-require-deletion-confirmation \
     --proceed-with-deletion \
-    --output-dir "C:\Logs\PCE_Maintenance"
+    --output-file "C:\Logs\PCE_Maintenance\cleanup.xlsx"
 ```
 
 ### Scenario 5: Targeted Cleanup by Naming Convention

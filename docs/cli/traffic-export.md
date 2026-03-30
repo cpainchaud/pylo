@@ -16,8 +16,16 @@ pylo traffic-export [OPTIONS]
 
 | Option | Short | Type | Default | Description |
 |--------|-------|------|---------|-------------|
-| `--format` | `-f` | choice | `excel` | Output file format (choices: `csv`, `excel`) |
-| `--output-dir` | `-o` | string | `output` | Directory where to save the output file |
+| `--report-format` | `-rf` | choice | `csv` | Report format: `csv`, `xlsx`, or `json` (can be repeated for multiple formats) |
+| `--output-file` | `-o` | string | Auto-generated | Output file path (relative to `./output/` or absolute path). If multiple formats are requested, the extension is adjusted per format |
+| `--output-file-timestamp` | `-oft` | flag | - | Append timestamp to output filename |
+
+**Note**: When `--output-file` is not specified, a timestamped filename is automatically generated in the format: `traffic-export_YYYYMMDD-HHMMSS.<format>`. Use `--output-file-timestamp` to add timestamps when providing a custom filename.
+
+**Report Formats**:
+- **CSV**: Comma-separated values, suitable for Excel and data processing tools
+- **XLSX**: Native Excel format with proper formatting
+- **JSON**: Flat array of objects, one per traffic record, with all columns as properties
 
 ### Filter Options
 
@@ -196,7 +204,7 @@ Export to CSV format instead of Excel:
 pylo traffic-export \
   --timeframe-hours 24 \
   --format csv \
-  --output-dir ./reports
+  --output-file ./reports/traffic.csv
 ```
 
 ### Complex Export with Multiple Options
@@ -212,7 +220,7 @@ pylo traffic-export \
   --label-separator ", " \
   --timezone "Europe/Paris" \
   --format excel \
-  --output-dir ./exports \
+  --output-file ./exports/traffic.csv \
   --records-count-limit 50000
 ```
 

@@ -4,6 +4,7 @@ import xlsxwriter
 import openpyxl
 import csv
 import os
+import json
 
 import illumio_pylo as pylo
 
@@ -127,6 +128,31 @@ class ArrayToExport:
         xls_worksheet.freeze_panes(1, 0)
         xls_workbook.close()
 
+    def write_to_json(self, filename, multivalues_cell_delimiter=' ', indent: Optional[int] = 2, ensure_ascii: bool = False):
+        """Write the data as a JSON array of flat objects.
+
+        Each row is converted into an object where keys are the header names and values are the cell values.
+        Lists are converted to strings using pylo.string_list_to_text() with the provided delimiter.
+        """
+        out = []
+        for line in self._lines:
+            obj = {}
+            for idx, header in enumerate(self._headers):
+                item = line[idx]
+                if type(item) is list:
+                    obj[header] = pylo.string_list_to_text(item, multivalues_cell_delimiter)
+                else:
+                    obj[header] = item
+            out.append(obj)
+
+        # Ensure parent dir exists
+        parent = os.path.dirname(filename)
+        if parent is not None and parent != '' and not os.path.exists(parent):
+            os.makedirs(parent, exist_ok=True)
+
+        with open(filename, 'w', encoding='utf-8') as json_file:
+            json.dump(out, json_file, ensure_ascii=ensure_ascii, indent=indent)
+
 
 class ArraysToExcel:
 
@@ -173,7 +199,6 @@ class ArraysToExcel:
             for header in self._headers:
                 headers_id.append(header.name)
 
-
             exporter = ArrayToExport(headers)
 
             for line in self._lines:
@@ -183,6 +208,31 @@ class ArraysToExcel:
                 exporter.add_line_from_list(row)
 
             exporter.write_to_csv(filename)
+
+        def write_to_json(self, filename: str, multivalues_cell_delimiter=' ', indent: Optional[int] = 2, ensure_ascii: bool = False):
+            """Write the data as a JSON array of flat objects.
+
+            Each row is converted into an object where keys are the header names and values are the cell values.
+            Lists are converted to strings using pylo.string_list_to_text() with the provided delimiter.
+            """
+            out = []
+            for line in self._lines:
+                obj = {}
+                for idx, header in enumerate(self._headers):
+                    item = line[idx]
+                    if type(item) is list:
+                        obj[header.name] = pylo.string_list_to_text(item, multivalues_cell_delimiter)
+                    else:
+                        obj[header.name] = item
+                out.append(obj)
+
+            # Ensure parent dir exists
+            parent = os.path.dirname(filename)
+            if parent is not None and parent != '' and not os.path.exists(parent):
+                os.makedirs(parent, exist_ok=True)
+
+            with open(filename, 'w', encoding='utf-8') as json_file:
+                json.dump(out, json_file, ensure_ascii=ensure_ascii, indent=indent)
 
         def columns_count(self):
             return len(self._headers)

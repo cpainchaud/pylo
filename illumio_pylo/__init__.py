@@ -1,9 +1,39 @@
-__version__ = "0.3.14"
-
 from typing import Callable
+
+__version__ = "0.3.14"
 
 from .tmp import *
 from .Helpers import *
+
+_SYSTEM_CA_DISABLE_ENV = 'PYLO_DISABLE_SYSTEM_CA'
+_trusty_env_values = {'1', 'true', 'yes', 'on'}
+
+
+def _env_flag_is_true(env_flag: str) -> bool:
+    value = os.getenv(env_flag)
+    return value is not None and value.strip().lower() in _trusty_env_values
+
+
+def _load_system_ca_store() -> None:
+    if _env_flag_is_true(_SYSTEM_CA_DISABLE_ENV):
+        log.debug('%s is set to a truthy value; skipping pip-system-certs injection', _SYSTEM_CA_DISABLE_ENV)
+        return
+    try:
+        import pip_system_certs
+    except ImportError:
+        log.debug('pip-system-certs not installed; continuing without system CA injection')
+        return
+
+    inject = getattr(pip_system_certs, 'inject_into_requests', None)
+    if callable(inject):
+        inject()
+        log.debug('Injected OS CA certificates into requests via pip-system-certs')
+        return
+
+    log.debug('pip-system-certs is installed but does not expose inject_into_requests; no injection performed')
+
+
+_load_system_ca_store()
 
 from .Exception import PyloEx, PyloApiEx, PyloApiTooManyRequestsEx, PyloApiUnexpectedSyntax, PyloObjectNotFound, PyloApiRequestForbiddenEx
 from .SoftwareVersion import SoftwareVersion
@@ -84,4 +114,3 @@ def get_organization_using_credential_file(fqdn_or_profile_name: str = None,
 ignoreWorkloadsWithSameName = True
 
 objectNotFound = object()
-

@@ -1,0 +1,7 @@
+# Development-only dependencies
+# Add packages here that are useful only for development and testing.
+# This file is not used for installation in production. CI may install these
+# packages if desired.
+
+pytest~=9.0.2
+
