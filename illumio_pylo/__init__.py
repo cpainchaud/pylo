@@ -1,6 +1,6 @@
 from typing import Callable
 
-__version__ = "0.3.14"
+__version__ = "0.4.0"
 
 from .tmp import *
 from .Helpers import *
