@@ -1,5 +1,8 @@
 name: CI - pytest
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ main, master, dev ]
