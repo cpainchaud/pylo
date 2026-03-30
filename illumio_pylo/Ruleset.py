@@ -1,9 +1,9 @@
+import re
 from typing import Optional, List, Union, Dict
 
 import illumio_pylo as pylo
 from .API.JsonPayloadTypes import RuleObjectJsonStructure, RulesetObjectJsonStructure, \
     RulesetScopeEntryLineJsonStructure
-import re
 
 ruleset_id_extraction_regex = re.compile(r"^/orgs/([0-9]+)/sec_policy/([0-9]+)?(draft)?/rule_sets/(?P<id>[0-9]+)$")
 
@@ -38,6 +38,9 @@ class RulesetScope:
             if scope_entry.is_all_all_all():
                 return True
         return False
+
+    def count_scopes(self) -> int:
+        return len(self.scope_entries)
 
 
 class RulesetScopeEntry:
@@ -145,6 +148,14 @@ class RulesetScopeEntry:
         :return:
         """
         return self._labels.get('app')
+
+    def get_label_by_type(self, label_type: str) -> Optional[Union['pylo.Label', 'pylo.LabelGroup']]:
+        """
+        Return the label of the given type if it exists in this scope entry, None otherwise
+        :param label_type:
+        :return:
+        """
+        return self._labels.get(label_type)
 
 
 class Ruleset:

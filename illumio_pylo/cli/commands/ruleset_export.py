@@ -1,37 +1,39 @@
 import argparse
-import os
-from typing import Dict, List, Literal
+from typing import Dict
 
 import illumio_pylo as pylo
-from illumio_pylo import ArraysToExcel, ExcelHeader
-from .utils.misc import make_filename_with_timestamp
+from illumio_pylo import ExcelHeader
 from . import Command
+from .utils.report_writer import ReportWriter
 
 command_name = 'rule-export'
 
 
 def fill_parser(parser: argparse.ArgumentParser):
-    parser.add_argument('--format', '-f', required=False, default='excel', choices=['csv', 'excel'],
-                        help='Output file format')
-    parser.add_argument('--output-dir', '-o', required=False, default='output',
-                        help='Directory where to save the output file')
     parser.add_argument('--prefix-objects-with-type', nargs='?', const=True, default=False,
                         help='Prefix objects with their type (e.g. "label:mylabel")')
     parser.add_argument('--object-types-as-section', action='store_true', default=False,
-                        help="Consumer and providers will show objects types section headers, example:" + os.linesep +
-                             "LABELS: " + os.linesep +
-                             "R-WEB" + os.linesep +
-                             "A-FUSION" + os.linesep +
-                             "IPLISTS: " + os.linesep +
-                             "Private_Networks" + os.linesep +
+                        help="Consumer and providers will show objects types section headers, example:\n" +
+                             "LABELS:\n" +
+                             "R-WEB\n" +
+                             "A-FUSION\n" +
+                             "IPLISTS:\n" +
+                             "Private_Networks\n" +
                              "Public_NATed")
+
+    # Add standard report arguments (static helper)
+    ReportWriter.add_arguments_to_parser(
+        parser,
+        default_prefix='rule-export',
+        default_sheet_name='rulesets'
+    )
 
 
 def __main(args: Dict, org: pylo.Organization, **kwargs):
     setting_prefix_objects_with_type: bool | str = args['prefix_objects_with_type']
     setting_object_types_as_section: bool = args['prefix_objects_with_type']
-    settings_output_file_format = args['format']
-    settings_output_dir = args['output_dir']
+
+    # Initialize report writer will be created after headers are known below
 
     if setting_prefix_objects_with_type is False:
         print(" * Prefix for object types are disabled")
@@ -43,7 +45,25 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
     else:
         print(" * Object types as section are enabled")
 
-    csv_report, output_file_name, sheet = prepare_csv_report_object(settings_output_file_format, settings_output_dir)
+    # Initialize report structure
+    csv_report_headers = pylo.ExcelHeaderSet([
+        ExcelHeader(name='ruleset', max_width=40),
+        ExcelHeader(name='scope', max_width=50),
+        ExcelHeader(name='type', max_width=10),
+        ExcelHeader(name='consumers', max_width=80),
+        ExcelHeader(name='providers', max_width=80),
+        ExcelHeader(name='services', max_width=30),
+        ExcelHeader(name='options', max_width=40),
+        ExcelHeader(name='ruleset_url', max_width=40, wrap_text=False),
+        ExcelHeader(name='ruleset_href', max_width=30, wrap_text=False)
+    ])
+
+    # Create report writer and its sheet using the header definitions
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='rulesets', filename_prefix='rule-export', args=args)
+
+    # ReportWriter initialized with CLI args via constructor
+    csv_report = report_writer.excel_workbook
+    sheet = report_writer.sheet
 
     for ruleset in org.RulesetStore.rulesets:
         for rule in ruleset.rules_ordered_by_type:
@@ -89,41 +109,9 @@ def __main(args: Dict, org: pylo.Organization, **kwargs):
 
             sheet.add_line_from_object(data)
 
-    if settings_output_file_format == "csv":
-        print(" * Writing export file '{}' ... ".format(output_file_name), end='', flush=True)
-        sheet.write_to_csv(output_file_name)
-        print("DONE")
-    elif settings_output_file_format == "excel":
-        print(" * Writing export file '{}' ... ".format(output_file_name), end='', flush=True)
-        csv_report.write_to_excel(output_file_name)
-        print("DONE")
-    else:
-        raise pylo.PyloEx("Unknown format: '{}'".format(args['format']))
-
-
-def prepare_csv_report_object(output_file_format: Literal['excel', 'csv'], settings_output_dir: str):
-    if output_file_format == "excel":
-        output_file_extension = ".xlsx"
-    elif output_file_format == "csv":
-        output_file_extension = ".csv"
-    else:
-        raise Exception("Unknown output file format: %s" % output_file_format)
-    csv_report_headers = pylo.ExcelHeaderSet(
-        [ExcelHeader(name='ruleset', max_width=40),
-         ExcelHeader(name='scope', max_width=50),
-         ExcelHeader(name='type', max_width=10),
-         ExcelHeader(name='consumers', max_width=80),
-         ExcelHeader(name='providers', max_width=80),
-         ExcelHeader(name='services', max_width=30),
-         ExcelHeader(name='options', max_width=40),
-         ExcelHeader(name='ruleset_url', max_width=40, wrap_text=False),
-         ExcelHeader(name='ruleset_href', max_width=30, wrap_text=False)
-         ])
-    csv_report = ArraysToExcel()
-    sheet = csv_report.create_sheet('rulesets', csv_report_headers, force_all_wrap_text=True,
-                                    multivalues_cell_delimiter=',')
-    output_file_name = make_filename_with_timestamp('rule_export_', settings_output_dir) + output_file_extension
-    return csv_report, output_file_name, sheet
+    # Always write report (even if empty)
+    # JSON is now generated from the populated sheet inside ReportWriter
+    report_writer.write_reports()
 
 
 command_object = Command(command_name, __main, fill_parser)

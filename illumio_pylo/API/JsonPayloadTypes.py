@@ -12,6 +12,15 @@ class HrefReferenceWithName(TypedDict):
     name: str
 
 
+class HrefReferenceWithNameAndCreatorDeleterInfo(TypedDict):
+    href: str
+    name: str
+    created_by: Optional[HrefReferenceWithName]
+    deleted_by: Optional[HrefReferenceWithName]
+    created_at: str  # ISO 8601 format UTC timestamp
+    deleted_at: Optional[str]  # ISO 8601 format UTC timestamp
+
+
 class LabelHrefRef(TypedDict):
     label: HrefReference
 
@@ -60,6 +69,8 @@ class LabelObjectJsonStructure(TypedDict):
     key: str
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+    external_data_set: Optional[str]
+    external_data_reference: Optional[str]
     usage: Optional[LabelObjectUsageJsonStructure]
     value: str
 
@@ -214,14 +225,44 @@ class RuleDirectServiceReferenceObjectJsonStructure(TypedDict):
     to_port: NotRequired[int]
 
 
+class RuleEndpointEntryJsonStructure(TypedDict):
+    """Represents a provider/consumer entry which may contain an actors key or a label reference.
+    Example: { "actors": "ams" } or { "label": {"href": ..., "key": ..., "value": ...}, "exclusion": false }
+    """
+    actors: NotRequired[Literal['ams']]
+    label: NotRequired[LabelObjectShortReferenceJsonStructure]
+    exclusion: NotRequired[bool]  # exclusion is only relevant if label is present, means that the rules applies to all labels of same key/type except the specified one
+
+
+class RulesResolveLabelsAsJsonStructure(TypedDict):
+    providers: List[Literal['workloads', 'virtual_services']]  # at least value but can be all of them
+    consumers: List[Literal['workloads', 'virtual_services']]  # at least value but can be all of them
+
+
 class RuleObjectJsonStructure(TypedDict):
     created_at: str
     created_by: Optional[HrefReferenceWithName]
-    description: str
+    deleted_at: Optional[str]
+    deleted_by: Optional[HrefReferenceWithName]
     href: str
-    ingress_services: List[RuleDirectServiceReferenceObjectJsonStructure | RuleServiceReferenceObjectJsonStructure]
     updated_at: str
     updated_by: Optional[HrefReferenceWithName]
+    update_type: NotRequired[Optional[str]]
+    description: NotRequired[Optional[str]]
+    enabled: bool
+    providers: List[RuleEndpointEntryJsonStructure]
+    consumers: List[RuleEndpointEntryJsonStructure]
+    consuming_security_principals: List[HrefReference]
+    sec_connect: bool
+    stateless: bool
+    machine_auth: bool
+    unscoped_consumers: bool
+    network_type: Literal['brn', 'all', 'non_brn']  # brn means corporate network, non_brn means non-corporate network, all means both
+    use_workload_subnets: List[HrefReference]
+    # ingress/egress services can be service references, direct service definitions, or full service objects
+    ingress_services: List[Union[RuleDirectServiceReferenceObjectJsonStructure, RuleServiceReferenceObjectJsonStructure]]
+    egress_services: List[Union[RuleDirectServiceReferenceObjectJsonStructure, RuleServiceReferenceObjectJsonStructure]]
+    resolve_labels_as: RulesResolveLabelsAsJsonStructure
 
 
 class RulesetScopeEntryLineJsonStructure(TypedDict):

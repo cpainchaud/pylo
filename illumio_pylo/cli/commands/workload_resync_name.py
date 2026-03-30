@@ -1,11 +1,12 @@
-from typing import List
-import illumio_pylo as pylo
 import argparse
 import math
+from typing import List
+
 import colorama
-import os
-from .utils.misc import make_filename_with_timestamp
+
+import illumio_pylo as pylo
 from . import Command
+from .utils.report_writer import ReportWriter
 
 command_name = 'workload-resync-names'
 objects_load_filter = ['workloads', 'labels']
@@ -22,12 +23,15 @@ def fill_parser(parser: argparse.ArgumentParser):
                         help="No change will be implemented in the PCE until you use this function to confirm you're good with them after review")
     parser.add_argument('--batch-size', type=int, required=False, default=500,
                         help='Number of Workloads to update per API call')
-    parser.add_argument('--report-format', '-rf', action='append', type=str, choices=['csv', 'xlsx'], default=None,
-                        help='Which report formats you want to produce (repeat option to have several)')
-    parser.add_argument('--output-dir', '-o', type=str, required=False, default='output',
-                        help='Directory where to write the report file(s)')
-    parser.add_argument('--output-filename', type=str, default=None,
-                        help='Write report to the specified file (or basename) instead of using the default timestamped filename. If multiple formats are requested, the provided path\'s extension will be replaced/added per format.')
+
+    # Register standard report-related CLI options using ReportWriter helper (keeps CLI consistent across commands)
+    ReportWriter.add_arguments_to_parser(
+        parser,
+        default_prefix='workload-resync-names',
+        default_sheet_name='resync_names',
+        default_format='csv',
+        format_help='Which report formats you want to produce (repeat option to have several)'
+    )
 
 
 def __main(args, org: pylo.Organization, **kwargs):
@@ -38,16 +42,11 @@ def __main(args, org: pylo.Organization, **kwargs):
     if report_wanted_format is None:
         report_wanted_format = ['csv']
 
-    arg_report_output_dir: str = args['output_dir']
-    arg_output_filename = args.get('output_filename')
-    if arg_output_filename is None:
-        output_file_prefix = make_filename_with_timestamp('workload-resync-names_', arg_report_output_dir)
-    else:
-        output_file_prefix = None
-
     csv_report_headers = pylo.ExcelHeaderSet(['name', 'hostname', 'status', 'reason', 'href'])
-    csv_report = pylo.ArraysToExcel()
-    sheet: pylo.ArraysToExcel.Sheet = csv_report.create_sheet('resync_names', csv_report_headers, force_all_wrap_text=True)
+    # Use ReportWriter (wraps ArraysToExcel) to manage formats/filenames consistently
+    report_writer = ReportWriter(headers=csv_report_headers, sheet_name='resync_names', filename_prefix='workload-resync-names',
+                                 force_all_wrap_text=True, multivalues_cell_delimiter=' ', args=args)
+    sheet: pylo.ArraysToExcel.Sheet = report_writer.sheet
 
     def add_workload_to_report(workload: pylo.Workload, status: str, reason: str = ''):
         sheet.add_line_from_object({
@@ -59,34 +58,12 @@ def __main(args, org: pylo.Organization, **kwargs):
         })
 
     def write_report_files():
+        # If no rows, warn and don't write files
         if sheet.lines_count() < 1:
             print("\n** WARNING: no entry matched your filters so reports were not generated !\n")
             return
-        if len(report_wanted_format) < 1:
-            print(" * No report format was specified, no report will be generated")
-            return
-        for report_format in report_wanted_format:
-            if arg_output_filename is None:
-                output_filename = output_file_prefix + '.' + report_format
-            else:
-                if len(report_wanted_format) == 1:
-                    output_filename = arg_output_filename
-                else:
-                    base = os.path.splitext(arg_output_filename)[0]
-                    output_filename = base + '.' + report_format
-
-            output_directory = os.path.dirname(output_filename)
-            if output_directory:
-                os.makedirs(output_directory, exist_ok=True)
-
-            print(" * Writing report file '{}' ... ".format(output_filename), end='', flush=True)
-            if report_format == 'csv':
-                sheet.write_to_csv(output_filename)
-            elif report_format == 'xlsx':
-                csv_report.write_to_excel(output_filename)
-            else:
-                raise pylo.PyloEx("Unknown format for report: '{}'".format(report_format))
-            print("DONE")
+        # Delegate file writing/filename handling to ReportWriter
+        report_writer.write_reports()
 
     count_managed_workloads = 0
     count_workloads_with_forced_names = 0
@@ -147,7 +124,8 @@ def __main(args, org: pylo.Organization, **kwargs):
                 status = status_entry.get('status', 'unknown status')
                 message = status_entry.get('message', '')
                 workload_object = org.WorkloadStore.itemsByHRef.get(href)
-                display_name = workload_object.name if workload_object and workload_object.name else status_entry.get('name', 'unknown workload')
+                status_entry_dict = dict(status_entry)
+                display_name = workload_object.name if workload_object and workload_object.name else status_entry_dict.get('name', 'unknown workload')
                 if status == 'updated':
                     print(colorama.Fore.GREEN + f" - Updated {display_name} ({href})" + colorama.Style.RESET_ALL)
                     if workload_object is not None:

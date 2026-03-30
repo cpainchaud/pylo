@@ -12,6 +12,13 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
+      - uses: ArcticLampyrid/action-wait-for-workflow@v1.3.0
+        timeout-minutes: 5
+        with:
+          workflow: pytest.yml          # required, e.g. build.yml
+          wait-interval: 30              # seconds (min 5)
+          allowed-conclusions: |         # succeeds if conclusion is allowed, and fails if not
+            success
       - uses: actions/checkout@v4
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)

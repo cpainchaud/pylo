@@ -1,6 +1,7 @@
-from hashlib import md5
 import random
-from typing import Set, Union
+from hashlib import md5
+from typing import Set
+
 # Pylo imports
 from illumio_pylo import log
 from .API.JsonPayloadTypes import LabelObjectJsonStructure, LabelGroupObjectJsonStructure, LabelDimensionObjectStructure
@@ -166,7 +167,7 @@ class LabelStore:
 
             new_label.raw_json = json_label
 
-            log.info("Found LabelGroup '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
+            log.debug("Found LabelGroup '%s' with href '%s' and type '%s'", new_label_name, new_label_href, new_label_type)
 
         for group in created_groups:
             group.load_from_json()

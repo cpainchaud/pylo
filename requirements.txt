@@ -1,9 +1,14 @@
-click==8.1.7
+click==8.3.1
 colorama~=0.4.4
-cryptography==46.0.6
+cryptography==46.0.5
 openpyxl~=3.1.3
 paramiko~=3.4.0
 prettytable~=3.10.0
 requests~=2.32.0
 xlsxwriter~=3.2.0
 flask~=2.2.0
+fastapi~=0.128.0
+uvicorn~=0.40.0
+pywebview~=6.1
+truststore~=0.10.4
+pip-system-certs~=5.3.0

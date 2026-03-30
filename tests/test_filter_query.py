@@ -288,7 +288,8 @@ def test_filter_execution():
     print(f"Results: {passed} passed, {failed} failed")
     print("=" * 60)
 
-    return failed == 0
+    # Use assertion for pytest (tests should return None). This will raise on failures.
+    assert failed == 0, f"{failed} filter cases failed"
 
 
 def test_error_handling():
@@ -330,11 +331,19 @@ if __name__ == '__main__':
     print("FilterQuery Test Suite")
     print("=" * 60)
 
-    test_lexer()
-    test_parser()
-    test_workload_registry()
-    success = test_filter_execution()
-    test_error_handling()
+    try:
+        test_lexer()
+        test_parser()
+        test_workload_registry()
+        test_filter_execution()
+        test_error_handling()
+        success = True
+    except AssertionError as ae:
+        print(f"Test failures: {ae}")
+        success = False
+    except Exception as e:
+        print(f"Unexpected error while running tests: {e}")
+        success = False
 
     print("\n" + "=" * 60)
     if success:
