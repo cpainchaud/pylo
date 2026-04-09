@@ -45,5 +45,4 @@ setup(
         "": ["*.pem", "*.html", "*.css", "*.js"],
     },
     python_requires='>=3.11',
-    setup_requires=required
 )
