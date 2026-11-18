@@ -99,7 +99,17 @@ class CredentialProfile:
                         "Optional: PYLO_PORT, PYLO_ORG_ID, PYLO_VERIFY_SSL".format(', '.join(missing_vars)))
 
         # Determine if this is an illum.io domain
-        is_illumio_domain = 'illum.io' in fqdn.lower()
+        # Normalize FQDN in case users provide scheme/path/port, then validate domain boundary.
+        normalized_fqdn = fqdn.strip().lower()
+        if '://' in normalized_fqdn:
+            normalized_fqdn = normalized_fqdn.split('://', 1)[1]
+        normalized_fqdn = normalized_fqdn.split('/', 1)[0]
+        normalized_fqdn = normalized_fqdn.split(':', 1)[0]
+
+        is_illumio_domain = (
+            normalized_fqdn == 'illum.io' or
+            normalized_fqdn.endswith('.illum.io')
+        )
 
         # Parse PORT with validation
         port_str = os.environ.get('PYLO_PORT')
